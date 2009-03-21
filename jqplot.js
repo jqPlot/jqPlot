@@ -14,16 +14,21 @@
         this.height = 0;
         this.width = 0;
         this.elem;
+        // lowest/highest user data associated with this axis.
         this.dataBounds = {min:null, max:null};
+        // lowest/highest values on axis.
+        this.min=null;
+        this.max=null;
+        this.style;
     };
     
     // Series object
     function Series() {
         this.show = true;
-        // when options are parsed, these properties will reference
-        // actual axes objects.
         this.xaxis = 'xaxis';
+        this._xaxis = new Axis(this.xaxis);
         this.yaxis = 'yaxis';
+        this._yaxis = new Axis(this.yaxis);
         this.renderer = 'lineRenderer';
         // raw user data points.  These should never be altered!!!
         this.data = [];
@@ -32,50 +37,45 @@
         this.points = {show:true, renderer: 'circleRenderer'}
     };
     
-    // function Point() {
-    //     this.show = true;
-    //     this.renderer = 'circleRenderer';
-    //     // the x, y coordinates on the grid.
-    //     this.x;
-    //     this.y;
-    //     // the x, y values of the corresponding user data.
-    //     // these should never be changed!!!
-    //     this._x;
-    //   ;  this._y;
-    // }
-    
     function Grid() {
         this.gridlines;
         this.background;
         this.border;
         this.renderer = 'defaultGridRenderer';
     };
-    
-
         
-        
-    function linearAxisRenderer(axis) {
+    function linearAxisRenderer() {
         log('in linearAxisRenderer');
+        var axis = this;
         var name = axis.name;
         var db = axis.dataBounds;
         var dim, interval;
-        if (name == 'xaxis' || name == 'x2axis') dim = this.width;
-        else dim = this.height;
+        var min, max;
+        if (name == 'xaxis' || name == 'x2axis') dim = axis.width;
+        else dim = axis.height;
         if (dim > 100) {
-            axis.numberTicks = parseInt(2+(dim-100)/50);
+            axis.numberTicks = parseInt(3+(dim-100)/50);
         }
-        else axis.numberTicks = 2;
+        else axis.numberTicks = 3;
         
-        var range = db.max - db.min;
-        var rdbmin = db.min - range/2*(axis.scale - 1);
-        var rdbmax = db.max + range/2*(axis.scale - 1);
-        axis.tickInterval = (db.max - db.min)/axis.numberTicks;
+        min = axis.min || db.min;
+        max = axis.max || db.max;
+        var range = max - min;
+        var rmin = min - (axis.min != null ? 0 : range/2*(axis.scale - 1));
+        var rmax = max + (axis.max != null ? 0 : range/2*(axis.scale - 1));
+        axis.min = rmin;
+        axis.max = rmax;
+        axis.tickInterval = (rmax - rmin)/(axis.numberTicks-1);
         for (var i=0; i<axis.numberTicks; i++){
-            var tt = rdbmin + i*axis.tickInterval
+            var tt = rmin + i*axis.tickInterval
             axis.ticks.labels.push(sprintf(axis.ticks.formatString, tt));
-            axis.ticks.values.push(rdbmin + i*axis.tickInterval);
+            axis.ticks.values.push(rmin + i*axis.tickInterval);
         }
     };
+    
+    function lineRenderer(){};
+    
+    function circleRenderer(){};
     
     $._jqPlot = function() {
         // user's data.  Should be in the form of
@@ -100,13 +100,8 @@
             series:[]
         };
     
-        // properties for the individual data series
+        // container for the individual data series
         this.series = [];
-        // the actual grid coordinates that will be plotted (in scaled grid coordinates)
-        // this.gridData = [];
-        // properties for points of individual data series
-        // this.points = [];
-        // properties for axes
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         this.grid = new Grid();
         this.title = {text:null, font:null};
@@ -123,27 +118,6 @@
         this.width = null;
         this.height = null;
         this.gridOffsets = {top:0, right:0, bottom:0, left:0};
-        // max and min x and y
-        // this.dataBounds={xaxis:{min:null, max:null}, yaxis:{min:null, max:null}, x2axis:{min:null, max:null}, y2axis:{min:null, max:null}};
-        
-        // this.setDefaults = function() {
-        //     // set defaults to default properties of the respective objects.
-        //     // This is for ... what?... why bother, objects will have
-        //     // defaults when initialized.
-        //     var a = new Axis();
-        //     var s = new Series();
-        //     var p = new Point();
-        //     var g = new Grid();
-        //     for (var prop in a)
-        //         this.defaults.axesDefaults[prop] = a[prop];
-        //     for (var prop in s) 
-        //         this.defaults.seriesDefaults[prop] = a[prop];
-        //     for (var prop is p)
-        //         this.defaults.pointsDefaults[prop] = a[prop];
-        //     for (var prop in g)
-        //         this.defaults.grid[prop] = a[prop]
-        // }
-        
             
         this.init = function(target, data, options) {
             log('in init');
@@ -162,33 +136,11 @@
             if (data.length < 1 || data[0].length < 2) throw "Invalid Plot data";
             this.parseOptions(options);
             
-            // compute the min and max x and y values for each axes
-            // var db = this.dataBounds;
-            // 
-            // // need to:  set the databounds on the plot and for each axes.
-            // // these are user data bounds, not display bounds
-            // for (var i=0; i<data.length; i++) {
-            //     var d=data[i];
-            //     // get the axis name from the series
-            //     var dbx = this.series[i].xaxis.name;
-            //     var dby = this.series[i].yaxis.name;
-            //     if (db[dbx].min == null) db[dbx].min = d[0][0];
-            //     if (db[dbx].max == null) db[dbx].max = d[0][0];
-            //     if (db[dby].min == null) db[dby].min = d[0][1];
-            //     if (db[dby].max == null) db[dby].max = d[0][1];
-            //     for (var j=0; j<d.length; j++) {
-            //         if (d[j][0] < db[dbx].min) db[dbx].min = d[j][0];
-            //         else if (d[j][0] > db[dbx].max) db[dbx].max = d[j][0];
-            //         if (d[j][1] < db[dby].min) db[dby].min = d[j][1];
-            //         else if (d[j][1] > db[dby].max) db[dby].max = d[j][1];
-            //     }
-            // }
-            
             for (var i=0; i<this.series.length; i++) {
                 var s = this.series[i];
                 var d = s.data;
-                var dbx = s.xaxis.dataBounds;
-                var dby = s.yaxis.dataBounds;
+                var dbx = s._xaxis.dataBounds;
+                var dby = s._yaxis.dataBounds;
                 if (dbx.min == null) dbx.min = d[0][0];
                 if (dbx.max == null) dbx.max = d[0][0];
                 if (dby.min == null) dby.min = d[0][1];
@@ -209,12 +161,41 @@
         this.parseOptions = function(options){
             log('in parseOptions');
             var opts = $.extend(true, {}, this.defaults, options);
-            for (var axis in opts.axes) {
+            for (var n in opts.axes) {
                 // opts.axes[axis] = $.extend(true, {}, opts.axesDefaults, opts.axes[axis]);
                 // for (var p in opts.axes[axis]){
                 //     this.axes[axis][p] = opts.axes[axis][p];
                 // }
-                $.extend(true, this.axes[axis], opts.axesDefaults, opts.axes[axis]);
+                var axis = this.axes[n];
+                $.extend(true, axis, opts.axesDefaults, opts.axes[n]);
+                switch (n) {
+                    case 'xaxis':
+                        axis.style = {position:'absolute', left:'0px', bottom:'0px'};
+                        axis.height = 0;
+                        axis.width = this.width;
+                        axis.offset = 'bottom';
+                        break;
+                    case 'x2axis':
+                        axis.style = {position:'absolute', left:'0px', top:'0px'};
+                        axis.height = 0;
+                        axis.width = this.width;
+                        axis.offset = 'top';
+                        break;
+                    case 'yaxis':
+                        axis.style = {position:'absolute', left:'0px', top:'0px'};
+                        axis.height = this.height;
+                        axis.width = 0;
+                        axis.offset = 'left';
+                        break;
+                    case 'y2axis':
+                        axis.style = {position:'absolute', right:'0px', top:'0px'};
+                        axis.height = this.height;
+                        axis.width = 0;
+                        axis.offset = 'right';
+                        break;
+                    default:
+                        break;
+                }
             }
             
             for (var i=0; i<this.data.length; i++) {
@@ -222,39 +203,30 @@
                 temp.data = this.data[i];
                 switch (temp.xaxis) {
                     case 'xaxis':
-                        temp.xaxis = this.axes.xaxis;
+                        temp._xaxis = this.axes.xaxis;
                         break;
                     case 'x2axis':
-                        temp.xaxis = this.axes.x2axis;
+                        temp._xaxis = this.axes.x2axis;
                         break;
                     default:
                         break;
                 }
                 switch (temp.yaxis) {
                     case 'yaxis':
-                        temp.yaxis = this.axes.yaxis;
+                        temp._yaxis = this.axes.yaxis;
                         break;
                     case 'y2axis':
-                        temp.yaxis = this.axes.y2axis;
+                        temp._yaxis = this.axes.y2axis;
                         break;
                     default:
                         break;
                 }
                 if (temp.show) {
-                    temp.xaxis.show = true;
-                    temp.yaxis.show = true;
+                    temp._xaxis.show = true;
+                    temp._yaxis.show = true;
                 }
-                // if (!temp.xaxis) temp.xaxis = 'xaxis';
-                // if (!temp.yaxis) temp.yaxis = 'yaxis';
                 this.series.push(temp);
-                // this.axes[temp.xaxis.].show = true;
-                // this.axes[temp.yaxis].show = true;
             }
-            
-            // for (var i=0; i<this.data.length; i++) {
-            //     var temp = $.extend(true, {}, this.options.pointsDefaults, this.options.points[i]);
-            //     this.points.push(temp);
-            // }
             
             // copy the grid and title options into this object.
             for (var opt in ['grid', 'title']) {
@@ -287,7 +259,7 @@
             // if a ticks array is specified, use it to fill in
             // the labels and values.
             var axis = this.axes[name];
-            var db = this.dataBounds[name];
+            var db = axis.dataBounds;
             if (axis.ticks && axis.ticks.constructor == Array) {
                 var temp = $.extend(true, [], axis.ticks);
                 // if 2-D array, match them up
@@ -307,7 +279,7 @@
             }
             // else call the axis renderer and fill in the labels
             // and values from there.
-            else this[this.axes[name].renderer].call(this, name);
+            else this[axis.renderer].call(axis);
         };
     
         // create the plot and add it do the dom
@@ -329,36 +301,8 @@
                     // fill a div with axes labels in the right direction.
                     // Need to pregenerate each axis to get it's bounds and
                     // position it and the labels correctly on the plot.
-                    var style, h, w, offset;
-                    switch (name) {
-                        case 'xaxis':
-                            style = {position:'absolute', left:'0px', bottom:'0px'};
-                            axis.height = 0;
-                            axis.width = this.width;
-                            offset = 'bottom';
-                            break;
-                        case 'x2axis':
-                            style = {position:'absolute', left:'0px', top:'0px'};
-                            axis.height = 0;
-                            axis.width = this.width;
-                            offset = 'top';
-                            break;
-                        case 'yaxis':
-                            style = {position:'absolute', left:'0px', top:'0px'};
-                            axis.height = this.height;
-                            axis.width = 0;
-                            offset = 'left';
-                            break;
-                        case 'y2axis':
-                            style = {position:'absolute', right:'0px', top:'0px'};
-                            axis.height = this.height;
-                            axis.width = 0;
-                            offset = 'right';
-                            break;
-                        default:
-                            break;
-                    }
-                    axis.elem = makeTag('div', {style:style});
+                    var h, w;
+                    axis.elem = makeTag('div', {style:axis.style});
                     // divs don't have dimensions untill added to dom
                     this.target.append(axis.elem);
                     for (var i=0; i<axis.ticks.labels.length; i++) {
@@ -369,11 +313,11 @@
                         console.log(h,w);
                         if (axis.height < h) {
                             axis.height = h;
-                            this.gridOffsets[offset] = h;
+                            this.gridOffsets[axis.offset] = h;
                         }
                         if (axis.width < w) {
                             axis.width = w;
-                            this.gridOffsets[offset] = w;
+                            this.gridOffsets[axis.offset] = w;
                         }
                     }
                 }
@@ -397,9 +341,7 @@
     
         this.drawSeries = function(){};
     
-        this.drawPoints = function(){};
-    
-        this.lineRenderer = function(){};   
+        this.drawPoints = function(){};   
     
         this.lineColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
     
@@ -457,10 +399,16 @@
         log(arguments);
         options = options || {};
         var plot = new $._jqPlot();
+        for (var i in $.jqplot.renderers) {
+            plot[$.jqplot.renderers[i]['name']] = $.jqplot.renderers[i]['renderer'];
+        }
         plot.init(target, data, options);
-        // plot.draw();
+        plot.draw();
         return plot;
     };
+    
+    $.jqplot.renderers = [{name:'linearAxisRenderer', renderer:linearAxisRenderer}, {name:'lineRenderer', renderer:lineRenderer}, {name:'circleRenderer', renderer:circleRenderer}];
+    
 
 
     /**
