@@ -10,7 +10,7 @@
         this.tickInterval;
         this.renderer = 'linearAxisRenderer';
         this.label = {text:null, font:null, align:null};
-        this.ticks = {labels:[], values:[], formatString:'%.1f', font:null};
+        this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', font:null};
         this.height = 0;
         this.width = 0;
         this.elem;
@@ -20,6 +20,10 @@
         this.min=null;
         this.max=null;
         this.style;
+        // axis will push the grid at position by value
+        this.gridOffsets;
+        // pixel offsets of min/max labels
+        this.offsets = {min:null, max:null};
     };
     
     // Series object
@@ -42,35 +46,11 @@
         this.background;
         this.border;
         this.renderer = 'defaultGridRenderer';
-    };
+        this.width;
+        this.height;
+        this.top;
+        this.left;
         
-    function linearAxisRenderer() {
-        log('in linearAxisRenderer');
-        var axis = this;
-        var name = axis.name;
-        var db = axis.dataBounds;
-        var dim, interval;
-        var min, max;
-        if (name == 'xaxis' || name == 'x2axis') dim = axis.width;
-        else dim = axis.height;
-        if (dim > 100) {
-            axis.numberTicks = parseInt(3+(dim-100)/50);
-        }
-        else axis.numberTicks = 3;
-        
-        min = axis.min || db.min;
-        max = axis.max || db.max;
-        var range = max - min;
-        var rmin = min - (axis.min != null ? 0 : range/2*(axis.scale - 1));
-        var rmax = max + (axis.max != null ? 0 : range/2*(axis.scale - 1));
-        axis.min = rmin;
-        axis.max = rmax;
-        axis.tickInterval = (rmax - rmin)/(axis.numberTicks-1);
-        for (var i=0; i<axis.numberTicks; i++){
-            var tt = rmin + i*axis.tickInterval
-            axis.ticks.labels.push(sprintf(axis.ticks.formatString, tt));
-            axis.ticks.values.push(rmin + i*axis.tickInterval);
-        }
     };
     
     function lineRenderer(){};
@@ -117,7 +97,7 @@
         // width and height of the canvas
         this.width = null;
         this.height = null;
-        this.gridOffsets = {top:0, right:0, bottom:0, left:0};
+        this.gridOffsets = {top:10, right:10, bottom:10, left:10};
             
         this.init = function(target, data, options) {
             log('in init');
@@ -173,25 +153,25 @@
                         axis.style = {position:'absolute', left:'0px', bottom:'0px'};
                         axis.height = 0;
                         axis.width = this.width;
-                        axis.offset = 'bottom';
+                        axis.gridOffset = 'bottom';
                         break;
                     case 'x2axis':
                         axis.style = {position:'absolute', left:'0px', top:'0px'};
                         axis.height = 0;
                         axis.width = this.width;
-                        axis.offset = 'top';
+                        axis.gridOffset = 'top';
                         break;
                     case 'yaxis':
                         axis.style = {position:'absolute', left:'0px', top:'0px'};
                         axis.height = this.height;
                         axis.width = 0;
-                        axis.offset = 'left';
+                        axis.gridOffset = 'left';
                         break;
                     case 'y2axis':
                         axis.style = {position:'absolute', right:'0px', top:'0px'};
                         axis.height = this.height;
                         axis.width = 0;
-                        axis.offset = 'right';
+                        axis.gridOffset = 'right';
                         break;
                     default:
                         break;
@@ -259,6 +239,8 @@
             // if a ticks array is specified, use it to fill in
             // the labels and values.
             var axis = this.axes[name];
+            axis.gridHeight = this.height;
+            axis.gridWidth = this.width;
             var db = axis.dataBounds;
             if (axis.ticks && axis.ticks.constructor == Array) {
                 var temp = $.extend(true, [], axis.ticks);
@@ -279,12 +261,23 @@
             }
             // else call the axis renderer and fill in the labels
             // and values from there.
-            else this[axis.renderer].call(axis);
+            else $.jqplot[axis.renderer].fill.call(axis);
         };
+        
+        this.pack = function() {
+            for (var name in this.axes) {
+                var axis = this.axes[name];
+                $.jqplot[axis.renderer].pack.call(axis, this.gridOffsets);
+            }
+        }
     
         // create the plot and add it do the dom
         this.draw = function(){
+            this.drawTitle();
             this.drawAxes();
+            this.makeCanvas();
+            this.drawGrid();
+            this.pack();
         };
     
         // Add the canvas element to the DOM
@@ -302,42 +295,61 @@
                     // Need to pregenerate each axis to get it's bounds and
                     // position it and the labels correctly on the plot.
                     var h, w;
-                    axis.elem = makeTag('div', {style:axis.style});
+                    axis.elem = makeTag('div', {class:'jqplot', style:axis.style});
                     // divs don't have dimensions untill added to dom
                     this.target.append(axis.elem);
                     for (var i=0; i<axis.ticks.labels.length; i++) {
-                        var elem = makeTag('div', axis.ticks.labels[i]);
+                        var elem = makeTag('div', {class:'jqplot', style:axis.ticks.styles[i]}, axis.ticks.labels[i]);
                         axis.elem.appendChild(elem);
                         h = $(elem).outerHeight();
                         w = $(elem).outerWidth();
-                        console.log(h,w);
                         if (axis.height < h) {
                             axis.height = h;
-                            this.gridOffsets[axis.offset] = h;
+                            this.gridOffsets[axis.gridOffset] = h;
                         }
                         if (axis.width < w) {
                             axis.width = w;
-                            this.gridOffsets[axis.offset] = w;
+                            this.gridOffsets[axis.gridOffset] = w;
                         }
                     }
+                    $(axis.elem).height(axis.height);
+                    $(axis.elem).width(axis.width);
                 }
             }
-            
-            // now have all the axes with their dimensions, position the labels
-            
-            
         };
         
-        this.fillAxisContainer = function(name) {
-            var axis = this.axes[name];
-            for (var i=0; i<axis.ticks.labels.length; i++) {
-                var elem = makeTag('div', {style:{position:'absolute',
-                    bottom:'0px', left:'0px'}}, axis.ticks.labels[i]);
-            }
-            return axis.elem;
+        this.drawGrid = function(){
+            
         };
     
-        this.drawGrid = function(){};
+        this.makeCanvas = function(){
+            this.gridCanvas = document.createElement('canvas');
+            this.gridCanvas.width = this.width;
+            this.gridCanvas.height = this.height;
+            if ($.browser.msie) // excanvas hack
+                this.gridCanvas = window.G_vmlCanvasManager.initElement(this.gridCanvas);
+            $(this.gridCanvas).css({ position: 'absolute', left: 0, top: 0 });
+            this.target.append(this.gridCanvas);
+            this.gctx = this.gridCanvas.getContext("2d");
+            
+            this.seriesCanvas = document.createElement('canvas');
+            this.seriesCanvas.width = this.width;
+            this.seriesCanvas.height = this.height;
+            if ($.browser.msie) // excanvas hack
+                this.seriesCanvas = window.G_vmlCanvasManager.initElement(this.seriesCanvas);
+            $(this.seriesCanvas).css({ position: 'absolute', left: 0, top: 0 });
+            this.target.append(this.seriesCanvas);
+            this.sctx = this.seriesCanvas.getContext("2d");
+            
+            this.overlayCanvas = document.createElement('canvas');
+            this.overlayCanvas.width = this.width;
+            this.overlayCanvas.height = this.height;
+            if ($.browser.msie) // excanvas hack
+                this.overlayCanvas = window.G_vmlCanvasManager.initElement(this.overlayCanvas);
+            $(this.overlayCanvas).css({ position: 'absolute', left: 0, top: 0 });
+            this.target.append(this.overlayCanvas);
+            this.octx = this.overlayCanvas.getContext("2d");
+        };
     
         this.drawSeries = function(){};
     
@@ -399,15 +411,120 @@
         log(arguments);
         options = options || {};
         var plot = new $._jqPlot();
-        for (var i in $.jqplot.renderers) {
-            plot[$.jqplot.renderers[i]['name']] = $.jqplot.renderers[i]['renderer'];
-        }
+        // for (var i in $.jqplot.renderers) {
+        //     plot[$.jqplot.renderers[i]['name']] = new $.jqplot.renderers[i]['renderer'];
+        // }
         plot.init(target, data, options);
         plot.draw();
         return plot;
     };
     
-    $.jqplot.renderers = [{name:'linearAxisRenderer', renderer:linearAxisRenderer}, {name:'lineRenderer', renderer:lineRenderer}, {name:'circleRenderer', renderer:circleRenderer}];
+    // $.jqplot.renderers = [{name:'linearAxisRenderer', renderer:linearAxisRenderer}, {name:'lineRenderer', renderer:lineRenderer}, {name:'circleRenderer', renderer:circleRenderer}];
+    
+    
+        
+    $.jqplot.linearAxisRenderer = function() {
+    };
+    
+    $.jqplot.linearAxisRenderer.fill = function() {
+        log('in linearAxisRenderer');
+        var name = this.name;
+        var db = this.dataBounds;
+        var dim, interval;
+        var min, max;
+        var pos1, pos2;
+        if (name == 'xaxis' || name == 'x2axis') {
+            dim = this.width;
+        }
+        else {
+            dim = this.height;
+        }
+        if (dim > 100) {
+            this.numberTicks = parseInt(3+(dim-100)/50);
+        }
+        else this.numberTicks = 3;
+        
+        min = this.min || db.min;
+        max = this.max || db.max;
+        var range = max - min;
+        var rmin = min - (this.min != null ? 0 : range/2*(this.scale - 1));
+        var rmax = max + (this.max != null ? 0 : range/2*(this.scale - 1));
+        this.min = rmin;
+        this.max = rmax;
+        this.tickInterval = (rmax - rmin)/(this.numberTicks-1);
+        for (var i=0; i<this.numberTicks; i++){
+            var tt = rmin + i*this.tickInterval
+            this.ticks.labels.push(sprintf(this.ticks.formatString, tt));
+            this.ticks.values.push(rmin + i*this.tickInterval);
+            var pox = i*15+'px';
+            switch (name) {
+                case 'xaxis':
+                    this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
+                    break;
+                case 'x2axis':
+                    this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox});
+                    break;
+                case 'yaxis':
+                    this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
+                    break;
+                case 'y2axis':
+                    this.ticks.styles.push({position:'absolute', left:'0px', top:pox});
+                    break;
+                    
+            }
+        }
+        if (name == 'yaxis' || name == 'y2axis') this.ticks.styles.reverse();
+    };
+    
+    // Now we know offsets around the grid, we can define conversioning functions
+    // and properly lay out the axes.
+    $.jqplot.linearAxisRenderer.pack = function(offsets) {
+        log('in packer');;
+        var ticks = this.ticks;
+        var tickdivs = $(this.elem).children('div');
+        if (this.name == 'xaxis' || this.name == 'x2axis') {
+            this.offsets = {min:offsets.left, max:offsets.right};
+            
+            this.p2u = function(p) {
+                return (p - this.offsets.min)*(this.max - this.min)/(this.gridWidth - this.offsets.max - this.offsets.min) + this.min;
+            }
+            
+            this.u2p = function(u) {
+                return (u - this.min) * (this.gridWidth - this.offsets.max - this.offsets.min) / (this.max - this.min) + this.offsets.min;
+            }
+            
+            if (this.show) {
+                for (i=0; i<tickdivs.length; i++) {
+                    var shim = $(tickdivs[i]).outerWidth()/2;
+                    var t = this.u2p(ticks.values[i]);
+                    log (t);
+                    var val = this.u2p(ticks.values[i]) - shim + 'px';
+                    $(tickdivs[i]).css('left', val);
+                    // remember, could have done it this way
+                    //tickdivs[i].style.left = val;
+                }
+            }
+        }  
+        else {
+            this.offsets = {min:offsets.bottom, max:offsets.top};
+            
+            this.p2u = function(p) {
+                return (p - this.gridHeight + this.offsets.min)*(this.max - this.min)/(this.gridHeight - this.offsets.min - this.offsets.max) + this.min;
+            }
+            
+            this.u2p = function(u) {
+                return -(u - this.min) * (this.gridHeight - this.offsets.min - this.offsets.max) / (this.max - this.min) + this.gridHeight - this.offsets.min;
+            }
+            if (this.show) {
+                for (i=0; i<tickdivs.length; i++) {
+                    var shim = $(tickdivs[i]).outerHeight()/2;
+                    var val = this.u2p(ticks.values[i]) - shim + 'px';
+                    $(tickdivs[i]).css('top', val);
+                }
+            }
+        }    
+        
+    };
     
 
 
