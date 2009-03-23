@@ -1,5 +1,12 @@
 (function($) {
     var debug = 1;
+    
+    function makeClass(klassname, konstructor) {
+        var o = new Object();
+        o.constructor = konstructor;
+        o.classname = klassname;
+        return o;
+    }
     // Axes object which contains all properties needed to draw an axis with 
     // the given renderer
     function Axis(name) {
@@ -8,7 +15,7 @@
         this.scale = 1.2;
         this.numberTicks;
         this.tickInterval;
-        this.renderer = 'linearAxisRenderer';
+        this.renderer = new linearAxisRenderer();
         this.label = {text:null, font:null, align:null};
         this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', font:null};
         this.height = 0;
@@ -242,6 +249,7 @@
             axis.gridHeight = this.height;
             axis.gridWidth = this.width;
             var db = axis.dataBounds;
+            log(axis);
             if (axis.ticks && axis.ticks.constructor == Array) {
                 var temp = $.extend(true, [], axis.ticks);
                 // if 2-D array, match them up
@@ -261,13 +269,13 @@
             }
             // else call the axis renderer and fill in the labels
             // and values from there.
-            else $.jqplot[axis.renderer].fill.call(axis);
+            else axis.renderer.fill.call(axis);
         };
         
         this.pack = function() {
             for (var name in this.axes) {
                 var axis = this.axes[name];
-                $.jqplot[axis.renderer].pack.call(axis, this.gridOffsets);
+                axis.renderer.pack.call(axis, this.gridOffsets);
             }
         }
     
@@ -423,10 +431,10 @@
     
     
         
-    $.jqplot.linearAxisRenderer = function() {
+    function linearAxisRenderer() {
     };
     
-    $.jqplot.linearAxisRenderer.fill = function() {
+    linearAxisRenderer.prototype.fill = function() {
         log('in linearAxisRenderer');
         var name = this.name;
         var db = this.dataBounds;
@@ -478,7 +486,7 @@
     
     // Now we know offsets around the grid, we can define conversioning functions
     // and properly lay out the axes.
-    $.jqplot.linearAxisRenderer.pack = function(offsets) {
+    linearAxisRenderer.prototype.pack = function(offsets) {
         log('in packer');;
         var ticks = this.ticks;
         var tickdivs = $(this.elem).children('div');
