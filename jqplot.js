@@ -1,12 +1,12 @@
 (function($) {
     var debug = 1;
     
-    function makeClass(klassname, konstructor) {
-        var o = new Object();
-        o.constructor = konstructor;
-        o.classname = klassname;
-        return o;
-    }
+    // function makeClass(klassname, konstructor) {
+    //     var o = new Object();
+    //     o.constructor = konstructor;
+    //     o.classname = klassname;
+    //     return o;
+    // }
     // Axes object which contains all properties needed to draw an axis with 
     // the given renderer
     function Axis(name) {
@@ -40,12 +40,15 @@
         this._xaxis = new Axis(this.xaxis);
         this.yaxis = 'yaxis';
         this._yaxis = new Axis(this.yaxis);
-        this.renderer = 'lineRenderer';
+        this.renderer = new lineRenderer();
         // raw user data points.  These should never be altered!!!
         this.data = [];
         // data in grid coordinates.  User data transformed for plotting on grid.
         this.gridData = [];
-        this.points = {show:true, renderer: 'circleRenderer'}
+        this.points = {show:true, renderer: 'circleRenderer'};
+        this.color;
+        this.lineWidth = 2.5;
+        this.shadow = true;
     };
     
     function Grid() {
@@ -60,8 +63,6 @@
         this.height;
         
     };
-    
-    function lineRenderer(){};
     
     function circleRenderer(){};
     
@@ -86,7 +87,6 @@
             seriesDefaults: {},
             series:[]
         };
-    
         // container for the individual data series
         this.series = [];
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
@@ -107,6 +107,8 @@
         this.gridOffsets = {top:10, right:10, bottom:10, left:10};
         this.equalXTicks = true;
         this.equalYTicks = true;
+        this.colorCyclerIdx = 0;
+        this.seriesColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
             
         this.init = function(target, data, options) {
             log('in init');
@@ -125,24 +127,10 @@
             if (data.length < 1 || data[0].length < 2) throw "Invalid Plot data";
             this.parseOptions(options);
             
+            // set the dataBounds (min and max) for each axis
             for (var i=0; i<this.series.length; i++) {
-                var s = this.series[i];
-                var d = s.data;
-                var dbx = s._xaxis.dataBounds;
-                var dby = s._yaxis.dataBounds;
-                if (dbx.min == null) dbx.min = d[0][0];
-                if (dbx.max == null) dbx.max = d[0][0];
-                if (dby.min == null) dby.min = d[0][1];
-                if (dby.max == null) dby.max = d[0][1];
-                for (var j=0; j<d.length; j++) {
-                    if (d[j][0] < dbx.min) dbx.min = d[j][0];
-                    else if (d[j][0] > dbx.max) dbx.max = d[j][0];
-                    if (d[j][1] < dby.min) dby.min = d[j][1];
-                    else if (d[j][1] > dby.max) dby.max = d[j][1];
-                }
+                this.series[i].renderer.processData.call(this.series[i]);
             }
-            
-            this.processData();
         }
     
         // parse the user supplied options and override defaults, then
@@ -214,6 +202,7 @@
                     temp._xaxis.show = true;
                     temp._yaxis.show = true;
                 }
+                if (!temp.color) temp.color = this.seriesColors[i];
                 this.series.push(temp);
             }
             
@@ -221,21 +210,6 @@
             for (var opt in ['grid', 'title']) {
                 this[opt] = $.extend(true, {}, opts[opt]);
             }
-        };
-    
-        // populate the gridData array with any necessary transformations
-        this.processData = function(){
-            // actually rather involved.
-            // have to figure out:
-            // overall size of canvas
-            // space for axes labels, axes ticks, title, maybe grid border
-            // (will it be inside, outside, or half&half on grid?)
-            //
-            // Then, figure out size of plotting area and offset from
-            // top left of canvas.
-            // then, tranform data points to plotting area coordinates
-            // and ultimately transform that back to top left grid coordinates.
-            
         };
     
         // determine xmax, xmin, ymax, ymin for each series
@@ -362,7 +336,7 @@
                         case 'xaxis':
                             for (var i=0; i<ticks.values.length; i++) {
                                 var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                log(pos);
+                                ctx.beginPath();
                                 ctx.moveTo(pos, grid.top);
                                 ctx.lineTo(pos, grid.bottom+4);
                                 ctx.stroke();
@@ -371,7 +345,7 @@
                         case 'yaxis':
                             for (var i=0; i<ticks.values.length; i++) {
                                 var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                log(pos)
+                                ctx.beginPath();
                                 ctx.moveTo(grid.right, pos);
                                 ctx.lineTo(grid.left-4, pos);
                                 ctx.stroke();
@@ -380,6 +354,7 @@
                         case 'x2axis':
                             for (var i=0; i<ticks.values.length; i++) {
                                 var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.beginPath();
                                 ctx.moveTo(pos, grid.bottom);
                                 ctx.lineTo(pos, grid.top-4);
                                 ctx.stroke();
@@ -388,6 +363,7 @@
                         case 'y2axis':
                             for (var i=0; i<ticks.values.length; i++) {
                                 var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.beginPath();
                                 ctx.moveTo(grid.left, pos);
                                 ctx.lineTo(grid.right+4, pos);
                                 ctx.stroke();
@@ -430,72 +406,27 @@
             $(this.overlayCanvas).css({ position: 'absolute', left: 0, top: 0 });
             this.target.append(this.overlayCanvas);
             this.octx = this.overlayCanvas.getContext("2d");
+            log (this.sctx);
         };
     
         this.drawSeries = function(){
-            
+            for (var i=0; i<this.series.length; i++) {
+                this.series[i].renderer.draw.call(this.series[i], this.grid, this.sctx);
+            }
         };
     
         this.drawPoints = function(){};   
     
-        this.lineColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
-    
-        this.colorMap = {
-            aqua:[0,255,255],
-            azure:[240,255,255],
-            beige:[245,245,220],
-            black:[0,0,0],
-            blue:[0,0,255],
-            brown:[165,42,42],
-            cyan:[0,255,255],
-            darkblue:[0,0,139],
-            darkcyan:[0,139,139],
-            darkgrey:[169,169,169],
-            darkgreen:[0,100,0],
-            darkkhaki:[189,183,107],
-            darkmagenta:[139,0,139],
-            darkolivegreen:[85,107,47],
-            darkorange:[255,140,0],
-            darkorchid:[153,50,204],
-            darkred:[139,0,0],
-            darksalmon:[233,150,122],
-            darkviolet:[148,0,211],
-            fuchsia:[255,0,255],
-            gold:[255,215,0],
-            green:[0,128,0],
-            indigo:[75,0,130],
-            khaki:[240,230,140],
-            lightblue:[173,216,230],
-            lightcyan:[224,255,255],
-            lightgreen:[144,238,144],
-            lightgrey:[211,211,211],
-            lightpink:[255,182,193],
-            lightyellow:[255,255,224],
-            lime:[0,255,0],
-            magenta:[255,0,255],
-            maroon:[128,0,0],
-            navy:[0,0,128],
-            olive:[128,128,0],
-            orange:[255,165,0],
-            pink:[255,192,203],
-            purple:[128,0,128],
-            violet:[128,0,128],
-            red:[255,0,0],
-            silver:[192,192,192],
-            white:[255,255,255],
-            yellow:[255,255,0]
-        }; 
-        
-
-        
+        // this.colorCycler = function() {
+        //     var color = this.colorCyclerColors[this.colorCyclerIdx];
+        //     this.colorCyclerIdx += 1;
+        //     return color;
+        // }
     };
     
     $.jqplot = function(target, data, options) {
         options = options || {};
         var plot = new $._jqPlot();
-        // for (var i in $.jqplot.renderers) {
-        //     plot[$.jqplot.renderers[i]['name']] = new $.jqplot.renderers[i]['renderer'];
-        // }
         plot.init(target, data, options);
         plot.draw();
         return plot;
@@ -605,7 +536,107 @@
         
     };
     
+    function lineRenderer(){
+    };
 
+    lineRenderer.prototype.draw = function(grid, ctx) {
+        var i;
+        ctx.save();
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = this.lineWidth;
+        ctx.strokeStyle = this.color;
+        ctx.beginPath();
+        var d = this.data;
+        var xp = this._xaxis.u2p;
+        var yp = this._yaxis.u2p;
+//        var start = true;
+//        // populate the gridData property for sections on grid
+//        for (i=0; i<this.data.length; i++) {
+//            var d = this.data[i];
+//            if (d == null) continue;
+//            // check to see if we've just started line.
+//            if (start) {
+//                // if below an axis, interpolate to next point only.
+//                if (d[0] < this._yaxis.min) {
+//                    
+//                }
+//            }
+//            if (d[0] < this._yaxis.min)
+//        }
+        var pointx, pointy;
+        this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
+        ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
+        for (var i=1; i<this.data.length; i++) {
+            this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
+            ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
+        }
+        ctx.stroke();
+        ctx.restore();
+    };
+    
+    lineRenderer.prototype.processData = function() {   
+        var d = this.data;
+        var i;
+        var dbx = this._xaxis.dataBounds;
+        var dby = this._yaxis.dataBounds;
+        // weed out any null points and set the axes bounds
+        for (i=0; i<d.length; i++) {
+            if (d[i] == null || d[i][0] == null || d[i][1] == null) d[i] = null;
+            else {                
+                if (d[i][0] < dbx.min || dbx.min == null) dbx.min = d[i][0];
+                else if (d[i][0] > dbx.max || dbx.max == null) dbx.max = d[i][0];
+                if (d[i][1] < dby.min || dby.min == null) dby.min = d[i][1];
+                else if (d[i][1] > dby.max || dby.max == null) dby.max = d[i][1];
+            }
+        }
+    }
+    
+    $._jqPlot.colorMap = {
+            aqua:[0,255,255],
+            azure:[240,255,255],
+            beige:[245,245,220],
+            black:[0,0,0],
+            blue:[0,0,255],
+            brown:[165,42,42],
+            cyan:[0,255,255],
+            darkblue:[0,0,139],
+            darkcyan:[0,139,139],
+            darkgrey:[169,169,169],
+            darkgreen:[0,100,0],
+            darkkhaki:[189,183,107],
+            darkmagenta:[139,0,139],
+            darkolivegreen:[85,107,47],
+            darkorange:[255,140,0],
+            darkorchid:[153,50,204],
+            darkred:[139,0,0],
+            darksalmon:[233,150,122],
+            darkviolet:[148,0,211],
+            fuchsia:[255,0,255],
+            gold:[255,215,0],
+            green:[0,128,0],
+            indigo:[75,0,130],
+            khaki:[240,230,140],
+            lightblue:[173,216,230],
+            lightcyan:[224,255,255],
+            lightgreen:[144,238,144],
+            lightgrey:[211,211,211],
+            lightpink:[255,182,193],
+            lightyellow:[255,255,224],
+            lime:[0,255,0],
+            magenta:[255,0,255],
+            maroon:[128,0,0],
+            navy:[0,0,128],
+            olive:[128,128,0],
+            orange:[255,165,0],
+            pink:[255,192,203],
+            purple:[128,0,128],
+            violet:[128,0,128],
+            red:[255,0,0],
+            silver:[192,192,192],
+            white:[255,255,255],
+            yellow:[255,255,0]
+        }; 
 
     /**
      * From "JavaScript: the Definitive Guide, by David Flanagan. Copyright 2006 O'Reilly Media, Inc."
