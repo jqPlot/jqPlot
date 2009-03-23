@@ -52,11 +52,12 @@
         this.gridlines;
         this.background;
         this.border;
-        this.renderer = 'defaultGridRenderer';
         this.width;
         this.height;
         this.top;
         this.left;
+        this.width;
+        this.height;
         
     };
     
@@ -80,8 +81,7 @@
         this.defaults = {
             pointsDefaults: {},
             axesDefaults: {},
-            axes:{xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}},
-            grid:{},
+            axes: {xaxis:{}, yaxis:[], x2axis:{}, y2axis:{}},
             title: {},
             seriesDefaults: {},
             series:[]
@@ -105,6 +105,8 @@
         this.width = null;
         this.height = null;
         this.gridOffsets = {top:10, right:10, bottom:10, left:10};
+        this.equalXTicks = true;
+        this.equalYTicks = true;
             
         this.init = function(target, data, options) {
             log('in init');
@@ -148,7 +150,7 @@
         this.parseOptions = function(options){
             log('in parseOptions');
             var opts = $.extend(true, {}, this.defaults, options);
-            for (var n in opts.axes) {
+            for (var n in this.axes) {
                 // opts.axes[axis] = $.extend(true, {}, opts.axesDefaults, opts.axes[axis]);
                 // for (var p in opts.axes[axis]){
                 //     this.axes[axis][p] = opts.axes[axis][p];
@@ -249,7 +251,6 @@
             axis.gridHeight = this.height;
             axis.gridWidth = this.width;
             var db = axis.dataBounds;
-            log(axis);
             if (axis.ticks && axis.ticks.constructor == Array) {
                 var temp = $.extend(true, [], axis.ticks);
                 // if 2-D array, match them up
@@ -277,15 +278,22 @@
                 var axis = this.axes[name];
                 axis.renderer.pack.call(axis, this.gridOffsets);
             }
+            this.grid.top = this.gridOffsets.top;
+            this.grid.left = this.gridOffsets.left;
+            this.grid.height = this.height - this.gridOffsets.top - this.gridOffsets.bottom;
+            this.grid.width = this.width - this.gridOffsets.left - this.gridOffsets.right;
+            this.grid.bottom = this.grid.top + this.grid.height;
+            this.grid.right = this.grid.left + this.grid.width;
         }
     
         // create the plot and add it do the dom
         this.draw = function(){
             this.drawTitle();
             this.drawAxes();
+            this.pack();
             this.makeCanvas();
             this.drawGrid();
-            this.pack();
+            this.drawSeries();
         };
     
         // Add the canvas element to the DOM
@@ -324,10 +332,75 @@
                     $(axis.elem).width(axis.width);
                 }
             }
+            
+            // if want equal axis ticks, recompute
+            if (this.equalXTicks) {
+                this.axes.x2axis.numberTicks = this.axes.xaxis.numberTicks;
+                this.setAxis('x2axis');
+            } 
+            
+            if (this.equalYTicks) {
+                this.axes.y2axis.numberTicks = this.axes.yaxis.numberTicks;
+                this.setAxis('y2axis');
+            } 
         };
         
         this.drawGrid = function(){
-            
+            // Add the grid onto the grid canvas.  This is the bottom most layer.
+            var ctx = this.gctx;
+            var grid = this.grid;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#cccccc';
+            for (var name in this.axes) {
+                var axis = this.axes[name];
+                if (axis.show) {
+                    log(name);
+                    var ticks = axis.ticks;
+                    switch (name) {
+                        case 'xaxis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                log(pos);
+                                ctx.moveTo(pos, grid.top);
+                                ctx.lineTo(pos, grid.bottom+4);
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'yaxis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                log(pos)
+                                ctx.moveTo(grid.right, pos);
+                                ctx.lineTo(grid.left-4, pos);
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'x2axis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.moveTo(pos, grid.bottom);
+                                ctx.lineTo(pos, grid.top-4);
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'y2axis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.moveTo(grid.left, pos);
+                                ctx.lineTo(grid.right+4, pos);
+                                ctx.stroke();
+                            }
+                            break;
+                    }
+                }
+            }
+            ctx.save();
+            ctx.lineWidth = 2.0;
+            ctx.strokeStyle = '#999999';
+            ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
+            ctx.restore();
         };
     
         this.makeCanvas = function(){
@@ -359,7 +432,9 @@
             this.octx = this.overlayCanvas.getContext("2d");
         };
     
-        this.drawSeries = function(){};
+        this.drawSeries = function(){
+            
+        };
     
         this.drawPoints = function(){};   
     
@@ -416,7 +491,6 @@
     };
     
     $.jqplot = function(target, data, options) {
-        log(arguments);
         options = options || {};
         var plot = new $._jqPlot();
         // for (var i in $.jqplot.renderers) {
@@ -426,11 +500,7 @@
         plot.draw();
         return plot;
     };
-    
-    // $.jqplot.renderers = [{name:'linearAxisRenderer', renderer:linearAxisRenderer}, {name:'lineRenderer', renderer:lineRenderer}, {name:'circleRenderer', renderer:circleRenderer}];
-    
-    
-        
+           
     function linearAxisRenderer() {
     };
     
@@ -447,10 +517,12 @@
         else {
             dim = this.height;
         }
-        if (dim > 100) {
-            this.numberTicks = parseInt(3+(dim-100)/50);
+        if (this.numberTicks == null){
+            if (dim > 100) {
+                this.numberTicks = parseInt(3+(dim-100)/75);
+            }
+            else this.numberTicks = 3;
         }
-        else this.numberTicks = 3;
         
         min = this.min || db.min;
         max = this.max || db.max;
@@ -470,13 +542,13 @@
                     this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
                     break;
                 case 'x2axis':
-                    this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox});
+                    this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
                     break;
                 case 'yaxis':
                     this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
                     break;
                 case 'y2axis':
-                    this.ticks.styles.push({position:'absolute', left:'0px', top:pox});
+                    this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
                     break;
                     
             }
@@ -505,7 +577,6 @@
                 for (i=0; i<tickdivs.length; i++) {
                     var shim = $(tickdivs[i]).outerWidth()/2;
                     var t = this.u2p(ticks.values[i]);
-                    log (t);
                     var val = this.u2p(ticks.values[i]) - shim + 'px';
                     $(tickdivs[i]).css('left', val);
                     // remember, could have done it this way
