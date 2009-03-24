@@ -1,23 +1,40 @@
+/* jqPlot JavaScript plotting library for jQuery.
+ * 
+ * Copyright (c) 2009 Chris Leonello
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
 (function($) {
     var debug = 1;
-    
-    // function makeClass(klassname, konstructor) {
-    //     var o = new Object();
-    //     o.constructor = konstructor;
-    //     o.classname = klassname;
-    //     return o;
-    // }
-    // Axes object which contains all properties needed to draw an axis with 
-    // the given renderer
+
     function Axis(name) {
         this.name = name;
         this.show = false;
+        // How much bigger or smaller to make the axis than the data range.
         this.scale = 1.2;
         this.numberTicks;
         this.tickInterval;
         this.renderer = new linearAxisRenderer();
         this.label = {text:null, font:null, align:null};
-        this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', font:null};
+        this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'"Trebuchet MS", Arial, Helvetica, sans-serif', fontSize:'0.85em'};
         this.height = 0;
         this.width = 0;
         this.elem;
@@ -33,7 +50,6 @@
         this.offsets = {min:null, max:null};
     };
     
-    // Series object
     function Series() {
         this.show = true;
         this.xaxis = 'xaxis';
@@ -45,10 +61,18 @@
         this.data = [];
         // data in grid coordinates.  User data transformed for plotting on grid.
         this.gridData = [];
+        // place holder, don't do anything with points yet.
         this.points = {show:true, renderer: 'circleRenderer'};
         this.color;
         this.lineWidth = 2.5;
-        this.shadow = true;
+        this.shadows = true;
+        // shadow angle in degrees
+        this.shadowAngle = 45;
+        // shadow offset in pixels
+        this.shadowOffset = 1;
+        this.shadowDepth = 3;
+        this.shadowAlpha = '0.07';
+        this.breakOnNull = false;
     };
     
     function Grid() {
@@ -58,9 +82,9 @@
         this.width;
         this.height;
         this.top;
+        this.bottom;
         this.left;
-        this.width;
-        this.height;
+        this.right;
         
     };
     
@@ -74,11 +98,8 @@
         // the id of the dom element to render the plot into
         this.targetId = null;
         // the jquery object for the dom target.
-        this.target = null;
-        // the defaults merged with the options the user passed into us.
-        //this.options = {};
-    
-        // default options object to be overridden by user.
+        this.target = null;    
+        // default options object.  Just a placeholder.
         this.defaults = {
             pointsDefaults: {},
             axesDefaults: {},
@@ -89,9 +110,10 @@
         };
         // container for the individual data series
         this.series = [];
+        // up to 4 axes are supported, each with it's own options.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         this.grid = new Grid();
-        this.title = {text:null, font:null};
+        // this.title = {text:null, font:null};
         // handle to the grid canvas drawing context.  Holds the axes, grid, and labels.
         // Stuff that should be rendered only at initial plot drawing.
         this.gctx = null;
@@ -107,12 +129,10 @@
         this.gridOffsets = {top:10, right:10, bottom:10, left:10};
         this.equalXTicks = true;
         this.equalYTicks = true;
-        this.colorCyclerIdx = 0;
+        // borrowed colors from Flot.
         this.seriesColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
             
         this.init = function(target, data, options) {
-            log('in init');
-            //this.setDefaults();
             this.targetId = target;
             this.target = $('#'+target);
             // make sure the target is positioned by some means
@@ -136,13 +156,8 @@
         // parse the user supplied options and override defaults, then
         // populate the instance properties
         this.parseOptions = function(options){
-            log('in parseOptions');
             var opts = $.extend(true, {}, this.defaults, options);
             for (var n in this.axes) {
-                // opts.axes[axis] = $.extend(true, {}, opts.axesDefaults, opts.axes[axis]);
-                // for (var p in opts.axes[axis]){
-                //     this.axes[axis][p] = opts.axes[axis][p];
-                // }
                 var axis = this.axes[n];
                 $.extend(true, axis, opts.axesDefaults, opts.axes[n]);
                 switch (n) {
@@ -176,7 +191,7 @@
             }
             
             for (var i=0; i<this.data.length; i++) {
-                var temp = $.extend(true, new Series(), opts.series[i]);
+                var temp = $.extend(true, new Series(), opts.seriesDefaults, opts.series[i]);
                 temp.data = this.data[i];
                 switch (temp.xaxis) {
                     case 'xaxis':
@@ -211,9 +226,6 @@
                 this[opt] = $.extend(true, {}, opts[opt]);
             }
         };
-    
-        // determine xmax, xmin, ymax, ymin for each series
-        this.getDataRange = function(){};
     
         // Populate the axis properties, giving a label and value
         // (corresponding to the user data coordinates, not plot coords.)
@@ -291,6 +303,8 @@
                     for (var i=0; i<axis.ticks.labels.length; i++) {
                         var elem = makeTag('div', {class:'jqplot', style:axis.ticks.styles[i]}, axis.ticks.labels[i]);
                         axis.elem.appendChild(elem);
+                        if (axis.ticks.fontFamily) elem.style.fontFamily = axis.ticks.fontFamily;
+                        if (axis.ticks.fontSize) elem.style.fontSize = axis.ticks.fontSize;
                         h = $(elem).outerHeight();
                         w = $(elem).outerWidth();
                         if (axis.height < h) {
@@ -330,7 +344,6 @@
             for (var name in this.axes) {
                 var axis = this.axes[name];
                 if (axis.show) {
-                    log(name);
                     var ticks = axis.ticks;
                     switch (name) {
                         case 'xaxis':
@@ -406,7 +419,6 @@
             $(this.overlayCanvas).css({ position: 'absolute', left: 0, top: 0 });
             this.target.append(this.overlayCanvas);
             this.octx = this.overlayCanvas.getContext("2d");
-            log (this.sctx);
         };
     
         this.drawSeries = function(){
@@ -416,12 +428,7 @@
         };
     
         this.drawPoints = function(){};   
-    
-        // this.colorCycler = function() {
-        //     var color = this.colorCyclerColors[this.colorCyclerIdx];
-        //     this.colorCyclerIdx += 1;
-        //     return color;
-        // }
+
     };
     
     $.jqplot = function(target, data, options) {
@@ -436,7 +443,6 @@
     };
     
     linearAxisRenderer.prototype.fill = function() {
-        log('in linearAxisRenderer');
         var name = this.name;
         var db = this.dataBounds;
         var dim, interval;
@@ -455,8 +461,9 @@
             else this.numberTicks = 3;
         }
         
-        min = this.min || db.min;
-        max = this.max || db.max;
+        
+        min = ((this.min != null) ? this.min : db.min);
+        max = ((this.max != null) ? this.max : db.max);
         var range = max - min;
         var rmin = min - (this.min != null ? 0 : range/2*(this.scale - 1));
         var rmax = max + (this.max != null ? 0 : range/2*(this.scale - 1));
@@ -490,7 +497,6 @@
     // Now we know offsets around the grid, we can define conversioning functions
     // and properly lay out the axes.
     linearAxisRenderer.prototype.pack = function(offsets) {
-        log('in packer');;
         var ticks = this.ticks;
         var tickdivs = $(this.elem).children('div');
         if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -542,28 +548,24 @@
     lineRenderer.prototype.draw = function(grid, ctx) {
         var i;
         ctx.save();
+        ctx.beginPath();
+        var xaxis = this.xaxis;
+        var yaxis = this.yaxis;
+        var d = this.data;
+        var xp = this._xaxis.u2p;
+        var yp = this._yaxis.u2p;
+        // use a clipping path to cut lines outside of grid.
+        ctx.moveTo(grid.left, grid.top);
+        ctx.lineTo(grid.right, grid.top);
+        ctx.lineTo(grid.right, grid.bottom);
+        ctx.lineTo(grid.left, grid.bottom);
+        ctx.closePath();
+        ctx.clip();
+        ctx.beginPath();
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
-        ctx.beginPath();
-        var d = this.data;
-        var xp = this._xaxis.u2p;
-        var yp = this._yaxis.u2p;
-//        var start = true;
-//        // populate the gridData property for sections on grid
-//        for (i=0; i<this.data.length; i++) {
-//            var d = this.data[i];
-//            if (d == null) continue;
-//            // check to see if we've just started line.
-//            if (start) {
-//                // if below an axis, interpolate to next point only.
-//                if (d[0] < this._yaxis.min) {
-//                    
-//                }
-//            }
-//            if (d[0] < this._yaxis.min)
-//        }
         var pointx, pointy;
         this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
         ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
@@ -572,17 +574,44 @@
             ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
         }
         ctx.stroke();
+        
+        // now draw the shadows
+        if (this.shadows) {
+            ctx.save();
+            for (var j=0; j<this.shadowDepth; j++) {
+                ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
+                ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
+                for (var i=1; i<this.data.length; i++) {
+                    this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
+                    ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
+                }
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
         ctx.restore();
     };
     
-    lineRenderer.prototype.processData = function() {   
+    lineRenderer.prototype.processData = function() { 
+        // don't have axes conversion functions yet, all we can do is look for bad
+        // points and set the axes bounds.  
         var d = this.data;
         var i;
         var dbx = this._xaxis.dataBounds;
         var dby = this._yaxis.dataBounds;
         // weed out any null points and set the axes bounds
         for (i=0; i<d.length; i++) {
-            if (d[i] == null || d[i][0] == null || d[i][1] == null) d[i] = null;
+            if (d[i] == null || d[i][0] == null || d[i][1] == null) {
+                // if line breaking on null values is set, keep the null in the data
+                if (this.breakOnNull) d[i] = null;
+                // else delete the null to skip the point.
+                else d.splice(i,1);
+            }
+        }
+        for (i=0; i<d.length; i++) {
+            if (d[i] == null || d[i][0] == null || d[i][1] == null) continue;
             else {                
                 if (d[i][0] < dbx.min || dbx.min == null) dbx.min = d[i][0];
                 else if (d[i][0] > dbx.max || dbx.max == null) dbx.max = d[i][0];
@@ -592,6 +621,7 @@
         }
     }
     
+    // Borrowed from Flot
     $._jqPlot.colorMap = {
             aqua:[0,255,255],
             azure:[240,255,255],
@@ -675,7 +705,7 @@
         // Set attributes
         if (attributes) {
             for(var name in attributes) {
-                if (name == 'style') {
+                if (name == 'style') {    // handle a style object
                     for (var s in attributes[name]) {
                         e.style[s] = attributes[name][s].toString();
                     }
@@ -701,21 +731,7 @@
 
         // Finally, return the element.
         return e;
-    };    
-
-
-    /**
-     * From "JavaScript: the Definitive Guide, by David Flanagan. Copyright 2006 O'Reilly Media, Inc."
-     * 
-     * maker(tagname): return a function that calls make() for the specified tag.
-     * Example: var table = maker("table"), tr = maker("tr"), td = maker("td");
-     */
-    function tagMaker(tag) {
-        return function(attrs, kids) {
-            if (arguments.length == 1) return make(tag, attrs);
-            else return make(tag, attrs, kids);
-        }
-    }
+    };
 	
 	// Convienence function that won't hang IE.
 	function log(something) {
@@ -744,30 +760,31 @@
      * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
      * Place, Suite 330, Boston, MA 02111-1307 USA
      */
-// 
-// It's prototype is simple:
-// 
-// string sprintf(string format[mixed arg1[, mixed arg2[,...]]])
-// The placeholders in the format string are marked by "%" and are followed by one or more of these elements, in this order:
-// 
-// An optional "+" sign that forces to preceed the result with a plus or minus sign on numeric values. By default, only the "-" sign is used on negative numbers.
-// An optional padding specifier that says what character to use for padding (if specified). Possible values are 0 or any other character precedeed by a '. The default is to pad with spaces.
-// An optional "-" sign, that causes sprintf to left-align the result of this placeholder. The default is to right-align the result.
-// An optional number, that says how many characters the result should have. If the value to be returned is shorter than this number, the result will be padded.
-// An optional precision modifier, consisting of a "." (dot) followed by a number, that says how many digits should be displayed for floating point numbers. When used on a string, it causes the result to be truncated.
-// A type specifier that can be any of:
-// % - print a literal "%" character
-// b - print an integer as a binary number
-// c - print an integer as the character with that ASCII value
-// d - print an integer as a signed decimal number
-// e - print a float as scientific notation
-// u - print an integer as an unsigned decimal number
-// f - print a float as is
-// o - print an integer as an octal number
-// s - print a string as is
-// x - print an integer as a hexadecimal number (lower-case)
-// X - print an integer as a hexadecimal number (upper-case)
-// 
+
+    // 
+    // It's prototype is simple:
+    // 
+    // string sprintf(string format[mixed arg1[, mixed arg2[,...]]])
+    // The placeholders in the format string are marked by "%" and are followed by one or more of these elements, in this order:
+    // 
+    // An optional "+" sign that forces to preceed the result with a plus or minus sign on numeric values. By default, only the "-" sign is used on negative numbers.
+    // An optional padding specifier that says what character to use for padding (if specified). Possible values are 0 or any other character precedeed by a '. The default is to pad with spaces.
+    // An optional "-" sign, that causes sprintf to left-align the result of this placeholder. The default is to right-align the result.
+    // An optional number, that says how many characters the result should have. If the value to be returned is shorter than this number, the result will be padded.
+    // An optional precision modifier, consisting of a "." (dot) followed by a number, that says how many digits should be displayed for floating point numbers. When used on a string, it causes the result to be truncated.
+    // A type specifier that can be any of:
+    // % - print a literal "%" character
+    // b - print an integer as a binary number
+    // c - print an integer as the character with that ASCII value
+    // d - print an integer as a signed decimal number
+    // e - print a float as scientific notation
+    // u - print an integer as an unsigned decimal number
+    // f - print a float as is
+    // o - print an integer as an octal number
+    // s - print a string as is
+    // x - print an integer as a hexadecimal number (lower-case)
+    // X - print an integer as a hexadecimal number (upper-case)
+    // 
 
     function str_repeat(i, m) { for (var o = []; m > 0; o[--m] = i); return(o.join('')); }
 
