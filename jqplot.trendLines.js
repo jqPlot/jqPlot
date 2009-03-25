@@ -9,6 +9,16 @@
     
     $.jqplot.postParseOptionsHooks.push(parseTrendLineOptions);
     $.jqplot.postDrawSeriesHooks.push(drawTrendLines);
+    $.jqplot.drawLegendHooks.push(addTrendLineLegend);
+    
+    // called witin scope of the legend object
+    // current series passed in
+    // must return null or an object {label:label, color:color}
+    function addTrendLineLegend(series) {
+        var lt = series.trendLines.label.toString();
+        var ret = (lt) ? {label:lt, color:series.trendLines.color} : null;
+        return ret;
+    }
 
     // called within scope of ._jqPlot
     function parseTrendLineOptions () {
@@ -25,7 +35,8 @@
             // shadow offset in pixels
             shadowOffset:1,
             shadowDepth:3,
-            shadowAlpha:'0.07'
+            shadowAlpha:'0.07',
+            label:''
         };
         for (i = 0; i < series.length; ++i) {
             s = series[i];

@@ -34,7 +34,7 @@
         this.tickInterval;
         this.renderer = new linearAxisRenderer();
         this.label = {text:null, font:null, align:null};
-        this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'"Trebuchet MS", Arial, Helvetica, sans-serif', fontSize:'0.85em'};
+        this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'"Trebuchet MS", Arial, Helvetica, sans-serif', fontSize:'0.75em'};
         this.height = 0;
         this.width = 0;
         this.elem;
@@ -49,6 +49,20 @@
         // pixel offsets of min/max labels
         this.offsets = {min:null, max:null};
     };
+    
+    function Legend() {
+        this.show = true;
+        this.location = 'se'; // one of the compas directions: nw, n, ne, e, se, s, sw, w
+        this.xoffset = 12;    // px
+        this.yoffset = 12;    // px
+        this.border = '1px solid #cccccc';  // css spec for border around legend box
+        this.background = '#ffffff'   // css spec for background of legend box
+        this.fontFamily = 'Trebuchet MS, Arial, Helvetica, sans-serif';    // css spec
+        this.fontSize = '0.75em';     // css spec
+        this.rowSpacing = '0.5em';    // css spec for padding-top of rows
+        this.elem;
+        
+    }
     
     function Series() {
         this.show = true;
@@ -65,7 +79,7 @@
         this.points = {show:true, renderer: 'circleRenderer'};
         this.color;
         this.lineWidth = 2.5;
-        this.shadows = true;
+        this.shadow = true;
         // shadow angle in degrees
         this.shadowAngle = 45;
         // shadow offset in pixels
@@ -73,12 +87,21 @@
         this.shadowDepth = 3;
         this.shadowAlpha = '0.07';
         this.breakOnNull = false;
+        this.label = '';
     };
     
     function Grid() {
-        this.gridlines;
-        this.background;
-        this.border;
+        this.drawGridlines = true;
+        this.background = '#fffcf6';
+        this.borderColor = '#999999';
+        this.borderWidth = 2.0;
+        this.borderShadow = true;
+        // shadow angle in degrees
+        this.shadowAngle = 45;
+        // shadow offset in pixels
+        this.shadowOffset = 1;
+        this.shadowDepth = 3;
+        this.shadowAlpha = '0.07';
         this.width;
         this.height;
         this.top;
@@ -99,12 +122,13 @@
         this.targetId = null;
         // the jquery object for the dom target.
         this.target = null;    
-        // default options object.  Just a placeholder.
+        // default options object.
+        // Fill in axes properties by default so don't throw an error.
+        // Remind me that can set defaults for all points, axes, series at once.
         this.defaults = {
             pointsDefaults: {},
             axesDefaults: {},
             axes: {xaxis:{}, yaxis:[], x2axis:{}, y2axis:{}},
-            title: {},
             seriesDefaults: {},
             series:[]
         };
@@ -113,6 +137,7 @@
         // up to 4 axes are supported, each with it's own options.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         this.grid = new Grid();
+        this.legend = new Legend();
         // this.title = {text:null, font:null};
         // handle to the grid canvas drawing context.  Holds the axes, grid, and labels.
         // Stuff that should be rendered only at initial plot drawing.
@@ -125,7 +150,7 @@
         this.octx = null;
         // width and height of the canvas
         this.width = null;
-        this.height = null;
+        this.height = null; 
         this.gridOffsets = {top:10, right:10, bottom:10, left:10};
         this.equalXTicks = true;
         this.equalYTicks = true;
@@ -193,7 +218,7 @@
             }
             
             for (var i=0; i<this.data.length; i++) {
-                var temp = $.extend(true, new Series(), this.options.seriesDefaults, this.options.series[i]);
+                var temp = $.extend(true, new Series(), this.seriesDefaults, this.options.series[i]);
                 temp.data = this.data[i];
                 switch (temp.xaxis) {
                     case 'xaxis':
@@ -224,9 +249,9 @@
             }
             
             // copy the grid and title options into this object.
-            for (var opt in ['grid', 'title']) {
-                this[opt] = $.extend(true, {}, this.options[opt]);
-            }
+            $.extend(true, this.grid, this.options.grid);
+            $.extend(true, this.title, this.options.title);
+            $.extend(true, this.legend, this.options.legend);
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
                 $.jqplot.postParseOptionsHooks[i].call(this);
             }
@@ -284,6 +309,7 @@
             this.pack();
             this.makeCanvas();
             this.drawGrid();
+            this.drawLegend();
             this.drawSeries();
             for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
                 $.jqplot.postDrawHooks[i].call(this);
@@ -306,11 +332,11 @@
                     // position it and the labels correctly on the plot.
                     var h, w;
                     
-                    axis.elem = $('<div class="jqplot-axis">').appendTo(this.target).get(0);
+                    axis.elem = $('<div class="jqplot-axis"></div>').appendTo(this.target).get(0);
                     for (var s in axis.style) $(axis.elem).css(s, axis.style[s]);
 
                     for (var i=0; i<axis.ticks.labels.length; i++) {
-                        var elem = $('<div class="jqplot-axis-tick">').appendTo(axis.elem).get(0);
+                        var elem = $('<div class="jqplot-axis-tick"></div>').appendTo(axis.elem).get(0);
                         
                         for (var s in axis.ticks.styles[i]) $(elem).css(s, axis.ticks.styles[i][s]);
                         $(elem).html(axis.ticks.labels[i]);
@@ -351,59 +377,164 @@
             // Add the grid onto the grid canvas.  This is the bottom most layer.
             var ctx = this.gctx;
             var grid = this.grid;
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#cccccc';
-            for (var name in this.axes) {
-                var axis = this.axes[name];
-                if (axis.show) {
-                    var ticks = axis.ticks;
-                    switch (name) {
-                        case 'xaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(pos, grid.top);
-                                ctx.lineTo(pos, grid.bottom+4);
-                                ctx.stroke();
-                            }
-                            break;
-                        case 'yaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(grid.right, pos);
-                                ctx.lineTo(grid.left-4, pos);
-                                ctx.stroke();
-                            }
-                            break;
-                        case 'x2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(pos, grid.bottom);
-                                ctx.lineTo(pos, grid.top-4);
-                                ctx.stroke();
-                            }
-                            break;
-                        case 'y2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(grid.left, pos);
-                                ctx.lineTo(grid.right+4, pos);
-                                ctx.stroke();
-                            }
-                            break;
+            log(grid);
+            ctx.save();
+            ctx.fillStyle = grid.background;
+            ctx.fillRect(grid.left, grid.top, grid.width, grid.height);
+            if (grid.drawGridlines) {
+                ctx.save();
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#cccccc';
+                for (var name in this.axes) {
+                    var axis = this.axes[name];
+                    if (axis.show) {
+                        var ticks = axis.ticks;
+                        switch (name) {
+                            case 'xaxis':
+                                for (var i=0; i<ticks.values.length; i++) {
+                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                    ctx.beginPath();
+                                    ctx.moveTo(pos, grid.top);
+                                    ctx.lineTo(pos, grid.bottom+4);
+                                    ctx.stroke();
+                                }
+                                break;
+                            case 'yaxis':
+                                for (var i=0; i<ticks.values.length; i++) {
+                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                    ctx.beginPath();
+                                    ctx.moveTo(grid.right, pos);
+                                    ctx.lineTo(grid.left-4, pos);
+                                    ctx.stroke();
+                                }
+                                break;
+                            case 'x2axis':
+                                for (var i=0; i<ticks.values.length; i++) {
+                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                    ctx.beginPath();
+                                    ctx.moveTo(pos, grid.bottom);
+                                    ctx.lineTo(pos, grid.top-4);
+                                    ctx.stroke();
+                                }
+                                break;
+                            case 'y2axis':
+                                for (var i=0; i<ticks.values.length; i++) {
+                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                    ctx.beginPath();
+                                    ctx.moveTo(grid.left, pos);
+                                    ctx.lineTo(grid.right+4, pos);
+                                    ctx.stroke();
+                                }
+                                break;
+                        }
+                    }
+                }
+                ctx.restore();
+            }
+            ctx.lineWidth = grid.borderWidth;
+            ctx.strokeStyle = grid.borderColor;
+            ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
+            // now draw the shadows
+            if (grid.borderShadow) {
+                ctx.save();
+                for (var j=0; j<grid.shadowDepth; j++) {
+                    ctx.translate(Math.cos(grid.shadowAngle*Math.PI/180)*grid.shadowOffset, Math.sin(grid.shadowAngle*Math.PI/180)*grid.shadowOffset);
+                    ctx.lineWidth = grid.borderWidth;
+                    ctx.strokeStyle = 'rgba(0,0,0,'+grid.shadowAlpha+')';
+                    ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
+                }
+                ctx.restore();
+            }
+
+            ctx.restore();
+        };
+        
+        this.drawLegend = function() {
+            var legend = this.legend;
+            var grid = this.grid;
+            if (legend.show) {
+                var series = this.series;
+                // make a table.  one line label per row.
+                var ss = 'background:'+legend.background+';border:'+legend.border+';font-size:'+legend.fontSize+';font-family:'+legend.fontFamily+';position:absolute;';
+                switch (legend.location) {
+                    case 'nw':
+                        var a = grid.left + legend.xoffset;
+                        var b = grid.top + legend.yoffset;
+                        ss += 'left:'+a+'px;top:'+b+'px;';
+                        break;
+                    case 'n':
+                        var a = (grid.left + grid.right)/2 + legend.xoffset;
+                        var b = grid.top + legend.yoffset;
+                        ss += 'left:'+a+'px;top:'+b+'px;';
+                        break;
+                    case 'ne':
+                        var a = grid.right - legend.xoffset;
+                        var b = grid.top + legend.yoffset;
+                        ss += 'right:'+a+'px;top:'+b+'px;';
+                        break;
+                    case 'e':
+                        var a = grid.right - legend.xoffset;
+                        var b = (grid.top + grid.bottom)/2 + legend.yoffset;
+                        ss += 'right:'+a+'px;top:'+b+'px;';
+                        break;
+                    case 'se':
+                        var a = this.width - grid.right + legend.xoffset;
+                        var b = this.height - grid.bottom + legend.yoffset;
+                        ss += 'right:'+a+'px;bottom:'+b+'px;';
+                        break;
+                    case 's':
+                        var a = (grid.left + grid.right)/2 + legend.xoffset;
+                        var b = grid.bottom + legend.yoffset;
+                        ss += 'left:'+a+'px;bottom:'+b+'px;';
+                        break;
+                    case 'sw':
+                        var a = grid.left + legend.xoffset;
+                        var b = grid.bottom + legend.yoffset;
+                        ss += 'left:'+a+'px;bottom:'+b+'px;';
+                        break;
+                    case 'w':
+                        var a = grid.left + legend.xoffset;
+                        var b = (grid.top + grid.bottom)/2 + legend.yoffset;
+                        ss += 'left:'+a+'px;top:'+b+'px;';
+                        break;
+                    default:  // same as 'se'
+                        var a = grid.right - legend.xoffset;
+                        var b = grid.bottom + legend.yoffset;
+                        ss += 'right:'+a+'px;bottom:'+b+'px;';
+                        break;
+                        
+                }
+                legend.elem = $('<table class="jqplot-legend" style="'+ss+'"></table>').appendTo(this.target).get(0);
+                
+                function addrow(label, color, pad) {
+                    var rs = (pad) ? legend.rowSpacing : '0';
+                    var tr = $('<tr class="jqplot-legend"></tr>').appendTo(legend.elem);
+                    $('<td class="jqplot-legend" style="vertical-align:middle;text-align:center;padding-top:'+rs+';">'+
+                        '<div style="border:1px solid #cccccc;padding:0.2em;">'+
+                        '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
+                        '</div></td>').appendTo(tr);
+                    $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';">'+label+'</td>').appendTo(tr);
+                };
+                
+                var pad = false;
+                for (var i = 0; i< series.length; i++) {
+                    s = series[i];
+                    var lt = s.label.toString();
+                    if (lt) {
+                        addrow(lt, s.color, pad);
+                        pad = true;
+                    }
+                    for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
+                        var item = $.jqplot.drawLegendHooks[j].call(legend, s);
+                        if (item) {
+                            addrow(item.label, item.color, pad);
+                            pad = true;
+                        } 
                     }
                 }
             }
-            ctx.save();
-            ctx.lineWidth = 2.0;
-            ctx.strokeStyle = '#999999';
-            ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
-            ctx.restore();
         };
     
         this.makeCanvas = function(){
@@ -459,6 +590,7 @@
     $.jqplot.postParseOptionsHooks = [];
     $.jqplot.postDrawHooks = [];
     $.jqplot.postDrawSeriesHooks = [];
+    $.jqplot.drawLegendHooks = [];
            
     function linearAxisRenderer() {
     };
@@ -600,7 +732,7 @@
         ctx.stroke();
         
         // now draw the shadows
-        if (this.shadows) {
+        if (this.shadow) {
             ctx.save();
             for (var j=0; j<this.shadowDepth; j++) {
                 ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
@@ -644,54 +776,6 @@
             }
         }
     }
-    
-    // Borrowed from Flot
-    $._jqPlot.colorMap = {
-            aqua:[0,255,255],
-            azure:[240,255,255],
-            beige:[245,245,220],
-            black:[0,0,0],
-            blue:[0,0,255],
-            brown:[165,42,42],
-            cyan:[0,255,255],
-            darkblue:[0,0,139],
-            darkcyan:[0,139,139],
-            darkgrey:[169,169,169],
-            darkgreen:[0,100,0],
-            darkkhaki:[189,183,107],
-            darkmagenta:[139,0,139],
-            darkolivegreen:[85,107,47],
-            darkorange:[255,140,0],
-            darkorchid:[153,50,204],
-            darkred:[139,0,0],
-            darksalmon:[233,150,122],
-            darkviolet:[148,0,211],
-            fuchsia:[255,0,255],
-            gold:[255,215,0],
-            green:[0,128,0],
-            indigo:[75,0,130],
-            khaki:[240,230,140],
-            lightblue:[173,216,230],
-            lightcyan:[224,255,255],
-            lightgreen:[144,238,144],
-            lightgrey:[211,211,211],
-            lightpink:[255,182,193],
-            lightyellow:[255,255,224],
-            lime:[0,255,0],
-            magenta:[255,0,255],
-            maroon:[128,0,0],
-            navy:[0,0,128],
-            olive:[128,128,0],
-            orange:[255,165,0],
-            pink:[255,192,203],
-            purple:[128,0,128],
-            violet:[128,0,128],
-            red:[255,0,0],
-            silver:[192,192,192],
-            white:[255,255,255],
-            yellow:[255,255,0]
-        }; 
-
 	
 	// Convienence function that won't hang IE.
 	function log(something) {
