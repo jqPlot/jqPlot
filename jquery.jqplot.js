@@ -56,7 +56,7 @@
         this._xaxis = new Axis(this.xaxis);
         this.yaxis = 'yaxis';
         this._yaxis = new Axis(this.yaxis);
-        this.renderer = new lineRenderer();
+        this.renderer = new $.jqplot.lineRenderer();
         // raw user data points.  These should never be altered!!!
         this.data = [];
         // data in grid coordinates.  User data transformed for plotting on grid.
@@ -131,9 +131,8 @@
         this.equalYTicks = true;
         // borrowed colors from Flot.
         this.seriesColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
-        // hooks for plugins
-        this.preDrawHooks = [];
-        this.postDrawHooks = [];
+        // container to hold all of the merged options.  Convienence for plugins.
+        this.options = {};
             
         this.init = function(target, data, options) {
             this.targetId = target;
@@ -159,10 +158,10 @@
         // parse the user supplied options and override defaults, then
         // populate the instance properties
         this.parseOptions = function(options){
-            var opts = $.extend(true, {}, this.defaults, options);
+            this.options = $.extend(true, {}, this.defaults, options);
             for (var n in this.axes) {
                 var axis = this.axes[n];
-                $.extend(true, axis, opts.axesDefaults, opts.axes[n]);
+                $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
                 switch (n) {
                     case 'xaxis':
                         axis.style = {position:'absolute', left:'0px', bottom:'0px'};
@@ -194,7 +193,7 @@
             }
             
             for (var i=0; i<this.data.length; i++) {
-                var temp = $.extend(true, new Series(), opts.seriesDefaults, opts.series[i]);
+                var temp = $.extend(true, new Series(), this.options.seriesDefaults, this.options.series[i]);
                 temp.data = this.data[i];
                 switch (temp.xaxis) {
                     case 'xaxis':
@@ -226,7 +225,10 @@
             
             // copy the grid and title options into this object.
             for (var opt in ['grid', 'title']) {
-                this[opt] = $.extend(true, {}, opts[opt]);
+                this[opt] = $.extend(true, {}, this.options[opt]);
+            }
+            for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
+                $.jqplot.postParseOptionsHooks[i].call(this);
             }
         };
     
@@ -277,17 +279,14 @@
     
         // create the plot and add it do the dom
         this.draw = function(){
-            for (var i=0; i<this.preDrawHooks.length; i++) {
-                this.preDrawHooks[i].call(this);
-            }
             this.drawTitle();
             this.drawAxes();
             this.pack();
             this.makeCanvas();
             this.drawGrid();
             this.drawSeries();
-            for (var i=0; i<this.postDrawHooks.length; i++) {
-                this.postDrawHooks[i].call(this);
+            for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
+                $.jqplot.postDrawHooks[i].call(this);
             }
         };
     
@@ -439,6 +438,9 @@
         this.drawSeries = function(){
             for (var i=0; i<this.series.length; i++) {
                 this.series[i].renderer.draw.call(this.series[i], this.grid, this.sctx);
+                for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+                    $.jqplot.postDrawSeriesHooks[j].call(this.series[i], this.grid, this.sctx);
+                }
             }
         };
     
@@ -453,6 +455,10 @@
         plot.draw();
         return plot;
     };
+    
+    $.jqplot.postParseOptionsHooks = [];
+    $.jqplot.postDrawHooks = [];
+    $.jqplot.postDrawSeriesHooks = [];
            
     function linearAxisRenderer() {
     };
@@ -557,10 +563,11 @@
         
     };
     
-    function lineRenderer(){
+    $.jqplot.lineRenderer = function(){
     };
 
-    lineRenderer.prototype.draw = function(grid, ctx) {
+    // called within scope of an individual series.
+    $.jqplot.lineRenderer.prototype.draw = function(grid, ctx) {
         var i;
         ctx.save();
         ctx.beginPath();
@@ -582,6 +589,8 @@
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         var pointx, pointy;
+        // recalculate the grid data
+        this.gridData = [];
         this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
         ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
         for (var i=1; i<this.data.length; i++) {
@@ -609,7 +618,7 @@
         ctx.restore();
     };
     
-    lineRenderer.prototype.processData = function() { 
+    $.jqplot.lineRenderer.prototype.processData = function() { 
         // don't have axes conversion functions yet, all we can do is look for bad
         // points and set the axes bounds.  
         var d = this.data;
