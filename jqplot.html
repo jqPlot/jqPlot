@@ -17,9 +17,10 @@
         chart = $.jqplot('chartdiv', 
             [[[1,1],[2,4],[3,5],[4,1],[5,4],[6,10]], [[1,11],[2,18],[3,27],[4,22],[6,41]]], 
             {
-                title:'Dual Axis With Title and Trend Line', 
-                legend:{fontSize:'0.8em', fontFamily:'Arial', location:'nw', rowSpacing:'0.2em'}, 
-                grid:{borderShadow:true}, axesDefaults:{ticks:{fontSize:'0.75em'}}, 
+                title:{text:'Dual Axis With Title and Trend Line'}, 
+                legend:{textColor:'', fontSize:'0.8em', location:'nw', rowSpacing:'0.2em'}, 
+                grid:{borderShadow:true, drawGridlines:true}, 
+                axesDefaults:{ticks:{mark:'cross', showLabels:true, size:6, fontSize:'0.75em'}}, 
                 series:[{trendLines:{show:true, label:'Line 1 Trend'}, label:'Line 1'}, {label:'Line 2', yaxis:'y2axis'}],
                 axes:{y2axis:{min:0, max:42}}
             });

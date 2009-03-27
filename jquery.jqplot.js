@@ -35,7 +35,7 @@
         this.renderer = new $.jqplot.lineAxisRenderer();
         this.tickFormatter = sprintf;
         this.label = {text:null, font:null, align:null};
-        this.ticks = {labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'"Trebuchet MS", Arial, Helvetica, sans-serif', fontSize:'0.75em'};
+        this.ticks = {mark:'outside', size:4, showLabels:true, labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'', fontSize:'0.75em', textColor:''};
         this.height = 0;
         this.width = 0;
         this.elem;
@@ -60,7 +60,8 @@
         this.yoffset = 12;    // px
         this.border = '1px solid #cccccc';  // css spec for border around legend box
         this.background = 'rgba(255,255,255,0.6)'   // css spec for background of legend box
-        this.fontFamily = 'Trebuchet MS, Arial, Helvetica, sans-serif';    // css spec
+        this.textColor = '';
+        this.fontFamily = '';    // css spec
         this.fontSize = '0.75em';     // css spec
         this.rowSpacing = '0.5em';    // css spec for padding-top of rows
         this.elem;
@@ -75,6 +76,7 @@
         this.elem;
         this.height = 0;
         this.width = 0;
+        this.textColor = '';
         
     }
     
@@ -303,7 +305,7 @@
             if (t.text) {
                 t.elem = $('<div class="jqplot-title" style="padding-bottom:0.4em;text-align:center;'+
                     'position:absolute;top:0px;left:0px;width:'+this.width+
-                    'px;">'+t.text+'</div>').appendTo(this.target);
+                    'px;color:'+t.textColor+';">'+t.text+'</div>').appendTo(this.target);
                 t.height = $(t.elem).outerHeight(true);
                 t.width = $(t.elem).outerWidth(true);              
             }
@@ -323,27 +325,29 @@
                     axis.elem = $('<div class="jqplot-axis"></div>').appendTo(this.target).get(0);
                     //for (var s in axis.style) $(axis.elem).css(s, axis.style[s]);
             
-                    for (var i=0; i<axis.ticks.labels.length; i++) {
-                        var elem = $('<div class="jqplot-axis-tick"></div>').appendTo(axis.elem).get(0);
-                        
-                        for (var s in axis.ticks.styles[i]) $(elem).css(s, axis.ticks.styles[i][s]);
-                        $(elem).html(axis.ticks.labels[i]);
-                        
-                        if (axis.ticks.fontFamily) elem.style.fontFamily = axis.ticks.fontFamily;
-                        if (axis.ticks.fontSize) elem.style.fontSize = axis.ticks.fontSize;
-                        
-                        h = $(elem).outerHeight(true);
-                        w = $(elem).outerWidth(true);
-                        
-                        if (axis.height < h) {
-                            axis.height = h;
-                        }
-                        if (axis.width < w) {
-                            axis.width = w;
+                    if (axis.ticks.showLabels) {
+                        for (var i=0; i<axis.ticks.labels.length; i++) {
+                            var elem = $('<div class="jqplot-axis-tick"></div>').appendTo(axis.elem).get(0);
+                            
+                            for (var s in axis.ticks.styles[i]) $(elem).css(s, axis.ticks.styles[i][s]);
+                            $(elem).html(axis.ticks.labels[i]);
+                            
+                            if (axis.ticks.fontFamily) elem.style.fontFamily = axis.ticks.fontFamily;
+                            if (axis.ticks.fontSize) elem.style.fontSize = axis.ticks.fontSize;
+                            
+                            h = $(elem).outerHeight(true);
+                            w = $(elem).outerWidth(true);
+                            
+                            if (axis.height < h) {
+                                axis.height = h;
+                            }
+                            if (axis.width < w) {
+                                axis.width = w;
+                            }
                         }
                     }
-                    $(axis.elem).height(axis.height);
-                    $(axis.elem).width(axis.width);
+                    //$(axis.elem).height(axis.height);
+                    //$(axis.elem).width(axis.width);
                 }
             }
         };
@@ -457,7 +461,7 @@
                                     var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
                                     ctx.beginPath();
                                     ctx.moveTo(pos, grid.top);
-                                    ctx.lineTo(pos, grid.bottom+4);
+                                    ctx.lineTo(pos, grid.bottom);
                                     ctx.stroke();
                                 }
                                 break;
@@ -466,7 +470,7 @@
                                     var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
                                     ctx.beginPath();
                                     ctx.moveTo(grid.right, pos);
-                                    ctx.lineTo(grid.left-4, pos);
+                                    ctx.lineTo(grid.left, pos);
                                     ctx.stroke();
                                 }
                                 break;
@@ -475,7 +479,7 @@
                                     var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
                                     ctx.beginPath();
                                     ctx.moveTo(pos, grid.bottom);
-                                    ctx.lineTo(pos, grid.top-4);
+                                    ctx.lineTo(pos, grid.top);
                                     ctx.stroke();
                                 }
                                 break;
@@ -484,7 +488,7 @@
                                     var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
                                     ctx.beginPath();
                                     ctx.moveTo(grid.left, pos);
-                                    ctx.lineTo(grid.right+4, pos);
+                                    ctx.lineTo(grid.right, pos);
                                     ctx.stroke();
                                 }
                                 break;
@@ -493,6 +497,130 @@
                 }
                 ctx.restore();
             }
+            
+            function drawMark(bx, by, ex, ey) {
+                ctx.beginPath();
+                ctx.moveTo(bx, by);
+                ctx.lineTo(ex, ey);
+                ctx.stroke();
+            }
+            
+            ctx.save();
+            ctx.lineJoin = 'miter';
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#cccccc';
+            for (var name in this.axes) {
+                var axis = this.axes[name];
+                if (axis.show && axis.ticks.mark) {
+                    var ticks = axis.ticks;
+                    var s = ticks.size;
+                    var m = ticks.mark;
+                    switch (name) {
+                        case 'xaxis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                var b, e;
+                                switch (m) {
+                                    case 'inside':
+                                        b = grid.bottom-s;
+                                        e = grid.bottom;
+                                        break;
+                                    case 'outside':
+                                        b = grid.bottom;
+                                        e = grid.bottom+s;
+                                        break;
+                                    case 'cross':
+                                        b = grid.bottom-s;
+                                        e = grid.bottom+s;
+                                        break;
+                                    default:
+                                        b = grid.bottom;
+                                        e = grid.bottom+s;
+                                        break;
+                                }
+                                drawMark(pos, b, pos, e);
+                            }
+                            break;
+                        case 'yaxis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                var b, e;
+                                switch (m) {
+                                    case 'outside':
+                                        b = grid.left-s;
+                                        e = grid.left;
+                                        break;
+                                    case 'inside':
+                                        b = grid.left;
+                                        e = grid.left+s;
+                                        break;
+                                    case 'cross':
+                                        b = grid.left-s;
+                                        e = grid.left+s;
+                                        break;
+                                    default:
+                                        b = grid.left-s;
+                                        e = grid.left;
+                                        break;
+                                }
+                                drawMark(b, pos, e, pos);
+                            }
+                            break;
+                        case 'x2axis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                var b, e;
+                                switch (m) {
+                                    case 'outside':
+                                        b = grid.top-s;
+                                        e = grid.top;
+                                        break;
+                                    case 'inside':
+                                        b = grid.top;
+                                        e = grid.top+s;
+                                        break;
+                                    case 'cross':
+                                        b = grid.top-s;
+                                        e = grid.top+s;
+                                        break;
+                                    default:
+                                        b = grid.top-s;
+                                        e = grid.top;
+                                        break;
+                                }
+                                drawMark(b, pos, e, pos);
+                            }
+                            break;
+                        case 'y2axis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                var b, e;
+                                switch (m) {
+                                    case 'inside':
+                                        b = grid.right-s;
+                                        e = grid.right;
+                                        break;
+                                    case 'outside':
+                                        b = grid.right;
+                                        e = grid.right+s;
+                                        break;
+                                    case 'cross':
+                                        b = grid.right-s;
+                                        e = grid.right+s;
+                                        break;
+                                    default:
+                                        b = grid.right;
+                                        e = grid.right+s;
+                                        break;
+                                }
+                                drawMark(b, pos, e, pos);
+                            }
+                            break;
+                    }
+                }
+            }
+            ctx.restore();
             ctx.lineWidth = grid.borderWidth;
             ctx.strokeStyle = grid.borderColor;
             ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
@@ -525,7 +653,7 @@
             if (legend.show) {
                 var series = this.series;
                 // make a table.  one line label per row.
-                var ss = 'background:'+legend.background+';border:'+legend.border+';font-size:'+legend.fontSize+';font-family:'+legend.fontFamily+';position:absolute;';
+                var ss = 'background:'+legend.background+';border:'+legend.border+';font-size:'+legend.fontSize+';font-family:'+legend.fontFamily+';position:absolute;color:'+legend.textColor+';';
                 switch (legend.location) {
                     case 'nw':
                         var a = grid.left + legend.xoffset;
