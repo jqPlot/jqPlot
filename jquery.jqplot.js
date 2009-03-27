@@ -125,6 +125,7 @@
         this.bottom;
         this.left;
         this.right;
+        this.renderer = new $.jqplot.canvasGridRenderer();
         
     };
     
@@ -291,7 +292,7 @@
             this.drawAxes();
             this.pack();
             this.makeCanvas();
-            this.drawGrid();
+            this.grid.renderer.draw.call(this.grid, this.gctx, this.axes);
             this.drawLegend();
             this.drawSeries();
             for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
@@ -313,75 +314,9 @@
     
         this.drawAxes = function(){
             for (var name in this.axes) {
-                var axis = this.axes[name];
-                if (axis.show) {
-                    // populate the axis label and value properties.
-                    this.setAxis(axis.name);
-                    // fill a div with axes labels in the right direction.
-                    // Need to pregenerate each axis to get it's bounds and
-                    // position it and the labels correctly on the plot.
-                    var h, w;
-                    
-                    axis.elem = $('<div class="jqplot-axis"></div>').appendTo(this.target).get(0);
-                    //for (var s in axis.style) $(axis.elem).css(s, axis.style[s]);
-            
-                    if (axis.ticks.showLabels) {
-                        for (var i=0; i<axis.ticks.labels.length; i++) {
-                            var elem = $('<div class="jqplot-axis-tick"></div>').appendTo(axis.elem).get(0);
-                            
-                            for (var s in axis.ticks.styles[i]) $(elem).css(s, axis.ticks.styles[i][s]);
-                            $(elem).html(axis.ticks.labels[i]);
-                            
-                            if (axis.ticks.fontFamily) elem.style.fontFamily = axis.ticks.fontFamily;
-                            if (axis.ticks.fontSize) elem.style.fontSize = axis.ticks.fontSize;
-                            
-                            h = $(elem).outerHeight(true);
-                            w = $(elem).outerWidth(true);
-                            
-                            if (axis.height < h) {
-                                axis.height = h;
-                            }
-                            if (axis.width < w) {
-                                axis.width = w;
-                            }
-                        }
-                    }
-                    //$(axis.elem).height(axis.height);
-                    //$(axis.elem).width(axis.width);
-                }
+                log('in drawAxes');
+                this.axes[name].renderer.draw.call(this.axes[name], this.target, this.height, this.width);
             }
-        };
-    
-        // Populate the axis properties, giving a label and value
-        // (corresponding to the user data coordinates, not plot coords.)
-        // for each tick on the axis.
-        this.setAxis = function(name) {
-            // if a ticks array is specified, use it to fill in
-            // the labels and values.
-            var axis = this.axes[name];
-            axis.canvasHeight = this.height;
-            axis.canvasWidth = this.width;
-            var db = axis.dataBounds;
-            if (axis.ticks && axis.ticks.constructor == Array) {
-                var temp = $.extend(true, [], axis.ticks);
-                // if 2-D array, match them up
-                if (temp[0].lenth) {
-                    for (var i=0; i< temp; i++) {
-                        axis.ticks.labels.push(temp[i][1].toString());
-                        axis.ticks.values.push(parseFloat(temp[i][0]));
-                    }
-                }
-                // else 1-D array
-                else {
-                    for (var i=0; i< temp; i++) {
-                        axis.ticks.labels.push(temp[i].toString());
-                        axis.ticks.values.push(parseFloat(temp[i]));
-                    }
-                }
-            }
-            // else call the axis renderer and fill in the labels
-            // and values from there.
-            else axis.renderer.fill.call(axis);
         };
         
         this.pack = function() {
@@ -436,215 +371,6 @@
             $(this.overlayCanvas).css({ position: 'absolute', left: 0, top: 0 });
             this.target.append(this.overlayCanvas);
             this.octx = this.overlayCanvas.getContext("2d");
-        };
-        
-        this.drawGrid = function(){
-            // Add the grid onto the grid canvas.  This is the bottom most layer.
-            var ctx = this.gctx;
-            var grid = this.grid;
-            ctx.save();
-            ctx.fillStyle = grid.background;
-            ctx.fillRect(grid.left, grid.top, grid.width, grid.height);
-            if (grid.drawGridlines) {
-                ctx.save();
-                ctx.lineJoin = 'miter';
-                ctx.lineCap = 'round';
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = '#cccccc';
-                for (var name in this.axes) {
-                    var axis = this.axes[name];
-                    if (axis.show) {
-                        var ticks = axis.ticks;
-                        switch (name) {
-                            case 'xaxis':
-                                for (var i=0; i<ticks.values.length; i++) {
-                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                    ctx.beginPath();
-                                    ctx.moveTo(pos, grid.top);
-                                    ctx.lineTo(pos, grid.bottom);
-                                    ctx.stroke();
-                                }
-                                break;
-                            case 'yaxis':
-                                for (var i=0; i<ticks.values.length; i++) {
-                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                    ctx.beginPath();
-                                    ctx.moveTo(grid.right, pos);
-                                    ctx.lineTo(grid.left, pos);
-                                    ctx.stroke();
-                                }
-                                break;
-                            case 'x2axis':
-                                for (var i=0; i<ticks.values.length; i++) {
-                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                    ctx.beginPath();
-                                    ctx.moveTo(pos, grid.bottom);
-                                    ctx.lineTo(pos, grid.top);
-                                    ctx.stroke();
-                                }
-                                break;
-                            case 'y2axis':
-                                for (var i=0; i<ticks.values.length; i++) {
-                                    var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                    ctx.beginPath();
-                                    ctx.moveTo(grid.left, pos);
-                                    ctx.lineTo(grid.right, pos);
-                                    ctx.stroke();
-                                }
-                                break;
-                        }
-                    }
-                }
-                ctx.restore();
-            }
-            
-            function drawMark(bx, by, ex, ey) {
-                ctx.beginPath();
-                ctx.moveTo(bx, by);
-                ctx.lineTo(ex, ey);
-                ctx.stroke();
-            }
-            
-            ctx.save();
-            ctx.lineJoin = 'miter';
-            ctx.lineCap = 'round';
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#cccccc';
-            for (var name in this.axes) {
-                var axis = this.axes[name];
-                if (axis.show && axis.ticks.mark) {
-                    var ticks = axis.ticks;
-                    var s = ticks.size;
-                    var m = ticks.mark;
-                    switch (name) {
-                        case 'xaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                var b, e;
-                                switch (m) {
-                                    case 'inside':
-                                        b = grid.bottom-s;
-                                        e = grid.bottom;
-                                        break;
-                                    case 'outside':
-                                        b = grid.bottom;
-                                        e = grid.bottom+s;
-                                        break;
-                                    case 'cross':
-                                        b = grid.bottom-s;
-                                        e = grid.bottom+s;
-                                        break;
-                                    default:
-                                        b = grid.bottom;
-                                        e = grid.bottom+s;
-                                        break;
-                                }
-                                drawMark(pos, b, pos, e);
-                            }
-                            break;
-                        case 'yaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                var b, e;
-                                switch (m) {
-                                    case 'outside':
-                                        b = grid.left-s;
-                                        e = grid.left;
-                                        break;
-                                    case 'inside':
-                                        b = grid.left;
-                                        e = grid.left+s;
-                                        break;
-                                    case 'cross':
-                                        b = grid.left-s;
-                                        e = grid.left+s;
-                                        break;
-                                    default:
-                                        b = grid.left-s;
-                                        e = grid.left;
-                                        break;
-                                }
-                                drawMark(b, pos, e, pos);
-                            }
-                            break;
-                        case 'x2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                var b, e;
-                                switch (m) {
-                                    case 'outside':
-                                        b = grid.top-s;
-                                        e = grid.top;
-                                        break;
-                                    case 'inside':
-                                        b = grid.top;
-                                        e = grid.top+s;
-                                        break;
-                                    case 'cross':
-                                        b = grid.top-s;
-                                        e = grid.top+s;
-                                        break;
-                                    default:
-                                        b = grid.top-s;
-                                        e = grid.top;
-                                        break;
-                                }
-                                drawMark(b, pos, e, pos);
-                            }
-                            break;
-                        case 'y2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                var b, e;
-                                switch (m) {
-                                    case 'inside':
-                                        b = grid.right-s;
-                                        e = grid.right;
-                                        break;
-                                    case 'outside':
-                                        b = grid.right;
-                                        e = grid.right+s;
-                                        break;
-                                    case 'cross':
-                                        b = grid.right-s;
-                                        e = grid.right+s;
-                                        break;
-                                    default:
-                                        b = grid.right;
-                                        e = grid.right+s;
-                                        break;
-                                }
-                                drawMark(b, pos, e, pos);
-                            }
-                            break;
-                    }
-                }
-            }
-            ctx.restore();
-            ctx.lineWidth = grid.borderWidth;
-            ctx.strokeStyle = grid.borderColor;
-            ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
-            
-            // now draw the shadow
-            if (grid.borderShadow) {
-                ctx.save();
-                for (var j=0; j<grid.shadowDepth; j++) {
-                    ctx.translate(Math.cos(grid.shadowAngle*Math.PI/180)*grid.shadowOffset, Math.sin(grid.shadowAngle*Math.PI/180)*grid.shadowOffset);
-                    ctx.lineWidth = grid.shadowWidth;
-                    ctx.strokeStyle = 'rgba(0,0,0,'+grid.shadowAlpha+')';
-                    ctx.lineJoin = 'miter';
-                    ctx.lineCap = 'round';
-                    ctx.beginPath();
-                    ctx.moveTo(grid.left, grid.bottom);
-                    ctx.lineTo(grid.right, grid.bottom);
-                    ctx.lineTo(grid.right, grid.top);
-                    ctx.stroke();
-                    //ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
-                }
-                ctx.restore();
-            }
-
-            ctx.restore();
         };
         
         this.drawLegend = function() {
@@ -762,6 +488,80 @@
     $.jqplot.lineAxisRenderer = function() {
     };
     
+    
+    // called with scope of axis
+    $.jqplot.lineAxisRenderer.prototype.draw = function(target, plotHeight, plotWidth) {
+        log ('in axis renderer draw');
+        var axis = this;
+        log (axis);
+        if (axis.show) {
+            // populate the axis label and value properties.
+            axis.renderer.setAxis.call(axis, plotHeight, plotWidth);
+            // fill a div with axes labels in the right direction.
+            // Need to pregenerate each axis to get it's bounds and
+            // position it and the labels correctly on the plot.
+            var h, w;
+            
+            axis.elem = $('<div class="jqplot-axis"></div>').appendTo(target).get(0);
+            //for (var s in axis.style) $(axis.elem).css(s, axis.style[s]);
+    
+            if (axis.ticks.showLabels) {
+                for (var i=0; i<axis.ticks.labels.length; i++) {
+                    var elem = $('<div class="jqplot-axis-tick"></div>').appendTo(axis.elem).get(0);
+                    
+                    for (var s in axis.ticks.styles[i]) $(elem).css(s, axis.ticks.styles[i][s]);
+                    $(elem).html(axis.ticks.labels[i]);
+                    
+                    if (axis.ticks.fontFamily) elem.style.fontFamily = axis.ticks.fontFamily;
+                    if (axis.ticks.fontSize) elem.style.fontSize = axis.ticks.fontSize;
+                    
+                    h = $(elem).outerHeight(true);
+                    w = $(elem).outerWidth(true);
+                    
+                    if (axis.height < h) {
+                        axis.height = h;
+                    }
+                    if (axis.width < w) {
+                        axis.width = w;
+                    }
+                }
+            }
+        }
+    };
+    
+    // called with scope of an axis
+    // Populate the axis properties, giving a label and value
+    // (corresponding to the user data coordinates, not plot coords.)
+    // for each tick on the axis.
+    $.jqplot.lineAxisRenderer.prototype.setAxis = function(plotHeight, plotWidth) {
+        // if a ticks array is specified, use it to fill in
+        // the labels and values.
+        var axis = this;
+        axis.canvasHeight = plotHeight;
+        axis.canvasWidth = plotWidth;
+        var db = axis.dataBounds;
+        if (axis.ticks && axis.ticks.constructor == Array) {
+            var temp = $.extend(true, [], axis.ticks);
+            // if 2-D array, match them up
+            if (temp[0].lenth) {
+                for (var i=0; i< temp; i++) {
+                    axis.ticks.labels.push(temp[i][1].toString());
+                    axis.ticks.values.push(parseFloat(temp[i][0]));
+                }
+            }
+            // else 1-D array
+            else {
+                for (var i=0; i< temp; i++) {
+                    axis.ticks.labels.push(temp[i].toString());
+                    axis.ticks.values.push(parseFloat(temp[i]));
+                }
+            }
+        }
+        // else call the axis renderer and fill in the labels
+        // and values from there.
+        else axis.renderer.fill.call(axis);
+    };
+    
     $.jqplot.lineAxisRenderer.prototype.fill = function() {
         var name = this.name;
         var db = this.dataBounds;
@@ -876,6 +676,216 @@
         
     };
     
+    $.jqplot.canvasGridRenderer = function(){};
+    
+    $.jqplot.canvasGridRenderer.prototype.draw = function(ctx, axes) {
+        var grid = this;
+        // Add the grid onto the grid canvas.  This is the bottom most layer.
+        ctx.save();
+        ctx.fillStyle = grid.background;
+        ctx.fillRect(grid.left, grid.top, grid.width, grid.height);
+        if (grid.drawGridlines) {
+            ctx.save();
+            ctx.lineJoin = 'miter';
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#cccccc';
+            for (var name in axes) {
+                var axis = axes[name];
+                if (axis.show) {
+                    var ticks = axis.ticks;
+                    switch (name) {
+                        case 'xaxis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.beginPath();
+                                ctx.moveTo(pos, grid.top);
+                                ctx.lineTo(pos, grid.bottom);
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'yaxis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.beginPath();
+                                ctx.moveTo(grid.right, pos);
+                                ctx.lineTo(grid.left, pos);
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'x2axis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.beginPath();
+                                ctx.moveTo(pos, grid.bottom);
+                                ctx.lineTo(pos, grid.top);
+                                ctx.stroke();
+                            }
+                            break;
+                        case 'y2axis':
+                            for (var i=0; i<ticks.values.length; i++) {
+                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                                ctx.beginPath();
+                                ctx.moveTo(grid.left, pos);
+                                ctx.lineTo(grid.right, pos);
+                                ctx.stroke();
+                            }
+                            break;
+                    }
+                }
+            }
+            ctx.restore();
+        }
+        
+        function drawMark(bx, by, ex, ey) {
+            ctx.beginPath();
+            ctx.moveTo(bx, by);
+            ctx.lineTo(ex, ey);
+            ctx.stroke();
+        }
+        
+        ctx.save();
+        ctx.lineJoin = 'miter';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#cccccc';
+        for (var name in axes) {
+            var axis = axes[name];
+            if (axis.show && axis.ticks.mark) {
+                var ticks = axis.ticks;
+                var s = ticks.size;
+                var m = ticks.mark;
+                switch (name) {
+                    case 'xaxis':
+                        for (var i=0; i<ticks.values.length; i++) {
+                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                            var b, e;
+                            switch (m) {
+                                case 'inside':
+                                    b = grid.bottom-s;
+                                    e = grid.bottom;
+                                    break;
+                                case 'outside':
+                                    b = grid.bottom;
+                                    e = grid.bottom+s;
+                                    break;
+                                case 'cross':
+                                    b = grid.bottom-s;
+                                    e = grid.bottom+s;
+                                    break;
+                                default:
+                                    b = grid.bottom;
+                                    e = grid.bottom+s;
+                                    break;
+                            }
+                            drawMark(pos, b, pos, e);
+                        }
+                        break;
+                    case 'yaxis':
+                        for (var i=0; i<ticks.values.length; i++) {
+                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                            var b, e;
+                            switch (m) {
+                                case 'outside':
+                                    b = grid.left-s;
+                                    e = grid.left;
+                                    break;
+                                case 'inside':
+                                    b = grid.left;
+                                    e = grid.left+s;
+                                    break;
+                                case 'cross':
+                                    b = grid.left-s;
+                                    e = grid.left+s;
+                                    break;
+                                default:
+                                    b = grid.left-s;
+                                    e = grid.left;
+                                    break;
+                            }
+                            drawMark(b, pos, e, pos);
+                        }
+                        break;
+                    case 'x2axis':
+                        for (var i=0; i<ticks.values.length; i++) {
+                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                            var b, e;
+                            switch (m) {
+                                case 'outside':
+                                    b = grid.top-s;
+                                    e = grid.top;
+                                    break;
+                                case 'inside':
+                                    b = grid.top;
+                                    e = grid.top+s;
+                                    break;
+                                case 'cross':
+                                    b = grid.top-s;
+                                    e = grid.top+s;
+                                    break;
+                                default:
+                                    b = grid.top-s;
+                                    e = grid.top;
+                                    break;
+                            }
+                            drawMark(b, pos, e, pos);
+                        }
+                        break;
+                    case 'y2axis':
+                        for (var i=0; i<ticks.values.length; i++) {
+                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                            var b, e;
+                            switch (m) {
+                                case 'inside':
+                                    b = grid.right-s;
+                                    e = grid.right;
+                                    break;
+                                case 'outside':
+                                    b = grid.right;
+                                    e = grid.right+s;
+                                    break;
+                                case 'cross':
+                                    b = grid.right-s;
+                                    e = grid.right+s;
+                                    break;
+                                default:
+                                    b = grid.right;
+                                    e = grid.right+s;
+                                    break;
+                            }
+                            drawMark(b, pos, e, pos);
+                        }
+                        break;
+                }
+            }
+        }
+        ctx.restore();
+        ctx.lineWidth = grid.borderWidth;
+        ctx.strokeStyle = grid.borderColor;
+        ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
+        
+        // now draw the shadow
+        if (grid.borderShadow) {
+            ctx.save();
+            for (var j=0; j<grid.shadowDepth; j++) {
+                ctx.translate(Math.cos(grid.shadowAngle*Math.PI/180)*grid.shadowOffset, Math.sin(grid.shadowAngle*Math.PI/180)*grid.shadowOffset);
+                ctx.lineWidth = grid.shadowWidth;
+                ctx.strokeStyle = 'rgba(0,0,0,'+grid.shadowAlpha+')';
+                ctx.lineJoin = 'miter';
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(grid.left, grid.bottom);
+                ctx.lineTo(grid.right, grid.bottom);
+                ctx.lineTo(grid.right, grid.top);
+                ctx.stroke();
+                //ctx.strokeRect(grid.left, grid.top, grid.width, grid.height);
+            }
+            ctx.restore();
+        }
+    
+        ctx.restore();
+    };
+    
     $.jqplot.lineRenderer = function(){
     };
 
@@ -962,7 +972,8 @@
 	// Convienence function that won't hang IE.
 	function log() {
 	    if (window.console && debug) {
-	        console.log(arguments);
+	       if (arguments.length == 1) console.log (arguments[0]);
+	       else console.log(arguments);
 	    }
 	};
 	
