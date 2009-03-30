@@ -587,7 +587,7 @@ THE SOFTWARE.
             
             for (var name in this.axes) {
                 var axis = this.axes[name];
-                axis.renderer.pack.call(axis, offsets);
+                axis.renderer.pack.call(axis, offsets, this.grid._width, this.grid._height);
             }
             
         };
@@ -853,7 +853,7 @@ THE SOFTWARE.
     
     // Now we know offsets around the grid, we can define conversioning functions
     // and properly lay out the axes.
-    $.jqplot.lineAxisRenderer.prototype.pack = function(offsets, grid) {
+    $.jqplot.lineAxisRenderer.prototype.pack = function(offsets, gridwidth, gridheight) {
         var ticks = this.ticks;
         var tickdivs = $(this._elem).children('div');
         if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -865,6 +865,14 @@ THE SOFTWARE.
             
             this.u2p = function(u) {
                 return (u - this.min) * (this._canvasWidth - this._offsets.max - this._offsets.min) / (this.max - this.min) + this._offsets.min;
+            }
+            
+            this.series_u2p = function(u) {
+                return (u - this.min) * gridwidth / (this.max - this.min);
+            }
+            
+            this.series_p2u = function(p) {
+                return p * (this.max - this.min) / gridwidth + this.min;
             }
             
             if (this.show) {
@@ -895,6 +903,15 @@ THE SOFTWARE.
             this.u2p = function(u) {
                 return -(u - this.min) * (this._canvasHeight - this._offsets.min - this._offsets.max) / (this.max - this.min) + this._canvasHeight - this._offsets.min;
             }
+            
+            this.series_u2p = function(u) {
+                return (this.max - u) * gridheight /(this.max - this.min);
+            }
+            
+            this.series_p2u = function(p) {
+                return -p * (this.max - this.min) / gridheight + this.max;
+            }
+            
             if (this.show) {
                 // set the position
                 if (this.name == 'yaxis') {
@@ -931,11 +948,11 @@ THE SOFTWARE.
         this.gctx = this.gridCanvas.getContext("2d");
         
         this.seriesCanvas = document.createElement('canvas');
-        this.seriesCanvas.width = this._width;
-        this.seriesCanvas.height = this._height;
+        this.seriesCanvas.width = this.grid._width;
+        this.seriesCanvas.height = this.grid._height;
         if ($.browser.msie) // excanvas hack
             this.seriesCanvas = window.G_vmlCanvasManager.initElement(this.seriesCanvas);
-        $(this.seriesCanvas).css({ position: 'absolute', left: 0, top: 0 });
+        $(this.seriesCanvas).css({ position: 'absolute', left: this.grid._left, top: this.grid._top });
         this.target.append(this.seriesCanvas);
         this.sctx = this.seriesCanvas.getContext("2d");
         
@@ -1168,16 +1185,16 @@ THE SOFTWARE.
         var xaxis = this.xaxis;
         var yaxis = this.yaxis;
         var d = this.data;
-        var xp = this._xaxis.u2p;
-        var yp = this._yaxis.u2p;
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
         // use a clipping path to cut lines outside of grid.
-        ctx.moveTo(grid._left, grid._top);
-        ctx.lineTo(grid._right, grid._top);
-        ctx.lineTo(grid._right, grid._bottom);
-        ctx.lineTo(grid._left, grid._bottom);
-        ctx.closePath();
-        ctx.clip();
-        ctx.beginPath();
+        // ctx.moveTo(grid._left, grid._top);
+        // ctx.lineTo(grid._right, grid._top);
+        // ctx.lineTo(grid._right, grid._bottom);
+        // ctx.lineTo(grid._left, grid._bottom);
+        // ctx.closePath();
+        // ctx.clip();
+        // ctx.beginPath();
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.lineWidth = this.lineWidth;
