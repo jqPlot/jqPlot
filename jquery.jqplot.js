@@ -29,6 +29,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
+About: Code Conventions
+
+Properties can be set or overriden by the options object passed in by the user, 
+however, properties prefixed with an underscore (_) should be considered private 
+and not overriden.  Classes are marked(Private) or (Public) to indicate their 
+visibility outside of the function closure and thus to the user.
+
+
+Objects and methods which extend the jQuery namespace (prefixed with a $.) are visible
+to the user through the jQuery namespace.  Except for the $.jqplot function, these are 
+primarily the renderes for lines, axes, grid, etc. which can be replaced, extended, or 
+enhanced by the user through plugins.
+
 */
 
 (function($) {
@@ -36,7 +49,7 @@ THE SOFTWARE.
     
     /* 
         Class: Axis
-        [Private] An individual axis object.  Cannot be instantiated directly, but created
+        (Private) An individual axis object.  Cannot be instantiated directly, but created
         by the Plot oject.  Axis properties can be set or overriden by the 
         options passed in from the user.
         
@@ -62,7 +75,7 @@ THE SOFTWARE.
         // number of units between ticks.  Mutually exclusive with numberTicks.
         this.tickInterval;
         // prop: renderer
-        // reference to a rendering engine that draws the axis on the plot.
+        // Instance of a rendering engine that draws the axis on the plot.
         this.renderer = new $.jqplot.lineAxisRenderer();
         /*  
             prop: label
@@ -149,7 +162,7 @@ THE SOFTWARE.
     
     /* 
         Class: Legend
-        [Private] Legend object.  Cannot be instantiated directly, but created
+        (Private) Legend object.  Cannot be instantiated directly, but created
         by the Plot oject.  Legend properties can be set or overriden by the 
         options passed in from the user.
     */
@@ -194,7 +207,7 @@ THE SOFTWARE.
     
     /* 
         Class: Title
-        [Private] Plot Title object.  Cannot be instantiated directly, but created
+        (Private) Plot Title object.  Cannot be instantiated directly, but created
         by the Plot oject.  Title properties can be set or overriden by the 
         options passed in from the user.
         
@@ -233,7 +246,7 @@ THE SOFTWARE.
     
     /* 
         Class: Series
-        [Private] An individual data series object.  Cannot be instantiated directly, but created
+        (Private) An individual data series object.  Cannot be instantiated directly, but created
         by the Plot oject.  Series properties can be set or overriden by the 
         options passed in from the user.
     */
@@ -256,8 +269,11 @@ THE SOFTWARE.
         // reference to the underlying y axis object associated with this series.
         this._yaxis = new Axis(this.yaxis);
         // prop: renderer
-        // reference to a renderer which will actually draw this series.
+        // Instance of a renderer which will draw the series.
         this.renderer = new $.jqplot.lineRenderer();
+        // prop: rendererOptions
+        // Options to set on the renderer.  See the renderer for possibly options.
+        this.rendererOptions = {};
         // prop: data
         // raw user data points.  These should never be altered!!!
         this.data = [];
@@ -266,31 +282,6 @@ THE SOFTWARE.
         this.gridData = [];
         // place holder, don't do anything with points yet.
         //this.points = {show:true, renderer: 'circleRenderer'};
-        // prop: color
-        // css color spec for the series
-        this.color;
-        // prop: lineWidth
-        // width of the line in pixels.  May have different meanings depending on renderer.
-        this.lineWidth = 2.5;
-        // prop: shadow
-        // wether or not to draw a shadow on the line
-        this.shadow = true;
-        // prop: shadowAngle
-        // Shadow angle in degrees
-        this.shadowAngle = 45;
-        // prop: shadowOffset
-        // Shadow offset from line in pixels
-        this.shadowOffset = 1;
-        // prop: shadowDepth
-        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
-        this.shadowDepth = 3;
-        // prop: shadowAlpha
-        // Alpha channel transparency of shadow.  0 = transparent.
-        this.shadowAlpha = '0.07';
-        // prop: breakOnNull
-        // wether line segments should be be broken at null value.
-        // False will join point on either side of line.
-        this.breakOnNull = false;
         // prop: label
         // Line label to use in legend.
         this.label = '';
@@ -298,7 +289,7 @@ THE SOFTWARE.
     
     /* 
         Class: Grid
-        [Private] Object representing the grid on which the plot is drawn.  The grid in this
+        (Private) Object representing the grid on which the plot is drawn.  The grid in this
         context is the area bounded by the axes, the area which will contain the series.
         The Grid object cannot be instantiated directly, but is created by the Plot oject.  
         Grid properties can be set or overriden by the options passed in from the user.
@@ -355,7 +346,7 @@ THE SOFTWARE.
         // position of the right of the grid measures from the top left of the DOM container.
         this._right;
         // prop: renderer
-        // reference to the object which will actually render the grid.
+        // Instance of a renderer which will actually render the grid.
         this.renderer = new $.jqplot.canvasGridRenderer();
         
     };
@@ -363,7 +354,7 @@ THE SOFTWARE.
     
     /* 
         Class: jqPlot
-        [Private] Plot object returned to call to $.jqplot.  Handles parsing user options,
+        (Private) Plot object returned to call to $.jqplot.  Handles parsing user options,
         creating sub objects (Axes, legend, title, series) and rendering the plot.
     */    
     function jqPlot() {
@@ -486,7 +477,7 @@ THE SOFTWARE.
             }
             
             for (var i=0; i<this.data.length; i++) {
-                var temp = $.extend(true, new Series(), this.seriesDefaults, this.options.series[i]);
+                var temp = $.extend(true, new Series(), this.options.seriesDefaults, this.options.series[i]);
                 temp.data = this.data[i];
                 switch (temp.xaxis) {
                     case 'xaxis':
@@ -512,7 +503,11 @@ THE SOFTWARE.
                     temp._xaxis.show = true;
                     temp._yaxis.show = true;
                 }
-                if (!temp.color) temp.color = this.seriesColors[i];
+                
+                // parse the renderer options and apply default colors if not provided
+                if (!temp.rendererOptions.color) temp.rendererOptions.color = this.seriesColors[i];
+                temp.renderer.init(temp.rendererOptions);
+                // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
                 this.series.push(temp);
             }
             
@@ -669,7 +664,7 @@ THE SOFTWARE.
                     s = series[i];
                     var lt = s.label.toString();
                     if (lt) {
-                        addrow(lt, s.color, pad);
+                        addrow(lt, s.renderer.color, pad);
                         pad = true;
                     }
                     for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
@@ -688,7 +683,7 @@ THE SOFTWARE.
         // of the individual series.
         this.drawSeries = function(){
             for (var i=0; i<this.series.length; i++) {
-                this.series[i].renderer.draw.call(this.series[i], this.grid, this.sctx);
+                this.series[i].renderer.draw.call(this.series[i].renderer, this.series[i], this.grid, this.sctx);
                 for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
                     $.jqplot.postDrawSeriesHooks[j].call(this.series[i], this.grid, this.sctx);
                 }
@@ -697,7 +692,7 @@ THE SOFTWARE.
     };
     
     // Class: $.jqplot
-    // jQuery extension called by user to create plot.
+    // (Public) jQuery extension called by user to create plot.
     //
     // Parameters:
     // target - ID of target element to render the plot into.
@@ -723,540 +718,7 @@ THE SOFTWARE.
     // array: $.jqplot.drawLegendHooks
     // Array of plugin hooks run within but at the end of the jqPlot.drawLegend method.
     $.jqplot.drawLegendHooks = [];
-           
-    $.jqplot.lineAxisRenderer = function() {
-    };
     
-    
-    // called with scope of axis
-    $.jqplot.lineAxisRenderer.prototype.draw = function(target, plotHeight, plotWidth) {
-        var axis = this;
-        if (axis.show) {
-            // populate the axis label and value properties.
-            axis.renderer.setAxis.call(axis, plotHeight, plotWidth);
-            // fill a div with axes labels in the right direction.
-            // Need to pregenerate each axis to get it's bounds and
-            // position it and the labels correctly on the plot.
-            var h, w;
-            
-            axis._elem = $('<div class="jqplot-axis"></div>').appendTo(target).get(0);
-            //for (var s in axis.style) $(axis._elem).css(s, axis.style[s]);
-    
-            if (axis.ticks.showLabels) {
-                for (var i=0; i<axis.ticks.labels.length; i++) {
-                    var elem = $('<div class="jqplot-axis-tick"></div>').appendTo(axis._elem).get(0);
-                    
-                    for (var s in axis.ticks.styles[i]) $(elem).css(s, axis.ticks.styles[i][s]);
-                    $(elem).html(axis.ticks.labels[i]);
-                    
-                    if (axis.ticks.fontFamily) elem.style.fontFamily = axis.ticks.fontFamily;
-                    if (axis.ticks.fontSize) elem.style.fontSize = axis.ticks.fontSize;
-                    
-                    h = $(elem).outerHeight(true);
-                    w = $(elem).outerWidth(true);
-                    
-                    if (axis._height < h) {
-                        axis._height = h;
-                    }
-                    if (axis._width < w) {
-                        axis._width = w;
-                    }
-                }
-            }
-        }
-    };
-    
-    // called with scope of an axis
-    // Populate the axis properties, giving a label and value
-    // (corresponding to the user data coordinates, not plot coords.)
-    // for each tick on the axis.
-    $.jqplot.lineAxisRenderer.prototype.setAxis = function(plotHeight, plotWidth) {
-        // if a ticks array is specified, use it to fill in
-        // the labels and values.
-        var axis = this;
-        axis._canvasHeight = plotHeight;
-        axis._canvasWidth = plotWidth;
-        var db = axis._dataBounds;
-        if (axis.ticks && axis.ticks.constructor == Array) {
-            var temp = $.extend(true, [], axis.ticks);
-            // if 2-D array, match them up
-            if (temp[0].lenth) {
-                for (var i=0; i< temp; i++) {
-                    axis.ticks.labels.push(temp[i][1].toString());
-                    axis.ticks.values.push(parseFloat(temp[i][0]));
-                }
-            }
-            // else 1-D array
-            else {
-                for (var i=0; i< temp; i++) {
-                    axis.ticks.labels.push(temp[i].toString());
-                    axis.ticks.values.push(parseFloat(temp[i]));
-                }
-            }
-        }
-        // else call the axis renderer and fill in the labels
-        // and values from there.
-        else axis.renderer.fill.call(axis);
-    };
-    
-    $.jqplot.lineAxisRenderer.prototype.fill = function() {
-        var name = this.name;
-        var db = this._dataBounds;
-        var dim, interval;
-        var min, max;
-        var pos1, pos2;
-        if (name == 'xaxis' || name == 'x2axis') {
-            dim = this._canvasWidth;
-        }
-        else {
-            dim = this._canvasHeight;
-        }
-        if (this.numberTicks == null){
-            if (dim > 100) {
-                this.numberTicks = parseInt(3+(dim-100)/75);
-            }
-            else this.numberTicks = 3;
-        }
-        
-        
-        min = ((this.min != null) ? this.min : db.min);
-        max = ((this.max != null) ? this.max : db.max);
-        var range = max - min;
-        var rmin = min - (this.min != null ? 0 : range/2*(this.scale - 1));
-        var rmax = max + (this.max != null ? 0 : range/2*(this.scale - 1));
-        this.min = rmin;
-        this.max = rmax;
-        this.tickInterval = (rmax - rmin)/(this.numberTicks-1);
-        for (var i=0; i<this.numberTicks; i++){
-            var tt = rmin + i*this.tickInterval
-            this.ticks.labels.push(this.tickFormatter(this.ticks.formatString, tt));
-            this.ticks.values.push(rmin + i*this.tickInterval);
-            var pox = i*15+'px';
-            switch (name) {
-                case 'xaxis':
-                    this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
-                    break;
-                case 'x2axis':
-                    this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
-                    break;
-                case 'yaxis':
-                    this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
-                    break;
-                case 'y2axis':
-                    this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
-                    break;
-                    
-            }
-        }
-        if (name == 'yaxis' || name == 'y2axis') this.ticks.styles.reverse();
-    };
-    
-    // Now we know offsets around the grid, we can define conversioning functions
-    // and properly lay out the axes.
-    $.jqplot.lineAxisRenderer.prototype.pack = function(offsets, gridwidth, gridheight) {
-        var ticks = this.ticks;
-        var tickdivs = $(this._elem).children('div');
-        if (this.name == 'xaxis' || this.name == 'x2axis') {
-            this._offsets = {min:offsets.left, max:offsets.right};
-            
-            this.p2u = function(p) {
-                return (p - this._offsets.min)*(this.max - this.min)/(this._canvasWidth - this._offsets.max - this._offsets.min) + this.min;
-            }
-            
-            this.u2p = function(u) {
-                return (u - this.min) * (this._canvasWidth - this._offsets.max - this._offsets.min) / (this.max - this.min) + this._offsets.min;
-            }
-            
-            this.series_u2p = function(u) {
-                return (u - this.min) * gridwidth / (this.max - this.min);
-            }
-            
-            this.series_p2u = function(p) {
-                return p * (this.max - this.min) / gridwidth + this.min;
-            }
-            
-            if (this.show) {
-                // set the position
-                if (this.name == 'xaxis') {
-                    $(this._elem).css({position:'absolute', left:'0px', top:(this._canvasHeight-offsets.bottom)+'px'});
-                }
-                else {
-                    $(this._elem).css({position:'absolute', left:'0px', bottom:(this._canvasHeight-offsets.top)+'px'});
-                }
-                for (i=0; i<tickdivs.length; i++) {
-                    var shim = $(tickdivs[i]).outerWidth(true)/2;
-                    //var t = this.u2p(ticks.values[i]);
-                    var val = this.u2p(ticks.values[i]) - shim + 'px';
-                    $(tickdivs[i]).css('left', val);
-                    // remember, could have done it this way
-                    //tickdivs[i].style.left = val;
-                }
-            }
-        }  
-        else {
-            this._offsets = {min:offsets.bottom, max:offsets.top};
-            
-            this.p2u = function(p) {
-                return (p - this._canvasHeight + this._offsets.min)*(this.max - this.min)/(this._canvasHeight - this._offsets.min - this._offsets.max) + this.min;
-            }
-            
-            this.u2p = function(u) {
-                return -(u - this.min) * (this._canvasHeight - this._offsets.min - this._offsets.max) / (this.max - this.min) + this._canvasHeight - this._offsets.min;
-            }
-            
-            this.series_u2p = function(u) {
-                return (this.max - u) * gridheight /(this.max - this.min);
-            }
-            
-            this.series_p2u = function(p) {
-                return -p * (this.max - this.min) / gridheight + this.max;
-            }
-            
-            if (this.show) {
-                // set the position
-                if (this.name == 'yaxis') {
-                    $(this._elem).css({position:'absolute', right:(this._canvasWidth-offsets.left)+'px', top:'0px'});
-                }
-                else {
-                    $(this._elem).css({position:'absolute', left:(this._canvasWidth - offsets.right)+'px', top:'0px'});
-                }
-                for (i=0; i<tickdivs.length; i++) {
-                    var shim = $(tickdivs[i]).outerHeight(true)/2;
-                    var val = this.u2p(ticks.values[i]) - shim + 'px';
-                    $(tickdivs[i]).css('top', val);
-                }
-            }
-        }    
-        
-    };
-    
-    // Class: $.jqplot.canvasGridRenderer
-    // Rendrer for a jqPlot object which draws the grid as a canvas element on the page.
-    $.jqplot.canvasGridRenderer = function(){};
-    
-    // Function: createDrawingContext
-    // Creates (but doesn't populate) the actual canvas elements for plotting.
-    // Called within context of jqPlot object.
-    $.jqplot.canvasGridRenderer.prototype.createDrawingContext = function(){
-        this.gridCanvas = document.createElement('canvas');
-        this.gridCanvas.width = this._width;
-        this.gridCanvas.height = this._height;
-        if ($.browser.msie) // excanvas hack
-            this.gridCanvas = window.G_vmlCanvasManager.initElement(this.gridCanvas);
-        $(this.gridCanvas).css({ position: 'absolute', left: 0, top: 0 });
-        this.target.append(this.gridCanvas);
-        this.gctx = this.gridCanvas.getContext("2d");
-        
-        this.seriesCanvas = document.createElement('canvas');
-        this.seriesCanvas.width = this.grid._width;
-        this.seriesCanvas.height = this.grid._height;
-        if ($.browser.msie) // excanvas hack
-            this.seriesCanvas = window.G_vmlCanvasManager.initElement(this.seriesCanvas);
-        $(this.seriesCanvas).css({ position: 'absolute', left: this.grid._left, top: this.grid._top });
-        this.target.append(this.seriesCanvas);
-        this.sctx = this.seriesCanvas.getContext("2d");
-        
-        this.overlayCanvas = document.createElement('canvas');
-        this.overlayCanvas.width = this._width;
-        this.overlayCanvas.height = this._height;
-        if ($.browser.msie) // excanvas hack
-            this.overlayCanvas = window.G_vmlCanvasManager.initElement(this.overlayCanvas);
-        $(this.overlayCanvas).css({ position: 'absolute', left: 0, top: 0 });
-        this.target.append(this.overlayCanvas);
-        this.octx = this.overlayCanvas.getContext("2d");
-    };
-    
-    $.jqplot.canvasGridRenderer.prototype.draw = function(ctx, axes) {
-        var grid = this;
-        // Add the grid onto the grid canvas.  This is the bottom most layer.
-        ctx.save();
-        ctx.fillStyle = grid.background;
-        ctx.fillRect(grid._left, grid._top, grid._width, grid._height);
-        if (grid.drawGridlines) {
-            ctx.save();
-            ctx.lineJoin = 'miter';
-            ctx.lineCap = 'round';
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#cccccc';
-            for (var name in axes) {
-                var axis = axes[name];
-                if (axis.show) {
-                    var ticks = axis.ticks;
-                    switch (name) {
-                        case 'xaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(pos, grid._top);
-                                ctx.lineTo(pos, grid._bottom);
-                                ctx.stroke();
-                            }
-                            break;
-                        case 'yaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(grid._right, pos);
-                                ctx.lineTo(grid._left, pos);
-                                ctx.stroke();
-                            }
-                            break;
-                        case 'x2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(pos, grid._bottom);
-                                ctx.lineTo(pos, grid._top);
-                                ctx.stroke();
-                            }
-                            break;
-                        case 'y2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(grid._left, pos);
-                                ctx.lineTo(grid._right, pos);
-                                ctx.stroke();
-                            }
-                            break;
-                    }
-                }
-            }
-            ctx.restore();
-        }
-        
-        function drawMark(bx, by, ex, ey) {
-            ctx.beginPath();
-            ctx.moveTo(bx, by);
-            ctx.lineTo(ex, ey);
-            ctx.stroke();
-        }
-        // Now draw the tick marks.
-        ctx.save();
-        ctx.lineJoin = 'miter';
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = '#cccccc';
-        for (var name in axes) {
-            var axis = axes[name];
-            if (axis.show && axis.ticks.mark) {
-                var ticks = axis.ticks;
-                var s = ticks.size;
-                var m = ticks.mark;
-                switch (name) {
-                    case 'xaxis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'inside':
-                                    b = grid._bottom-s;
-                                    e = grid._bottom;
-                                    break;
-                                case 'outside':
-                                    b = grid._bottom;
-                                    e = grid._bottom+s;
-                                    break;
-                                case 'cross':
-                                    b = grid._bottom-s;
-                                    e = grid._bottom+s;
-                                    break;
-                                default:
-                                    b = grid._bottom;
-                                    e = grid._bottom+s;
-                                    break;
-                            }
-                            drawMark(pos, b, pos, e);
-                        }
-                        break;
-                    case 'yaxis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'outside':
-                                    b = grid._left-s;
-                                    e = grid._left;
-                                    break;
-                                case 'inside':
-                                    b = grid._left;
-                                    e = grid._left+s;
-                                    break;
-                                case 'cross':
-                                    b = grid._left-s;
-                                    e = grid._left+s;
-                                    break;
-                                default:
-                                    b = grid._left-s;
-                                    e = grid._left;
-                                    break;
-                            }
-                            drawMark(b, pos, e, pos);
-                        }
-                        break;
-                    case 'x2axis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'outside':
-                                    b = grid._top-s;
-                                    e = grid._top;
-                                    break;
-                                case 'inside':
-                                    b = grid._top;
-                                    e = grid._top+s;
-                                    break;
-                                case 'cross':
-                                    b = grid._top-s;
-                                    e = grid._top+s;
-                                    break;
-                                default:
-                                    b = grid._top-s;
-                                    e = grid._top;
-                                    break;
-                            }
-                            drawMark(pos, b, pos, e);
-                        }
-                        break;
-                    case 'y2axis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'inside':
-                                    b = grid._right-s;
-                                    e = grid._right;
-                                    break;
-                                case 'outside':
-                                    b = grid._right;
-                                    e = grid._right+s;
-                                    break;
-                                case 'cross':
-                                    b = grid._right-s;
-                                    e = grid._right+s;
-                                    break;
-                                default:
-                                    b = grid._right;
-                                    e = grid._right+s;
-                                    break;
-                            }
-                            drawMark(b, pos, e, pos);
-                        }
-                        break;
-                }
-            }
-        }
-        ctx.restore();
-        ctx.lineWidth = grid.borderWidth;
-        ctx.strokeStyle = grid.borderColor;
-        ctx.strokeRect(grid._left, grid._top, grid._width, grid._height);
-        
-        // now draw the shadow
-        if (grid.shadow) {
-            ctx.save();
-            for (var j=0; j<grid.shadowDepth; j++) {
-                ctx.translate(Math.cos(grid.shadowAngle*Math.PI/180)*grid.shadowOffset, Math.sin(grid.shadowAngle*Math.PI/180)*grid.shadowOffset);
-                ctx.lineWidth = grid.shadowWidth;
-                ctx.strokeStyle = 'rgba(0,0,0,'+grid.shadowAlpha+')';
-                ctx.lineJoin = 'miter';
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(grid._left, grid._bottom);
-                ctx.lineTo(grid._right, grid._bottom);
-                ctx.lineTo(grid._right, grid._top);
-                ctx.stroke();
-                //ctx.strokeRect(grid._left, grid._top, grid._width, grid._height);
-            }
-            ctx.restore();
-        }
-    
-        ctx.restore();
-    };
-    
-    $.jqplot.lineRenderer = function(){
-    };
-
-    // called within scope of an individual series.
-    $.jqplot.lineRenderer.prototype.draw = function(grid, ctx) {
-        var i;
-        ctx.save();
-        ctx.beginPath();
-        var xaxis = this.xaxis;
-        var yaxis = this.yaxis;
-        var d = this.data;
-        var xp = this._xaxis.series_u2p;
-        var yp = this._yaxis.series_u2p;
-        // use a clipping path to cut lines outside of grid.
-        // ctx.moveTo(grid._left, grid._top);
-        // ctx.lineTo(grid._right, grid._top);
-        // ctx.lineTo(grid._right, grid._bottom);
-        // ctx.lineTo(grid._left, grid._bottom);
-        // ctx.closePath();
-        // ctx.clip();
-        // ctx.beginPath();
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        ctx.lineWidth = this.lineWidth;
-        ctx.strokeStyle = this.color;
-        var pointx, pointy;
-        // recalculate the grid data
-        this.gridData = [];
-        this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
-        ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
-        for (var i=1; i<this.data.length; i++) {
-            this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
-            ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
-        }
-        ctx.stroke();
-        
-        // now draw the shadows
-        if (this.shadow) {
-            ctx.save();
-            for (var j=0; j<this.shadowDepth; j++) {
-                ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
-                for (var i=1; i<this.data.length; i++) {
-                    this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
-                    ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
-                }
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
-        ctx.restore();
-    };
-    
-    $.jqplot.lineRenderer.prototype.processData = function() { 
-        // don't have axes conversion functions yet, all we can do is look for bad
-        // points and set the axes bounds.  
-        var d = this.data;
-        var i;
-        var dbx = this._xaxis._dataBounds;
-        var dby = this._yaxis._dataBounds;
-
-        // weed out any null points and set the axes bounds
-        for (i=0; i<d.length; i++) {
-            if (d[i] == null || d[i][0] == null || d[i][1] == null) {
-                // if line breaking on null values is set, keep the null in the data
-                if (this.breakOnNull) d[i] = null;
-                // else delete the null to skip the point.
-                else d.splice(i,1);
-            }
-        }
-        for (i=0; i<d.length; i++) {
-            if (d[i] == null || d[i][0] == null || d[i][1] == null) continue;
-            else {                
-                if (d[i][0] < dbx.min || dbx.min == null) dbx.min = d[i][0];
-                if (d[i][0] > dbx.max || dbx.max == null) dbx.max = d[i][0];
-                if (d[i][1] < dby.min || dby.min == null) dby.min = d[i][1];
-                if (d[i][1] > dby.max || dby.max == null) dby.max = d[i][1];
-            }
-        }
-    }
-	
 	// Convienence function that won't hang IE.
 	function log() {
 	    if (window.console && debug) {

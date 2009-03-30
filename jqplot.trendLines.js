@@ -28,14 +28,15 @@
         var defaults = {
             show: false,
             color: '#666666',
-            lineWidth:2.5,
-            shadows:true,
-            // shadow angle in degrees
-            shadowAngle:45,
-            // shadow offset in pixels
-            shadowOffset:1,
-            shadowDepth:3,
-            shadowAlpha:'0.07',
+            rendererOptions:{marker:{show:false}},
+            // lineWidth:2.5,
+            // shadows:true,
+            // // shadow angle in degrees
+            // shadowAngle:45,
+            // // shadow offset in pixels
+            // shadowOffset:1,
+            // shadowDepth:3,
+            // shadowAlpha:'0.07',
             label:''
         };
         for (i = 0; i < series.length; ++i) {
@@ -56,7 +57,8 @@
             tl.data = fit.data;
             tl.gridData = [];
             var lineRenderer = new $.jqplot.lineRenderer();
-            lineRenderer.draw.call(tl, grid, ctx); 
+            lineRenderer.init(tl.trendLines.rendererOptions);
+            lineRenderer.draw.call(lineRenderer, tl, grid, ctx); 
         }  
     }
 	

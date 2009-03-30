@@ -5,6 +5,10 @@
 	<!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
     <script language="javascript" type="text/javascript" src="../jquery-1.3.2.js"></script>
     <script language="javascript" type="text/javascript" src="jquery.jqplot.js"></script>
+    <script language="javascript" type="text/javascript" src="jqplot.lineAxisRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="jqplot.canvasGridRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="jqplot.lineRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="jqplot.markRenderer.js"></script>
     <script language="javascript" type="text/javascript" src="jqplot.trendLines.js"></script>
     <script language="javascript">
 		$(document).ready(function(){
@@ -20,10 +24,11 @@
             {
                 title:{text:'Dual Axis With Title and Trend Line'}, 
                 legend:{textColor:'', fontSize:'0.8em', location:'nw', rowSpacing:'0.2em'}, 
-                grid:{borderShadow:true, drawGridlines:true}, 
+                grid:{borderShadow:true, drawGridlines:true, background: '#ffffe0'}, 
                 axesDefaults:{ticks:{mark:'cross', showLabels:true, size:6, fontSize:'0.75em'}}, 
                 series:[{trendLines:{show:true, label:'Line 1 Trend'}, label:'Line 1'}, {label:'Line 2', xaxis:'x2axis', yaxis:'y2axis'}],
-                axes:{y2axis:{min:0, max:42}}
+                axes:{y2axis:{min:0, max:42}},
+								seriesDefaults:{rendererOptions:{marker:{style:'circle'}}}
             });
 		});
 		</script>
