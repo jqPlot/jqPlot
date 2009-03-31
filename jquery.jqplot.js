@@ -51,7 +51,9 @@ enhanced by the user through plugins.
         Class: Axis
         (Private) An individual axis object.  Cannot be instantiated directly, but created
         by the Plot oject.  Axis properties can be set or overriden by the 
-        options passed in from the user.
+        options passed in from the user.  As currently implemented, the axis and 
+        the lineAxisRenderer are tightly integrated.  Options are assigned to the
+        Axis object itself, and not the renderer.
         
         Parameters:
             name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
@@ -65,9 +67,13 @@ enhanced by the user through plugins.
         // prop: show
         // Wether to display the axis on the graph.
         this.show = false;
-        // prop: scale
+        // prop: pad
+        // Padding to extend the range above and below the data bounds.
         // Factor to multiply by the data range when setting the axis bounds
-        this.scale = 1.2;
+        this.pad = 1.2;
+        // prop: type
+        // Type of axis, linear or log
+        this.type = 'linear';
         // prop: numberTicks
         // Desired number of ticks.  Computed automatically by default
         this.numberTicks;
@@ -91,7 +97,7 @@ enhanced by the user through plugins.
         this.label = {text:null, fontFamily:null, fontSize:null, align:null};
         /*  
             prop: ticks
-            Container for axis ticks and their properties.
+            Container for axis tick properties.
         
             Properties:
           
@@ -158,6 +164,23 @@ enhanced by the user through plugins.
         // prop: _canvasHeight
         // height of the grid canvas, total DOM element height.
         this._canvasHeight;
+        this._ticks=[];
+    };
+    
+    function AxisTick() {
+        this.mark = 'outside';
+        this.isMinorTick = false;
+        this.size = 4;
+        this.show = true;
+        this.showLabel = true;
+        this.label = '';
+        this.value;
+        this.styles = {};
+        this.formatString;
+        this.fontFamily='';
+        this.fontSize = '0.75em';
+        this.textColor = '';
+        this._elem;
     };
     
     /* 
@@ -400,6 +423,7 @@ enhanced by the user through plugins.
         this.equalYTicks = true;
         // borrowed colors from Flot.
         this.seriesColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
+        this.seriesColorsIndex = 0;
         // Default font characteristics which can be overriden by individual 
         // plot elements.  All are css specs.
         this.textColor = '#666666';
@@ -436,8 +460,15 @@ enhanced by the user through plugins.
             
             // set the dataBounds (min and max) for each axis
             for (var i=0; i<this.series.length; i++) {
-                this.series[i].renderer.processData.call(this.series[i]);
+                if (this.series[i].show) this.series[i].renderer.processData.call(this.series[i]);
+                //this.series[i].renderer.processData.call(this.series[i]);
             }
+        }
+        
+        this.getNextSeriesColor = function() {
+            var c = this.seriesColors[this.seriesColorsIndex];
+            this.seriesColorsIndex++;
+            return c;
         }
     
         // Function: parseOptions
@@ -505,7 +536,10 @@ enhanced by the user through plugins.
                 }
                 
                 // parse the renderer options and apply default colors if not provided
-                if (!temp.rendererOptions.color) temp.rendererOptions.color = this.seriesColors[i];
+                if (!temp.rendererOptions.color && temp.show != false) {
+                    temp.rendererOptions.color = this.getNextSeriesColor();
+                }
+                // temp.rendererOptions.show = temp.show;
                 temp.renderer.init(temp.rendererOptions);
                 // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
                 this.series.push(temp);
@@ -662,17 +696,19 @@ enhanced by the user through plugins.
                 var pad = false;
                 for (var i = 0; i< series.length; i++) {
                     s = series[i];
-                    var lt = s.label.toString();
-                    if (lt) {
-                        addrow(lt, s.renderer.color, pad);
-                        pad = true;
-                    }
-                    for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
-                        var item = $.jqplot.drawLegendHooks[j].call(legend, s);
-                        if (item) {
-                            addrow(item.label, item.color, pad);
+                    if (s.show) {
+                        var lt = s.label.toString();
+                        if (lt) {
+                            addrow(lt, s.renderer.color, pad);
                             pad = true;
-                        } 
+                        }
+                        for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
+                            var item = $.jqplot.drawLegendHooks[j].call(legend, s);
+                            if (item) {
+                                addrow(item.label, item.color, pad);
+                                pad = true;
+                            } 
+                        }
                     }
                 }
             }
@@ -683,9 +719,11 @@ enhanced by the user through plugins.
         // of the individual series.
         this.drawSeries = function(){
             for (var i=0; i<this.series.length; i++) {
-                this.series[i].renderer.draw.call(this.series[i].renderer, this.series[i], this.grid, this.sctx);
-                for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
-                    $.jqplot.postDrawSeriesHooks[j].call(this.series[i], this.grid, this.sctx);
+                if (this.series[i].show) {
+                    this.series[i].renderer.draw.call(this.series[i].renderer, this.series[i], this.grid, this.sctx);
+                    for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+                        $.jqplot.postDrawSeriesHooks[j].call(this.series[i], this.grid, this.sctx);
+                    }
                 }
             }
         };
