@@ -58,196 +58,220 @@
     $.jqplot.lineAxisRenderer.prototype.setAxis = function(plotHeight, plotWidth) {
         // if a ticks array is specified, use it to fill in
         // the labels and values.
-        var axis = this;
-        axis._canvasHeight = plotHeight;
-        axis._canvasWidth = plotWidth;
-        var db = axis._dataBounds;
-        if (axis.ticks && axis.ticks.constructor == Array) {
-            var temp = $.extend(true, [], axis.ticks);
-            // if 2-D array, match them up
-            if (temp[0].lenth) {
-                for (var i=0; i< temp; i++) {
-                    var t = new AxisTick();
-                    axis._ticks.push($.extend(true, t, {label:temp[i][1].toString(), value:temp[i][0]}));
-                    axis.ticks.labels.push(temp[i][1].toString());
-                    axis.ticks.values.push(parseFloat(temp[i][0]));
-                }
-            }
-            // else 1-D array
-            else {
-                for (var i=0; i< temp; i++) {
-                    var t = new AxisTick();
-                    if (typeof(temp[i]) == 'number') axis._ticks.push($.extend(true, t, {label:temp[i].toString(), value:temp[i]}));
-                    else  axis._ticks.push($.extend(true, t, {label:temp[i].toString(), value:i+1}));
-                    if (typeof(temp[i]) == 'number') {
-                        axis.ticks.labels.push(temp[i].toString());
-                        axis.ticks.values.push(parseFloat(temp[i]));
-                    }
-                    else {
-                        axis.ticks.labels.push(temp[i].toString());
-                        axis.ticks.values.push(i+1);
-                    }
+        var ticks = this.ticks;
+        if (ticks.values.length) {
+            if (!ticks.labels.length) {
+                for (var i=0; i<ticks.values.length; i++) {
+                    ticks.labels[i] = ticks.values[i].toString();
                 }
             }
         }
-        // else call the axis renderer and fill in the labels
-        // and values from there.
-        else axis.renderer.fill.call(axis);
+        this._canvasHeight = plotHeight;
+        this._canvasWidth = plotWidth;
+        this.renderer.fill.call(this);
     };
     
     $.jqplot.lineAxisRenderer.prototype.fill = function() {
         var name = this.name;
-        log('render axis ', name);
         var db = this._dataBounds;
         var dim, interval;
         var min, max;
         var pos1, pos2;
         var tt;
-        if (name == 'xaxis' || name == 'x2axis') {
-            dim = this._canvasWidth;
-        }
-        else {
-            dim = this._canvasHeight;
+        if (this.ticks.values.length) {
+            var v = this.ticks.values;
+            this.numberTicks = v.length;
+            this.min = v[0];
+            this.max = v[this.numberTicks-1];
+            this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
+            for (var i=0; i<this.numberTicks; i++) {
+                var pox = i*15+'px';
+                switch (name) {
+                    case 'xaxis':
+                        this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
+                        break;
+                    case 'x2axis':
+                        this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
+                        break;
+                    case 'yaxis':
+                        this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
+                        break;
+                    case 'y2axis':
+                        this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
+                        break;
+                }
+            }
         }
         
-        min = ((this.min != null) ? this.min : db.min);
-        max = ((this.max != null) ? this.max : db.max);
-        var range = max - min;
-        var rmin, rmax;
-        log('min and max: ', min, max);
-        log('type of axis: ', this.type);
+        else {
+            if (name == 'xaxis' || name == 'x2axis') {
+                dim = this._canvasWidth;
+            }
+            else {
+                dim = this._canvasHeight;
+            }
+        
+            min = ((this.min != null) ? this.min : db.min);
+            max = ((this.max != null) ? this.max : db.max);
+            // perform some checks
+            if (min < 1e-9) min = 1e-9;
+            if (max < 1e-8) max = 1e-8;
+            if (this.pad >1.99) this.pad = 1.99;
+            var range = max - min;
+            var rmin, rmax;
 
-        if (this.type == 'log' || this.type == 'logarithmic') {
-            // for log axes, open up range to get a nice power of 10.
-            rmin = Math.pow(10, Math.ceil(Math.log(min*(2-this.pad))/Math.LN10)-1);
-            rmax = Math.pow(10, Math.floor(Math.log(max*this.pad)/Math.LN10)+1);
-            // rmin = min - min*((this.pad-1)/2);
-            // if (rmin <= 0) rmin = .01;
-            // rmax = max + max*((this.pad-1)/2);
-            log('rmin and rmax, ', rmin, rmax);
-            this.min = rmin;
-            this.max = rmax;
-            range = this.max - this.min;
-            var fittedTicks = 0;
-            var minorTicks = 0;
-            if (this.numberTicks == null){
-                if (dim > 100) {
-                    this.numberTicks = Math.log(this.max/this.min)/Math.LN10 + 1;
-                    //this.numberTicks = Math.ceil(Math.log(range)/Math.LN10 + 1);
-                    if (this.numberTicks < 2) this.numberTicks = 2;
-                    fittedTicks = parseInt(3+(dim-100)/75);
-                }
-                else {
-                    this.numberTicks = 2;
-                    fittedTicks = 2;
-                }
-                // if we don't have enough ticks, add some minor ticks
-                // how many to have between major ticks.
-                if (this.numberTicks < fittedTicks-1) {
-                    minorTicks = 1 + Math.floor(fittedTicks/this.numberTicks);
-                }
-            }
-            log('numberticks, fittedticks: ', this.numberticks, fittedTicks);
+            function fillLog() {
+                if (this.logStyle == 'even') {                    
+                    // for log axes, open up range to get a nice power of this.logBase.
+                    rmin = min - min*((this.pad-1)/2);
+                    rmax = max + max*((this.pad-1)/2);
+                    this.min = rmin;
+                    this.max = rmax;
+                    range = this.max - this.min;            
             
-            function fillTick(tt) {
-                this.ticks.labels.push(this.tickFormatter(this.ticks.formatString, tt));
-                this.ticks.values.push(tt);
-                var pox = i*15+'px';
-                switch (name) {
-                    case 'xaxis':
-                        this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
-                        break;
-                    case 'x2axis':
-                        this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
-                        break;
-                    case 'yaxis':
-                        this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
-                        break;
-                    case 'y2axis':
-                        this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
-                        break;
-                }
-            };
-        
-            log('number of ticks ', this.numberTicks);
-            this.tickInterval = range / (this.numberTicks-1);
-            for (var i=0; i<this.numberTicks; i++){
-                // if (i == 0) tt = this.min;
-                // else tt = Math.pow(10, i - this.numberTicks + 1) * this.max;
-                tt = Math.pow(10, i - this.numberTicks + 1) * this.max
-                
-                // tt = this.min + i * range / (this.numberTicks-1);
-                log('tick value ', tt);
-                fillTick.call(this, tt);
-                
-                if (minorTicks) {
-                    var tt1 = Math.pow(10, i - this.numberTicks + 2) * this.max;
-                    var spread = tt1 - tt;
-                    var interval = spread / (minorTicks+1);
-                    for (var j=0; j<minorTicks; j++) {
-                        fillTick.call(this, tt+interval*(j+1));
+                    if (this.numberTicks == null){
+                        if (dim > 100) {
+                            this.numberTicks = parseInt(3+(dim-100)/75);
+                        }
+                        else {
+                            this.numberTicks = 2;
+                        }
                     }
-                }       
-            }
-        }
         
-        else {
-            rmin = min - range/2*(this.pad - 1);
-            rmax = max + range/2*(this.pad - 1);
-            this.min = rmin;
-            this.max = rmax;
-            range = this.max - this.min;
-        
-            if (this.numberTicks == null){
-                if (dim > 100) {
-                    this.numberTicks = parseInt(3+(dim-100)/75);
-                }
-                else this.numberTicks = 2;
-            }
-        
-            this.tickInterval = range / (this.numberTicks-1);
-            for (var i=0; i<this.numberTicks; i++){
-                tt = this.min + i * range / (this.numberTicks-1);
-                this.ticks.labels.push(this.tickFormatter(this.ticks.formatString, tt));
-                this.ticks.values.push(tt);
-                var pox = i*15+'px';
-                switch (name) {
-                    case 'xaxis':
-                        this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
-                        break;
-                    case 'x2axis':
-                        this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
-                        break;
-                    case 'yaxis':
-                        this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
-                        break;
-                    case 'y2axis':
-                        this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
-                        break;
+                    var u = Math.pow(this.logBase, (1/(this.numberTicks-1)*Math.log(this.max/this.min)/Math.log(this.logBase)));
+                    for (var i=0; i<this.numberTicks; i++){
+                        tt = this.min * Math.pow(u, i);
+                        fillTick.call(this, tt);
+                
+                    }
                     
                 }
-            }
+                
+                else {
+                    
+                    // for log axes, open up range to get a nice power of this.logBase.
+                    rmin = Math.pow(this.logBase, Math.ceil(Math.log(min*(2-this.pad))/Math.log(this.logBase))-1);
+                    rmax = Math.pow(this.logBase, Math.floor(Math.log(max*this.pad)/Math.log(this.logBase))+1);
+                    this.min = rmin;
+                    this.max = rmax;
+                    range = this.max - this.min;            
+            
+                    var fittedTicks = 0;
+                    var minorTicks = 0;
+                    if (this.numberTicks == null){
+                        if (dim > 100) {
+                            this.numberTicks = Math.round(Math.log(this.max/this.min)/Math.log(this.logBase) + 1);
+                            if (this.numberTicks < 2) this.numberTicks = 2;
+                            fittedTicks = parseInt(3+(dim-100)/75);
+                        }
+                        else {
+                            this.numberTicks = 2;
+                            fittedTicks = 2;
+                        }
+                        // if we don't have enough ticks, add some intermediate ticks
+                        // how many to have between major ticks.
+                        if (this.numberTicks < fittedTicks-1) {
+                            minorTicks = 1 + Math.floor(fittedTicks/this.numberTicks);
+                        }
+                    }
+
+                    for (var i=0; i<this.numberTicks; i++){
+                        tt = Math.pow(this.logBase, i - this.numberTicks + 1) * this.max;
+
+                        fillTick.call(this, tt);
+                
+                        if (minorTicks) {
+                            var tt1 = Math.pow(this.logBase, i - this.numberTicks + 2) * this.max;
+                            var spread = tt1 - tt;
+                            var interval = spread / (minorTicks+1);
+                            for (var j=0; j<minorTicks; j++) {
+                                fillTick.call(this, tt+interval*(j+1));
+                            }
+                        }       
+                    }                    
+                }
+            
+                function fillTick(tt) {
+                    this.ticks.labels.push(this.tickFormatter(this.ticks.formatString, tt));
+                    this.ticks.values.push(tt);
+                    var pox = i*15+'px';
+                    switch (name) {
+                        case 'xaxis':
+                            this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
+                            break;
+                        case 'x2axis':
+                            this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
+                            break;
+                        case 'yaxis':
+                            this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
+                            break;
+                        case 'y2axis':
+                            this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
+                            break;
+                    }
+                };
+        
+            };
+        
+            function fillLinear() {
+                rmin = min - range/2*(this.pad - 1);
+                rmax = max + range/2*(this.pad - 1);
+                this.min = rmin;
+                this.max = rmax;
+                range = this.max - this.min;
+        
+                if (this.numberTicks == null){
+                    if (dim > 100) {
+                        this.numberTicks = parseInt(3+(dim-100)/75);
+                    }
+                    else this.numberTicks = 2;
+                }
+        
+                this.tickInterval = range / (this.numberTicks-1);
+                for (var i=0; i<this.numberTicks; i++){
+                    tt = this.min + i * range / (this.numberTicks-1);
+                    this.ticks.labels.push(this.tickFormatter(this.ticks.formatString, tt));
+                    this.ticks.values.push(tt);
+                    var pox = i*15+'px';
+                    switch (name) {
+                        case 'xaxis':
+                            this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
+                            break;
+                        case 'x2axis':
+                            this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
+                            break;
+                        case 'yaxis':
+                            this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
+                            break;
+                        case 'y2axis':
+                            this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
+                            break;
+                    
+                    }
+                }
+            };
+            if (this.type == 'log' || this.type == 'logarithmic') fillLog.call(this);
+            else fillLinear.call(this);
         }
+        
         if (name == 'yaxis' || name == 'y2axis') this.ticks.styles.reverse();
     };
     
     // Now we know offsets around the grid, we can define conversioning functions
     // and properly lay out the axes.
     $.jqplot.lineAxisRenderer.prototype.pack = function(offsets, gridwidth, gridheight) {
+        var lb = parseInt(this.logBase);
         var ticks = this.ticks;
         var tickdivs = $(this._elem).children('div');
         // linear or log axis.  All it changes is the transformation functions from units to coordinates
         var trans = function(v) { return v };
-        var logtrans = function (v) { return Math.log(v)/Math.LN10; };
+        var logtrans = function (v) { return Math.log(v)/Math.log(lb); };
         var max = this.max;
         var min = this.min;
         if (this.type == 'log' || this.type == 'logarithmic') {
-            // trans = logtrans;
-            // max = Math.log(this.max)/Math.LN10;
-            // min = Math.log(this.min)/Math.LN10;
-            trans = Math.log;
-            max = Math.log(this.max);
-            min = Math.log(this.min);
+            trans = logtrans;
+            max = Math.log(this.max)/Math.log(this.logBase);
+            min = Math.log(this.min)/Math.log(this.logBase);
         }
         
         if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -279,7 +303,6 @@
                 }
                 for (i=0; i<tickdivs.length; i++) {
                     var shim = $(tickdivs[i]).outerWidth(true)/2;
-                    //var t = this.u2p(ticks.values[i]);
                     var val = this.u2p(ticks.values[i]) - shim + 'px';
                     $(tickdivs[i]).css('left', val);
                     // remember, could have done it this way

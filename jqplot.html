@@ -21,25 +21,30 @@
 */
 				var data = [];
 				var temp = [];
-				var d = 1.00;
-				var g = 1.01;
-				for (var i=1; i<11; i++) {
+				var d = 87;
+				var g = 1.136465;
+				g = 1.2;
+				for (var i=1; i<20; i++) {
 					temp.push([i, d]);
 					d *= g;
 				}
 				data.push(temp);
+				// for (var i=0; i<data[0].length; i++) {
+				// 	console.log(data[0][i]);
+				// }
         chart = $.jqplot('chartdiv', 
-            //[[[1,1],[2,4],[3,5],[4,1],[5,4],[6,10]], [[21,1],[32,313],[43,752],[54,3081],[65,6472],[76,10000]]],
+            [[[1,1],[2,2],[3,5],[4,3.6],[5,6.2],[6,12.1]], [[21,1],[32,313],[43,752],[54,3081],[65,6472],[76,8947]]],
             //[[[1,1.1],[2,1.4],[3,1.6],[4,2],[5,2.45],[6,2.8],[7,3.4],[8,4.4],[9,4.8],[10,5.4]]], 
-						data,
+						// data,
             {
                 title:{text:'dP increase'}, 
                 legend:{textColor:'', fontSize:'0.8em', location:'nw', rowSpacing:'0.2em'}, 
                 grid:{borderShadow:true, drawGridlines:true, background: '#ffffe0'}, 
                 axesDefaults:{ticks:{mark:'cross', showLabels:true, size:6, fontSize:'0.75em'}}, 
-                //series:[{show:false, trendLines:{show:false, label:'Line 1 Trend'}, label:'Line 1'}, {label:'Line 2', xaxis:'xaxis', yaxis:'yaxis'}],
-								series:[{label:'Line 2', xaxis:'xaxis', yaxis:'yaxis'}],
-                axes:{yaxis:{pad:1, type:'log'}},
+                series:[{show:true, trendLines:{type: 'exp', show:true, label:'Line 1 Trend'}, label:'Line 1'}, {show: false, label:'Line 2', xaxis:'xaxis', yaxis:'yaxis'}],
+								// series:[{label:'calculated 2', xaxis:'xaxis', yaxis:'yaxis'}],
+                // axes:{yaxis:{pad:1, type:'log', ticks:{values:[100, 158, 251, 398, 630, 1000]}}},
+								axes:{yaxis:{pad:1.1, type:'log', logStyle:'power'}},
         				seriesDefaults:{rendererOptions:{marker:{style:'filledCircle'}}}
             });
 

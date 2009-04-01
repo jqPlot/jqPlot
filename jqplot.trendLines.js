@@ -16,7 +16,8 @@
     // must return null or an object {label:label, color:color}
     function addTrendLineLegend(series) {
         var lt = series.trendLines.label.toString();
-        var ret = (lt) ? {label:lt, color:series.trendLines.color} : null;
+        var ret = null;
+        if (series.trendLines.show && lt) ret = {label:lt, color:series.trendLines.color};
         return ret;
     }
 
@@ -37,7 +38,9 @@
             // shadowOffset:1,
             // shadowDepth:3,
             // shadowAlpha:'0.07',
-            label:''
+            label:'',
+            // linear or exp or exponential
+            type: 'linear'
         };
         for (i = 0; i < series.length; ++i) {
             s = series[i];
@@ -51,7 +54,7 @@
     function drawTrendLines(grid, ctx) {
         var fit;
         if (this.trendLines.show) {
-            fit = fitData(this.data, 'linear');
+            fit = fitData(this.data, this.trendLines.type);
             // make a trendline series
             var tl = $.extend(true, {}, this, this.trendLines);
             tl.data = fit.data;

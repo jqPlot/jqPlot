@@ -74,6 +74,11 @@ enhanced by the user through plugins.
         // prop: type
         // Type of axis, linear or log
         this.type = 'linear';
+        // prop: logStyle
+        // For log axis, weather to compute ticks by equal power (power) or by equal display spacing (even).
+        // One of 'power' or 'even'
+        this.logStyle = 'even';
+        this.logBase = 10;
         // prop: numberTicks
         // Desired number of ticks.  Computed automatically by default
         this.numberTicks;
