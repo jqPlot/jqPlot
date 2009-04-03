@@ -12,10 +12,20 @@
     $.jqplot.lineAxisRenderer = function() {
     };
     
+    $.jqplot.lineAxisRenderer.prototype.init = function(options){
+        $.extend(true, this, options);
+    };
     
+    // function: draw
+    // Creates the axis container DOM element and tick DOM elements.
+    // Populates some properties of the elements and figures out
+    // height and width of element.
     // called with scope of axis
     $.jqplot.lineAxisRenderer.prototype.draw = function(target, plotHeight, plotWidth) {
         var axis = this;
+        if (this._mode == 'category') {
+            this.type = 'linear';
+        }
         if (axis.show) {
             // populate the axis label and value properties.
             axis.renderer.setAxis.call(axis, plotHeight, plotWidth);
@@ -51,6 +61,7 @@
         }
     };
     
+    // function: setAxis
     // called with scope of an axis
     // Populate the axis properties, giving a label and value
     // (corresponding to the user data coordinates, not plot coords.)
@@ -71,6 +82,9 @@
         this.renderer.fill.call(this);
     };
     
+    // function: fill
+    // Set initial styles on tick dom elements.
+    // figure out numberTicks, min, max, tickInterval and tick values.
     $.jqplot.lineAxisRenderer.prototype.fill = function() {
         var name = this.name;
         var db = this._dataBounds;
@@ -78,7 +92,35 @@
         var min, max;
         var pos1, pos2;
         var tt;
-        if (this.ticks.values.length) {
+        
+        if (this._mode == 'category') {
+            var v = this.ticks.values;
+            var l = this.ticks.labels;
+            this.numberTicks = v.length;
+            this.tickInterval = this.max/2;
+            this.min = db.min;
+            this.max = db.max;
+            this.max = 2*this.numberTicks;
+            for (var i=0; i<this.numberTicks; i++) {
+                var pox = i*15+'px';
+                switch (name) {
+                    case 'xaxis':
+                        this.ticks.styles.push({position:'absolute', top:'0px', left:pox, paddingTop:'10px'});
+                        break;
+                    case 'x2axis':
+                        this.ticks.styles.push({position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'});
+                        break;
+                    case 'yaxis':
+                        this.ticks.styles.push({position:'absolute', right:'0px', top:pox, paddingRight:'10px'});
+                        break;
+                    case 'y2axis':
+                        this.ticks.styles.push({position:'absolute', left:'0px', top:pox, paddingLeft:'10px'});
+                        break;
+                }
+            }
+        }
+        
+        else if (this.ticks.values.length) {
             var v = this.ticks.values;
             this.numberTicks = v.length;
             this.min = v[0];
@@ -257,8 +299,9 @@
         if (name == 'yaxis' || name == 'y2axis') this.ticks.styles.reverse();
     };
     
-    // Now we know offsets around the grid, we can define conversioning functions
-    // and properly lay out the axes.
+    // functions: pack
+    // Define unit <-> coordinate conversions and properly position tick dom elements.
+    // Now we know offsets around the grid, we can define conversioning functions.
     $.jqplot.lineAxisRenderer.prototype.pack = function(offsets, gridwidth, gridheight) {
         var lb = parseInt(this.logBase);
         var ticks = this.ticks;

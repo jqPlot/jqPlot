@@ -58,12 +58,13 @@ enhanced by the user through plugins.
         Parameters:
             name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
     */
-    function Axis(name) {
+    function Axis(name, series) {
         // Group: Properties
         
         // prop: name
         // Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
         this.name = name;
+        this.series = [];
         // prop: show
         // Wether to display the axis on the graph.
         this.show = false;
@@ -71,14 +72,18 @@ enhanced by the user through plugins.
         // Padding to extend the range above and below the data bounds.
         // Factor to multiply by the data range when setting the axis bounds
         this.pad = 1.2;
-        // prop: type
-        // Type of axis, linear or log
-        this.type = 'linear';
-        // prop: logStyle
-        // For log axis, weather to compute ticks by equal power (power) or by equal display spacing (even).
-        // One of 'power' or 'even'
-        this.logStyle = 'even';
-        this.logBase = 10;
+        // // prop: type
+        // // Type of axis, linear or log
+        // this.type = 'linear';
+        // // prop: logStyle
+        // // For log axis, weather to compute ticks by equal power (power) or by equal display spacing (even).
+        // // One of 'power' or 'even'
+        // this.logStyle = 'even';
+        // this.logBase = 10;
+        // // prop: _mode
+        // // 'scatter' or 'category'
+        // // Category axis data value considered a category label, not a position.
+        // this._mode = 'scatter';
         // prop: numberTicks
         // Desired number of ticks.  Computed automatically by default
         this.numberTicks;
@@ -87,7 +92,8 @@ enhanced by the user through plugins.
         this.tickInterval;
         // prop: renderer
         // Instance of a rendering engine that draws the axis on the plot.
-        this.renderer = new $.jqplot.lineAxisRenderer();
+        this.renderer = new $.jqplot.linearAxisRenderer();
+        this.rendererOptions = {};
         /*  
             prop: label
             Axis label object.  Container for axis label properties. Not implimeted yet.
@@ -119,7 +125,8 @@ enhanced by the user through plugins.
             fontSize -css font-size spec.
             textColor - css color spec.
         */
-        this.ticks = {mark:'outside', size:4, showLabels:true, labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'', fontSize:'0.75em', textColor:''};
+        this.ticks = {mark:'outside', markSize:4, size:4, showLabels:true, labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'', fontSize:'0.75em', textColor:''};
+        this.showMinorTicks = true;
         // prop: tickFormatter
         // Function applied to format tick label text.
         this.tickFormatter = sprintf;
@@ -170,22 +177,9 @@ enhanced by the user through plugins.
         // height of the grid canvas, total DOM element height.
         this._canvasHeight;
         this._ticks=[];
-    };
-    
-    function AxisTick() {
-        this.mark = 'outside';
-        this.isMinorTick = false;
-        this.size = 4;
-        this.show = true;
-        this.showLabel = true;
-        this.label = '';
-        this.value;
-        this.styles = {};
-        this.formatString;
-        this.fontFamily='';
-        this.fontSize = '0.75em';
-        this.textColor = '';
-        this._elem;
+        
+        // append a reference to the series using this axis.
+        this.series.push(series);
     };
     
     /* 
@@ -289,13 +283,13 @@ enhanced by the user through plugins.
         this.xaxis = 'xaxis';
         // prop: _xaxis
         // reference to the underlying x axis object associated with this series.
-        this._xaxis = new Axis(this.xaxis);
+        this._xaxis = new Axis(this.xaxis, this);
         // prop: yaxis
         // name of y axis to associate with this series.
         this.yaxis = 'yaxis';
         // prop: _yaxis
         // reference to the underlying y axis object associated with this series.
-        this._yaxis = new Axis(this.yaxis);
+        this._yaxis = new Axis(this.yaxis, this);
         // prop: renderer
         // Instance of a renderer which will draw the series.
         this.renderer = new $.jqplot.lineRenderer();
@@ -428,7 +422,7 @@ enhanced by the user through plugins.
         this.equalYTicks = true;
         // borrowed colors from Flot.
         this.seriesColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
-        this.seriesColorsIndex = 0;
+        this._seriesColorsIndex = 0;
         // Default font characteristics which can be overriden by individual 
         // plot elements.  All are css specs.
         this.textColor = '#666666';
@@ -460,7 +454,7 @@ enhanced by the user through plugins.
             // get a handle to the plot object from the target to help with events.
             $(target).data('jqplot', this);
             this.data = data;
-            if (data.length < 1 || data[0].length < 2) throw "Invalid Plot data";
+            // if (data.length < 1 || data[0].length < 2) throw "Invalid Plot data";
             this.parseOptions(options);
             
             // set the dataBounds (min and max) for each axis
@@ -471,8 +465,8 @@ enhanced by the user through plugins.
         }
         
         this.getNextSeriesColor = function() {
-            var c = this.seriesColors[this.seriesColorsIndex];
-            this.seriesColorsIndex++;
+            var c = this.seriesColors[this._seriesColorsIndex];
+            this._seriesColorsIndex++;
             return c;
         }
     
@@ -510,11 +504,42 @@ enhanced by the user through plugins.
                     default:
                         break;
                 }
+                axis.renderer.init(axis.rendererOptions);
             }
+            if (this.data.length == 0) {
+                this.data = [];
+                for (var i=0; i<this.options.series.length; i++) {
+                    this.data.push(this.options.series.data);
+                }    
+            }
+                
+                
+            function normalizeData(data) {
+                // return data as an array of point arrays,
+                // in form [[x1,y1...], [x2,y2...], ...]
+                var temp = [];
+                var i;
+                if (!(data[0] instanceof Array)) {
+                    // we have a series of scalars.  One line with just y values.
+                    // turn the scalar list of data into a data array of form:
+                    // [[1, data[0]], [2, data[1]], ...]
+                    for (i=0; i<data.length; i++) {
+                        temp.push([i+1, data[i]]);
+                    }
+                }
             
+                else {
+                    // we have a properly formatted data series, copy it.
+                    $.extend(true, temp, data);
+                }
+                return temp;
+            };
+
+
+                
             for (var i=0; i<this.data.length; i++) {
                 var temp = $.extend(true, new Series(), this.options.seriesDefaults, this.options.series[i]);
-                temp.data = this.data[i];
+                temp.data = normalizeData(this.data[i]);
                 switch (temp.xaxis) {
                     case 'xaxis':
                         temp._xaxis = this.axes.xaxis;
@@ -539,7 +564,7 @@ enhanced by the user through plugins.
                     temp._xaxis.show = true;
                     temp._yaxis.show = true;
                 }
-                
+
                 // parse the renderer options and apply default colors if not provided
                 if (!temp.rendererOptions.color && temp.show != false) {
                     temp.rendererOptions.color = this.getNextSeriesColor();
@@ -547,7 +572,7 @@ enhanced by the user through plugins.
                 // temp.rendererOptions.show = temp.show;
                 temp.renderer.init(temp.rendererOptions);
                 // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
-                this.series.push(temp);
+                this.series.push(temp);  
             }
             
             // copy the grid and title options into this object.
@@ -742,9 +767,26 @@ enhanced by the user through plugins.
     // data - an array of data series.
     // options - user defined options object.
     $.jqplot = function(target, data, options) {
-        options = options || {};
+        var _data, _options;
+        
+        // check to see if only 2 arguments were specified, what is what.
+        if (options == null) {
+            if (data instanceof Array) {
+                _data = data;
+                _options = null;   
+            }
+            
+            else if (data.constructor == Object) {
+                _data = null;
+                _options = data;
+            }
+        }
+        else {
+            _data = data;
+            _options = options;
+        }
         var plot = new jqPlot();
-        plot.init(target, data, options);
+        plot.init(target, _data, _options);
         plot.draw();
         return plot;
     };

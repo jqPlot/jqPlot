@@ -41,6 +41,11 @@
         ctx.save();
         ctx.fillStyle = grid.background;
         ctx.fillRect(grid._left, grid._top, grid._width, grid._height);
+        
+        function drawGridLine(x1, y1, x2, y2) {
+            
+        }
+        
         if (grid.drawGridlines) {
             ctx.save();
             ctx.lineJoin = 'miter';
@@ -49,43 +54,31 @@
             ctx.strokeStyle = '#cccccc';
             for (var name in axes) {
                 var axis = axes[name];
+                var ticks = axis._ticks;
                 if (axis.show) {
-                    var ticks = axis.ticks;
                     switch (name) {
                         case 'xaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(pos, grid._top);
-                                ctx.lineTo(pos, grid._bottom);
-                                ctx.stroke();
+                            for (var i=0; i<ticks.length; i++) {
+                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
+                                drawLine(pos, grid._top, pos, grid._bottom);
                             }
                             break;
                         case 'yaxis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(grid._right, pos);
-                                ctx.lineTo(grid._left, pos);
-                                ctx.stroke();
+                            for (var i=0; i<ticks.length; i++) {
+                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
+                                drawLine(grid._right, pos, grid._left, pos);
                             }
                             break;
                         case 'x2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(pos, grid._bottom);
-                                ctx.lineTo(pos, grid._top);
-                                ctx.stroke();
+                            for (var i=0; i<ticks.length; i++) {
+                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
+                                drawLine(pos, grid._bottom, pos, grid._top);
                             }
                             break;
                         case 'y2axis':
-                            for (var i=0; i<ticks.values.length; i++) {
-                                var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
-                                ctx.beginPath();
-                                ctx.moveTo(grid._left, pos);
-                                ctx.lineTo(grid._right, pos);
-                                ctx.stroke();
+                            for (var i=0; i<ticks.length; i++) {
+                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
+                                drawLine(grid._left, pos, grid._right, pos);
                             }
                             break;
                     }
@@ -94,7 +87,7 @@
             ctx.restore();
         }
         
-        function drawMark(bx, by, ex, ey) {
+        function drawLine(bx, by, ex, ey) {
             ctx.beginPath();
             ctx.moveTo(bx, by);
             ctx.lineTo(ex, ey);
@@ -110,12 +103,13 @@
             var axis = axes[name];
             if (axis.show && axis.ticks.mark) {
                 var ticks = axis.ticks;
-                var s = ticks.size;
+                var s = ticks.markSize;
                 var m = ticks.mark;
+                var t = axis._ticks;
                 switch (name) {
                     case 'xaxis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                        for (var i=0; i<t.length; i++) {
+                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
                             var b, e;
                             switch (m) {
                                 case 'inside':
@@ -135,12 +129,12 @@
                                     e = grid._bottom+s;
                                     break;
                             }
-                            drawMark(pos, b, pos, e);
+                            drawLine(pos, b, pos, e);
                         }
                         break;
                     case 'yaxis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                        for (var i=0; i<t.length; i++) {
+                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
                             var b, e;
                             switch (m) {
                                 case 'outside':
@@ -160,12 +154,12 @@
                                     e = grid._left;
                                     break;
                             }
-                            drawMark(b, pos, e, pos);
+                            drawLine(b, pos, e, pos);
                         }
                         break;
                     case 'x2axis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                        for (var i=0; i<t.length; i++) {
+                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
                             var b, e;
                             switch (m) {
                                 case 'outside':
@@ -185,12 +179,12 @@
                                     e = grid._top;
                                     break;
                             }
-                            drawMark(pos, b, pos, e);
+                            drawLine(pos, b, pos, e);
                         }
                         break;
                     case 'y2axis':
-                        for (var i=0; i<ticks.values.length; i++) {
-                            var pos = Math.round(axis.u2p(ticks.values[i])) + 0.5;
+                        for (var i=0; i<t.length; i++) {
+                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
                             var b, e;
                             switch (m) {
                                 case 'inside':
@@ -210,7 +204,7 @@
                                     e = grid._right+s;
                                     break;
                             }
-                            drawMark(b, pos, e, pos);
+                            drawLine(b, pos, e, pos);
                         }
                         break;
                 }
