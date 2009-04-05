@@ -10,7 +10,7 @@
     }
     
     // called with context of Grid.
-    $.jqplot.canvasGridRenderer.prototype.createElements = function() {
+    $.jqplot.canvasGridRenderer.prototype.createElement = function() {
         var elem = document.createElement('canvas');
         var w = this._plotDimensions.width;
         var h = this._plotDimensions.height;

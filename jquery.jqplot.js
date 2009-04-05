@@ -452,6 +452,10 @@ enhanced by the user through plugins.
         this.renderer.init(this.rendererOptions);
     }
     
+    Series.prototype.draw = function(sctx) {
+        this.renderer.draw.call(this, sctx);
+    }
+    
     /* 
         Class: Grid
         (Private) Object representing the grid on which the plot is drawn.  The grid in this
@@ -528,10 +532,30 @@ enhanced by the user through plugins.
     
     function SeriesCanvas() {
         $.jqplot.ElemContainer.call(this);
+        this._ctx;
     };
     
     SeriesCanvas.prototype = new $.jqplot.ElemContainer();
     SeriesCanvas.prototype.constructor = SeriesCanvas;
+    
+    SeriesCanvas.prototype.createElement = function(offsets) {
+        this._offsets = offsets;
+        var elem = document.createElement('canvas');
+        var w = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+        var h = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+        elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        if ($.browser.msie) // excanvas hack
+            elem = window.G_vmlCanvasManager.initElement(elem);
+        this._elem = $(elem);
+        this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
+        return this._elem;
+    };
+    
+    SeriesCanvas.prototype.setContext = function() {
+        this._ctx = this._elem.get(0).getContext("2d");
+        return this._ctx;
+    }
 
     
     /* 
@@ -564,8 +588,7 @@ enhanced by the user through plugins.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         this.grid = new Grid();
         this.legend = new Legend();
-        this.seriesView = new $.jqplot.canvasSeriesView();
-        this.overlayView = new $.jqplot.canvasOverlayView();
+        this.seriesCanvas = new SeriesCanvas();
         // Can get these through the representative ojects.
         // // handle to the grid canvas drawing context.  Holds the axes, grid, and labels.
         // // Stuff that should be rendered only at initial plot drawing.
@@ -621,6 +644,7 @@ enhanced by the user through plugins.
             this._plotDimensions.width = this._width;
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
+            this.seriesCanvas._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0) throw "Canvas dimensions <=0";
             
             // get a handle to the plot object from the target to help with events.
@@ -778,7 +802,12 @@ enhanced by the user through plugins.
             
             this.target.append(this.grid.createElement(this._gridOffsets));
             this.grid.draw();
-            this.target.append(this.)
+            this.target.append(this.seriesCanvas.createElement(this._gridOffsets));
+            var sctx = this.seriesCanvas.setContext();
+            
+            for (var i=0; i<this.series.length; i++) {
+                this.series[i].draw(sctx);
+            }
             // // the series share one element and drawing context.
             // this.target.append(this.createSeriesContext(););
             // // grid and series won't need to be packed since they are the last elements to be drawn.

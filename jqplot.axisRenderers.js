@@ -31,8 +31,7 @@
             var dim=0;
             var temp;
             
-            this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"
-></div>');
+            this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
             //for (var s in axis.style) $(axis._elem).css(s, axis.style[s]);
     
             if (this.showTicks) {
@@ -68,12 +67,9 @@
                 }
             }
             if (this.name == 'xaxis') this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
-            else if (this.name == 'x2axis') this._elem.css({'height':dim+'px', left:'0px', top:'0px'
-});
-            else if (this.name == 'yaxis') this._elem.css({'width':dim+'px', left:'0px', top:'0px'})
-;
-            else if (this.name == 'y2axis') this._elem.css({'width':dim+'px', right:'0px', top:'0px'
-});
+            else if (this.name == 'x2axis') this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
+            else if (this.name == 'yaxis') this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+            else if (this.name == 'y2axis') this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
         }  
     };
     
@@ -108,20 +104,16 @@
             //     var pox = i*15+'px';
             //     switch (name) {
             //         case 'xaxis':
-            //             t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'}
-;
+            //             t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
             //             break;
             //         case 'x2axis':
-            //             t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'
-};
+            //             t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
             //             break;
             //         case 'yaxis':
-            //             t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'
-};
+            //             t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
             //             break;
             //         case 'y2axis':
-            //             t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'
-};
+            //             t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};
             //             break;
             //     }
             // }
@@ -189,13 +181,11 @@
         }
         
         this._offsets = offsets;
-        // pixellength will be + for x axes and - for y axes becasue pixels always measured from top
- left.
+        // pixellength will be + for x axes and - for y axes becasue pixels always measured from top left.
         var pixellength = offmax - offmin;
         var unitlength = max - min;
         
-        // point to unit and unit to point conversions references to Plot DOM element top left corner
-.
+        // point to unit and unit to point conversions references to Plot DOM element top left corner.
         this.p2u = function(p){
             return (p - offmin) * unitlength / pixellength + min;
         };
@@ -204,15 +194,22 @@
             return (u - min) * pixellength / unitlength + offmin;
         };
         
-        // point to unit and unit to point conversions references to Grid DOM element top left corner
-.
-        this.grid_p2u = function(p){
+        // point to unit and unit to point conversions references to Grid DOM element top left corner.
+        this.series_p2u = function(p){
             return p * unitlength / pixellength + min;
         };
         
-        this.grid_u2p = function(u){
-            return (u - min) * pixellength / unitlength;
-        };
+        if (this.name == 'xaxis' || this.name == 'x2axis'){
+            this.series_u2p = function(u){
+                return (u - min) * pixellength / unitlength;
+            };
+        }
+        
+        else {
+            this.series_u2p = function(u){
+                return (u - max) * pixellength / unitlength;
+            };
+        }
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -261,8 +258,7 @@
         
         // if tick
         
-        // Ticks should have been already specified by the user or set by the line renderer.  Since 
-we
+        // Ticks should have been already specified by the user or set by the line renderer.  Since we
         // don't have access to the series, there's not much to do if we don't already have ticks.
         if (ticks.length) {
             this.numberTicks =ticks.length;
@@ -279,12 +275,10 @@ we
                         t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
                         break;
                     case 'x2axis':
-                        t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'
-};
+                        t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
                         break;
                     case 'yaxis':
-                        t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'}
-;
+                        t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
                         break;
                     case 'y2axis':
                         t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};

@@ -1,21 +1,20 @@
 (function($) {
     $.jqplot.lineRenderer = function(){
-        this._ctx;
     };
     
     $.jqplot.lineRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
         this.markerOptions = {color: this.color};
-        this.marker.init(this.markerOptions);
+        // this.marker.init(this.markerOptions);
     }
 
-    $.jqplot.lineRenderer.prototype.draw = function(series, grid, ctx) {
+    $.jqplot.lineRenderer.prototype.draw = function(ctx) {
         var i;
-        var xaxis = series.xaxis;
-        var yaxis = series.yaxis;
-        var d = series.data;
-        var xp = series._xaxis.series_u2p;
-        var yp = series._yaxis.series_u2p;
+        var xaxis = this.xaxis;
+        var yaxis = this.yaxis;
+        var d = this.data;
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
         var pointx, pointy;
         ctx.save();
         if (this.showLine) {
@@ -25,12 +24,12 @@
             ctx.lineWidth = this.lineWidth;
             ctx.strokeStyle = this.color;
             // recalculate the grid data
-            series.gridData = [];
-            series.gridData.push([xp.call(series._xaxis, series.data[0][0]), yp.call(series._yaxis, series.data[0][1])]);
-            ctx.moveTo(series.gridData[0][0], series.gridData[0][1]);
-            for (var i=1; i<series.data.length; i++) {
-                series.gridData.push([xp.call(series._xaxis, series.data[i][0]), yp.call(series._yaxis, series.data[i][1])]);
-                ctx.lineTo(series.gridData[i][0], series.gridData[i][1]);
+            this.gridData = [];
+            this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
+            ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
+            for (var i=1; i<this.data.length; i++) {
+                this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
+                ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
             }
             ctx.stroke();
         
@@ -41,11 +40,11 @@
                     ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
                     ctx.beginPath();
                     ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                    ctx.moveTo(series.gridData[0][0], series.gridData[0][1]);
-                    for (var i=1; i<series.data.length; i++) {
-                        // pointx = xp.call(series._xaxis, series.data[i][0]);
-                        // pointy = yp.call(series._yaxis, series.data[i][1]);
-                        ctx.lineTo(series.gridData[i][0], series.gridData[i][1]);
+                    ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
+                    for (var i=1; i<this.data.length; i++) {
+                        // pointx = xp.call(this._xaxis, this.data[i][0]);
+                        // pointy = yp.call(this._yaxis, this.data[i][1]);
+                        ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
                     }
                     ctx.stroke();
                 }
@@ -54,11 +53,11 @@
         }
         
         // now draw the markers
-        if (this.marker.show) {
-            for (i=0; i<series.gridData.length; i++) {
-                this.marker.draw(series.gridData[i][0], series.gridData[i][1], ctx);
-            }
-        }
+        // if (this.marker.show) {
+        //     for (i=0; i<this.gridData.length; i++) {
+        //         this.marker.draw(this.gridData[i][0], this.gridData[i][1], ctx);
+        //     }
+        // }
         
         ctx.restore();
     };
