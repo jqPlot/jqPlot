@@ -47,27 +47,100 @@ enhanced by the user through plugins.
 (function($) {
     var debug = 1;
     
-    /* 
-        Class: Axis
-        (Private) An individual axis object.  Cannot be instantiated directly, but created
-        by the Plot oject.  Axis properties can be set or overriden by the 
-        options passed in from the user.  As currently implemented, the axis and 
-        the lineAxisRenderer are tightly integrated.  Options are assigned to the
-        Axis object itself, and not the renderer.
+    // Class: $.jqplot
+    // (Public) jQuery extension called by user to create plot.
+    //
+    // Parameters:
+    // target - ID of target element to render the plot into.
+    // data - an array of data series.
+    // options - user defined options object.
+    $.jqplot = function(target, data, options) {
+        var _data, _options;
         
-        Parameters:
-            name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
-    */
-    function Axis(name, series) {
+        // check to see if only 2 arguments were specified, what is what.
+        if (options == null) {
+            if (data instanceof Array) {
+                _data = data;
+                _options = null;   
+            }
+            
+            else if (data.constructor == Object) {
+                _data = null;
+                _options = data;
+            }
+        }
+        else {
+            _data = data;
+            _options = options;
+        }
+        var plot = new jqPlot();
+        plot.init(target, _data, _options);
+        plot.draw();
+        return plot;
+    };
+    
+    $.jqplot.ElemContainer = function() {
+        this._elem;
+        this._plotWidth;
+        this._plotHeight;
+        this._plotDimensions = {height:null, width:null};
+    };
+            
+    $.jqplot.ElemContainer.prototype.getWidth = function() {
+        return this._elem.outerWidth(true);
+    };
+    
+    $.jqplot.ElemContainer.prototype.getHeight = function() {
+        return this._elem.outerHeight(true);
+    };
+    
+    $.jqplot.ElemContainer.prototype.getPosition = function() {
+        return this._elem.position();
+    };
+    
+    $.jqplot.ElemContainer.prototype.getTop = function() {
+        return this.getPosition().top;
+    };
+    
+    $.jqplot.ElemContainer.prototype.getLeft = function() {
+        return this.getPosition().left;
+    };
+    
+    $.jqplot.ElemContainer.prototype.getBottom = function() {
+        return this._elem.css('bottom');
+    };
+    
+    $.jqplot.ElemContainer.prototype.getRight = function() {
+        return this._elem.css('right');
+    };
+    
+
+    // Class: Axis
+    // (Private) An individual axis object.  Cannot be instantiated directly, but created
+    // by the Plot oject.  Axis properties can be set or overriden by the 
+    // options passed in from the user.  As currently implemented, the axis and 
+    // the lineAxisRenderer are tightly integrated.  Options are assigned to the
+    // Axis object itself, and not the renderer.
+    // 
+    // Parameters:
+    //     name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
+    function Axis(name) {
+        $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
         // prop: name
         // Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
         this.name = name;
-        this.series = [];
+        this._series = [];
         // prop: show
         // Wether to display the axis on the graph.
         this.show = false;
+        // prop; min
+        // minimum value of the axis (in data units, not pixels).
+        this.min=null;
+        // prop: max
+        // maximum value of the axis (in data units, not pixels).
+        this.max=null;
         // prop: pad
         // Padding to extend the range above and below the data bounds.
         // Factor to multiply by the data range when setting the axis bounds
@@ -94,101 +167,101 @@ enhanced by the user through plugins.
         // Instance of a rendering engine that draws the axis on the plot.
         this.renderer = new $.jqplot.linearAxisRenderer();
         this.rendererOptions = {};
-        /*  
-            prop: label
-            Axis label object.  Container for axis label properties. Not implimeted yet.
+
+        // prop: label
+        // Axis label object options.  Container for axis label properties. Not implimeted yet.
+        // 
+        // Properties:
+        // text - label text.
+        // fontFamily - css font-family spec.
+        // fontSize - css font-size spec. 
+        this.labelOptions = {text:null, fontFamily:null, fontSize:null};
         
-            Properties:
-          
-            text - label text.
-            fontFamily - css font-family spec.
-            fontSize - css font-size spec.  
-            align - css text-align spec.
-        */
-        this.label = {text:null, fontFamily:null, fontSize:null, align:null};
-        /*  
-            prop: ticks
-            Container for axis tick properties.
-        
-            Properties:
-          
-            mark - tick markings.  One of 'inside', 'outside', 'cross', '' or null.
-                The latter 2 options will hide the tick marks.
-            size - length of the tick marks in pixels.  For 'cross' style, length
-                will be stoked above and below axis, so total length will be twice this.
-            showLabels - Wether to show labels or not.
-            labels - Array of tick labels.
-            values - Array of underlying data values.
-            styles - Array of css styles to be applied.
-            formatString - formatting string passed to the tick formatter.
-            fontFamily - css font-family spec.
-            fontSize -css font-size spec.
-            textColor - css color spec.
-        */
-        this.ticks = {mark:'outside', markSize:4, size:4, showLabels:true, labels:[], values:[], styles:[], formatString:'%.1f', fontFamily:'', fontSize:'0.75em', textColor:''};
+        // prop: tickOptions
+        // Container for axis tick properties.
+        // 
+        // Properties:
+        // mark - tick markings.  One of 'inside', 'outside', 'cross', '' or null.
+        //     The latter 2 options will hide the tick marks.
+        // size - length of the tick marks in pixels.  For 'cross' style, length
+        //     will be stoked above and below axis, so total length will be twice this.
+        // showLabels - Wether to show labels or not.
+        // formatString - formatting string passed to the tick formatter.
+        // fontFamily - css font-family spec.
+        // fontSize -css font-size spec.
+        // textColor - css color spec.
+        this.tickOptions = {mark:'outside', markSize:4, size:4, showLabel:true, formatter:$.jqplot.sprintf, formatString:'%.1f', fontFamily:'', fontSize:'0.75em', textColor:''};
+        this.showTicks = true;
+        this.showTickMarks = true;
         this.showMinorTicks = true;
-        // prop: tickFormatter
-        // Function applied to format tick label text.
-        this.tickFormatter = sprintf;
-        // prop: _height
-        // height of the rendered axis in pixels.
-        this._height = 0;
-        // prop: _width
-        // width of the rendered axis in pixels.
-        this._width = 0;
-        // prop: _elem
-        // reference to the actual axis DOM element.
-        this._elem;
-        /*  
-            prop: _dataBounds
-            low/high values of all of the series bound to this axis.
-        
-            Properties:
-          
-            min - lowest value on this axis.
-            max - highest value on this axis.
-        */
+        // prop: _dataBounds
+        // low/high values of all of the series bound to this axis.
+        // 
+        // Properties:
+        // min - lowest value on this axis.
+        // max - highest value on this axis.
         this._dataBounds = {min:null, max:null};
-        // prop; min
-        // minimum value of the axis (in data units, not pixels).
-        this.min=null;
-        // prop: max
-        // maximum value of the axis (in data units, not pixels).
-        this.max=null;
-        // prop: style
-        // Don't know? Will have to check if this is used.
-        this.style;
-        // prop: _gridOffsets
-        // reference to the plot element grid offsets.
-        this._gridOffsets;
-        /*  
-            Property: _offsets
-            Pixel offsets from the edge of the DOM element in pixels.
-        
-            Properties:
-            min - pixel offset to the minimum value.
-            max - pixel offset to the maximum value.
-        */
+        // Property: _offsets
+        // Pixel offsets from the edge of the DOM element in pixels.
+        // 
+        // Properties:
+        // min - pixel offset to the minimum value tick.
+        // max - pixel offset to the maximum value tick.
         this._offsets = {min:null, max:null};
         // prop: _canvasWidth
-        // width of the grid canvas, total DOM element width.
-        this._canvasWidth;
+        // width of the plot canvas, total DOM element width.
+        this._plotWidth;
         // prop: _canvasHeight
-        // height of the grid canvas, total DOM element height.
-        this._canvasHeight;
+        // height of the plot canvas, total DOM element height.
+        this._plotHeight;
         this._ticks=[];
-        
-        // append a reference to the series using this axis.
-        this.series.push(series);
     };
     
-    /* 
-        Class: Legend
-        (Private) Legend object.  Cannot be instantiated directly, but created
-        by the Plot oject.  Legend properties can be set or overriden by the 
-        options passed in from the user.
-    */
+    Axis.prototype = new $.jqplot.ElemContainer();
+    Axis.prototype.constructor = Axis;
+    
+    Axis.prototype.init = function() {
+        var db = this._dataBounds;
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s.data;
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
+                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                }              
+                else {
+                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
+                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                }              
+            }
+        }
+        
+        this.renderer.init(this.rendererOptions);
+    };
+    
+    Axis.prototype.draw = function() {
+        return this.renderer.draw.call(this);
+    };
+    
+    Axis.prototype.set = function() {
+        this.renderer.set.call(this);
+    };
+    
+    Axis.prototype.pack = function(pos, offsets) {
+        if (this.show) this.renderer.pack.call(this, pos, offsets);
+    };
+
+
+    // Class: Legend
+    // (Private) Legend object.  Cannot be instantiated directly, but created
+    // by the Plot oject.  Legend properties can be set or overriden by the 
+    // options passed in from the user.
     function Legend() {
+        $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
         // prop: show
@@ -203,45 +276,53 @@ enhanced by the user through plugins.
         // prop: yoffset
         // offset from the inside edge of the plot in the y direction in pixels.
         this.yoffset = 12;
-        // prop: border
-        // css spec for the border around the legend box.
-        this.border = '1px solid #cccccc';
-        // prop: background
-        // css spec for the background of the legend box.
-        this.background = 'rgba(255,255,255,0.6)';
-        // prop: textColor
-        // css color spec for the legend text.
-        this.textColor = '';
-        // prop: fontFamily
-        // css font-family spec for the legend text.
-        this.fontFamily = ''; 
-        // prop: fontSize
-        // css font-size spec for the legend text.
-        this.fontSize = '0.75em';
-        // prop: rowSpacing
-        // css padding-top spec for the rows in the legend.
-        this.rowSpacing = '0.5em';
+        ///////////////////////////////
+        ///////////////////////////////
+        // make these options on the renderer.
+        // // prop: border
+        // // css spec for the border around the legend box.
+        // this.border = '1px solid #cccccc';
+        // // prop: background
+        // // css spec for the background of the legend box.
+        // this.background = 'rgba(255,255,255,0.6)';
+        // // prop: textColor
+        // // css color spec for the legend text.
+        // this.textColor = '';
+        // // prop: fontFamily
+        // // css font-family spec for the legend text.
+        // this.fontFamily = ''; 
+        // // prop: fontSize
+        // // css font-size spec for the legend text.
+        // this.fontSize = '0.75em';
+        // // prop: rowSpacing
+        // // css padding-top spec for the rows in the legend.
+        // this.rowSpacing = '0.5em';
         // prop: _elem
         // reference to the legend DOM element.
-        this._elem;
+        this.renderer = new $.jqplot.tableLegendRenderer();
+        this.rendererOptions = {};
         
-    }
+    };
     
-    /* 
-        Class: Title
-        (Private) Plot Title object.  Cannot be instantiated directly, but created
-        by the Plot oject.  Title properties can be set or overriden by the 
-        options passed in from the user.
-        
-        Parameters:
-            text - text of the title.
-    */
+    Legend.prototype = new $.jqplot.ElemContainer();
+    Legend.prototype.constructor = Legend;
+    
+
+    // Class: Title
+    // (Private) Plot Title object.  Cannot be instantiated directly, but created
+    // by the Plot oject.  Title properties can be set or overriden by the 
+    // options passed in from the user.
+    // 
+    // Parameters:
+    //     text - text of the title.
     function Title(text) {
+        $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
         // prop: text
         // text of the title;
         this.text = text;
+        this.show = true;
         // prop: fontFamily
         // css font-family spec for the text.
         this.fontFamily = '';
@@ -251,20 +332,27 @@ enhanced by the user through plugins.
         // prop: textAlign
         // css text-align spec for the text.
         this.textAlign = 'center';
-        // prop: _elem
-        // reference to the title DOM element.
-        this._elem;
-        // prop: _height
-        // height of the DOM element in pixels.
-        this._height = 0;
-        // prop: _width
-        // width of the DOM element in pixels.
-        this._width = 0;
         // prop: textColor
         // css color spec for the text.
         this.textColor = '';
-        
+        this.renderer = new $.jqplot.divTitleRenderer();
+        this.rendererOptions = {};   
+    };
+    
+    Title.prototype = new $.jqplot.ElemContainer();
+    Title.prototype.constructor = Title;
+    
+    Title.prototype.init = function() {
+        this.renderer.init(this.rendererOptions);
     }
+    
+    Title.prototype.draw = function(width) {
+        return this.renderer.draw.call(this, width);
+    };
+    
+    Title.prototype.pack = function() {
+        this.renderer.pack.call(this);
+    };
     
     /* 
         Class: Series
@@ -273,6 +361,7 @@ enhanced by the user through plugins.
         options passed in from the user.
     */
     function Series() {
+        $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
         // prop: show
@@ -283,13 +372,13 @@ enhanced by the user through plugins.
         this.xaxis = 'xaxis';
         // prop: _xaxis
         // reference to the underlying x axis object associated with this series.
-        this._xaxis = new Axis(this.xaxis, this);
+        this._xaxis;
         // prop: yaxis
         // name of y axis to associate with this series.
         this.yaxis = 'yaxis';
         // prop: _yaxis
         // reference to the underlying y axis object associated with this series.
-        this._yaxis = new Axis(this.yaxis, this);
+        this._yaxis;
         // prop: renderer
         // Instance of a renderer which will draw the series.
         this.renderer = new $.jqplot.lineRenderer();
@@ -307,7 +396,61 @@ enhanced by the user through plugins.
         // prop: label
         // Line label to use in legend.
         this.label = '';
+        // prop: color
+        // css color spec for the series
+        this.color = '#666666';
+        // prop: lineWidth
+        // width of the line in pixels.  May have different meanings depending on renderer.
+        this.lineWidth = 2.5;
+        // prop: shadow
+        // wether or not to draw a shadow on the line
+        this.shadow = true;
+        // prop: shadowAngle
+        // Shadow angle in degrees
+        this.shadowAngle = 45;
+        // prop: shadowOffset
+        // Shadow offset from line in pixels
+        this.shadowOffset = 1;
+        // prop: shadowDepth
+        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
+        this.shadowDepth = 3;
+        // prop: shadowAlpha
+        // Alpha channel transparency of shadow.  0 = transparent.
+        this.shadowAlpha = '0.07';
+        // prop: breakOnNull
+        // wether line segments should be be broken at null value.
+        // False will join point on either side of line.
+        this.breakOnNull = false;
+        // prop: marks
+        // Either an instance of a mark renderer which will draw the data pont markers
+        // or an options object with a renderer property and additional options to pass
+        // to the renderer.  See the renderer for additional options.
+        this.marker = new $.jqplot.markRenderer();
+        // // prop: mode
+        // // 'scatter' or 'category'
+        // // 'scatter' gives an X-Y scatter line plot, 'category' gives equally spaced data line plot.
+        // this.mode = 'scatter'
+        // prop: showLine
+        // wether to actually draw the line or not.  Series will still be renderered, even if no line is drawn.
+        this.showLine = true;
     };
+    
+    Series.prototype = new $.jqplot.ElemContainer();
+    Series.prototype.constructor = Series;
+    
+    Series.prototype.init = function() {
+        // weed out any null values in the data.
+        var d = this.data;
+        for (i=0; i<d.length; i++) {
+            if (d[i] == null || d[i][0] == null || d[i][1] == null) {
+                // For the time being, just delete null values
+                // could keep them if wanted to break lines on null.
+                d.splice(i,1);
+                continue;
+            }
+        }
+        this.renderer.init(this.rendererOptions);
+    }
     
     /* 
         Class: Grid
@@ -317,6 +460,7 @@ enhanced by the user through plugins.
         Grid properties can be set or overriden by the options passed in from the user.
     */
     function Grid() {
+        $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
         // prop: drawGridlines
@@ -349,29 +493,45 @@ enhanced by the user through plugins.
         // prop: shadowAlpha
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.07';
-        // prop: _width
-        // width of the grid area bounded by the border.
-        this._width;
-        // prop: _height
-        // height of the grid area bounded by the border.
-        this._height;
-        // prop: _top
-        // position of the top of the grid measures from the top left of the DOM container.
-        this._top;
-        // prop: _bottom
-        // position of the bottom of the grid measures from the top left of the DOM container.
-        this._bottom;
-        // prop: _left
-        // position of the left of the grid measures from the top left of the DOM container.
         this._left;
-        // prop: _right
-        // position of the right of the grid measures from the top left of the DOM container.
+        this._top;
         this._right;
+        this._bottom;
+        this._width;
+        this._height;
+
+        // prop: _axes
+        // reference to the plot axes
+        this._axes = [];
         // prop: renderer
         // Instance of a renderer which will actually render the grid.
         this.renderer = new $.jqplot.canvasGridRenderer();
-        
+        this.rendererOptions = {};
+        this._offsets = {top:null, bottom:null, left:null, right:null};
     };
+    
+    Grid.prototype = new $.jqplot.ElemContainer();
+    Grid.prototype.constructor = Grid;
+    
+    Grid.prototype.init = function() {
+        this.renderer.init.call(this, this.rendererOptions);
+    }
+    
+    Grid.prototype.createElement = function(offsets) {
+        this._offsets = offsets;
+        return this.renderer.createElement.call(this);
+    }
+    
+    Grid.prototype.draw = function() {
+        this.renderer.draw.call(this);
+    }
+    
+    function SeriesCanvas() {
+        $.jqplot.ElemContainer.call(this);
+    };
+    
+    SeriesCanvas.prototype = new $.jqplot.ElemContainer();
+    SeriesCanvas.prototype.constructor = SeriesCanvas;
 
     
     /* 
@@ -404,20 +564,25 @@ enhanced by the user through plugins.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         this.grid = new Grid();
         this.legend = new Legend();
-        // this.title = {text:null, font:null};
-        // handle to the grid canvas drawing context.  Holds the axes, grid, and labels.
-        // Stuff that should be rendered only at initial plot drawing.
-        this.gctx = null;
-        // handle to the series  canvas drawing context.  Holds the rendered
-        // rendered series which may be manipulated through user interaction.
-        this.sctx = null;
+        this.seriesView = new $.jqplot.canvasSeriesView();
+        this.overlayView = new $.jqplot.canvasOverlayView();
+        // Can get these through the representative ojects.
+        // // handle to the grid canvas drawing context.  Holds the axes, grid, and labels.
+        // // Stuff that should be rendered only at initial plot drawing.
+        // this._gctx = null;
+        // // handle to the series  canvas drawing context.  Holds the rendered
+        // // rendered series which may be manipulated through user interaction.
+        // this._sctx = null;
         // handle to the overlay canvas drawing object.  Holds interactive content
         // like highlights that are rendered according to user interaction
-        this.octx = null;
+        this._octx = null;
         // width and height of the canvas
         this._width = null;
         this._height = null; 
+        this._plotDimensions = {height:null, width:null};
+        // default padding for the grid context
         this._gridOffsets = {top:10, right:10, bottom:10, left:10};
+        // for dual axes, wether to space ticks the same on both sides.
         this.equalXTicks = true;
         this.equalYTicks = true;
         // borrowed colors from Flot.
@@ -436,33 +601,57 @@ enhanced by the user through plugins.
         // Initializes the jqPlot object, parsing the user options and processing the data.
         //
         // Parameter:
-        // target - ID of the DOM element the plot will render into.
-        // data - data series.
-        // options - user specified options object.    
+        //  target - ID of the DOM element the plot will render into.
+        //  data - data series.
+        //  options - user specified options object.    
         this.init = function(target, data, options) {
             this.targetId = target;
             this.target = $('#'+target);
-            // make sure the target is positioned by some means
             if (!this.target) throw "No plot target specified";
+            
+            // make sure the target is positioned by some means and set css
             if (this.target.css('position') == 'static') this.target.css('position', 'relative');
             this.target.css('color', this.textColor);
             this.target.css('font-family', this.fontFamily);
             this.target.css('font-size', this.fontSize);
+            
             this._height = parseFloat(this.target.css('height'));
             this._width = parseFloat(this.target.css('width'));
+            this._plotDimensions.height = this._height;
+            this._plotDimensions.width = this._width;
+            this.grid._plotDimensions = this._plotDimensions;
+            this.title._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0) throw "Canvas dimensions <=0";
+            
             // get a handle to the plot object from the target to help with events.
             $(target).data('jqplot', this);
+            
             this.data = data;
-            // if (data.length < 1 || data[0].length < 2) throw "Invalid Plot data";
+            
             this.parseOptions(options);
             
-            // set the dataBounds (min and max) for each axis
-            for (var i=0; i<this.series.length; i++) {
-                if (this.series[i].show) this.series[i].renderer.processData.call(this.series[i]);
-                //this.series[i].renderer.processData.call(this.series[i]);
-            }
+            this.initializeSeries();
+            
+            this.initializeAxes();
+            
+            this.grid.init();
+            this.grid._axes = this.axes;
         }
+        
+        this.initializeSeries = function() {
+            for (var i=0; i<this.series.length; i++) {
+                this.series[i]._plotDimensions = this._plotDimensions;
+               this.series[i].init();
+            }
+        };
+        
+        this.initializeAxes = function() {
+            for (var name in this.axes) {
+                this.axes[name]._plotDimensions = this._plotDimensions;
+                this.axes[name].init();
+            }
+        };
+        
         
         this.getNextSeriesColor = function() {
             var c = this.seriesColors[this._seriesColorsIndex];
@@ -480,31 +669,8 @@ enhanced by the user through plugins.
             for (var n in this.axes) {
                 var axis = this.axes[n];
                 $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
-                switch (n) {
-                    case 'xaxis':
-                        //axis.style = {position:'absolute', left:'0px', bottom:'0px'};
-                        axis._width = this._width;
-                        axis.gridOffset = 'bottom';
-                        break;
-                    case 'x2axis':
-                        //axis.style = {position:'absolute', left:'0px', top:'0px'};
-                        axis._width = this._width;
-                        axis.gridOffset = 'top';
-                        break;
-                    case 'yaxis':
-                        //axis.style = {position:'absolute', left:'0px', top:'0px'};
-                        axis._height = this._height;
-                        axis.gridOffset = 'left';
-                        break;
-                    case 'y2axis':
-                        //axis.style = {position:'absolute', right:'0px', top:'0px'};
-                        axis._height = this._height;
-                        axis.gridOffset = 'right';
-                        break;
-                    default:
-                        break;
-                }
-                axis.renderer.init(axis.rendererOptions);
+                axis._plotWidth = this._width;
+                axis._plotHeight = this._height;
             }
             if (this.data.length == 0) {
                 this.data = [];
@@ -560,6 +726,8 @@ enhanced by the user through plugins.
                     default:
                         break;
                 }
+                temp._xaxis._series.push(temp);
+                temp._yaxis._series.push(temp);
                 if (temp.show) {
                     temp._xaxis.show = true;
                     temp._yaxis.show = true;
@@ -570,7 +738,6 @@ enhanced by the user through plugins.
                     temp.rendererOptions.color = this.getNextSeriesColor();
                 }
                 // temp.rendererOptions.show = temp.show;
-                temp.renderer.init(temp.rendererOptions);
                 // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
                 this.series.push(temp);  
             }
@@ -579,6 +746,7 @@ enhanced by the user through plugins.
             $.extend(true, this.grid, this.options.grid);
             if (typeof this.options.title == 'string') this.title.text = this.options.title;
             else if (typeof this.options.title == 'object') $.extend(true, this.title, this.options.title);
+            this.title._plotWidth = this._width;
             $.extend(true, this.legend, this.options.legend);
             
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
@@ -587,41 +755,43 @@ enhanced by the user through plugins.
         };
     
         // Function: draw
-        // Calls functions needed to draw the plot.
+        // Calls functions needed to draw the plot.  Draws the objects, but doesn't do 
+        // the final positioning on the Plot.  That is done by pack.
         this.draw = function(){
-            this.drawTitle();
-            this.drawAxes();
-            this.pack();
-            this.grid.renderer.createDrawingContext.call(this);
-            this.grid.renderer.draw.call(this.grid, this.gctx, this.axes);
-            this.drawLegend();
-            this.drawSeries();
-            for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
-                $.jqplot.postDrawHooks[i].call(this);
-            }
-        };
-        
-        // Function: drawTitle
-        // Draws the plot title
-        this.drawTitle = function(){
-            // title will alway start at the top left
-            var t = this.title;
-            if (t.text) {
-                var styletext = 'padding-bottom:0.4em;text-align:center;'+
-                    'position:absolute;top:0px;left:0px;width:'+this._width+'px;';
-                styletext += (t.textColor) ? 'color:'+t.textColor+';' : '';
-                t._elem = $('<div class="jqplot-title" style="'+styletext+'">'+t.text+'</div>').appendTo(this.target);
-                t._height = $(t._elem).outerHeight(true);
-                t._width = $(t._elem).outerWidth(true);              
-            }
-        };
-        
-        // Function: drawAxes
-        // Draws the axes on the plot.
-        this.drawAxes = function(){
+            this.target.append(this.title.draw());
+            this.title.pack({top:0, left:0});
             for (var name in this.axes) {
-                this.axes[name].renderer.draw.call(this.axes[name], this.target, this._height, this._width);
+                this.target.append(this.axes[name].draw());
+                this.axes[name].set();
             }
+            
+            if (this.axes.yaxis.show) this._gridOffsets.left = this.axes.yaxis.getWidth();
+            if (this.axes.y2axis.show) this._gridOffsets.right = this.axes.y2axis.getWidth();
+            if (this.title.show && this.axes.x2axis.show) this._gridOffsets.top = this.title.getHeight() + this.x2axis.getHeight();
+            else if (this.title.show) this._gridOffsets.top = this.title.getHeight();
+            else if (this.axes.x2axis.show) this._gridOffsets.top = this.axes.x2axis.getHeight();
+            if (this.axes.xaxis.show) this._gridOffsets.bottom = this.axes.xaxis.getHeight();
+            this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridOffsets.bottom, max: this._gridOffsets.top});
+            this.axes.x2axis.pack({bottom:this._gridOffsets.top, left:0}, {min:this._gridOffsets.left, max:this._width - this._gridOffsets.right});
+            this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridOffsets.left, max:this._width - this._gridOffsets.right});
+            this.axes.y2axis.pack({top:0, right:0}, {min:this._height - this._gridOffsets.bottom, max: this._gridOffsets.top});
+            
+            this.target.append(this.grid.createElement(this._gridOffsets));
+            this.grid.draw();
+            this.target.append(this.)
+            // // the series share one element and drawing context.
+            // this.target.append(this.createSeriesContext(););
+            // // grid and series won't need to be packed since they are the last elements to be drawn.
+            // this.grid.render();
+            // for (var i=0; i<this.series.length; i++) {
+            //     this.series[i].render();
+            // }
+            // // finally, draw and pack the legend
+            // this.target.append(this.legend.draw(););
+            // this.legend.pack();
+            // for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
+            //     $.jqplot.postDrawHooks[i].call(this);
+            // }
         };
         
         // Function: pack
@@ -759,38 +929,6 @@ enhanced by the user through plugins.
         };
     };
     
-    // Class: $.jqplot
-    // (Public) jQuery extension called by user to create plot.
-    //
-    // Parameters:
-    // target - ID of target element to render the plot into.
-    // data - an array of data series.
-    // options - user defined options object.
-    $.jqplot = function(target, data, options) {
-        var _data, _options;
-        
-        // check to see if only 2 arguments were specified, what is what.
-        if (options == null) {
-            if (data instanceof Array) {
-                _data = data;
-                _options = null;   
-            }
-            
-            else if (data.constructor == Object) {
-                _data = null;
-                _options = data;
-            }
-        }
-        else {
-            _data = data;
-            _options = options;
-        }
-        var plot = new jqPlot();
-        plot.init(target, _data, _options);
-        plot.draw();
-        return plot;
-    };
-    
     // array: $.jqplot.postParseOptionsHooks
     // Array of plugin hooks run after jqPlot.parseOptions method
     $.jqplot.postParseOptionsHooks = [];
@@ -860,7 +998,7 @@ enhanced by the user through plugins.
 
     function str_repeat(i, m) { for (var o = []; m > 0; o[--m] = i); return(o.join('')); }
 
-    function sprintf () {
+    $.jqplot.sprintf = function() {
       var i = 0, a, f = arguments[i++], o = [], m, p, c, x;
       while (f) {
         if (m = /^[^\x25]+/.exec(f)) o.push(m[0]);
@@ -892,7 +1030,5 @@ enhanced by the user through plugins.
       }
       return o.join('');
     }
-    
-    $.sprintf = sprintf;
     
 })(jQuery);
