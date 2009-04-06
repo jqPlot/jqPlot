@@ -2,10 +2,11 @@
     $.jqplot.lineRenderer = function(){
     };
     
+    // called with scope of series.
     $.jqplot.lineRenderer.prototype.init = function(options) {
-        $.extend(true, this, options);
-        this.markerOptions = {color: this.color};
-        // this.marker.init(this.markerOptions);
+        $.extend(true, this.renderer, options);
+        if (!this.markerOptions.color) this.markerOptions.color = this.color;
+        this.marker.init(this.markerOptions);
     }
 
     $.jqplot.lineRenderer.prototype.draw = function(ctx) {
@@ -42,8 +43,6 @@
                     ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
                     ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
                     for (var i=1; i<this.data.length; i++) {
-                        // pointx = xp.call(this._xaxis, this.data[i][0]);
-                        // pointy = yp.call(this._yaxis, this.data[i][1]);
                         ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
                     }
                     ctx.stroke();
@@ -53,11 +52,11 @@
         }
         
         // now draw the markers
-        // if (this.marker.show) {
-        //     for (i=0; i<this.gridData.length; i++) {
-        //         this.marker.draw(this.gridData[i][0], this.gridData[i][1], ctx);
-        //     }
-        // }
+        if (this.marker.show) {
+            for (i=0; i<this.gridData.length; i++) {
+                this.marker.draw(this.gridData[i][0], this.gridData[i][1], ctx);
+            }
+        }
         
         ctx.restore();
     };

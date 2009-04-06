@@ -28,31 +28,6 @@
         this._height = this._bottom - this._top;
         return this._elem;
     };
-    
-        // var h = this._plotDimensions.height - this._offsets.bottom - this._offsets.top;
-        // var w = this._plotDimensions.width - this._offsets.left - this._offsets.right;
-    
-    // Function: createDrawingContext
-    // (Public) Creates (but doesn't populate) the actual canvas elements for plotting.
-    // Called within context of jqPlot object.
-    // $.jqplot.canvasGridRenderer.prototype.createDrawingContext = function(){
-    //     this.gridCanvas = document.createElement('canvas');
-    //     this.gridCanvas.width = this._width;
-    //     this.gridCanvas.height = this._height;
-    //     if ($.browser.msie) // excanvas hack
-    //         this.gridCanvas = window.G_vmlCanvasManager.initElement(this.gridCanvas);
-    //     $(this.gridCanvas).css({ position: 'absolute', left: 0, top: 0 });
-    //     this.target.append(this.gridCanvas);
-    //     this.gctx = this.gridCanvas.getContext("2d");
-    //     
-    //     this.seriesCanvas = document.createElement('canvas');
-    //     this.seriesCanvas.width = this.grid._width;
-    //     this.seriesCanvas.height = this.grid._height;
-    //     if ($.browser.msie) // excanvas hack
-    //         this.seriesCanvas = window.G_vmlCanvasManager.initElement(this.seriesCanvas);
-    //     $(this.seriesCanvas).css({ position: 'absolute', left: this.grid._left, top: this.grid._top });
-    //     this.target.append(this.seriesCanvas);
-    //     this.sctx = this.seriesCanvas.getContext("2d");
     //     
     //     this.overlayCanvas = document.createElement('canvas');
     //     this.overlayCanvas.width = this._width;
