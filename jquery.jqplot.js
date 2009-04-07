@@ -153,8 +153,9 @@ enhanced by the user through plugins.
         this.tickInterval;
         // prop: renderer
         // Instance of a rendering engine that draws the axis on the plot.
-        this.renderer = new $.jqplot.linearAxisRenderer();
+        this.renderer = $.jqplot.LinearAxisRenderer;
         this.rendererOptions = {};
+        this.tickRenderer = $.jqplot.AxisTick;
         // prop: tickOptions
         // Container for axis tick properties.
         // 
@@ -217,8 +218,9 @@ enhanced by the user through plugins.
                 }              
             }
         }
+        this.renderer = new this.renderer();
+        this.renderer.init.call(this, this.rendererOptions);
         
-        this.renderer.init(this.rendererOptions);
     };
     
     Axis.prototype.draw = function() {
@@ -233,10 +235,10 @@ enhanced by the user through plugins.
         if (this.show) this.renderer.pack.call(this, pos, offsets);
     };
     
-    $.jqplot.linearAxisRenderer = function() {
+    $.jqplot.LinearAxisRenderer = function() {
     };
     
-    $.jqplot.linearAxisRenderer.prototype.init = function(options){
+    $.jqplot.LinearAxisRenderer.prototype.init = function(options){
         $.extend(true, this, options);
     };
     
@@ -245,7 +247,7 @@ enhanced by the user through plugins.
     // Populates some properties of the elements and figures out
     // height and width of element.
     // called with scope of axis
-    $.jqplot.linearAxisRenderer.prototype.draw = function() {
+    $.jqplot.LinearAxisRenderer.prototype.draw = function() {
         if (this.show) {
             // populate the axis label and value properties.
             this.renderer.createTicks.call(this);
@@ -273,7 +275,7 @@ enhanced by the user through plugins.
         return this._elem;
     };
     
-    $.jqplot.linearAxisRenderer.prototype.set = function() {   
+    $.jqplot.LinearAxisRenderer.prototype.set = function() {   
         var dim = 0;
         var temp; 
         if (this.show && this.showTicks) {
@@ -302,13 +304,12 @@ enhanced by the user through plugins.
     // Populate the axis properties, giving a label and value
     // (corresponding to the user data coordinates, not plot coords.)
     // for each tick on the axis.
-    $.jqplot.linearAxisRenderer.prototype.createTicks = function() {
+    $.jqplot.LinearAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
-        var axis = this;
-        var ticks = axis._ticks;
-        var name = axis.name;
+        var ticks = this._ticks;
+        var name = this.name;
         // databounds were set on axis initialization.
-        var db = axis._dataBounds;
+        var db = this._dataBounds;
         var dim, interval;
         var min, max;
         var pos1, pos2;
@@ -350,10 +351,10 @@ enhanced by the user through plugins.
         // we don't have any ticks yet, let's make some!
         else {
             if (name == 'xaxis' || name == 'x2axis') {
-                dim = this._plotWidth;
+                dim = this._plotDimensions.width;
             }
             else {
-                dim = this._plotHeight;
+                dim = this._plotDimensions.height;
             }
         
             min = ((this.min != null) ? this.min : db.min);
@@ -378,14 +379,15 @@ enhanced by the user through plugins.
             this.tickInterval = range / (this.numberTicks-1);
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * range / (this.numberTicks-1);
-                var t = new $.jqplot.AxisTick(this.tickOptions);
+                var t = new this.tickRenderer(this.tickOptions);
+                // var t = new $.jqplot.AxisTick(this.tickOptions);
                 if (!this.showTicks) {
                     t.showLabel = false;
                     t.showMark = false;
                 }
                 else if (!this.showTickMarks) t.showMark = false;
                 t.setTick(tt, this.name);
-                axis._ticks.push(t);
+                this._ticks.push(t);
             }
         }
     };
@@ -393,7 +395,7 @@ enhanced by the user through plugins.
     // functions: pack
     // Define unit <-> coordinate conversions and properly position tick dom elements.
     // Now we know offsets around the grid, we can define conversioning functions.
-    $.jqplot.linearAxisRenderer.prototype.pack = function(pos, offsets) {
+    $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
         var ticks = this._ticks;
         var max = this.max;
         var min = this.min;
@@ -455,6 +457,7 @@ enhanced by the user through plugins.
         }    
     };
 
+    // as convienence, tick cna be initialized when created.
     $.jqplot.AxisTick = function(options) {
         $.jqplot.ElemContainer.call(this);
         this.mark = 'outside';
@@ -476,6 +479,10 @@ enhanced by the user through plugins.
         
         $.extend(true, this, options);
     };
+    
+    $.jqplot.AxisTick.prototype.init = function(options) {
+        $.extend(true, this, options);
+    }
     
     $.jqplot.AxisTick.prototype = new $.jqplot.ElemContainer();
     $.jqplot.AxisTick.prototype.constructor = $.jqplot.AxisTick;
@@ -553,7 +560,7 @@ enhanced by the user through plugins.
         this.rowSpacing = '0.5em';
         // prop: _elem
         // reference to the legend DOM element.
-        this.renderer = new $.jqplot.tableLegendRenderer();
+        this.renderer = $.jqplot.TableLegendRenderer;
         this.rendererOptions = {};
         this._series = [];
         
@@ -562,8 +569,12 @@ enhanced by the user through plugins.
     Legend.prototype = new $.jqplot.ElemContainer();
     Legend.prototype.constructor = Legend;
     
+    Legend.prototype.init = function() {
+        this.renderer = new this.renderer();
+        this.renderer.init.call(this, this.rendererOptions);
+    }
+    
     Legend.prototype.draw = function(offsets) {
-        log('Legend draw');
         return this.renderer.draw.call(this, offsets);
     };
     
@@ -571,11 +582,15 @@ enhanced by the user through plugins.
         this.renderer.set.call(this);
     };
     
-    $.jqplot.tableLegendRenderer = function(){
+    $.jqplot.TableLegendRenderer = function(){
         //
     };
+
+    $.jqplot.TableLegendRenderer.prototype.init = function(options) {
+        $.extend(true, this, options);
+    }
     
-    $.jqplot.tableLegendRenderer.prototype.draw = function(offsets) {
+    $.jqplot.TableLegendRenderer.prototype.draw = function(offsets) {
         var legend = this;
         if (this.show) {
             var series = this._series;
@@ -645,7 +660,6 @@ enhanced by the user through plugins.
                 '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
                 '</div></td>').appendTo(tr);
             $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';">'+label+'</td>').appendTo(tr);
-            log('legend set: ', tr);
         };
         
         var pad = false;
@@ -696,7 +710,7 @@ enhanced by the user through plugins.
         // prop: textColor
         // css color spec for the text.
         this.textColor = '';
-        this.renderer = new $.jqplot.divTitleRenderer();
+        this.renderer = $.jqplot.DivTitleRenderer;
         this.rendererOptions = {};   
     };
     
@@ -704,7 +718,8 @@ enhanced by the user through plugins.
     Title.prototype.constructor = Title;
     
     Title.prototype.init = function() {
-        this.renderer.init(this.rendererOptions);
+        this.renderer = new this.renderer();
+        this.renderer.init.call(this, this.rendererOptions);
     }
     
     Title.prototype.draw = function(width) {
@@ -715,14 +730,14 @@ enhanced by the user through plugins.
         this.renderer.pack.call(this);
     };
     
-    $.jqplot.divTitleRenderer = function() {
+    $.jqplot.DivTitleRenderer = function() {
     };
     
-    $.jqplot.divTitleRenderer.prototype.init = function(options) {
+    $.jqplot.DivTitleRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
     };
     
-    $.jqplot.divTitleRenderer.prototype.draw = function() {
+    $.jqplot.DivTitleRenderer.prototype.draw = function() {
         var r = this.renderer;
         if (!this.text) {
             this.show = false;
@@ -741,7 +756,7 @@ enhanced by the user through plugins.
         return this._elem;
     };
     
-    $.jqplot.divTitleRenderer.prototype.pack = function() {
+    $.jqplot.DivTitleRenderer.prototype.pack = function() {
         // nothing to do here
     };
 
@@ -770,7 +785,7 @@ enhanced by the user through plugins.
         this._yaxis;
         // prop: renderer
         // Instance of a renderer which will draw the series.
-        this.renderer = new $.jqplot.lineRenderer();
+        this.renderer = $.jqplot.LineRenderer;
         // prop: rendererOptions
         // Options to set on the renderer.  See the renderer for possibly options.
         this.rendererOptions = {};
@@ -814,7 +829,7 @@ enhanced by the user through plugins.
         // Either an instance of a mark renderer which will draw the data pont markers
         // or an options object with a renderer property and additional options to pass
         // to the renderer.  See the renderer for additional options.
-        this.marker = new $.jqplot.markRenderer();
+        this.markerRenderer = $.jqplot.MarkerRenderer;
         this.markerOptions = {};
         // // prop: mode
         // // 'scatter' or 'category'
@@ -841,25 +856,40 @@ enhanced by the user through plugins.
                 continue;
             }
         }
+        this.renderer = new this.renderer();
         this.renderer.init.call(this, this.rendererOptions);
+        this.markerRenderer = new this.markerRenderer();
+        if (!this.markerOptions.color) this.markerOptions.color = this.color;
+        if (this.markerOptions.show == null) this.markerOptions.show = this.showMarker;
+        // the markerRenderer is called within it's own scaope, don't want to overwrite series options!!
+        this.markerRenderer.init(this.markerOptions);
     }
     
     Series.prototype.draw = function(sctx) {
+        this.renderer.setGridData.call(this);
         this.renderer.draw.call(this, sctx);
     }
     
-    $.jqplot.lineRenderer = function(){
+    $.jqplot.LineRenderer = function(){
     };
     
     // called with scope of series.
-    $.jqplot.lineRenderer.prototype.init = function(options) {
+    $.jqplot.LineRenderer.prototype.init = function(options) {
         $.extend(true, this.renderer, options);
-        if (!this.markerOptions.color) this.markerOptions.color = this.color;
-        if (this.markerOptions.show == null) this.markerOptions.show = this.showMarker;
-        this.marker.init(this.markerOptions);
-    }
+    };
+    
+    $.jqplot.LineRenderer.prototype.setGridData = function() {
+        // recalculate the grid data
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
+        this.gridData = [];
+        this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
+        for (var i=1; i<this.data.length; i++) {
+            this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
+        }
+    };
 
-    $.jqplot.lineRenderer.prototype.draw = function(ctx) {
+    $.jqplot.LineRenderer.prototype.draw = function(ctx) {
         var i;
         var xaxis = this.xaxis;
         var yaxis = this.yaxis;
@@ -874,12 +904,8 @@ enhanced by the user through plugins.
             ctx.lineCap = 'round';
             ctx.lineWidth = this.lineWidth;
             ctx.strokeStyle = this.color;
-            // recalculate the grid data
-            this.gridData = [];
-            this.gridData.push([xp.call(this._xaxis, this.data[0][0]), yp.call(this._yaxis, this.data[0][1])]);
             ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
             for (var i=1; i<this.data.length; i++) {
-                this.gridData.push([xp.call(this._xaxis, this.data[i][0]), yp.call(this._yaxis, this.data[i][1])]);
                 ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
             }
             ctx.stroke();
@@ -902,16 +928,16 @@ enhanced by the user through plugins.
         }
         
         // now draw the markers
-        if (this.marker.show) {
+        if (this.markerRenderer.show) {
             for (i=0; i<this.gridData.length; i++) {
-                this.marker.draw(this.gridData[i][0], this.gridData[i][1], ctx);
+                this.markerRenderer.draw(this.gridData[i][0], this.gridData[i][1], ctx);
             }
         }
         
         ctx.restore();
     };    
     
-    $.jqplot.markRenderer = function(){
+    $.jqplot.MarkerRenderer = function(){
         this.show = true;
         // prop: style
         // One of diamond, circle, square, x, plus, dash, filledDiamond, filledCircle, filledSquare
@@ -936,11 +962,11 @@ enhanced by the user through plugins.
         this.shadowAlpha = '0.07';
     };
     
-    $.jqplot.markRenderer.prototype.init = function(options) {
+    $.jqplot.MarkerRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
     }
     
-    $.jqplot.markRenderer.prototype.drawDiamond = function(x, y, ctx, fill) {
+    $.jqplot.MarkerRenderer.prototype.drawDiamond = function(x, y, ctx, fill) {
         ctx.save();
         ctx.lineJoin = 'miter';
         ctx.lineWidth = this.lineWidth;
@@ -962,6 +988,12 @@ enhanced by the user through plugins.
             ctx.save();
             for (var j=0; j<this.shadowDepth; j++) {
                 ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
+                // // Experimental shadow growth
+                // ctx.lineWidth = this.lineWidth*(1+j/4);
+                // stretch = 1.2 * (1+j/7);
+                // dx = this.size/2*stretch;
+                // dy = this.size/2*stretch;
+                // //////////////////
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
                 ctx.fillStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
@@ -979,7 +1011,7 @@ enhanced by the user through plugins.
         ctx.restore();
     };
     
-    $.jqplot.markRenderer.prototype.drawSquare = function(x, y, ctx, fill) {
+    $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill) {
         ctx.save();
         ctx.lineJoin = 'miter';
         ctx.lineWidth = this.lineWidth;
@@ -1018,7 +1050,7 @@ enhanced by the user through plugins.
         ctx.restore();
     };
     
-    $.jqplot.markRenderer.prototype.drawCircle = function(x, y, ctx, fill) {
+    $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill) {
         ctx.save();
         ctx.lineJoin = 'miter';
         ctx.lineWidth = this.lineWidth;
@@ -1035,6 +1067,10 @@ enhanced by the user through plugins.
             ctx.save();
             for (var j=0; j<this.shadowDepth; j++) {
                 ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
+                // // Experimental shadow growth
+                // ctx.lineWidth = this.lineWidth*(1+j/5);
+                // radius = this.size/2*(1+j/6);
+                // ///////////////////////////
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
                 ctx.fillStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
@@ -1047,7 +1083,7 @@ enhanced by the user through plugins.
         ctx.restore();
     };
     
-    $.jqplot.markRenderer.prototype.draw = function(x, y, ctx) {
+    $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx) {
         switch (this.style) {
             case 'diamond':
                 this.drawDiamond(x,y,ctx, false);
@@ -1126,7 +1162,7 @@ enhanced by the user through plugins.
         this._axes = [];
         // prop: renderer
         // Instance of a renderer which will actually render the grid.
-        this.renderer = new $.jqplot.canvasGridRenderer();
+        this.renderer = $.jqplot.CanvasGridRenderer;
         this.rendererOptions = {};
         this._offsets = {top:null, bottom:null, left:null, right:null};
     };
@@ -1135,6 +1171,7 @@ enhanced by the user through plugins.
     Grid.prototype.constructor = Grid;
     
     Grid.prototype.init = function() {
+        this.renderer = new this.renderer();
         this.renderer.init.call(this, this.rendererOptions);
     }
     
@@ -1147,16 +1184,16 @@ enhanced by the user through plugins.
         this.renderer.draw.call(this);
     }
     
-    $.jqplot.canvasGridRenderer = function(){};
+    $.jqplot.CanvasGridRenderer = function(){};
     
     // called with context of Grid object
-    $.jqplot.canvasGridRenderer.prototype.init = function(options) {
+    $.jqplot.CanvasGridRenderer.prototype.init = function(options) {
         this._ctx;
         $.extend(true, this, options);
     }
     
     // called with context of Grid.
-    $.jqplot.canvasGridRenderer.prototype.createElement = function() {
+    $.jqplot.CanvasGridRenderer.prototype.createElement = function() {
         var elem = document.createElement('canvas');
         var w = this._plotDimensions.width;
         var h = this._plotDimensions.height;
@@ -1185,7 +1222,7 @@ enhanced by the user through plugins.
     //     this.octx = this.overlayCanvas.getContext("2d");
     // };
     
-    $.jqplot.canvasGridRenderer.prototype.draw = function() {
+    $.jqplot.CanvasGridRenderer.prototype.draw = function() {
         this._ctx = this._elem.get(0).getContext("2d");
         var ctx = this._ctx;
         var axes = this._axes;
@@ -1510,6 +1547,8 @@ enhanced by the user through plugins.
             this.data = data;
             
             this.parseOptions(options);
+            this.title.init();
+            this.legend.init();
             
             for (var i=0; i<this.series.length; i++) {
                 this.series[i]._plotDimensions = this._plotDimensions;
