@@ -8,24 +8,29 @@
 	       else console.log(arguments);
 	    }
 	};
-	
+	// class: $.jqplot.LogAxisRenderer
+	// A plugin for a jqPlot to render a logarithmic axis.	
     $.jqplot.LogAxisRenderer = function() {
+        // prop: seriesDefaults
+        // Default properties which will be applied directly to the series.
+        // Properties
+        /// base - the logarithmic base, commonly 2, 10 or Math.E
+        // tickDistribution - 'even' or 'power'.  'even' gives equal pixel
+        // spacing of the ticks on the plot.  'power' gives ticks in powers
+        // of 10.
+        this.seriesDefaults = {
+            base : 10,
+            tickDistribution :'even'
+        };
     };
     
     $.jqplot.LogAxisRenderer.prototype.init = function(options) {
-        // var defaults = {
-        //     base:10,
-        //     tickDistribution:'even'
-        // };
-        $.extend(true, this, options);
-        log('Log Axis init: ', this);
+        $.extend(true, this.renderer, options);
+        for (var d in this.renderer.seriesDefaults) {
+            if (this[d] == null) this[d] = this.renderer.seriesDefaults[d];
+        }
     };
-    
-    // function: draw
-    // Creates the axis container DOM element and tick DOM elements.
-    // Populates some properties of the elements and figures out
-    // height and width of element.
-    // called with scope of axis
+
     $.jqplot.LogAxisRenderer.prototype.draw = function() {
         if (this.show) {
             // populate the axis label and value properties.
@@ -78,13 +83,6 @@
         } 
     };
     
-    // function: setAxis
-    // called with scope of an axis
-    // Populate the axis properties, giving a label and value
-    // (corresponding to the user data coordinates, not plot coords.)
-    // for each tick on the axis.
-    // Set initial styles on tick dom elements.
-    // figure out numberTicks, min, max, tickInterval and tick values.
     $.jqplot.LogAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
         var ticks = this._ticks;
@@ -221,7 +219,6 @@
                         var spread = tt1 - tt;
                         var interval = tt1 / (minorTicks+1);
                         for (var j=minorTicks-1; j>=0; j--) {
-                            var t = new $.jqplot.AxisTick();
                             var val = tt1-interval*(j+1);
                             var t = new this.tickRenderer(this.tickOptions);
                             if (!this.showTicks) {
@@ -238,11 +235,6 @@
         }
     };
     
-    
-    // functions: pack
-    // Define unit <-> coordinate conversions and properly position tick dom elements.
-    // Now we know offsets around the grid, we can define conversioning functions.
-    // called with scope of axis.
     $.jqplot.LogAxisRenderer.prototype.pack = function(pos, offsets) {
         var lb = parseInt(this.base);
         var ticks = this._ticks;

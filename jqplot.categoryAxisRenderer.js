@@ -9,8 +9,6 @@
 	    }
 	};
     
-    // Class: categoryAxisRenderer
-    // Subclass of linearAxisRenderer.  Renderes axis as equally spaced category labels.
     $.jqplot.categoryAxisRenderer = function() {
         $.jqplot.linearAxisRenderer.call(this);
     };
@@ -18,11 +16,7 @@
     $.jqplot.categoryAxisRenderer.prototype = new $.jqplot.linearAxisRenderer();
     $.jqplot.categoryAxisRenderer.prototype.constructor = $.jqplot.categoryAxisRenderer;
  
-    // function: setAxis
-    // called with scope of an axis
-    // Populate the axis properties, giving a label and value
-    // (corresponding to the user data coordinates, not plot coords.)
-    // for each tick on the axis.
+
     $.jqplot.categoryAxisRenderer.prototype.setAxis = function(plotHeight, plotWidth) {
         // we're are operating on an axis here
         var axis = this;
