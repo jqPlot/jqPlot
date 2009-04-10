@@ -13,6 +13,9 @@
     $.jqplot.LogAxisRenderer = function() {
         // prop: seriesDefaults
         // Default properties which will be applied directly to the series.
+        //
+        // Group: Properties
+        //
         // Properties
         /// base - the logarithmic base, commonly 2, 10 or Math.E
         // tickDistribution - 'even' or 'power'.  'even' gives equal pixel
