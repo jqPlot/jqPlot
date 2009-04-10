@@ -29,29 +29,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-About: Usage
-
-In your html, include jquery:
-
-: <script language="javascript" type="text/javascript" src="../jquery-1.3.2.js"></script>
-
-include jqplot plugin:
-
-: <script language="javascript" type="text/javascript" src="jquery.jqplot.js"></script>
-
-and for Internet Explorer support, include the excanvas script: 
-
-: <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
-    
-Add a container (target) to your web page where you want your plot to show up.
-Be sure to give your target a width and a height:
-
-: <div id="chartdiv" style="height:360px;width:540px; "></div> 
-
-Then, create the actual plot by calling the $.jqplot plugin with the id of your target and some data:
-
-: .jqplot('chartdiv',  [[[1,1],[2,4],[3,9],[4,16]]], 
-
 */
 
 (function($) {

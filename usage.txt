@@ -1,7 +1,7 @@
 Title: jqPlot Usage
 
-jqPlot is a jquery extension to render completely client-side javascript charts in your web pages.  
-To use jqPlot, in your html, include jquery, the jqPlot plugin, and optionally the excanvas script for IE support in your web page:
+jqPlot is a jquery extension to render completely client-side javascript charts in your web pages. The project home page and downloads can be found at <http://code.google.com/p/jqplot/>.  It is currently under heavy development but fully functional.  To use jqPlot, in your html, include jquery, the jqPlot plugin, and optionally the excanvas script for IE 
+support in your web page:
 
 > <script language="javascript" type="text/javascript" src="../jquery-1.3.2.js"></script>
 > <script language="javascript" type="text/javascript" src="jquery.jqplot.js"></script>
@@ -12,38 +12,37 @@ Be sure to give your target a width and a height:
 
 > <div id="chartdiv" style="height:400px;width:300px; "></div> 
 
-Then, create the actual plot by calling the $.jqplot plugin with the id of your target and some data
-:
+Then, create the actual plot by calling the 
+$.jqplot plugin with the id of your target and some data:
 
-> $.jqplot('chartdiv',  [[[1,1],[2,4],[3,9],[4,16]]]);
+> $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
 
-Which will produce a chart like
-:
+Which will produce a 
+chart like:
 
 (see samples/basicline.png)
 
-You can customize the plot by passing options to the $.jqplot function
-:
+You can customize the plot by passing options to the 
+$.jqplot function:
 
-> $.jqplot('chartdiv',  [[[1,1],[2,4],[3,9],[4,16]]], 
+> $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]], 
 > { title:'Exponential Line', 
 >   axes:{yaxis:{min:-10, max:240}}, 
 >   series:[{color:'#5FAB78'}]
 > });
 
-Which will produce a plot like
-:
+Which will produce 
+a plot like:
 
 (see samples/basicoptions.png)
 
 You can use jqPlot plugins (that is, plugins to the jqPlot plugin) by including them in your html 
-after you include the jqPlot plugin.  Here is how to include the log axis plugin
-:
+after you include the jqPlot plugin.  Here is how to include the log axis plugin:
 
 : <script language="javascript" type="text/javascript" src="jqplot.LogAxisRenderer.js"></script>
 
-Here is a the same $.jqplot call but with a log y axis
-:
+Here is a the same $.jqplot call 
+but with a log y axis:
 
 : $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]], 
 : { title:'Exponential Line', 
@@ -51,13 +50,13 @@ Here is a the same $.jqplot call but with a log y axis
 :   series:[{color:'#5FAB78'}]
 : });
 
-Which produces a plot like
-:
+Which produces 
+a plot like:
 
 (see samples/basiclogaxis.png)
 
-You can further customize with options specific to the log axis plugin
-:
+You can further customize with options specific 
+to the log axis plugin:
 
 : $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]], 
 : { title:'Exponential Line', 
@@ -65,8 +64,8 @@ You can further customize with options specific to the log axis plugin
 :   series:[{color:'#5FAB78'}]
 : });
 
-Which makes a plot like
-:
+Which makes a 
+plot like:
 
 (see samples/basiclogoptions.png)
 
