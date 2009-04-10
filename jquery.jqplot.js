@@ -533,7 +533,7 @@ THE SOFTWARE.
         this.show = true;
         // prop: location
         // Placement of the legend.  one of the compas directions: nw, n, ne, e, se, s, sw, w
-        this.location = 'se';
+        this.location = 'ne';
         // prop: xoffset
         // offset from the inside edge of the plot in the x direction in pixels.
         this.xoffset = 12;
@@ -580,8 +580,8 @@ THE SOFTWARE.
         return this.renderer.draw.call(this, offsets);
     };
     
-    Legend.prototype.set = function() {
-        this.renderer.set.call(this);
+    Legend.prototype.pack = function(offsets) {
+        this.renderer.pack.call(this, offsets);
     };
     
     $.jqplot.TableLegendRenderer = function(){
@@ -592,66 +592,35 @@ THE SOFTWARE.
         $.extend(true, this, options);
     }
     
-    $.jqplot.TableLegendRenderer.prototype.draw = function(offsets) {
+    $.jqplot.TableLegendRenderer.prototype.draw = function() {
         var legend = this;
         if (this.show) {
             var series = this._series;
-            // fake a grid for positioning
-            var grid = {_top:offsets.top, _left:offsets.left, _right:this._plotDimensions.width - offsets.right, _bottom:this._plotDimensions.height - offsets.bottom}
             // make a table.  one line label per row.
             var ss = 'background:'+this.background+';border:'+this.border+';position:absolute;';
             ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
             ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
-            switch (this.location) {
-                case 'nw':
-                    var a = grid._left + this.xoffset;
-                    var b = grid._top + this.yoffset;
-                    ss += 'left:'+a+'px;top:'+b+'px;';
-                    break;
-                case 'n':
-                    var a = (grid._left + grid._right)/2 + this.xoffset;
-                    var b = grid._top + this.yoffset;
-                    ss += 'left:'+a+'px;top:'+b+'px;';
-                    break;
-                case 'ne':
-                    var a = grid._right - this.xoffset;
-                    var b = grid._top + this.yoffset;
-                    ss += 'right:'+a+'px;top:'+b+'px;';
-                    break;
-                case 'e':
-                    var a = offsets.right + this.xoffset;
-                    var b = offsets.top + this.yoffset;
-                    ss += 'right:'+a+'px;top:'+b+'px;';
-                    break;
-                case 'se':
-                    var a = offsets.right + this.xoffset;
-                    var b = offsets.bottom + this.yoffset;
-                    ss += 'right:'+a+'px;bottom:'+b+'px;';
-                    break;
-                case 's':
-                    var a = (grid._left + grid._right)/2 + this.xoffset;
-                    var b = grid._bottom + this.yoffset;
-                    ss += 'left:'+a+'px;bottom:'+b+'px;';
-                    break;
-                case 'sw':
-                    var a = grid._left + this.xoffset;
-                    var b = grid._bottom + this.yoffset;
-                    ss += 'left:'+a+'px;bottom:'+b+'px;';
-                    break;
-                case 'w':
-                    var a = grid._left + this.xoffset;
-                    var b = (grid._top + grid._bottom)/2 + this.yoffset;
-                    ss += 'left:'+a+'px;top:'+b+'px;';
-                    break;
-                default:  // same as 'se'
-                    var a = grid._right - this.xoffset;
-                    var b = grid._bottom + this.yoffset;
-                    ss += 'right:'+a+'px;bottom:'+b+'px;';
-                    break;
-                
-            }
             this._elem = $('<table class="jqplot-legend" style="'+ss+'"></table>');
+        
+            var pad = false;
+            for (var i = 0; i< series.length; i++) {
+                s = series[i];
+                if (s.show) {
+                    var lt = s.label.toString();
+                    if (lt) {
+                        addrow.call(this, lt, s.color, pad);
+                        pad = true;
+                    }
+                    for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
+                        var item = $.jqplot.drawLegendHooks[j].call(this, s);
+                        if (item) {
+                            addrow(item.label, item.color, pad);
+                            pad = true;
+                        } 
+                    }
+                }
+            }
         }
         
         function addrow(label, color, pad) {
@@ -663,26 +632,63 @@ THE SOFTWARE.
                 '</div></td>').appendTo(tr);
             $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';">'+label+'</td>').appendTo(tr);
         };
-        
-        var pad = false;
-        for (var i = 0; i< series.length; i++) {
-            s = series[i];
-            if (s.show) {
-                var lt = s.label.toString();
-                if (lt) {
-                    addrow.call(this, lt, s.color, pad);
-                    pad = true;
-                }
-                for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
-                    var item = $.jqplot.drawLegendHooks[j].call(this, s);
-                    if (item) {
-                        addrow(item.label, item.color, pad);
-                        pad = true;
-                    } 
-                }
-            }
-        }
         return this._elem;
+    };
+    
+    $.jqplot.TableLegendRenderer.prototype.pack = function(offsets) {
+        if (this.show) {
+            // fake a grid for positioning
+            var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom}        
+            switch (this.location) {
+                case 'nw':
+                    var a = grid._left + this.xoffset;
+                    var b = grid._top + this.yoffset;
+                    this._elem.css('left', a);
+                    this._elem.css('top', b);
+                    break;
+                case 'n':
+                    var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
+                    var b = grid._top + this.yoffset;
+                    this._elem.css('left', a);
+                    this._elem.css('top', b);
+                    break;
+                case 'ne':
+                    var a = offsets.right + this.xoffset;
+                    var b = grid._top + this.yoffset;
+                    this._elem.css({right:a, top:b});
+                    break;
+                case 'e':
+                    var a = offsets.right + this.xoffset;
+                    var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
+                    this._elem.css({right:a, top:b});
+                    break;
+                case 'se':
+                    var a = offsets.right + this.xoffset;
+                    var b = offsets.bottom + this.yoffset;
+                    this._elem.css({right:a, bottom:b});
+                    break;
+                case 's':
+                    var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
+                    var b = offsets.bottom + this.yoffset;
+                    this._elem.css({left:a, bottom:b});
+                    break;
+                case 'sw':
+                    var a = grid._left + this.xoffset;
+                    var b = offsets.bottom + this.yoffset;
+                    this._elem.css({left:a, bottom:b});
+                    break;
+                case 'w':
+                    var a = grid._left + this.xoffset;
+                    var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
+                    this._elem.css({left:a, top:b});
+                    break;
+                default:  // same as 'se'
+                    var a = grid._right - this.xoffset;
+                    var b = grid._bottom + this.yoffset;
+                    this._elem.css({right:a, bottom:b});
+                    break;
+            }
+        } 
     };
 
     // Class: Title
@@ -1494,8 +1500,8 @@ THE SOFTWARE.
         // for dual axes, wether to space ticks the same on both sides.
         this.equalYTicks = true;
         // prop: seriesColors
-        // default colors for the series.
-        this.seriesColors = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"];
+        // default colors for the series.#c29549
+        this.seriesColors = [ "#4bb2c5", "#c5b47f", "#cba02e", "#579575", "#839557", "#958c12", "#953579"];
         this._seriesColorsIndex = 0;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
@@ -1683,7 +1689,8 @@ THE SOFTWARE.
             this.drawSeries(sctx);
 
             // finally, draw and pack the legend
-            this.target.append(this.legend.draw(this._gridOffsets));
+            this.target.append(this.legend.draw());
+            this.legend.pack(this._gridOffsets);
 
             // for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
             //     $.jqplot.postDrawHooks[i].call(this);
