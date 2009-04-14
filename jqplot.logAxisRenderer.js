@@ -147,9 +147,8 @@
             var rmin, rmax;
 
             if (this.tickDistribution == 'even') {                    
-                // for log axes, open up range to get a nice power of axis.renderer.base.
-                rmin = min - min*((this.pad-1)/2);
-                rmax = max + max*((this.pad-1)/2);
+                rmin = (this.min != null) ? this.min : min - min*((this.pad-1)/2);
+                rmax = (this.max != null) ? this.max : max + max*((this.pad-1)/2);
                 this.min = rmin;
                 this.max = rmax;
                 range = this.max - this.min;            
@@ -179,8 +178,8 @@
             }
             
             else if (this.tickDistribution == 'power'){
-                
-                // for log axes, open up range to get a nice power of axis.renderer.base.
+                // for power distribution, open up range to get a nice power of axis.renderer.base.
+                // don't respect the user's min/max settings. (fix this).
                 rmin = Math.pow(this.base, Math.ceil(Math.log(min*(2-this.pad))/Math.log(this.base))-1);
                 rmax = Math.pow(this.base, Math.floor(Math.log(max*this.pad)/Math.log(this.base))+1);
                 this.min = rmin;

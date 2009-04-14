@@ -45,6 +45,7 @@ THE SOFTWARE.
         var _data, _options;
         
         // check to see if only 2 arguments were specified, what is what.
+        if (data == null) throw "No data specified";
         if (options == null) {
             if (data instanceof Array) {
                 _data = data;
@@ -257,7 +258,7 @@ THE SOFTWARE.
         return this._elem;
     };
     
-    $.jqplot.LinearAxisRenderer.prototype.set = function() {   
+    $.jqplot.LinearAxisRenderer.prototype.set = function() { 
         var dim = 0;
         var temp; 
         if (this.show && this.showTicks) {
@@ -416,20 +417,25 @@ THE SOFTWARE.
             if (this.name == 'xaxis' || this.name == 'x2axis') {
                 for (i=0; i<ticks.length; i++) {
                     var t = ticks[i];
-                    var shim = t.getWidth()/2;
-                    var val = this.u2p(t.value) - shim + 'px';
-                    t._elem.css('left', val);
+                    if (t.show && t.showLabel) {
+                        var shim = t.getWidth()/2;
+                        var val = this.u2p(t.value) - shim + 'px';
+                        t._elem.css('left', val);
+                    }
                 }
             }
             else {
                 for (i=0; i<ticks.length; i++) {
                     var t = ticks[i];
-                    var shim = t.getHeight()/2;
-                    var val = this.u2p(t.value) - shim + 'px';
-                    t._elem.css('top', val);
+                    if (t.show && t.showLabel) {
+                        var shim = t.getHeight()/2;
+                        var val = this.u2p(t.value) - shim + 'px';
+                        t._elem.css('top', val);
+                    }
                 }
             }
-        }    
+        }   
+        log(this); 
     };
 
     // class: $.jqplot.AxisTickRenderer
@@ -443,6 +449,9 @@ THE SOFTWARE.
         // prop: showMark
         // wether or not to show the mark on the axis.
         this.showMark = true;
+        // prop: showGridline
+        // wether or not to draw the gridline on the grid at this tick.
+        this.showGridline = true;
         // prop: isMinorTick
         // if this is a minor tick.
         this.isMinorTick = false;
@@ -530,7 +539,7 @@ THE SOFTWARE.
         
         // prop: show
         // Wether to display the legend on the graph.
-        this.show = true;
+        this.show = false;
         // prop: location
         // Placement of the legend.  one of the compas directions: nw, n, ne, e, se, s, sw, w
         this.location = 'ne';
@@ -1239,31 +1248,25 @@ THE SOFTWARE.
                 var axis = axes[name];
                 var ticks = axis._ticks;
                 if (axis.show) {
-                    switch (name) {
-                        case 'xaxis':
-                            for (var i=0; i<ticks.length; i++) {
-                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
-                                drawLine(pos, this._top, pos, this._bottom);
+                    for (var i=0; i<ticks.length; i++) {
+                        var t = axis._ticks[i];
+                        if (t.show && t.showGridline) {
+                            var pos = Math.round(axis.u2p(t.value)) + 0.5;
+                            switch (name) {
+                                case 'xaxis':
+                                    drawLine(pos, this._top, pos, this._bottom);
+                                    break;
+                                case 'yaxis':
+                                    drawLine(this._right, pos, this._left, pos);
+                                    break;
+                                case 'x2axis':
+                                    drawLine(pos, this._bottom, pos, this._top);
+                                    break;
+                                case 'y2axis':
+                                    drawLine(this._left, pos, this._right, pos);
+                                    break;
                             }
-                            break;
-                        case 'yaxis':
-                            for (var i=0; i<ticks.length; i++) {
-                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
-                                drawLine(this._right, pos, this._left, pos);
-                            }
-                            break;
-                        case 'x2axis':
-                            for (var i=0; i<ticks.length; i++) {
-                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
-                                drawLine(pos, this._bottom, pos, this._top);
-                            }
-                            break;
-                        case 'y2axis':
-                            for (var i=0; i<ticks.length; i++) {
-                                var pos = Math.round(axis.u2p(axis._ticks[i].value)) + 0.5;
-                                drawLine(this._left, pos, this._right, pos);
-                            }
-                            break;
+                        }
                     }
                 }
             }
@@ -1290,107 +1293,97 @@ THE SOFTWARE.
                 var s = to.markSize;
                 var m = to.mark;
                 var t = axis._ticks;
-                switch (name) {
-                    case 'xaxis':
-                        for (var i=0; i<t.length; i++) {
-                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'inside':
-                                    b = this._bottom-s;
-                                    e = this._bottom;
-                                    break;
-                                case 'outside':
-                                    b = this._bottom;
-                                    e = this._bottom+s;
-                                    break;
-                                case 'cross':
-                                    b = this._bottom-s;
-                                    e = this._bottom+s;
-                                    break;
-                                default:
-                                    b = this._bottom;
-                                    e = this._bottom+s;
-                                    break;
-                            }
-                            drawLine(pos, b, pos, e);
+                for (var i=0; i<t.length; i++) {
+                    if (t[i].show && t[i].showMark) {
+                        var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
+                        var b, e;
+                        switch (name)     {
+                            case 'xaxis':
+                                switch (m) {
+                                    case 'inside':
+                                        b = this._bottom-s;
+                                        e = this._bottom;
+                                        break;
+                                    case 'outside':
+                                        b = this._bottom;
+                                        e = this._bottom+s;
+                                        break;
+                                    case 'cross':
+                                        b = this._bottom-s;
+                                        e = this._bottom+s;
+                                        break;
+                                    default:
+                                        b = this._bottom;
+                                        e = this._bottom+s;
+                                        break;
+                                }
+                                drawLine(pos, b, pos, e);
+                                break;
+                            case 'yaxis':
+                                switch (m) {
+                                    case 'outside':
+                                        b = this._left-s;
+                                        e = this._left;
+                                        break;
+                                    case 'inside':
+                                        b = this._left;
+                                        e = this._left+s;
+                                        break;
+                                    case 'cross':
+                                        b = this._left-s;
+                                        e = this._left+s;
+                                        break;
+                                    default:
+                                        b = this._left-s;
+                                        e = this._left;
+                                        break;
+                                }
+                                drawLine(b, pos, e, pos);
+                                break;
+                            case 'x2axis':
+                                switch (m) {
+                                    case 'outside':
+                                        b = this._top-s;
+                                        e = this._top;
+                                        break;
+                                    case 'inside':
+                                        b = this._top;
+                                        e = this._top+s;
+                                        break;
+                                    case 'cross':
+                                        b = this._top-s;
+                                        e = this._top+s;
+                                        break;
+                                    default:
+                                        b = this._top-s;
+                                        e = this._top;
+                                        break;
+                                }
+                                drawLine(pos, b, pos, e);
+                                break;
+                            case 'y2axis':
+                                switch (m) {
+                                    case 'inside':
+                                        b = this._right-s;
+                                        e = this._right;
+                                        break;
+                                    case 'outside':
+                                        b = this._right;
+                                        e = this._right+s;
+                                        break;
+                                    case 'cross':
+                                        b = this._right-s;
+                                        e = this._right+s;
+                                        break;
+                                    default:
+                                        b = this._right;
+                                        e = this._right+s;
+                                        break;
+                                }
+                                drawLine(b, pos, e, pos);
+                                break;
                         }
-                        break;
-                    case 'yaxis':
-                        for (var i=0; i<t.length; i++) {
-                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'outside':
-                                    b = this._left-s;
-                                    e = this._left;
-                                    break;
-                                case 'inside':
-                                    b = this._left;
-                                    e = this._left+s;
-                                    break;
-                                case 'cross':
-                                    b = this._left-s;
-                                    e = this._left+s;
-                                    break;
-                                default:
-                                    b = this._left-s;
-                                    e = this._left;
-                                    break;
-                            }
-                            drawLine(b, pos, e, pos);
-                        }
-                        break;
-                    case 'x2axis':
-                        for (var i=0; i<t.length; i++) {
-                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'outside':
-                                    b = this._top-s;
-                                    e = this._top;
-                                    break;
-                                case 'inside':
-                                    b = this._top;
-                                    e = this._top+s;
-                                    break;
-                                case 'cross':
-                                    b = this._top-s;
-                                    e = this._top+s;
-                                    break;
-                                default:
-                                    b = this._top-s;
-                                    e = this._top;
-                                    break;
-                            }
-                            drawLine(pos, b, pos, e);
-                        }
-                        break;
-                    case 'y2axis':
-                        for (var i=0; i<t.length; i++) {
-                            var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
-                            var b, e;
-                            switch (m) {
-                                case 'inside':
-                                    b = this._right-s;
-                                    e = this._right;
-                                    break;
-                                case 'outside':
-                                    b = this._right;
-                                    e = this._right+s;
-                                    break;
-                                case 'cross':
-                                    b = this._right-s;
-                                    e = this._right+s;
-                                    break;
-                                default:
-                                    b = this._right;
-                                    e = this._right+s;
-                                    break;
-                            }
-                            drawLine(b, pos, e, pos);
-                        }
-                        break;
+                    }
                 }
             }
         }
@@ -1501,7 +1494,7 @@ THE SOFTWARE.
         this.equalYTicks = true;
         // prop: seriesColors
         // default colors for the series.#c29549
-        this.seriesColors = [ "#4bb2c5", "#c5b47f", "#cba02e", "#579575", "#839557", "#958c12", "#953579"];
+        this.seriesColors = [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12", "#953579"];
         this._seriesColorsIndex = 0;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
@@ -1520,7 +1513,7 @@ THE SOFTWARE.
         this.init = function(target, data, options) {
             this.targetId = target;
             this.target = $('#'+target);
-            if (!this.target) throw "No plot target specified";
+            if (!this.target.get(0)) throw "No plot target specified";
             
             // make sure the target is positioned by some means and set css
             if (this.target.css('position') == 'static') this.target.css('position', 'relative');
@@ -1549,7 +1542,7 @@ THE SOFTWARE.
             
             for (var i=0; i<this.series.length; i++) {
                 this.series[i]._plotDimensions = this._plotDimensions;
-               this.series[i].init();
+                this.series[i].init();
             }
 
             for (var name in this.axes) {
