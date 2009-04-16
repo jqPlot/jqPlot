@@ -131,6 +131,9 @@ THE SOFTWARE.
         // Padding to extend the range above and below the data bounds.
         // Factor to multiply by the data range when setting the axis bounds
         this.pad = 1.2;
+        // prop: ticks
+        // 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...]
+        this.ticks = [];
         // prop: numberTicks
         // Desired number of ticks.  Computed automatically by default
         this.numberTicks;
@@ -149,20 +152,7 @@ THE SOFTWARE.
         this.tickRenderer = $.jqplot.AxisTickRenderer;
         // prop: tickOptions
         // Options that will be passed to the tickRenderer.
-        // 
-        // Properties:
-        // mark - tick markings.  One of 'inside', 'outside', 'cross', '' or null.
-        //     The latter 2 options will hide the tick marks.
-        // markSize - length of the tick marks in pixels.  For 'cross' style, length
-        //     will be stoked above and below axis, so total length will be twice this.
-        // size - uhhhh, hmmm.
-        // formatter - a class of a formatter which formats the value of the tick for display.
-        // showLabel - Wether to show labels or not.
-        // formatString - formatting string passed to the tick formatter.
-        // fontFamily - css font-family spec.
-        // fontSize -css font-size spec.
-        // textColor - css color spec.
-        this.tickOptions = {mark:'outside', markSize:4, size:4, showLabel:true, formatter:$.jqplot.sprintf, formatString:'%.1f', fontFamily:'', fontSize:'0.75em', textColor:''};
+        this.tickOptions = {};
         // prop: showTicks
         // wether to show the ticks (marks and labels) or not.
         this.showTicks = true;
@@ -187,24 +177,6 @@ THE SOFTWARE.
     Axis.prototype.constructor = Axis;
     
     Axis.prototype.init = function() {
-        var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s.data;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
-                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
-                }              
-                else {
-                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
-                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
-                }              
-            }
-        }
         this.renderer = new this.renderer();
         this.renderer.init.call(this, this.rendererOptions);
         
@@ -227,6 +199,24 @@ THE SOFTWARE.
     
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
         $.extend(true, this, options);
+        var db = this._dataBounds;
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s.data;
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
+                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                }              
+                else {
+                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
+                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                }              
+            }
+        }
     };
     
 
@@ -286,6 +276,7 @@ THE SOFTWARE.
     $.jqplot.LinearAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
         var ticks = this._ticks;
+        var userTicks = this.ticks;
         var name = this.name;
         // databounds were set on axis initialization.
         var db = this._dataBounds;
@@ -294,37 +285,41 @@ THE SOFTWARE.
         var pos1, pos2;
         var tt, i;
         
-        //////////////////////////
-        //////////////////////////
-        // fix me
-        //////////////////////////
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
-        if (ticks.length) {
-            // for (i=0; i<ticks.length; i++){
-            //     var t = ticks[i];
-            //     if (!t.label) t.label = t.value.toString();
-            //     // set iitial css positioning styles for the ticks.
-            //     var pox = i*15+'px';
-            //     switch (name) {
-            //         case 'xaxis':
-            //             t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
-            //             break;
-            //         case 'x2axis':
-            //             t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
-            //             break;
-            //         case 'yaxis':
-            //             t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
-            //             break;
-            //         case 'y2axis':
-            //             t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};
-            //             break;
-            //     }
-            // }
-            // axis.numberTicks = ticks.length;
-            // axis.min = ticks[0].value;
-            // axis.max = ticks[axis.numberTicks-1].value;
-            // axis.tickInterval = (axis.max - axis.min) / (axis.numberTicks - 1);
+        
+        if (userTicks.length) {
+            // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
+            for (i=0; i<userTicks.length; i++){
+                var ut = userTicks[i];
+                var t = new this.tickRenderer(this.tickOptions);
+                if (ut.constructor == Array) {
+                    t.value = ut[0];
+                    t.label = ut[1];
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) t.showMark = false;
+                    t.setTick(ut[0], this.name);
+                    this._ticks.push(t);
+                }
+                
+                else {
+                    t.value = ut;
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) t.showMark = false;
+                    t.setTick(ut, this.name);
+                    this._ticks.push(t);
+                }
+            }
+            this.numberTicks = userTicks.length;
+            this.min = this._ticks[0].value;
+            this.max = this._ticks[this.numberTicks-1].value;
+            this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
         }
         
         // we don't have any ticks yet, let's make some!
@@ -434,8 +429,7 @@ THE SOFTWARE.
                     }
                 }
             }
-        }   
-        log(this); 
+        }
     };
 
     // class: $.jqplot.AxisTickRenderer
@@ -471,10 +465,10 @@ THE SOFTWARE.
         this._styles = {};
         // prop: formatter
         // A class of a formatter for the tick text.  sprintf by default.
-        this.formatter = $.jqplot.sprintf;
+        this.formatter = $.jqplot.DefaultTickFormatter;
         // prop: formatString
         // string passed to the formatter.
-        this.formatString = '%.1f'
+        this.formatString = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
         this.fontFamily='';
@@ -1660,7 +1654,6 @@ THE SOFTWARE.
                 this.target.append(this.axes[name].draw());
                 this.axes[name].set();
             }
-            
             if (this.axes.yaxis.show) this._gridOffsets.left = this.axes.yaxis.getWidth();
             if (this.axes.y2axis.show) this._gridOffsets.right = this.axes.y2axis.getWidth();
             if (this.title.show && this.axes.x2axis.show) this._gridOffsets.top = this.title.getHeight() + this.axes.x2axis.getHeight();
@@ -1744,11 +1737,18 @@ THE SOFTWARE.
     // string sprintf(string format[mixed arg1[, mixed arg2[,...]]])
     // The placeholders in the format string are marked by "%" and are followed by one or more of these elements, in this order:
     // 
-    // An optional "+" sign that forces to preceed the result with a plus or minus sign on numeric values. By default, only the "-" sign is used on negative numbers.
-    // An optional padding specifier that says what character to use for padding (if specified). Possible values are 0 or any other character precedeed by a '. The default is to pad with spaces.
-    // An optional "-" sign, that causes sprintf to left-align the result of this placeholder. The default is to right-align the result.
-    // An optional number, that says how many characters the result should have. If the value to be returned is shorter than this number, the result will be padded.
-    // An optional precision modifier, consisting of a "." (dot) followed by a number, that says how many digits should be displayed for floating point numbers. When used on a string, it causes the result to be truncated.
+    // An optional "+" sign that forces to preceed the result with a plus or minus 
+    //   sign on numeric values. By default, only the "-" sign is used on negative numbers.
+    // An optional padding specifier that says what character to use for padding (if specified). 
+    //   Possible values are 0 or any other character precedeed by a '. The default is to pad with spaces.
+    // An optional "-" sign, that causes sprintf to left-align the result of this placeholder. 
+    //   The default is to right-align the result.
+    // An optional number, that says how many characters the result should have. If the value 
+    //   to be returned is shorter than this number, the result will be padded.
+    // An optional precision modifier, consisting of a "." (dot) followed by a number, that says 
+    //   how many digits should be displayed for floating point numbers. When used on a string, 
+    //   it causes the result to be truncated.
+    // 
     // A type specifier that can be any of:
     // % - print a literal "%" character
     // b - print an integer as a binary number
@@ -1757,6 +1757,8 @@ THE SOFTWARE.
     // e - print a float as scientific notation
     // u - print an integer as an unsigned decimal number
     // f - print a float as is
+    // p - print a float of given significant digits instead of precision
+    // P - print a float of given significant digits instead of precision without padding out trailing zeros.
     // o - print an integer as an octal number
     // s - print a string as is
     // x - print an integer as a hexadecimal number (lower-case)
@@ -1765,12 +1767,55 @@ THE SOFTWARE.
 
     function str_repeat(i, m) { for (var o = []; m > 0; o[--m] = i); return(o.join('')); }
 
+    function calcSigDigits(num) {
+        var count = 0;
+        var parts = String(num).split('.');
+        var part, i, p;
+
+        if (parts.length == 2) {
+            part = parts[1];
+            for (i=part.length-1; i>-1; i--) {
+                p = part[i];
+                if (count == 0) {
+                    if (p != '0') count++;
+                }
+                else count++;
+            }
+            part = parts[0];
+            for (var i=part.length-1; i>-1; i--) {
+                p = part[i];
+                if (count == 0) {
+                    if (p != '0') count++;
+                }
+                else if (part.length == 1) {
+                    if (p != '0') count++;
+                }
+                else count++;
+            }
+        }
+
+        else if (parts.length == 1) {
+            part = parts[0];
+            for (var i=part.length-1; i>-1; i--) {
+                p = part[i];
+                if (count == 0) {
+                    if (p != '0') count++;
+                }
+                else count++;
+            }
+        }
+        
+        if (count<1) count = 1;
+
+        return count;
+    };
+
     $.jqplot.sprintf = function() {
       var i = 0, a, f = arguments[i++], o = [], m, p, c, x;
       while (f) {
         if (m = /^[^\x25]+/.exec(f)) o.push(m[0]);
         else if (m = /^\x25{2}/.exec(f)) o.push('%');
-        else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
+        else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fopPsuxX])/.exec(f)) {
           if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) throw("Too few arguments.");
           if (/[^s]/.test(m[7]) && (typeof(a) != 'number'))
             throw("Expecting number but found " + typeof(a));
@@ -1780,6 +1825,17 @@ THE SOFTWARE.
             case 'd': a = parseInt(a); break;
             case 'e': a = m[6] ? a.toExponential(m[6]) : a.toExponential(); break;
             case 'f': a = m[6] ? parseFloat(a).toFixed(m[6]) : parseFloat(a); break;
+            case 'p': a = m[6] ? parseFloat(a).toPrecision(m[6]) : parseFloat(a); break;
+            case 'P':
+                var np = m[6];
+                if (np) {
+                    var b = parseFloat(a).toPrecision(np);
+                    var sig = calcSigDigits(b);
+                    if (sig < np) np = sig;
+                    a = parseFloat(a).toPrecision(np);
+                }
+                else a = parseFloat(a);
+                break;
             case 'o': a = a.toString(8); break;
             case 's': a = ((a = String(a)) && m[6] ? a.substring(0, m[6]) : a); break;
             case 'u': a = Math.abs(a); break;
@@ -1796,6 +1852,14 @@ THE SOFTWARE.
         f = f.substring(m[0].length);
       }
       return o.join('');
+    };
+    
+    $.jqplot.DefaultTickFormatter = function (format, val) {
+        if (typeof val == 'number') {
+            if (!format) format = '%.6P';
+            return $.jqplot.sprintf(format, val);
+        }
+        else return String(val);
     }
     
 })(jQuery);

@@ -29,37 +29,29 @@
         var pos1, pos2;
         var tt, i;
 
-        //////////////////////////
-        //////////////////////////
-        // fix me
-        //////////////////////////
         // if we already have ticks, use them.
-        // ticks must be in order of increasing value.
         if (ticks.length) {
-            // for (i=0; i<ticks.length; i++){
-            //     var t = ticks[i];
-            //     if (!t.label) t.label = t.value.toString();
-            //     // set iitial css positioning styles for the ticks.
-            //     var pox = i*15+'px';
-            //     switch (name) {
-            //         case 'xaxis':
-            //             t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
-            //             break;
-            //         case 'x2axis':
-            //             t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
-            //             break;
-            //         case 'yaxis':
-            //             t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
-            //             break;
-            //         case 'y2axis':
-            //             t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};
-            //             break;
-            //     }
-            // }
-            // axis.numberTicks = ticks.length;
-            // axis.min = ticks[0].value;
-            // axis.max = ticks[axis.numberTicks-1].value;
-            // axis.tickInterval = (axis.max - axis.min) / (axis.numberTicks - 1);
+            var newticks = [];
+            this.min = 0.5;
+            this.max = ticks.length + 0.5;
+            var range = this.max - this.min;
+            this.numberTicks = 2*ticks.length + 1;
+            for (i=0; i<ticks.length; i++){
+                tt = this.min + i * range / (this.numberTicks-1);
+                // need a marker before and after the tick
+                var t = new this.tickRenderer(this.tickOptions);
+                t.showLabel = false;
+                t.showMark = true;
+                t.showGridline = true;
+                t.setTick(tt, this.name);
+                newticks.push(t);
+                var t = new this.tickRenderer(this.tickOptions);
+                t.showLabel = true;
+                t.showMark = false;
+                t.showGridline = false;
+                t.
+
+            }
         }
 
         // we don't have any ticks yet, let's make some!
@@ -78,10 +70,8 @@
             var max;
             for (var i=0; i<this._series.length; i++) {
                 var s = this._series[i];
-                log(s);
                 for (var j=0; j<s.data.length; j++) {
-                    var val = String(s.data[j][0]);
-                    log(val);
+                    var val = s.data[j][0];
                     if ($.inArray(val, labels) == -1) {
                         numcats += 1;      
                         labels.push(val);
@@ -97,7 +87,12 @@
             var range = max - min;
             this.min = min;
             this.max = max;
-            var maxVisibleTicks = parseInt(3+dim/50);
+            var track = 0;
+            var maxVisibleTicks = parseInt(3+dim/45);
+            log(numcats);
+            log(maxVisibleTicks);
+            var skip = parseInt(numcats/maxVisibleTicks);
+            log(skip);
 
 
             this.tickInterval = range / (this.numberTicks-1);
@@ -111,8 +106,15 @@
                     t.showGridline = true;
                 }
                 else {
-                    t.showLabel = true;
-                    t.label = labels[(i-1)/2];
+                    if (skip>0 && track<skip) {
+                        t.showLabel = false;
+                        track += 1;
+                    }
+                    else {
+                        t.showLabel = true;
+                        track = 0;
+                    } 
+                    t.label = t.formatter(t.formatString, labels[(i-1)/2]);
                     t.showMark = false;
                     t.showGridline = false;
                 }
