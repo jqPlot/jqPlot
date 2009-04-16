@@ -1281,14 +1281,12 @@ THE SOFTWARE.
         ctx.strokeStyle = '#cccccc';
         for (var name in axes) {
             var axis = axes[name];
-            var to = axis.tickOptions;
-            if (axis.show && to.mark) {
-                var ticks = axis._ticks;
-                var s = to.markSize;
-                var m = to.mark;
+            if (axis.show) {
                 var t = axis._ticks;
                 for (var i=0; i<t.length; i++) {
-                    if (t[i].show && t[i].showMark) {
+                    if (t[i].show && t[i].showMark && t[i].mark) {
+                        s = t[i].markSize;
+                        m = t[i].mark;
                         var pos = Math.round(axis.u2p(t[i].value)) + 0.5;
                         var b, e;
                         switch (name)     {

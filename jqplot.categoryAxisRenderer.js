@@ -19,8 +19,8 @@
 
     $.jqplot.CategoryAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
-        log("in category axis renderer create ticks");
         var ticks = this._ticks;
+        var userTicks = this.ticks;
         var name = this.name;
         // databounds were set on axis initialization.
         var db = this._dataBounds;
@@ -30,28 +30,35 @@
         var tt, i;
 
         // if we already have ticks, use them.
-        if (ticks.length) {
-            var newticks = [];
+        if (userTicks.length) {
             this.min = 0.5;
-            this.max = ticks.length + 0.5;
+            this.max = userTicks.length + 0.5;
             var range = this.max - this.min;
-            this.numberTicks = 2*ticks.length + 1;
-            for (i=0; i<ticks.length; i++){
-                tt = this.min + i * range / (this.numberTicks-1);
+            this.numberTicks = 2*userTicks.length + 1;
+            for (i=0; i<userTicks.length; i++){
+                tt = this.min + 2 * i * range / (this.numberTicks-1);
                 // need a marker before and after the tick
                 var t = new this.tickRenderer(this.tickOptions);
                 t.showLabel = false;
                 t.showMark = true;
                 t.showGridline = true;
                 t.setTick(tt, this.name);
-                newticks.push(t);
+                this._ticks.push(t);
                 var t = new this.tickRenderer(this.tickOptions);
+                t.label = userTicks[i];
                 t.showLabel = true;
                 t.showMark = false;
                 t.showGridline = false;
-                t.
-
+                t.setTick(tt+0.5, this.name);
+                this._ticks.push(t);
             }
+            // now add the last tick at the end
+            var t = new this.tickRenderer(this.tickOptions);
+            t.showLabel = false;
+            t.showMark = true;
+            t.showGridline = true;
+            t.setTick(tt+1, this.name);
+            this._ticks.push(t);
         }
 
         // we don't have any ticks yet, let's make some!
@@ -89,10 +96,7 @@
             this.max = max;
             var track = 0;
             var maxVisibleTicks = parseInt(3+dim/45);
-            log(numcats);
-            log(maxVisibleTicks);
             var skip = parseInt(numcats/maxVisibleTicks);
-            log(skip);
 
 
             this.tickInterval = range / (this.numberTicks-1);
@@ -126,7 +130,6 @@
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
-            log(this);
         }
     };
     
