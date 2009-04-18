@@ -10,69 +10,136 @@ describe 'jqPlot'
         end
 
         it 'catch canvas dimensions <=0'
-            -{ $.jqplot('chart1', [[1,2,3,4]]) }.should.throw_error 'Canvas dimensions <=0'
+            -{ $.jqplot('chart0', [[1,2,3,4]]) }.should.throw_error 'Canvas dimensions <=0'
         end
     end
     
     describe 'Line options'
+        it plot1.title.text            
+            plot1.axes.xaxis.should.have_property '_elem'
+            plot1.axes.yaxis.should.have_property '_elem'
+            plot1.title.should.have_property '_elem'
+            plot1.seriesCanvas.should.have_property '_elem'
+            plot1.series.should.have_property 'length', 4
+            plot1.series[0].markerRenderer.style.should.equal 'square'
+            plot1.series[0].lineWidth.should.be 2
+            plot1.series[1].showLine.should.be_false
+            plot1.series[1].markerRenderer.style.should.equal 'diamond' 
+            plot1.series[2].markerRenderer.style.should.equal 'circle'
+            plot1.series[3].lineWidth.should.be 5
+            plot1.series[3].markerRenderer.style.should.equal 'filledSquare'
+            plot1.series[3].markerRenderer.size.should.equal 11 
+            plot1.title.text.should.be 'Line Style Options'
+        end
+        it plot2.title.text            
+            plot2.axes.xaxis.should.have_property '_elem'
+            plot2.axes.yaxis.should.have_property '_elem'
+            plot2.title.should.have_property '_elem'
+            plot2.seriesCanvas.should.have_property '_elem'
+            plot2.series.should.have_property 'length', 3
+            plot2.series[0].markerRenderer.style.should.equal 'square'
+            plot2.series[0].showLine.should.be_false
+            plot2.series[2].lineWidth.should.equal 5
+            plot2.title.text.should.be 'Mixed Data Lines'
+        end
+    end
     
-        it 'Multiple mixed data lines'
-            chart = $.jqplot('chart2', [[[1,1],[1.5, 2.25],[2,4],[2.5,6.25],[3,9],[3.5,12.25],[4,16]],[25, 12.5, 6.25, 3.125], [4, 25, 21, 9]], {
-                legend:{show:true},
-                title:'Mixed Data Lines',
-                series:[{label:'Rising line', showLine:false, markerOptions:{style:'square'}}, {label:'Declining line'}, {label:'Zig Zag Line', lineWidth:5, showMarker:false}]
-            })
-            chart.axes.xaxis.should.have_property '_elem'
-            chart.axes.yaxis.should.have_property '_elem'
-            chart.title.should.have_property '_elem'
-            chart.seriesCanvas.should.have_property '_elem'
-            chart.series.should.have_property 'length', 3
-            chart.series[0].markerRenderer.style.should.equal 'square'
-            chart.series[0].showLine.should.be_false
-            chart.series[2].lineWidth.should.equal 5
-            chart.title.text.should.be 'Mixed Data Lines'
+    describe 'Shadow options'
+        it plot1b.title.text
+            plot1b.axes.xaxis.should.have_property '_elem'
+            plot1b.axes.yaxis.should.have_property '_elem'
+            plot1b.title.should.have_property '_elem'
+            plot1b.seriesCanvas.should.have_property '_elem'
         end
     end
     
     describe 'Axes options' 
-        it 'Secondary log y axis and options'
-            chart = $.jqplot('chart3', [[[1,1],[2,4],[3,9],[4,16]],[25, 12.5, 6.25, 3.125]], {
-                legend:{show:true, location:'e'},
-                title:'Secondary Log Axis',
-                series:[{label:'Rising line'},{yaxis:'y2axis', label:'Declining line'}], 
-                axes:{xaxis:{min:0, max:5}, y2axis:{renderer:$.jqplot.LogAxisRenderer, min:2, max:30}}
-            })
-            chart.axes.xaxis.should.have_property '_elem'
-            chart.axes.yaxis.should.have_property '_elem'
-            chart.axes.y2axis.should.have_property '_elem'
-            chart.title.should.have_property '_elem'
-            chart.seriesCanvas.should.have_property '_elem'
-            chart.axes.y2axis.renderer.constructor.should.be $.jqplot.LogAxisRenderer
-            chart.axes.y2axis.base.should.equal 10
-            chart.legend.location.should.be 'e'
-            chart.title.text.should.be 'Secondary Log Axis'
-            chart.axes.xaxis.min.should.be 0
-            chart.axes.xaxis.max.should.be 5
+        it plot3.title.text
+            plot3.axes.xaxis.should.have_property '_elem'
+            plot3.axes.yaxis.should.have_property '_elem'
+            plot3.axes.y2axis.should.have_property '_elem'
+            plot3.title.should.have_property '_elem'
+            plot3.seriesCanvas.should.have_property '_elem'
+            plot3.axes.y2axis.renderer.constructor.should.be $.jqplot.LogAxisRenderer
+            plot3.axes.y2axis.base.should.equal 10
+            plot3.legend.location.should.be 'e'
+            plot3.title.text.should.be 'Secondary Log Axis'
+            plot3.axes.xaxis.min.should.be 0
+            plot3.axes.xaxis.max.should.be 5
         end
-        it 'Secondary log y axis, power distribution'
-            chart = $.jqplot('chart4', [[[1,1],[2,4],[3,9],[4,16]],[25, 12.5, 6.25, 3.125]], {
-                legend:{show:true, location:'e'},
-                title:'Secondary Log Axis, Power Distribution',
-                series:[{label:'Rising line'},{yaxis:'y2axis', label:'Declining line'}], 
-                axes:{xaxis:{min:0, max:5}, y2axis:{tickDistribution:'power', renderer:$.jqplot.LogAxisRenderer, min:2, max:30}}
-            })
-            chart.axes.xaxis.should.have_property '_elem'
-            chart.axes.yaxis.should.have_property '_elem'
-            chart.axes.y2axis.should.have_property '_elem'
-            chart.title.should.have_property '_elem'
-            chart.seriesCanvas.should.have_property '_elem'
-            chart.axes.y2axis.renderer.constructor.should.equal $.jqplot.LogAxisRenderer
-            chart.axes.y2axis.base.should.equal 10
-            chart.legend.location.should.be 'e'
-            chart.title.text.should.be 'Secondary Log Axis, Power Distribution'
-            chart.axes.xaxis.min.should.be 0
-            chart.axes.xaxis.max.should.be 5
-            chart.axes.y2axis.tickDistribution.should.be 'power'
+        
+        it plot4.title.text
+            plot4.axes.xaxis.should.have_property '_elem'
+            plot4.axes.yaxis.should.have_property '_elem'
+            plot4.title.should.have_property '_elem'
+            plot4.seriesCanvas.should.have_property '_elem'
+            plot4.axes.yaxis.renderer.constructor.should.equal $.jqplot.LogAxisRenderer
+            plot4.axes.yaxis.base.should.equal 10
+            plot4.legend.location.should.be 'e'
+            plot4.title.text.should.be 'Secondary Log Axis, Power Distribution'
+            plot4.axes.xaxis.min.should.be 0
+            plot4.axes.xaxis.max.should.be 5
+            plot4.axes.y2axis.tickDistribution.should.be 'power'
+        end
+        
+        it plot5.title.text
+            plot5.axes.xaxis.should.have_property '_elem'
+            plot5.axes.yaxis.should.have_property '_elem'
+            plot5.title.should.have_property '_elem'
+            plot5.seriesCanvas.should.have_property '_elem'
+            plot5.axes.xaxis.min.should.be 0
+            plot5.axes.xaxis.max.should.be 5
+            plot5.axes.xaxis.numberTicks.should.be 6
+            plot5.axes.yaxis.min.should.be -5
+            plot5.axes.yaxis.max.should.be 30
+            plot5.axes.yaxis.numberTicks.should.be 8
+        end
+    end
+    
+    describe 'Category Axes'
+        it plot6.title.text
+            plot6.axes.xaxis.should.have_property '_elem'
+            plot1.seriesCanvas.should.have_property '_elem'
+            plot6.axes.xaxis.renderer.constructor.should.be $.jqplot.CategoryAxisRenderer
+            plot7.axes.xaxis._ticks[0].label.should.be '1'
+            plot7.axes.xaxis._ticks[0].label.should.be '2'
+            plot7.axes.xaxis._ticks[0].label.should.be '3'
+            plot7.axes.xaxis._ticks[0].label.should.be '4'
+            plot7.axes.xaxis._ticks[0].label.should.be '5'
+            plot7.axes.xaxis._ticks[0].label.should.be '6'
+            plot7.axes.xaxis._ticks[0].label.should.be '7'
+        end
+        it plot7.title.text
+            plot7.axes.xaxis.should.have_property '_elem'
+            plot1.seriesCanvas.should.have_property '_elem'
+            plot7.axes.xaxis.renderer.constructor.should.be $.jqplot.CategoryAxisRenderer
+            plot7.axes.xaxis._ticks[0].label.should.be 'uno'
+            plot7.axes.xaxis._ticks[0].label.should.be 'dos'
+            plot7.axes.xaxis._ticks[0].label.should.be 'tres'
+            plot7.axes.xaxis._ticks[0].label.should.be 'cuatro'
+            plot7.axes.xaxis._ticks[0].label.should.be 'cinco'
+            plot7.axes.xaxis._ticks[0].label.should.be 'seis'
+            plot7.axes.xaxis._ticks[0].label.should.be 'siete'
+        end
+        it plot8.title.text
+            plot8.axes.xaxis.should.have_property '_elem'
+            plot1.seriesCanvas.should.have_property '_elem'
+            plot8.axes.xaxis.renderer.constructor.should.be $.jqplot.CategoryAxisRenderer
+            plot8.axes.xaxis._ticks[0].label.should.be 'uno'
+            plot8.axes.xaxis._ticks[0].label.should.be 'due'
+            plot8.axes.xaxis._ticks[0].label.should.be 'tre'
+            plot8.axes.xaxis._ticks[0].label.should.be 'quattro'
+            plot8.axes.xaxis._ticks[0].label.should.be 'cinque'
+            plot8.axes.xaxis._ticks[0].label.should.be 'sei'
+            plot8.axes.xaxis._ticks[0].label.should.be 'sette'
+        end
+    end
+
+    describe 'Date Axes'
+        it plot9.title.text
+            plot9.axes.xaxis.should.have_property '_elem'
+            plot1.seriesCanvas.should.have_property '_elem'
+            plot9.axes.xaxis.renderer.constructor.should.be $.jqplot.DateAxisRenderer
         end
     end
 

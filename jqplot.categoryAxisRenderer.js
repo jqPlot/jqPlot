@@ -15,6 +15,28 @@
     
     $.jqplot.CategoryAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
     $.jqplot.CategoryAxisRenderer.prototype.constructor = $.jqplot.CategoryAxisRenderer;
+    
+    $.jqplot.CategoryAxisRenderer.prototype.init = function(options){
+        $.extend(true, this, {tickOptions:{formatString:'%d'}}, options);
+        var db = this._dataBounds;
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s.data;
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
+                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                }              
+                else {
+                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
+                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                }              
+            }
+        }
+    };
  
 
     $.jqplot.CategoryAxisRenderer.prototype.createTicks = function() {

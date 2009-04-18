@@ -513,7 +513,9 @@ THE SOFTWARE.
     
     $.jqplot.AxisTickRenderer.prototype.draw = function() {
         if (!this.label) this.label = this.formatter(this.formatString, this.value);
-        this._elem = $('<div class="jqplot-axis-tick">'+this.label+'</div>');
+        style='';
+        if (Number(this.label)) style='style="white-space:nowrap;" ';
+        this._elem = $('<div '+style+'class="jqplot-axis-tick">'+this.label+'</div>');
         for (var s in this._styles) {
             this._elem.css(s, this._styles[s]);
         }
@@ -1765,7 +1767,10 @@ THE SOFTWARE.
 
     function str_repeat(i, m) { for (var o = []; m > 0; o[--m] = i); return(o.join('')); }
 
-    function calcSigDigits(num) {
+    function calcSigDigits(num, keepint) {
+        // keepint = true will force non-significant zeros before a
+        // decimal point to be counted as significant.
+        keepint = (keepint) ? true : false;
         var count = 0;
         var parts = String(num).split('.');
         var part, i, p;
@@ -1783,10 +1788,12 @@ THE SOFTWARE.
             for (var i=part.length-1; i>-1; i--) {
                 p = part[i];
                 if (count == 0) {
-                    if (p != '0') count++;
+                    if (!keepint && p != '0') count++;
+                    else count++;
                 }
                 else if (part.length == 1) {
-                    if (p != '0') count++;
+                    if (!keepint && p != '0') count++;
+                    else count++;
                 }
                 else count++;
             }
@@ -1797,7 +1804,8 @@ THE SOFTWARE.
             for (var i=part.length-1; i>-1; i--) {
                 p = part[i];
                 if (count == 0) {
-                    if (p != '0') count++;
+                    if (!keepint && p != '0') count++;
+                    else count++;
                 }
                 else count++;
             }
@@ -1828,7 +1836,7 @@ THE SOFTWARE.
                 var np = m[6];
                 if (np) {
                     var b = parseFloat(a).toPrecision(np);
-                    var sig = calcSigDigits(b);
+                    var sig = calcSigDigits(b, true);
                     if (sig < np) np = sig;
                     a = parseFloat(a).toPrecision(np);
                 }
@@ -1854,7 +1862,7 @@ THE SOFTWARE.
     
     $.jqplot.DefaultTickFormatter = function (format, val) {
         if (typeof val == 'number') {
-            if (!format) format = '%.6P';
+            if (!format) format = '%.1f';
             return $.jqplot.sprintf(format, val);
         }
         else return String(val);

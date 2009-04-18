@@ -17,7 +17,7 @@
     $.jqplot.DateAxisRenderer.prototype.constructor = $.jqplot.DateAxisRenderer;
     
     $.jqplot.DateTickFormatter = function(format, val) {
-        if (!format) format = Date.ISO;
+        if (!format) format = '%Y/%m/%d';
         return Date.create(val).strftime(format);
     }
     
@@ -104,14 +104,14 @@
                 dim = this._plotDimensions.height;
             }
         
-            min = ((this.min != null) ? this.min : db.min);
-            max = ((this.max != null) ? this.max : db.max);
+            min = ((this.min != null) ? Date.create(this.min).getTime() : db.min);
+            max = ((this.max != null) ? Date.create(this.max).getTime() : db.max);
 
             var range = max - min;
             var rmin, rmax;
         
-            rmin = (this.min != null) ? this.min : min - range/2*(this.pad - 1);
-            rmax = (this.max != null) ? this.max : max + range/2*(this.pad - 1);
+            rmin = (this.min != null) ? Date.create(this.min).getTime() : min - range/2*(this.pad - 1);
+            rmax = (this.max != null) ? Date.create(this.max).getTime() : max + range/2*(this.pad - 1);
             this.min = rmin;
             this.max = rmax;
             range = this.max - this.min;
