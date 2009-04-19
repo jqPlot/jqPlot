@@ -145,6 +145,18 @@
             else {
                 dim = this._plotDimensions.height;
             }
+            
+            // if min, max and number of ticks specified, user can't specify interval.
+            if (this.min != null && this.max != null && this.numberTicks != null) {
+                this.tickInterval = null;
+            }
+            
+            // if max, min, and interval specified and interval won't fit, ignore interval.
+            if (this.min != null && this.max != null && this.tickInterval != null) {
+                if (parseInt((this.max-this.min)/this.tickInterval) != (this.max-this.min)/this.tickInterval) {
+                    this.tickInterval = null;
+                }
+            }
         
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
@@ -159,15 +171,21 @@
             range = this.max - this.min;
     
             if (this.numberTicks == null){
+                // if tickInterval is specified by user, we will ignore computed maximum.
+                // max will be equal or greater to fit even # of ticks.
+                if (this.tickInterval != null) {
+                    this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval);
+                    this.max = this.min + this.tickInterval*this.numberTicks;
+                }
                 if (dim > 100) {
                     this.numberTicks = parseInt(3+(dim-100)/75);
                 }
                 else this.numberTicks = 2;
             }
-    
-            this.tickInterval = range / (this.numberTicks-1);
+            
+            if (this.tickInterval == null) this.tickInterval = range / (this.numberTicks-1);
             for (var i=0; i<this.numberTicks; i++){
-                tt = this.min + i * range / (this.numberTicks-1);
+                tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
                 if (!this.showTicks) {

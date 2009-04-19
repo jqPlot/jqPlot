@@ -79,7 +79,7 @@
       line2=[25, 17.5, 12.25, 8.6, 6.0, 4.2, 2.9]; \
       line3=[4, 25, 13, 22, 14, 17, 15]; \
       plot2 = $.jqplot('_target_', [line1, line2, line3], \
-      {legend:{show:true}, title:'Mixed Data Lines', \
+      {legend:{show:true}, title:'Mixed Data Input Formats', \
       series:[{label:'Rising line', showLine:false, markerOptions:{style:'square'}}, \
       {label:'Declining line'}, {label:'Zig Zag Line', lineWidth:5, showMarker:false}]});";
             
@@ -138,12 +138,20 @@
       
       o = "line1=[['2008-09-30', 4], ['2008-10-30', 6.5], ['2008-11-30', 5.7], ['2008-12-30', 9], ['2009-01-30', 8.2]]; \
       plot9 = $.jqplot('_target_', [line1], \
-      {title:'Default Date X Axis', \
-      axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer, min:'2008-08-30', max:'2009-02-28'}}, \
+      {title:'Default Date Axis', \
+      axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
       genplot(o);
       
+      o = "line1=[['2008-06-30', 4], ['2008-7-30', 6.5], ['2008-8-30', 5.7], ['2008-9-30', 9], ['2008-10-30', 8.2]]; \
+      plot10 = $.jqplot('_target_', [line1], \
+      {title:'Customized Date Axis', gridPadding:{right:45}, \
+      axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer, tickOptions:{formatString:'%b %#d, %y'}, min:'May 30, 2008', tickInterval:'1 month'}}, \
+      series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
+      
+      genplot(o);
+  
       prettyPrint();
       
       JSpec.options.profile = false;

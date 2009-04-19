@@ -23,6 +23,7 @@
     
     $.jqplot.DateAxisRenderer.prototype.init = function(options){
         this.tickOptions.formatter = $.jqplot.DateTickFormatter;
+        this._tickInterval = null;
         $.extend(true, this, options);
         var db = this._dataBounds;
         // Go through all the series attached to this axis and find
@@ -92,7 +93,7 @@
             this.numberTicks = userTicks.length;
             this.min = this._ticks[0].value;
             this.max = this._ticks[this.numberTicks-1].value;
-            this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
+            this._tickInterval = [(this.max - this.min) / (this.numberTicks - 1)/1000, 'seconds'];
         }
         
         // we don't have any ticks yet, let's make some!
@@ -102,6 +103,31 @@
             }
             else {
                 dim = this._plotDimensions.height;
+            }
+            
+            // if min, max and number of ticks specified, user can't specify interval.
+            if (this.min != null && this.max != null && this.numberTicks != null) {
+                this.tickInterval = null;
+            }
+            
+            // if user specified a tick interval, convert to usable.
+            if (this.tickInterval != null)
+            {
+                // if interval is a number or can be converted to one, use it.
+                // Assume it is in SECONDS!!!
+                if (Number(this.tickInterval)) {
+                    this._tickInterval = [Number(this.tickInterval), 'seconds'];
+                }
+                // else, parse out something we can build from.
+                else if (typeof this.tickInterval == "string") {
+                    var parts = this.tickInterval.split(' ');
+                    if (parts.length == 1) {
+                        this._tickInterval = [1, parts[0]];
+                    }
+                    else if (parts.length == 2) {
+                        this._tickInterval = [parts[0], parts[1]]
+                    }
+                }
             }
         
             min = ((this.min != null) ? Date.create(this.min).getTime() : db.min);
@@ -117,15 +143,24 @@
             range = this.max - this.min;
     
             if (this.numberTicks == null){
-                if (dim > 100) {
+                // if tickInterval is specified by user, we will ignore computed maximum.
+                // max will be equal or greater to fit even # of ticks.
+                if (this._tickInterval != null) {
+                    var nc = Date.create(this.max).diff(this.min, this._tickInterval[1], true);
+                    this.numberTicks = Math.ceil(nc/this._tickInterval[0]) +1;
+                    //log(this._tickInterval, nc, this.numberTicks);
+                    this.max = Date.create(this.min).add(this.numberTicks-1, this._tickInterval[1]).getTime();
+                }
+                else if (dim > 100) {
                     this.numberTicks = parseInt(3+(dim-100)/75);
                 }
                 else this.numberTicks = 2;
             }
     
-            this.tickInterval = range / (this.numberTicks-1);
+            if (this._tickInterval == null) this._tickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
             for (var i=0; i<this.numberTicks; i++){
-                tt = this.min + i * range / (this.numberTicks-1);
+                var min = Date.create(this.min);
+                tt = min.add(i*this._tickInterval[0], this._tickInterval[1]).getTime();
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
                 if (!this.showTicks) {
@@ -146,8 +181,8 @@
      *
      * @author Ken Snyder (ken d snyder at gmail dot com)
      * @date 2008-09-10
-     * @version 2.0.2 (http://kendsnyder.com/sandbox/date/)
-     * @license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
+     * @version 2.0.2 (
+http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
      *
      * @contributions Chris Leonello
      * @comment Bug fix to 12 hour time and additions to handle milliseconds and 

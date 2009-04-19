@@ -91,6 +91,18 @@
             else {
                 dim = this._plotDimensions.height;
             }
+            
+            // if min, max and number of ticks specified, user can't specify interval.
+            if (this.min != null && this.max != null && this.numberTicks != null) {
+                this.tickInterval = null;
+            }
+            
+            // if max, min, and interval specified and interval won't fit, ignore interval.
+            if (this.min != null && this.max != null && this.tickInterval != null) {
+                if (parseInt((this.max-this.min)/this.tickInterval) != (this.max-this.min)/this.tickInterval) {
+                    this.tickInterval = null;
+                }
+            }
         
             // find out how many categories are in the lines and collect labels
             var labels = [];
@@ -121,9 +133,10 @@
             var skip = parseInt(numcats/maxVisibleTicks);
 
 
-            this.tickInterval = range / (this.numberTicks-1);
+            if (this.tickInterval == null) this.tickInterval = range / (this.numberTicks-1);
+            // if tickInterval is specified, we will ignore any computed maximum.
             for (var i=0; i<this.numberTicks; i++){
-                tt = this.min + i * range / (this.numberTicks-1);
+                tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
                 // if even tick, it isn't a category, it's a divider
                 if (i/2 == parseInt(i/2)) {

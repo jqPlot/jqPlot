@@ -556,6 +556,7 @@ THE SOFTWARE.
             axesDefaults: {},
             axes: {xaxis:{}, yaxis:[], x2axis:{}, y2axis:{}},
             seriesDefaults: {},
+            gridPadding: {top:10, right:10, bottom:10, left:10},
             series:[]
         };
         // prop: series
@@ -572,8 +573,10 @@ THE SOFTWARE.
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
-        // default padding for the grid context
-        this._gridOffsets = {top:10, right:10, bottom:10, left:10};
+        // prop: _gridPadding
+        // default padding around the grid element.  Overriden if there is
+        // an element (title, axis) beside that edge of the grid.
+        this._gridPadding = {top:10, right:10, bottom:10, left:10};
         // prop: equalXTicks
         // for dual axes, wether to space ticks the same on both sides.
         this.equalXTicks = true;
@@ -652,6 +655,7 @@ THE SOFTWARE.
     
         this.parseOptions = function(options){
             this.options = $.extend(true, {}, this.defaults, options);
+            this._gridPadding = this.options.gridPadding;
             for (var n in this.axes) {
                 var axis = this.axes[n];
                 $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
@@ -745,28 +749,28 @@ THE SOFTWARE.
                 this.target.append(this.axes[name].draw());
                 this.axes[name].set();
             }
-            if (this.axes.yaxis.show) this._gridOffsets.left = this.axes.yaxis.getWidth();
-            if (this.axes.y2axis.show) this._gridOffsets.right = this.axes.y2axis.getWidth();
-            if (this.title.show && this.axes.x2axis.show) this._gridOffsets.top = this.title.getHeight() + this.axes.x2axis.getHeight();
-            else if (this.title.show) this._gridOffsets.top = this.title.getHeight();
-            else if (this.axes.x2axis.show) this._gridOffsets.top = this.axes.x2axis.getHeight();
-            if (this.axes.xaxis.show) this._gridOffsets.bottom = this.axes.xaxis.getHeight();
+            if (this.axes.yaxis.show) this._gridPadding.left = this.axes.yaxis.getWidth();
+            if (this.axes.y2axis.show) this._gridPadding.right = this.axes.y2axis.getWidth();
+            if (this.title.show && this.axes.x2axis.show) this._gridPadding.top = this.title.getHeight() + this.axes.x2axis.getHeight();
+            else if (this.title.show) this._gridPadding.top = this.title.getHeight();
+            else if (this.axes.x2axis.show) this._gridPadding.top = this.axes.x2axis.getHeight();
+            if (this.axes.xaxis.show) this._gridPadding.bottom = this.axes.xaxis.getHeight();
             
-            this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridOffsets.bottom, max: this._gridOffsets.top});
-            this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridOffsets.left, max:this._width - this._gridOffsets.right});
-            this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridOffsets.left, max:this._width - this._gridOffsets.right});
-            this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridOffsets.bottom, max: this._gridOffsets.top});
+            this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+            this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
+            this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
+            this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
-            this.target.append(this.grid.createElement(this._gridOffsets));
+            this.target.append(this.grid.createElement(this._gridPadding));
             this.grid.draw();
-            this.target.append(this.seriesCanvas.createElement(this._gridOffsets));
+            this.target.append(this.seriesCanvas.createElement(this._gridPadding));
             var sctx = this.seriesCanvas.setContext();
             
             this.drawSeries(sctx);
 
             // finally, draw and pack the legend
             this.target.append(this.legend.draw());
-            this.legend.pack(this._gridOffsets);
+            this.legend.pack(this._gridPadding);
 
             // for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
             //     $.jqplot.postDrawHooks[i].call(this);
