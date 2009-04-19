@@ -32,20 +32,6 @@ THE SOFTWARE.
 */
 
 (function($) {
-    
-    var defaultPlugins = ['jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.sprintf.js'];
-    for (var i=0; i<defaultPlugins.length; i++) {
-        var pp = defaultPlugins[i];
-        try {
-            document.write("<scr"+"ipt type='text/javascript' src='"+pp+"'></scr"+"ipt>");
-        } catch (e) {
-            var script = document.createElement("script");
-            script.src = pp;
-            document.getElementsByTagName("head")[0].appendChild(script);
-        }
-    }
-
-    
     // Class: $.jqplot
     // jQuery extension called by user to create plot.
     //
