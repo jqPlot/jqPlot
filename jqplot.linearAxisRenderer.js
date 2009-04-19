@@ -1,14 +1,4 @@
 (function($) {
-    var debug = 1;
-        
-	// Convienence function that won't hang IE.
-	function log() {
-	    if (window.console && debug) {
-	       if (arguments.length == 1) console.log (arguments[0]);
-	       else console.log(arguments);
-	    }
-	};
-
     $.jqplot.LinearAxisRenderer = function() {
     };
     

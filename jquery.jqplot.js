@@ -32,7 +32,6 @@ THE SOFTWARE.
 */
 
 (function($) {
-    var debug = 1;
     
     var defaultPlugins = ['jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.sprintf.js'];
     for (var i=0; i<defaultPlugins.length; i++) {
@@ -79,6 +78,8 @@ THE SOFTWARE.
         plot.draw();
         return plot;
     };
+    
+    $.jqplot.debug = 1;
     
     $.jqplot.ElemContainer = function() {
         this._elem;
@@ -795,10 +796,12 @@ THE SOFTWARE.
     $.jqplot.drawLegendHooks = [];
     
 	// Convienence function that won't hang IE.
-	function log() {
-	    if (window.console && debug) {
+	$.jqplot.log = function() {
+	    if (window.console && $.jqplot.debug) {
 	       if (arguments.length == 1) console.log (arguments[0]);
 	       else console.log(arguments);
 	    }
 	};
+	var log = $.jqplot.log;
+	
 })(jQuery);

@@ -1,14 +1,4 @@
 (function($) {  
-    var debug = 1;
-        
-	// Convienence function that won't hang IE.
-	function log() {
-	    if (window.console && debug) {
-	       if (arguments.length == 1) console.log (arguments[0]);
-	       else console.log(arguments);
-	    }
-	};
-    
     $.jqplot.DateAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
     };
@@ -667,7 +657,7 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
         }               
     ];
     
-    if (debug) $.date = Date.create;
+    if ($.jqplot.debug) $.date = Date.create;
    
 })(jQuery);
 
