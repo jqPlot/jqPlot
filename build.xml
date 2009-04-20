@@ -11,14 +11,17 @@
 	  <loadfile property="version" srcfile="version.txt" /> 
 	  
 	  <!-- misc. properties -->
-    <property description="YUICompressor" name="YUICompressor" value="${BUILD_DIR}/yuicompressor-2.4.2.jar" />
+    <property description="YUICompressor" name="YUICompressor" value="yuicompressor-2.4.2.jar" />
 	  <loadfile description="Version to build" property="version" srcfile="version.txt" />
 
     <!-- MAIN -->
 
     <target name="jqplot" description="Build jqplot for distribution and compression.">
-        <echo message="Building ${JQPLOT}" />
+        <echo message="Building jqPlot" />
+        <mkdir dir="${BUILD_DIR}" />
         <mkdir dir="${DIST_DIR}" />
+        <mkdir dir="${BUILD_DIR}/plugins" />
+        <mkdir dir="${DIST_DIR}/plugins" />
         <!-- stip out top level closures, concat everything, and wrap in a closure. -->
         <!-- copy all needed files from src to build -->
         <copy todir="${BUILD_DIR}">
@@ -28,13 +31,11 @@
             <exclude name="jquery.jqplot.js" />
           </fileset>
         </copy>
-        
-        <!-- keep the opening of the closure in core and the closing of the closure in sprintf
-          but remove the closing of the closure in core and opening of the closure in sprintf -->
-        <!-- <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="" file="${BUILD_DIR}/jqplot.sprintf.js" />
-        <replaceregexp match="\(function\(\$\) \{" replace="" file="${BUILD_DIR}/jqplot.core.js" /> -->
-        
-        <!-- replace opening and closing of closures in all other files -->
+        <copy todir="${BUILD_DIR}/plugins">
+          <fileset dir="${SRC_DIR}/plugins" includes="*" />
+        </copy>
+                
+        <!-- remove appropriate opening and closing of closures -->
         <replaceregexp match="\(function\(\$\) \{" replace="">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
@@ -58,24 +59,47 @@
             </fileset>
             <fileset dir="${BUILD_DIR}" includes="jqplot.sprintf.js" />
         </concat>
-        <echo message="${JQPLOT} built." />
+        
+        <!-- now copy files to dist dir. -->
+        <copy todir="${DIST_DIR}">
+          <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
+        </copy>
+        
+        <copy todir="${DIST_DIR}/plugins">
+          <fileset dir="${BUILD_DIR}/plugins" includes="*" />
+        </copy>
+        
+        <echo message="jqPlot built." />
     </target>
 
     <target name="min" depends="jqplot" description="Remove all comments and whitespace, no compression, great in combination with GZip">
-        <echo message="Building ${JQPLOT_MIN}" />
-		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
-			<fileset dir="${DIST_DIR}">
-				<include name="jquery.jqplot.js" />
-			</fileset>
-			<arg line="-jar" />
-			<arg path="${YUICompressor}" />
-			<arg value="--charset" />
-			<arg value="ANSI" />
-			<arg value="-o" />
-			<targetfile />
-			<mapper type="glob" from="jquery.jqplot.js" to="jquery.jqplot.min.js" />
-		</apply>
-        <echo message="${JQPLOT_MIN} built." />
+        <echo message="Building minified sources with YUI Compressor" />
+    		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
+    			<fileset dir="${DIST_DIR}">
+    				<include name="jquery.jqplot.js" />
+    			</fileset>
+    			<arg line="-jar" />
+    			<arg path="${YUICompressor}" />
+    			<arg value="--charset" />
+    			<arg value="ANSI" />
+    			<arg value="-o" />
+    			<targetfile />
+    			<mapper type="glob" from="jquery.jqplot.js" to="jquery.jqplot.min.js" />
+    		</apply>
+    		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
+    			<fileset dir="${DIST_DIR}/plugins">
+    				<include name="jqplot.*.js" />
+    				<exclude name="jqplot.*.min.js" />
+    			</fileset>
+    			<arg line="-jar" />
+    			<arg path="${YUICompressor}" />
+    			<arg value="--charset" />
+    			<arg value="ANSI" />
+    			<arg value="-o" />
+    			<targetfile />
+    			<mapper type="glob" from="jqplot.*.js" to="jqplot.*.min.js" />
+    		</apply>
+        <echo message="Minified sources built." />
     </target>
 
 	<target name="test" depends="jqplot">
