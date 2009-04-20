@@ -1,12 +1,20 @@
 1.4
 JavaScript
-/Users/cleonell/Sites/lib/jqplot/makeTag.js	1237946838	0	/Users/cleonell/Sites/lib/jqplot/makeTag.js
-/Users/cleonell/Sites/lib/jqplot/goog.txt	1239346646	0	/Users/cleonell/Sites/lib/jqplot/goog.txt
-/Users/cleonell/Sites/lib/jqplot/excanvas.min.js	1238378900	0	/Users/cleonell/Sites/lib/jqplot/excanvas.min.js
-/Users/cleonell/Sites/lib/jqplot/jquery.jqplot.js	1239346013	1	jqPlot
-/Users/cleonell/Sites/lib/jqplot/excanvas.js	1238378900	0	/Users/cleonell/Sites/lib/jqplot/excanvas.js
-/Users/cleonell/Sites/lib/jqplot/jqplot.categoryAxisRenderer.js	1239164467	0	/Users/cleonell/Sites/lib/jqplot/jqplot.categoryAxisRenderer.js
-/Users/cleonell/Sites/lib/jqplot/jqplot.logAxisRenderer.js	1239347348	1	$.jqplot.LogAxisRenderer
-/Users/cleonell/Sites/lib/jqplot/usage.txt	1239176924	1	jqPlot Usage
-/Users/cleonell/Sites/lib/jqplot/examples.txt	1239347704	1	jqPlot Examples
-/Users/cleonell/Sites/lib/jqplot/jqplot.trendLines.js	1238555164	0	/Users/cleonell/Sites/lib/jqplot/jqplot.trendLines.js
+/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.trendLines.js	1240178588	0	/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.trendLines.js
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.core.js	1240239971	1	jqPlot
+/Users/cleonell/Sites/lib/jqplot/src/excanvas.js	1240178473	0	/Users/cleonell/Sites/lib/jqplot/src/excanvas.js
+/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.dateAxisRenderer.js	1240178588	0	/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.dateAxisRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.categoryAxisRenderer.js	1240178588	0	/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.categoryAxisRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/examples.txt	1240177497	1	jqPlot Examples
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.axisTickRenderer.js	1240241627	1	$.jqplot.AxisTickRenderer
+/Users/cleonell/Sites/lib/jqplot/src/jquery.jqplot.js	1240241580	0	/Users/cleonell/Sites/lib/jqplot/src/jquery.jqplot.js
+/Users/cleonell/Sites/lib/jqplot/src/excanvas.min.js	1240178473	0	/Users/cleonell/Sites/lib/jqplot/src/excanvas.min.js
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.divTitleRenderer.js	1240178563	0	/Users/cleonell/Sites/lib/jqplot/src/jqplot.divTitleRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.tableLegendRenderer.js	1240178563	0	/Users/cleonell/Sites/lib/jqplot/src/jqplot.tableLegendRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.markerRenderer.js	1240178563	1	/Users/cleonell/Sites/lib/jqplot/src/jqplot.markerRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.sprintf.js	1240178563	0	/Users/cleonell/Sites/lib/jqplot/src/jqplot.sprintf.js
+/Users/cleonell/Sites/lib/jqplot/src/plugins/jqplot.logAxisRenderer.js	1240178588	1	$.jqplot.LogAxisRenderer
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.lineRenderer.js	1240178563	0	/Users/cleonell/Sites/lib/jqplot/src/jqplot.lineRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/usage.txt	1240236426	1	jqPlot Usage
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.linearAxisRenderer.js	1240178563	0	/Users/cleonell/Sites/lib/jqplot/src/jqplot.linearAxisRenderer.js
+/Users/cleonell/Sites/lib/jqplot/src/jqplot.canvasGridRenderer.js	1240178563	0	/Users/cleonell/Sites/lib/jqplot/src/jqplot.canvasGridRenderer.js

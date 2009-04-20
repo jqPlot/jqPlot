@@ -11,8 +11,9 @@
 	  <loadfile property="version" srcfile="version.txt" /> 
 	  
 	  <!-- misc. properties -->
-    <property description="YUICompressor" name="YUICompressor" value="yuicompressor-2.4.2.jar" />
+    <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.2.jar" />
 	  <loadfile description="Version to build" property="version" srcfile="version.txt" />
+	  <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
 
     <!-- MAIN -->
 
@@ -109,16 +110,23 @@
 	</target>
 
 	<target name="docs" depends="jqplot">
-		<echo message="Creating automated test suite" />
-<!-- need to do some jython scripting here -->
-		<echo message="Test Suite Finished" />
+		<echo message="Creating documentation" />
+    <mkdir dir="${DIST_DIR}/docs" />
+    <exec executable="${ND}">
+      <arg value="-r" />
+      <arg value="-i" />
+      <arg path="src" />
+      <arg line="-o HTML " />
+      <arg path="dist/docs" />
+      <arg value="-p" />
+      <arg path="NDdata/" />
+    </exec>
+		<echo message="Documentation Finished" />
 	</target>
 
     <target name="clean">
-        <delete>
-          <fileset dir="build" includes="*"/>
-          <fileset dir="dist" includes="*"/>
-        </delete>
+        <delete dir="${BUILD_DIR}" />
+        <delete dir="${DIST_DIR}" />
     </target>
 
     <target name="all" depends="clean,jqplot,min,docs,test">
