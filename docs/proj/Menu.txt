@@ -5,15 +5,8 @@ Format: 1.4
 # Title: [project name]
 # SubTitle: [subtitle]
 
-# You can add a footer to your documentation like this:
-# Footer: [text]
-# If you want to add a copyright notice, this would be the place to do it.
-
-# You can add a timestamp to your documentation like one of these:
-# Timestamp: Generated on month day, year
-# Timestamp: Updated mm/dd/yyyy
-# Timestamp: Last updated mon day
-#
+Footer: Copyright (c) 2009 Chris Leonello
+Timestamp: Updated month day, year
 #   m     - One or two digit month.  January is "1"
 #   mm    - Always two digit month.  January is "01"
 #   mon   - Short month word.  January is "Jan"
@@ -47,13 +40,17 @@ Format: 1.4
 
 
 File: jqPlot Usage  (usage.txt)
-File: jqPlot  (jquery.jqplot.js)
-File: $.jqplot.LogAxisRenderer  (jqplot.logAxisRenderer.js)
+File: jqPlot Examples  (examples.txt)
+File: $.jqplot.LogAxisRenderer  (plugins/jqplot.logAxisRenderer.js)
+File: jqPlot  (jqplot.core.js)
+File: $.jqplot.AxisTickRenderer  (jqplot.axisTickRenderer.js)
+File: jqplot.markerRenderer.js  (jqplot.markerRenderer.js)
 
 Group: Index  {
 
    Index: Everything
    Class Index: Classes
    Property Index: Properties
+   File Index: Files
    }  # Group: Index
 
