@@ -1,0 +1,104 @@
+<project name="jqPlot" default="jqlot" basedir=".">
+    
+    <!-- directories for building -->
+    <property description="Source directory" name="SRC_DIR" value="src"  />
+    <property description="Build, work, temporary directory" name="BUILD_DIR" value="build" />
+    <property description="Directory for distributable files" name="DIST_DIR" value="dist" />
+
+    <!-- Files names for distribution -->
+    <property name="JQPLOT" value="jquery.jqplot.js" />
+    <property name="JQPLOT_MIN" value="jquery.jqplot.min.js" />
+	  <loadfile property="version" srcfile="version.txt" /> 
+	  
+	  <!-- misc. properties -->
+    <property description="YUICompressor" name="YUICompressor" value="${BUILD_DIR}/yuicompressor-2.4.2.jar" />
+	  <loadfile description="Version to build" property="version" srcfile="version.txt" />
+
+    <!-- MAIN -->
+
+    <target name="jqplot" description="Build jqplot for distribution and compression.">
+        <echo message="Building ${JQPLOT}" />
+        <mkdir dir="${DIST_DIR}" />
+        <!-- stip out top level closures, concat everything, and wrap in a closure. -->
+        <!-- copy all needed files from src to build -->
+        <copy todir="${BUILD_DIR}">
+          <fileset dir="${SRC_DIR}">
+            <include name="excanvas.min.js" />
+            <include name="jqplot.*.js" />
+            <exclude name="jquery.jqplot.js" />
+          </fileset>
+        </copy>
+        
+        <!-- keep the opening of the closure in core and the closing of the closure in sprintf
+          but remove the closing of the closure in core and opening of the closure in sprintf -->
+        <!-- <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="" file="${BUILD_DIR}/jqplot.sprintf.js" />
+        <replaceregexp match="\(function\(\$\) \{" replace="" file="${BUILD_DIR}/jqplot.core.js" /> -->
+        
+        <!-- replace opening and closing of closures in all other files -->
+        <replaceregexp match="\(function\(\$\) \{" replace="">
+          <fileset dir="${BUILD_DIR}">
+            <include name="jqplot.*.js" />
+            <exclude name="jqplot.core.js" />
+          </fileset>
+        </replaceregexp>
+        <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="">
+          <fileset dir="${BUILD_DIR}">
+            <include name="jqplot.*.js" />
+            <exclude name="jqplot.sprintf.js" />
+          </fileset>
+        </replaceregexp>
+        
+        <!-- now cat all files together to make one jqplot source file -->
+        <concat destfile="${BUILD_DIR}/${JQPLOT}">
+            <fileset dir="${BUILD_DIR}" includes="jqplot.core.js" />
+            <fileset dir="${BUILD_DIR}">
+              <include name="jqplot.*.js" />
+              <exclude name="jqplot.core.js" />
+              <exclude name="jqplot.sprintf.js" />
+            </fileset>
+            <fileset dir="${BUILD_DIR}" includes="jqplot.sprintf.js" />
+        </concat>
+        <echo message="${JQPLOT} built." />
+    </target>
+
+    <target name="min" depends="jqplot" description="Remove all comments and whitespace, no compression, great in combination with GZip">
+        <echo message="Building ${JQPLOT_MIN}" />
+		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
+			<fileset dir="${DIST_DIR}">
+				<include name="jquery.jqplot.js" />
+			</fileset>
+			<arg line="-jar" />
+			<arg path="${YUICompressor}" />
+			<arg value="--charset" />
+			<arg value="ANSI" />
+			<arg value="-o" />
+			<targetfile />
+			<mapper type="glob" from="jquery.jqplot.js" to="jquery.jqplot.min.js" />
+		</apply>
+        <echo message="${JQPLOT_MIN} built." />
+    </target>
+
+	<target name="test" depends="jqplot">
+		<echo message="Creating automated test suite" />
+<!-- need to do some jython scripting here -->
+		<echo message="Test Suite Finished" />
+	</target>
+
+	<target name="docs" depends="jqplot">
+		<echo message="Creating automated test suite" />
+<!-- need to do some jython scripting here -->
+		<echo message="Test Suite Finished" />
+	</target>
+
+    <target name="clean">
+        <delete>
+          <fileset dir="build" includes="*"/>
+          <fileset dir="dist" includes="*"/>
+        </delete>
+    </target>
+
+    <target name="all" depends="clean,jqplot,min,docs,test">
+        <echo message="Build complete distribution, docs and tests" />
+    </target>
+
+</project>
