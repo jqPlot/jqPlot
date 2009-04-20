@@ -1,3 +1,12 @@
+/*
+*  $ID$
+*  $URL$
+*  $Date$
+*  $Rev$
+*  $Author$
+*
+*/ 
+
 // This is a bootstrap loader for using the source distribution of jqPlot.
 // Unless you are doing development, you probably want one of the prepackaged distributions.
 // You could also load all of the source files separately.
