@@ -134,6 +134,7 @@
       <arg path="dist/docs" />
       <arg value="-p" />
       <arg path="NDdata/" />
+      <arg line="-s Default docstyles" />
     </exec>
 		<echo message="Documentation Finished" />
 	</target>
@@ -143,7 +144,7 @@
         <delete dir="${DIST_DIR}" />
     </target>
 
-    <target name="all" depends="clean,jqplot,min,docs,tests">
+    <target name="all" depends="clean,jqplot,min,mintests,docs">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 

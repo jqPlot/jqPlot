@@ -1,3 +1,5 @@
 Title: jqPlot Examples
 
 jqPlot examples demonstrating many of the options can be found here: <http://www.hacknack.com/jqplot/examples.html>.
+
+More examples as well as unit tests can be found here: <../../tests/>

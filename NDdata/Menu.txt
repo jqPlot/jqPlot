@@ -1,9 +1,8 @@
 Format: 1.4
 
 
-# You can add a title and sub-title to your menu like this:
-# Title: [project name]
-# SubTitle: [subtitle]
+Title: jqPlot
+SubTitle: Pure Javascript plotting the jQuery way.
 
 Footer: Copyright (c) 2009 Chris Leonello
 Timestamp: Updated month day, year
@@ -39,18 +38,31 @@ Timestamp: Updated month day, year
 # --------------------------------------------------------------------------
 
 
-File: $.jqplot.AxisTickRenderer  (jqplot.axisTickRenderer.js)
-File: $.jqplot.LogAxisRenderer  (plugins/jqplot.logAxisRenderer.js)
-File: jqPlot  (jqplot.core.js)
-File: jqPlot Examples  (examples.txt)
-File: jqPlot Usage  (usage.txt)
-File: jqplot.markerRenderer.js  (jqplot.markerRenderer.js)
+File: jqPlot Graphs  (jqplot.core.js)
+File: Usage  (no auto-title, usage.txt)
+File: Examples  (no auto-title, examples.txt)
+Link: Unit Tests &amp; Examples  (../../tests/)
+
+Group: Default Renderers  {
+
+   File: AxisTickRenderer  (jqplot.axisTickRenderer.js)
+   File: CanvasGridRenderer  (jqplot.canvasGridRenderer.js)
+   File: DivTitleRenderer  (jqplot.divTitleRenderer.js)
+   File: LinearAxisRenderer  (jqplot.linearAxisRenderer.js)
+   File: MarkerRenderer  (jqplot.markerRenderer.js)
+   }  # Group: Default Renderers
+
+Group: Plugin Renderers  {
+
+   File: LogAxisRenderer  (plugins/jqplot.logAxisRenderer.js)
+   File: CategoryAxisRenderer  (plugins/jqplot.categoryAxisRenderer.js)
+   File: DateAxisRenderer  (plugins/jqplot.dateAxisRenderer.js)
+   }  # Group: Plugin Renderers
 
 Group: Index  {
 
    Index: Everything
    Class Index: Classes
    Property Index: Properties
-   File Index: Files
    }  # Group: Index
 

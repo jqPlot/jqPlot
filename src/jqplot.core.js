@@ -1,5 +1,5 @@
-/* 
-* Title: jqPlot
+/* *
+* Title: jqPlot Graphs
 * 
 * Pure JavaScript plotting library for jQuery.
 * 
@@ -35,16 +35,34 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 * 
-*/
+* About: Introduction
+* 
+* jqPlot can be customized by overriding the defaults of any of the objects which make
+* up the plot.  The general usage of jqplot is:
+* 
+* > chart = $.jqplot('targetElemId', [dataArray,...], {optionsObject});
+* 
+* The optionsObject corresponds to an properties on a <jqPlot> instance, so customization
+* may look like this:
+* 
+* > chart = $.jqplot('targetElemId', [dataArray, ...], {title:'My Plot', axes:{xaxis:{min:0, max:10}}});
+*
+* For more inforrmation, see <jqPlot Usage>.
+*
+* About: Usage
+*
+* See <jqPlot Usage>
+* 
+* */
 
 (function($) {
     // Class: $.jqplot
-    // jQuery extension called by user to create plot.
+    // jQuery function called by the user to create a plot.
     //
     // Parameters:
     // target - ID of target element to render the plot into.
     // data - an array of data series.
-    // options - user defined options object.
+    // options - user defined options object.  See the individual classes for available options.
     $.jqplot = function(target, data, options) {
         var _data, _options;
         
@@ -73,6 +91,7 @@
     
     $.jqplot.debug = 1;
     
+    // A superclass holding some common properties and methods.
     $.jqplot.ElemContainer = function() {
         this._elem;
         this._plotWidth;
@@ -138,36 +157,38 @@
         // Factor to multiply by the data range when setting the axis bounds
         this.pad = 1.2;
         // prop: ticks
-        // 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...]
+        // 1D [val, val, ...] or 2D [[val, label], [val, label], ...] array of ticks for the axis.
+        // If no label is specified, the value is formatted into an appropriate label.
         this.ticks = [];
         // prop: numberTicks
-        // Desired number of ticks.  Computed automatically by default
+        // Desired number of ticks.  Default is to compute automatically.
         this.numberTicks;
         // prop: tickInterval
         // number of units between ticks.  Mutually exclusive with numberTicks.
         this.tickInterval;
         // prop: renderer
         // A class of a rendering engine that handles tick generation, 
-        // data to plot scaling and drawing the axis element.
+        // scaling input data to pixel grid units and drawing the axis element.
         this.renderer = $.jqplot.LinearAxisRenderer;
         // prop: rendererOptions
-        // renderer specific options.
+        // renderer specific options.  Not commonly used.
         this.rendererOptions = {};
         // prop: tickRenderer
-        // A class of a rendering engine for creating the ticks labels displayed on the plot.
+        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
+        // See <$.jqplot.AxisTickRenderer>.
         this.tickRenderer = $.jqplot.AxisTickRenderer;
         // prop: tickOptions
-        // Options that will be passed to the tickRenderer.
+        // Options that will be passed to the tickRenderer, see <$.jqplot.AxisTickRenderer> options.
         this.tickOptions = {};
         // prop: showTicks
-        // wether to show the ticks (marks and labels) or not.
+        // wether to show the ticks (both marks and labels) or not.
         this.showTicks = true;
         // prop: showTickMarks
-        // wether to show the tick marks or not.
+        // wether to show the tick marks (line crossing grid) or not.
         this.showTickMarks = true;
         // prop: showMinorTicks
-        // Wether or not to show minor ticks.  THis is renderer dependent.
-        // The default LinearAxisRenderer does not have minor ticks.
+        // Wether or not to show minor ticks.  This is renderer dependent.
+        // The default <$.jqplot.LinearAxisRenderer> does not have minor ticks.
         this.showMinorTicks = true;
 
         this._dataBounds = {min:null, max:null};
@@ -212,7 +233,7 @@
         // Wether to display the legend on the graph.
         this.show = false;
         // prop: location
-        // Placement of the legend.  one of the compas directions: nw, n, ne, e, se, s, sw, w
+        // Placement of the legend.  one of the compass directions: nw, n, ne, e, se, s, sw, w
         this.location = 'ne';
         // prop: xoffset
         // offset from the inside edge of the plot in the x direction in pixels.
@@ -239,7 +260,8 @@
         // css padding-top spec for the rows in the legend.
         this.rowSpacing = '0.5em';
         // renderer
-        // A class that will create a DOM object for the legend.
+        // A class that will create a DOM object for the legend,
+        // see <$.jqplot.TableLegendRenderer>.
         this.renderer = $.jqplot.TableLegendRenderer;
         // prop: rendererOptions
         // renderer specific options passed to the renderer.
@@ -298,7 +320,8 @@
         // css color spec for the text.
         this.textColor = '';
         // prop: renderer
-        // A class for creating a DOM element for the title.
+        // A class for creating a DOM element for the title,
+        // see <$.jqplot.DivTitleRenderer>.
         this.renderer = $.jqplot.DivTitleRenderer;
         // prop: rendererOptions
         // renderer specific options passed to the renderer.
@@ -334,25 +357,29 @@
         // wether or not to draw the series.
         this.show = true;
         // prop: xaxis
-        // name of x axis to associate with this series.
+        // name of x axis to associate with this series, either 'xaxis' or 'x2axis'.
         this.xaxis = 'xaxis';
         this._xaxis;
         // prop: yaxis
-        // name of y axis to associate with this series.
+        // name of y axis to associate with this series, either 'yaxis' or 'y2axis'.
         this.yaxis = 'yaxis';
         this._yaxis;
         // prop: renderer
-        // A class of a renderer which will draw the series.
+        // A class of a renderer which will draw the series, 
+        // see <$.jqplot.LineRenderer>.
         this.renderer = $.jqplot.LineRenderer;
         // prop: rendererOptions
-        // Options to set on the renderer.  See the renderer for possibly options.
+        // Options to pass on to the renderer.
         this.rendererOptions = {};
         // prop: data
-        // raw user data points.
+        // data points for the line in series units.
+        // converted to an array of (x,y) data points with x starting at 1 if a 1D array of y values is passed in.
         this.data = [];
+        // prop: gridData
+        // data points for the line in grid pixel units.
         this.gridData = [];
         // prop: label
-        // Line label to use in legend.
+        // Line label to use in the legend.
         this.label = '';
         // prop: color
         // css color spec for the series
@@ -380,10 +407,12 @@
         // False will join point on either side of line.
         this.breakOnNull = false;
         // prop: markerRenderer
-        // A class of a renderer which will draw marker at the data points.
+        // A class of a renderer which will draw marker (e.g. circle, square, ...) at the data points,
+        // see <$.jqplot.MarkerRenderer>.
         this.markerRenderer = $.jqplot.MarkerRenderer;
         // prop: markerOptions
-        // renderer specific options to pass to the markerRenderer.
+        // renderer specific options to pass to the markerRenderer,
+        // see <$.jqplot.MarkerRenderer>.
         this.markerOptions = {};
         // prop: showLine
         // wether to actually draw the line or not.  Series will still be renderered, even if no line is drawn.
@@ -425,8 +454,10 @@
 
     /* 
         Class: Grid
-        (Private) Object representing the grid on which the plot is drawn.  The grid in this
+        
+        Object representing the grid on which the plot is drawn.  The grid in this
         context is the area bounded by the axes, the area which will contain the series.
+        Note, the series are drawn on their own canvas.
         The Grid object cannot be instantiated directly, but is created by the Plot oject.  
         Grid properties can be set or overriden by the options passed in from the user.
     */
@@ -472,8 +503,12 @@
         this._height;
         this._axes = [];
         // prop: renderer
-        // Instance of a renderer which will actually render the grid.
+        // Instance of a renderer which will actually render the grid,
+        // see <$.jqplot.CanvasGridRenderer>.
         this.renderer = $.jqplot.CanvasGridRenderer;
+        // prop: rendererOptions
+        // Options to pass on to the renderer,
+        // see <$.jqplot.CanvasGridRenderer>.
         this.rendererOptions = {};
         this._offsets = {top:null, bottom:null, left:null, right:null};
     };
@@ -544,10 +579,14 @@
         // 
         // Properties
         // axesDefaults - defaults applied to all axes.
+        // axes - axis by axis defaults.  Include all 4 axes, even if they are empty.
         // seriesDefaults - deraults applied to all series.
+        // gridPadding - default padding around the grid drawing area if no axis or title
+        //    is present on a given side of the grid.
+        // series - series by series defaults.  Don't know how useful this is.
         this.defaults = {
             axesDefaults: {},
-            axes: {xaxis:{}, yaxis:[], x2axis:{}, y2axis:{}},
+            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}},
             seriesDefaults: {},
             gridPadding: {top:10, right:10, bottom:10, left:10},
             series:[]
@@ -556,19 +595,19 @@
         // Array of series object options.
         this.series = [];
         // prop: axes
-        // up to 4 axes are supported, each with it's own options.
+        // up to 4 axes are supported, each with it's own options, 
+        // see <$.jqplot.LinearAxisRenderer>
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         // prop: grid
+        // see <$.jqplot.canvasGridRenderer>
         this.grid = new Grid();
         // prop: legend
+        // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
         this.seriesCanvas = new SeriesCanvas();
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
-        // prop: _gridPadding
-        // default padding around the grid element.  Overriden if there is
-        // an element (title, axis) beside that edge of the grid.
         this._gridPadding = {top:10, right:10, bottom:10, left:10};
         // prop: equalXTicks
         // for dual axes, wether to space ticks the same on both sides.

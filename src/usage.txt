@@ -1,10 +1,14 @@
 Title: jqPlot Usage
 
-jqPlot is a jquery extension to render completely client-side javascript charts in your web pages. The project home page and downloads can be found at <http://code.google.com/p/jqplot/>.  It is currently under heavy development but fully functional.  To use jqPlot, in your html, include jquery, the jqPlot plugin, and optionally the excanvas script for IE 
+jqPlot is a jquery extension to render completely client-side javascript charts in your web pages. The project home page and downloads can be found at <http://code.google.com/p/jqplot/>.  It is currently under heavy development but fully functional.  
+
+Below are a few static samples to demonstrate jqPlot usage.  These plots are not actually generated, but shown as images.  Many more examples of dynamically rendered plots can be seen on the unit test page here: <http://../tests/>.
+
+To use jqPlot include jquery, the jqPlot jQuery plugin, and optionally the excanvas script for IE 
 support in your web page:
 
-> <script language="javascript" type="text/javascript" src="../jquery-1.3.2.js"></script>
-> <script language="javascript" type="text/javascript" src="jquery.jqplot.js"></script>
+> <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
+> <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
 > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
     
 Add a container (target) to your web page where you want your plot to show up.

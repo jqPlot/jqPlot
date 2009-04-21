@@ -1,4 +1,7 @@
 (function($) {     
+    // class: $.jqplot.CanvasGridRenderer
+    // The default jqPlot grid renderer, creating a grid on a canvas element.
+    // The renderer has no additional options beyond the <Grid> class.
     $.jqplot.CanvasGridRenderer = function(){};
     
     // called with context of Grid object

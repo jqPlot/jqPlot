@@ -1,4 +1,7 @@
 (function($) {
+    // class: $.jqplot.LinearAxisRenderer
+    // The default jqPlot axis renderer, creating a numeric axis.
+    // The renderer has no additional options beyond the <Axis> object.
     $.jqplot.LinearAxisRenderer = function() {
     };
     

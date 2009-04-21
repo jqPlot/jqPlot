@@ -1,4 +1,6 @@
 (function($) {
+    // class $.jqplot.TableLegendRenderer
+    // The default legend renderer for jqPlot, this class has no options beyond the <Legend> class.
     $.jqplot.TableLegendRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
     }

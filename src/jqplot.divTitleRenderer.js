@@ -1,4 +1,6 @@
-(function($) {    
+(function($) {
+    // Class: $.jqplot.DivTitleRenderer
+    // The default title renderer for jqPlot.  This class has no options beyond the <Title> class. 
     $.jqplot.DivTitleRenderer = function() {
     };
     

@@ -1,4 +1,6 @@
 (function($) {
+	// class: $.jqplot.MarkerRenderer
+	// The default jqPlot marker renderer, rendering the points on the line.
     $.jqplot.MarkerRenderer = function(){
         // prop: show
         // wether or not to show the marker.

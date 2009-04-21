@@ -1,4 +1,7 @@
 (function($) {
+    // class $.jqplot.LineRenderer
+    // The default line renderer for jqPlot, this class has no options beyond the <Series> class.
+    // Draws series as a line.
     $.jqplot.LineRenderer = function(){
     };
     
