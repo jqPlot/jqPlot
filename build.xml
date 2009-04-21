@@ -7,7 +7,6 @@
 
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
-    <property name="JQPLOT_MIN" value="jquery.jqplot.min.js" />
 	  <loadfile property="version" srcfile="version.txt" /> 
 	  
 	  <!-- misc. properties -->
@@ -19,6 +18,7 @@
 
     <target name="jqplot" description="Build jqplot for distribution and compression.">
         <echo message="Building jqPlot" />
+    	  <replaceregexp match="@VERSION" replace="${version}" file="${SRC_DIR}/jqplot.core.js" />
         <mkdir dir="${BUILD_DIR}" />
         <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
@@ -104,7 +104,7 @@
     </target>
 
 	<target name="tests" depends="jqplot">
-		<echo message="Creating automated test suite" />
+		<echo message="Creating automated test suite for distribtion" />
     <mkdir dir="${DIST_DIR}/tests" />
     <copy todir="${DIST_DIR}/tests">
       <fileset dir="tests" includes="*" />

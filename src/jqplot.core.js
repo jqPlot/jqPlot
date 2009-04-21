@@ -1,11 +1,11 @@
 /* 
 * Title: jqPlot
 * 
-* JavaScript plotting library for jQuery.
+* Pure JavaScript plotting library for jQuery.
 * 
 * About: Version
 *
-* $Rev$
+* Version: 0.4.0 $Rev$
 *
 * $Id$
 * 
