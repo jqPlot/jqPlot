@@ -2,8 +2,7 @@ body.jspec {
   margin: 45px 0;
   text-align: center;
   font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
-/*  background: #efefef url(images/bg.png) top left repeat-x;*/
-  background: #efefef;
+  background: #efefef url(images/bg.png) top left repeat-x;
 }
 #jspec {
   margin: 0 auto;

@@ -5,12 +5,9 @@
 * 
 * About: Version
 *
-* $Id$
+* $Rev$
 *
-* $URL: file:///Users/cleonell/svn/jqplot/trunk/src/jqplot.core.js $
-* $Date: 2009-04-20 15:50:30 -0400 (Mon, 20 Apr 2009) $
-* $Rev: 68 $
-* $Author: cleonell $
+* $Id$
 * 
 * About: Copyright
 * 

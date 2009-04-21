@@ -103,11 +103,25 @@
         <echo message="Minified sources built." />
     </target>
 
-	<target name="test" depends="jqplot">
+	<target name="tests" depends="jqplot">
 		<echo message="Creating automated test suite" />
-<!-- need to do some jython scripting here -->
+    <mkdir dir="${DIST_DIR}/tests" />
+    <copy todir="${DIST_DIR}/tests">
+      <fileset dir="tests" includes="*" />
+    </copy>
+    <copy todir="${DIST_DIR}/tests/images">
+      <fileset dir="tests/images" includes="*" />
+    </copy>
+    <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
+    <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
 		<echo message="Test Suite Finished" />
 	</target>
+	
+	<target name="mintests" depends="tests, min">
+	  <echo message="Modifying test suite to use minified distribution" />
+    <replaceregexp match="jquery\.jqplot\.js" replace="jquery\.jqplot\.min\.js" file="${DIST_DIR}/tests/index.html" />
+    <replaceregexp match="/jqplot\.([a-zA-Z0-9_-]+)\.js" replace="/jqplot\.\1\.min\.js" flags="g" file="${DIST_DIR}/tests/index.html" />
+  </target>
 
 	<target name="docs" depends="jqplot">
 		<echo message="Creating documentation" />
@@ -129,7 +143,7 @@
         <delete dir="${DIST_DIR}" />
     </target>
 
-    <target name="all" depends="clean,jqplot,min,docs,test">
+    <target name="all" depends="clean,jqplot,min,docs,tests">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 

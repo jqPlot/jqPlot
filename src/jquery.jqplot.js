@@ -1,10 +1,7 @@
 /*
-*  $ID$
-*  $URL: file:///Users/cleonell/svn/jqplot/trunk/src/jquery.jqplot.js $
-*  $Date: 2009-04-20 15:50:30 -0400 (Mon, 20 Apr 2009) $
 *  $Rev: 68 $
-*  $Author: cleonell $
 *
+*  $Id$
 */ 
 
 // This is a bootstrap loader for using the source distribution of jqPlot.
