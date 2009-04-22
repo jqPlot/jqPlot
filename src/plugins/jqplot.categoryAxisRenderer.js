@@ -110,17 +110,27 @@
             var labels = [];
             var numcats = 0;
             var min = 0.5;
-            var max;
+            var max, val;
             for (var i=0; i<this._series.length; i++) {
                 var s = this._series[i];
                 for (var j=0; j<s.data.length; j++) {
-                    var val = s.data[j][0];
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        val = s.data[j][0];
+                    }
+                    else {
+                        val = s.data[j][1];
+                    }
                     if ($.inArray(val, labels) == -1) {
                         numcats += 1;      
                         labels.push(val);
                     }
-                    // for category axis, force the x values into category bins.
-                    s.data[j][0] = j+1;
+                    // for category axis, force the values into category bins.
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        s.data[j][0] = j+1;
+                    }
+                    else {
+                        s.data[j][1] = j+1;
+                    }
                 }
             }
         

@@ -11,7 +11,7 @@
 	*  > {axes:{xaxis:{renderer:$.jqplot.LogAxisRenderer}}}
 	**/	
     $.jqplot.LogAxisRenderer = function() {
-        // prop: seriesDefaults
+        // prop: axisDefaults
         // Default properties which will be applied directly to the series.
         //
         // Group: Properties
@@ -21,7 +21,7 @@
         // tickDistribution - 'even' or 'power'.  'even' gives equal pixel
         // spacing of the ticks on the plot.  'power' gives ticks in powers
         // of 10.
-        this.seriesDefaults = {
+        this.axisDefaults = {
             base : 10,
             tickDistribution :'even'
         };
@@ -29,8 +29,8 @@
     
     $.jqplot.LogAxisRenderer.prototype.init = function(options) {
         $.extend(true, this.renderer, options);
-        for (var d in this.renderer.seriesDefaults) {
-            if (this[d] == null) this[d] = this.renderer.seriesDefaults[d];
+        for (var d in this.renderer.axisDefaults) {
+            if (this[d] == null) this[d] = this.renderer.axisDefaults[d];
         }
         var db = this._dataBounds;
         // Go through all the series attached to this axis and find

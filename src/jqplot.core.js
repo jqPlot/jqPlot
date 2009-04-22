@@ -190,9 +190,9 @@
         // Wether or not to show minor ticks.  This is renderer dependent.
         // The default <$.jqplot.LinearAxisRenderer> does not have minor ticks.
         this.showMinorTicks = true;
-
+        // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
-
+        // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
 
         this._plotWidth;
