@@ -208,22 +208,22 @@
        */
 
       Console : function(results, options) {
-        console.log('')
-        console.log('Passes: ' + results.stats.passes + ' Failures: ' + results.stats.failures)
+        //console.log('')
+        //console.log('Passes: ' + results.stats.passes + ' Failures: ' + results.stats.failures)
         
         function renderSuite(suite) {
           if (suite.ran) {
-            console.group(suite.description)
+            //console.group(suite.description)
             results.each(suite.specs, function(spec){
               assertionCount = spec.assertions.length + ':'
               if (spec.requiresImplementation())
-                console.warn(spec.description)
+                //console.warn(spec.description)
               else if (spec.passed())
-                console.log(assertionCount + ' ' + spec.description)
+                //console.log(assertionCount + ' ' + spec.description)
               else 
-                console.error(assertionCount + ' ' + spec.description + ', ' + spec.failure().message)
+                //console.error(assertionCount + ' ' + spec.description + ', ' + spec.failure().message)
             })
-            console.groupEnd()
+            //console.groupEnd()
           }          
         }
         

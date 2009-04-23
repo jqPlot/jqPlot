@@ -40,7 +40,6 @@ describe 'jqPlot'
             plot2.series[0].markerRenderer.style.should.equal 'square'
             plot2.series[0].showLine.should.be_false
             plot2.series[2].lineWidth.should.equal 5
-            plot2.title.text.should.be 'Mixed Data Lines'
         end
     end
     
@@ -76,10 +75,9 @@ describe 'jqPlot'
             plot4.axes.yaxis.renderer.constructor.should.equal $.jqplot.LogAxisRenderer
             plot4.axes.yaxis.base.should.equal 10
             plot4.legend.location.should.be 'e'
-            plot4.title.text.should.be 'Secondary Log Axis, Power Distribution'
             plot4.axes.xaxis.min.should.be 0
             plot4.axes.xaxis.max.should.be 5
-            plot4.axes.y2axis.tickDistribution.should.be 'power'
+            plot4.axes.yaxis.tickDistribution.should.be 'power'
         end
         
         it plot5.title.text
@@ -99,39 +97,39 @@ describe 'jqPlot'
     describe 'Category Axis Renderer Plugin'
         it plot6.title.text
             plot6.axes.xaxis.should.have_property '_elem'
-            plot1.seriesCanvas.should.have_property '_elem'
+            plot6.seriesCanvas.should.have_property '_elem'
             plot6.axes.xaxis.renderer.constructor.should.be $.jqplot.CategoryAxisRenderer
-            plot7.axes.xaxis._ticks[0].label.should.be '1'
-            plot7.axes.xaxis._ticks[0].label.should.be '2'
-            plot7.axes.xaxis._ticks[0].label.should.be '3'
-            plot7.axes.xaxis._ticks[0].label.should.be '4'
-            plot7.axes.xaxis._ticks[0].label.should.be '5'
-            plot7.axes.xaxis._ticks[0].label.should.be '6'
-            plot7.axes.xaxis._ticks[0].label.should.be '7'
+            plot6.axes.xaxis._ticks[1].label.should.be '1'
+            plot6.axes.xaxis._ticks[3].label.should.be '2'
+            plot6.axes.xaxis._ticks[5].label.should.be '3'
+            plot6.axes.xaxis._ticks[7].label.should.be '4'
+            plot6.axes.xaxis._ticks[9].label.should.be '5'
+            plot6.axes.xaxis._ticks[11].label.should.be '6'
+            plot6.axes.xaxis._ticks[13].label.should.be '7'
         end
         it plot7.title.text
             plot7.axes.xaxis.should.have_property '_elem'
             plot1.seriesCanvas.should.have_property '_elem'
             plot7.axes.xaxis.renderer.constructor.should.be $.jqplot.CategoryAxisRenderer
-            plot7.axes.xaxis._ticks[0].label.should.be 'uno'
-            plot7.axes.xaxis._ticks[0].label.should.be 'dos'
-            plot7.axes.xaxis._ticks[0].label.should.be 'tres'
-            plot7.axes.xaxis._ticks[0].label.should.be 'cuatro'
-            plot7.axes.xaxis._ticks[0].label.should.be 'cinco'
-            plot7.axes.xaxis._ticks[0].label.should.be 'seis'
-            plot7.axes.xaxis._ticks[0].label.should.be 'siete'
+            plot7.axes.xaxis._ticks[1].label.should.be 'uno'
+            plot7.axes.xaxis._ticks[3].label.should.be 'dos'
+            plot7.axes.xaxis._ticks[5].label.should.be 'tres'
+            plot7.axes.xaxis._ticks[7].label.should.be 'cuatro'
+            plot7.axes.xaxis._ticks[9].label.should.be 'cinco'
+            plot7.axes.xaxis._ticks[11].label.should.be 'seis'
+            plot7.axes.xaxis._ticks[13].label.should.be 'siete'
         end
         it plot8.title.text
             plot8.axes.xaxis.should.have_property '_elem'
             plot1.seriesCanvas.should.have_property '_elem'
             plot8.axes.xaxis.renderer.constructor.should.be $.jqplot.CategoryAxisRenderer
-            plot8.axes.xaxis._ticks[0].label.should.be 'uno'
-            plot8.axes.xaxis._ticks[0].label.should.be 'due'
-            plot8.axes.xaxis._ticks[0].label.should.be 'tre'
-            plot8.axes.xaxis._ticks[0].label.should.be 'quattro'
-            plot8.axes.xaxis._ticks[0].label.should.be 'cinque'
-            plot8.axes.xaxis._ticks[0].label.should.be 'sei'
-            plot8.axes.xaxis._ticks[0].label.should.be 'sette'
+            plot8.axes.xaxis._ticks[1].label.should.be 'uno'
+            plot8.axes.xaxis._ticks[3].label.should.be 'due'
+            plot8.axes.xaxis._ticks[5].label.should.be 'tre'
+            plot8.axes.xaxis._ticks[7].label.should.be 'quattro'
+            plot8.axes.xaxis._ticks[9].label.should.be 'cinque'
+            plot8.axes.xaxis._ticks[11].label.should.be 'sei'
+            plot8.axes.xaxis._ticks[13].label.should.be 'sette'
         end
     end
 
@@ -145,8 +143,7 @@ describe 'jqPlot'
             plot10.axes.xaxis.should.have_property '_elem'
             plot10.seriesCanvas.should.have_property '_elem'
             plot10.axes.xaxis.renderer.constructor.should.be $.jqplot.DateAxisRenderer
-            plot10.axes.xaxis.min.should.be Date.create('May 20, 2008').getTime()
-            plot10.axes.xaxis.tickInterval.should.be [1, 'month']
+            plot10.axes.xaxis.tickInterval.should.be '1 month'
             plot10.axes.xaxis.numberTicks.should.be 7
         end
     end

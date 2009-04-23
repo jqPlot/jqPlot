@@ -5,17 +5,17 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>jqPlot Unit Tests and Examples</title>
+	<!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
 	
   <!-- BEGIN: load jquery -->
   <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
   <!-- END: load jquery -->
   
   <!-- BEGIN: load extras -->
-  <script language="javascript" type="text/javascript" src="jspec.min.js"></script>
-  <script language="javascript" type="text/javascript" src="jspec.jquery.min.js"></script>
+  <script language="javascript" type="text/javascript" src="lib/jspec.js"></script>
   <script language="javascript" type="text/javascript" src="beautify.min.js" ></script>
   <script language="javascript" type="text/javascript" src="prettify.min.js"></script>
-  <link rel="stylesheet" href="jspec.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="lib/jspec.css" type="text/css" media="screen" title="no title" charset="utf-8">
   <link rel="stylesheet" href="prettify.min.css" type="text/css" rel="stylesheet" />
   <!-- END: load extras -->
   
@@ -37,6 +37,7 @@
       nid = uID();
       o = o.replace(/_target_/, 'chart'+nid);
       n = js_beautify(o);
+      // n = o;
       $('<div class="jqPLot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').appendTo('body');
       $('<pre id="code'+nid+'" class="prettyprint"></pre>').appendTo('body');
       $('#code'+nid).html(n);

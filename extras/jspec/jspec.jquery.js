@@ -59,7 +59,7 @@
   // --- be_a_TYPE_input (deprecated)
   
   $$.each('checkbox radio file password submit image text reset button', function(type){
-    console.warn("be_a_" + type + "_input is deprected; use have_type('" + type + "')");
+    //console.warn("be_a_" + type + "_input is deprected; use have_type('" + type + "')");
     JSpec.matchers['be_a_' + type + '_input'] = "jQuery(actual).get(0).type == '" + type + "'"
   })
   
