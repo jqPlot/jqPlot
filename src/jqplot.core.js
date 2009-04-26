@@ -652,7 +652,7 @@
             this.title._plotDimensions = this._plotDimensions;
             this.seriesCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
-            if (this._height <=0 || this._width <=0) throw "Canvas dimensions <=0";
+            if (this._height <=0 || this._width <=0 || !this._height || !this._width) throw "Canvas dimensions <=0";
             
             // get a handle to the plot object from the target to help with events.
             $(target).data('jqplot', this);

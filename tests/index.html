@@ -3,20 +3,20 @@
 
 <html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>jqPlot Unit Tests and Examples</title>
-	<!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-	
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>jqPlot Unit Tests and Examples</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
   <!-- BEGIN: load jquery -->
   <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
   <!-- END: load jquery -->
   
   <!-- BEGIN: load extras -->
   <script language="javascript" type="text/javascript" src="jspec/lib/jspec.js"></script>
-  <script language="javascript" type="text/javascript" src="beautify.min.js" ></script>
-  <script language="javascript" type="text/javascript" src="prettify.min.js"></script>
+  <script language="javascript" type="text/javascript" src="js-beautify/beautify.js" ></script>
+  <script language="javascript" type="text/javascript" src="google-code-prettify/prettify.js"></script>
   <link rel="stylesheet" href="jspec/lib/jspec.css" type="text/css" media="screen" title="no title" charset="utf-8">
-  <link rel="stylesheet" href="prettify.min.css" type="text/css" rel="stylesheet" />
+  <link rel="stylesheet" href="google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
   <!-- END: load extras -->
   
   <!-- BEGIN: load jqplot -->
@@ -26,24 +26,22 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
   <!-- END: load jqplot -->
 
-	<script language="javascript" type="text/javascript">
-	  var uID = (function() {
-	    var id = 1;
-	    return function(){return id++};
-	  })();
-	  
+  <script language="javascript" type="text/javascript">
+    var uID = (function() {
+      var id = 1;
+      return function(){return id++};
+    })();
+    
     function genplot(o) {
-      var nid, n;
+      var nid, n, no;
       nid = uID();
       o = o.replace(/_target_/, 'chart'+nid);
       n = js_beautify(o);
-      // n = o;
       $('<div class="jqPLot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').appendTo('body');
-      $('<pre id="code'+nid+'" class="prettyprint"></pre>').appendTo('body');
-      $('#code'+nid).html(n);
+      $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').appendTo('body');
       eval(o);
     }
-	
+  
     function runSuites() {
       var o, n, nid;
       
@@ -161,7 +159,7 @@
       
       genplot(o);
   
-      prettyPrint();
+      //prettyPrint();
       
       JSpec.options.profile = false;
       JSpec
@@ -171,21 +169,54 @@
     }
   </script>
   <style type="text/css">
-      div.jqPLot {
-        position:relative;
-        margin: 4em auto 3em auto;
-      }
-      pre {
-        text-align: left;
-      }
+    body {
+      background-color: #efefef;
+    }
+    div.jqPLot {
+      font-size: 16px;
+      position: relative;
+      margin: 4em auto 3em auto;
+    }
+    pre.prettyprint {
+      text-align: left;
+      margin: auto;
+      padding: 15px;
+      width: 900px;
+      background-color: #ffffff;
+    }
+    #jspec, #jspec-top, #jspec-bottom {
+      background: #ffffff;
+      width: 900px;
+      margin: 0 auto;
+    }
+    
+    #jspec-top {
+      border: 1px solid #888888;
+      border-bottom: 0px;
+    }
+    
+    #jspec {
+      border: 1px solid #888888;
+      border-top: 0px;
+      border-bottom: 0px;
+    }
+    
+    #jspec-bottom {
+      border: 1px solid #888888;
+      border-top: 0px;
+    }
+    
+    #jspec-report td + td {
+      width: auto;
+    }
   </style>
 </head>
-	<body class="jspec" onLoad="runSuites();">
-		<div id="jspec-top"><h2 id="jspec-title">jqPlot</h2></div>
-		<div id="jspec"></div>
-		<div id="jspec-bottom"></div>
-		
-		<div class="jqPLot" id="chart0"></div>
+  <body onLoad="runSuites();">
+    <div id="jspec-top"><h2 id="jspec-title">jqPlot</h2></div>
+    <div id="jspec"></div>
+    <div id="jspec-bottom"></div>
+    
+    <div class="jqPLot" id="chart0" style=""></div>
 
 </body>
 </html>
