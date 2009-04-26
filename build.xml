@@ -113,7 +113,6 @@
       <fileset dir="tests/images" includes="*" />
     </copy>
     <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
-    <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
 		<echo message="Test Suite Finished" />
 	</target>
 	
