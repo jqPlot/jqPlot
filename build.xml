@@ -70,6 +70,10 @@
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
         </copy>
         
+        <copy todir="${DIST_DIR}">
+          <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
+        </copy>
+        
         <echo message="jqPlot built." />
     </target>
 
@@ -109,18 +113,23 @@
     <copy todir="${DIST_DIR}/tests">
       <fileset dir="tests" includes="*" />
     </copy>
-    <copy todir="${DIST_DIR}/tests/images">
-      <fileset dir="tests/images" includes="*" />
+    <copy todir="${DIST_DIR}/tests/jspec/lib">
+      <fileset dir="tests/jspec/lib" includes="jspec.min.*" />
+    </copy>
+    <copy todir="${DIST_DIR}/tests/jspec/lib/images">
+      <fileset dir="tests/jspec/lib/images" includes="*" />
     </copy>
     <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
 		<echo message="Test Suite Finished" />
 	</target>
 	
+<!--
 	<target name="mintests" depends="tests, min">
 	  <echo message="Modifying test suite to use minified distribution" />
     <replaceregexp match="jquery\.jqplot\.js" replace="jquery\.jqplot\.min\.js" file="${DIST_DIR}/tests/index.html" />
     <replaceregexp match="/jqplot\.([a-zA-Z0-9_-]+)\.js" replace="/jqplot\.\1\.min\.js" flags="g" file="${DIST_DIR}/tests/index.html" />
   </target>
+-->
 
 	<target name="docs" depends="jqplot">
 		<echo message="Creating documentation" />
@@ -143,7 +152,7 @@
         <delete dir="${DIST_DIR}" />
     </target>
 
-    <target name="all" depends="clean,jqplot,min,mintests,docs">
+    <target name="all" depends="clean,jqplot,min,tests,docs">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 
