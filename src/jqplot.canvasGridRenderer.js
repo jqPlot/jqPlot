@@ -2,12 +2,17 @@
     // class: $.jqplot.CanvasGridRenderer
     // The default jqPlot grid renderer, creating a grid on a canvas element.
     // The renderer has no additional options beyond the <Grid> class.
-    $.jqplot.CanvasGridRenderer = function(){};
+    $.jqplot.CanvasGridRenderer = function(){
+        this.shadowRenderer = new $.jqplot.ShadowRenderer();
+    };
     
     // called with context of Grid object
     $.jqplot.CanvasGridRenderer.prototype.init = function(options) {
         this._ctx;
         $.extend(true, this, options);
+        // set the shadow renderer options
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:false, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.shadowWidth, closePath:false};
+        this.renderer.shadowRenderer.init(sopts);
     }
     
     // called with context of Grid.
@@ -29,16 +34,6 @@
         this._height = this._bottom - this._top;
         return this._elem;
     };
-    //     
-    //     this.overlayCanvas = document.createElement('canvas');
-    //     this.overlayCanvas.width = this._width;
-    //     this.overlayCanvas.height = this._height;
-    //     if ($.browser.msie) // excanvas hack
-    //         this.overlayCanvas = window.G_vmlCanvasManager.initElement(this.overlayCanvas);
-    //     $(this.overlayCanvas).css({ position: 'absolute', left: 0, top: 0 });
-    //     this.target.append(this.overlayCanvas);
-    //     this.octx = this.overlayCanvas.getContext("2d");
-    // };
     
     $.jqplot.CanvasGridRenderer.prototype.draw = function() {
         this._ctx = this._elem.get(0).getContext("2d");
@@ -203,21 +198,8 @@
         
         // now draw the shadow
         if (this.shadow) {
-            ctx.save();
-            for (var j=0; j<this.shadowDepth; j++) {
-                ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-                ctx.lineWidth = this.shadowWidth;
-                ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.lineJoin = 'miter';
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(this._left, this._bottom);
-                ctx.lineTo(this._right, this._bottom);
-                ctx.lineTo(this._right, this._top);
-                ctx.stroke();
-                //ctx.strokeRect(this._left, this._top, this._width, this._height);
-            }
-            ctx.restore();
+            var points = [[this._left, this._bottom], [this._right, this._bottom], [this._right, this._top]];
+            this.renderer.shadowRenderer.draw(ctx, points);
         }
     
         ctx.restore();
