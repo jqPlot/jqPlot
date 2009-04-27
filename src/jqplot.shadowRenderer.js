@@ -9,7 +9,7 @@
         this.lineWidth = 1.5;
         this.lineJoin = 'miter';
         this.lineCap = 'round';
-        this.closePath = true;
+        this.closePath = false;
         this.fill = false;
         this.depth = 3;
         this.isarc = false;

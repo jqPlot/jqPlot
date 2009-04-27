@@ -33,41 +33,40 @@
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.07';
         this.shadowRenderer = new $.jqplot.ShadowRenderer();
+        this.shapeRenderer = new $.jqplot.ShapeRenderer();
     };
     
     $.jqplot.MarkerRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-        var sopt = {angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, lineWidth:this.lineWidth, depth:this.shadowDepth}
+        var sdopt = {angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, lineWidth:this.lineWidth, depth:this.shadowDepth, closePath:true}
         if (this.style.indexOf('filled') != -1) {
-            sopt.fill = true;
+            sdopt.fill = true;
         }
         if (this.style.indexOf('ircle') != -1) {
-            sopt.isarc = true;
-            sopt.closePath = false;
+            sdopt.isarc = true;
+            sdopt.closePath = false;
         }
-        this.shadowRenderer.init(sopt);
+        this.shadowRenderer.init(sdopt);
+        
+        var shopt = {fill:false, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:true}
+        if (this.style.indexOf('filled') != -1) {
+            shopt.fill = true;
+        }
+        if (this.style.indexOf('ircle') != -1) {
+            shopt.isarc = true;
+            shopt.closePath = false;
+        }
+        this.shapeRenderer.init(shopt);
     }
     
     $.jqplot.MarkerRenderer.prototype.drawDiamond = function(x, y, ctx, fill) {
-        ctx.save();
-        ctx.lineJoin = 'miter';
-        ctx.lineWidth = this.lineWidth;
-        ctx.strokeStyle = this.color;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
         var stretch = 1.2;
         var dx = this.size/2/stretch;
         var dy = this.size/2*stretch;
-        ctx.moveTo(x-dx, y);
-        ctx.lineTo(x, y+dy);
-        ctx.lineTo(x+dx, y);
-        ctx.lineTo(x, y-dy);
-        ctx.closePath();
-        if (fill) ctx.fill();
-        else ctx.stroke();
+        var points = [[x-dx, y], [x, y+dy], [x+dx, y], [x, y-dy]];
+        this.shapeRenderer.draw(ctx, points);
         
         if (this.shadow) {
-            var points = [[x-dx, y], [x, y+dy], [x+dx, y], [x, y-dy]];
             this.shadowRenderer.draw(ctx, points);
         }
         
@@ -75,25 +74,13 @@
     };
     
     $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill) {
-        ctx.save();
-        ctx.lineJoin = 'miter';
-        ctx.lineWidth = this.lineWidth;
-        ctx.strokeStyle = this.color;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
         var stretch = 1.0;
         var dx = this.size/2/stretch;
         var dy = this.size/2*stretch;
-        ctx.moveTo(x-dx, y-dy);
-        ctx.lineTo(x-dx, y+dy);
-        ctx.lineTo(x+dx, y+dy);
-        ctx.lineTo(x+dx, y-dy);
-        ctx.closePath();
-        if (fill) ctx.fill();
-        else ctx.stroke();
+        var points = [[x-dx, y-dy], [x-dx, y+dy], [x+dx, y+dy], [x+dx, y-dy]];
+        this.shapeRenderer.draw(ctx, points);
         
         if (this.shadow) {
-            var points = [[x-dx, y-dy], [x-dx, y+dy], [x+dx, y+dy], [x+dx, y-dy]];
             this.shadowRenderer.draw(ctx, points);
         }
         
@@ -101,20 +88,12 @@
     };
     
     $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill) {
-        ctx.save();
-        ctx.lineJoin = 'miter';
-        ctx.lineWidth = this.lineWidth;
-        ctx.strokeStyle = this.color;
-        ctx.fillStyle = this.color;
         var radius = this.size/2;
         var end = 2*Math.PI;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, end, true);
-        if (fill) ctx.fill();
-        else ctx.stroke();
+        var points = [x, y, radius, 0, end, true];
+        this.shapeRenderer.draw(ctx, points);
         
         if (this.shadow) {
-            var points = [x, y, radius, 0, end, true];
             this.shadowRenderer.draw(ctx, points);
         }
         ctx.restore();
