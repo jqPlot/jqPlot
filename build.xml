@@ -1,4 +1,4 @@
-<project name="jqPlot" default="jqlot" basedir=".">
+<project name="jqPlot" default="all" basedir=".">
     
     <!-- directories for building -->
     <property description="Source directory" name="SRC_DIR" value="src"  />
@@ -16,7 +16,7 @@
 
     <!-- MAIN -->
 
-    <target name="jqplot" description="Build jqplot for distribution and compression.">
+    <target name="dist" description="Build uncompressed jqplot for distribution.">
         <echo message="Building jqPlot" />
     	  <replaceregexp match="@VERSION" replace="${version}" file="${SRC_DIR}/jqplot.core.js" />
         <mkdir dir="${BUILD_DIR}" />
@@ -77,7 +77,7 @@
         <echo message="jqPlot built." />
     </target>
 
-    <target name="min" depends="jqplot" description="Remove all comments and whitespace, no compression, great in combination with GZip">
+    <target name="min" depends="dist" description="Minify sources with YUI compressor.">
         <echo message="Building minified sources with YUI Compressor" />
     		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
     			<fileset dir="${DIST_DIR}">
@@ -107,7 +107,7 @@
         <echo message="Minified sources built." />
     </target>
 
-	<target name="tests" depends="jqplot">
+	<target name="tests" depends="dist" description="Create test suite for distribution.">
 		<echo message="Creating automated test suite for distribtion" />
     <mkdir dir="${DIST_DIR}/tests" />
     <copy todir="${DIST_DIR}/tests">
@@ -131,7 +131,7 @@
   </target>
 -->
 
-	<target name="docs" depends="jqplot">
+	<target name="docs" depends="dist" description="Create documentation for distribution.">
 		<echo message="Creating documentation" />
     <mkdir dir="${DIST_DIR}/docs" />
     <exec executable="${ND}">
@@ -147,12 +147,12 @@
 		<echo message="Documentation Finished" />
 	</target>
 
-    <target name="clean">
+    <target name="clean" description="Clean up, removing build and distribution directories and everything underneath.">
         <delete dir="${BUILD_DIR}" />
         <delete dir="${DIST_DIR}" />
     </target>
 
-    <target name="all" depends="clean,jqplot,min,tests,docs">
+    <target name="all" depends="clean,dist,min,tests,docs" description="Clean then build everything (distribution, minify, tests and docs).">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 
