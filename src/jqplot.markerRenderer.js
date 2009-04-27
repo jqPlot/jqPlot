@@ -38,7 +38,7 @@
     
     $.jqplot.MarkerRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-        var sdopt = {angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, lineWidth:this.lineWidth, depth:this.shadowDepth, closePath:true}
+        var sdopt = {angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, lineWidth:this.lineWidth, depth:this.shadowDepth, closePath:true};
         if (this.style.indexOf('filled') != -1) {
             sdopt.fill = true;
         }
@@ -48,7 +48,7 @@
         }
         this.shadowRenderer.init(sdopt);
         
-        var shopt = {fill:false, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:true}
+        var shopt = {fill:false, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:true};
         if (this.style.indexOf('filled') != -1) {
             shopt.fill = true;
         }

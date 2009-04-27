@@ -3,11 +3,19 @@
     // The default line renderer for jqPlot, this class has no options beyond the <Series> class.
     // Draws series as a line.
     $.jqplot.LineRenderer = function(){
+        this.shapeRenderer = new $.jqplot.ShapeRenderer();
+        this.shadowRenderer = new $.jqplot.ShadowRenderer();
     };
     
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options) {
         $.extend(true, this.renderer, options);
+        // set the shape renderer options
+        var opts = {lineJoin:'miter', lineCap:'round', fill:false, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:false};
+        this.renderer.shapeRenderer.init(opts);
+        // set the shadow renderer options
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:false, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:false};
+        this.renderer.shadowRenderer.init(sopts);
     };
     
     $.jqplot.LineRenderer.prototype.setGridData = function() {
@@ -31,31 +39,11 @@
         var pointx, pointy;
         ctx.save();
         if (this.showLine) {
-            ctx.beginPath();
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-            ctx.lineWidth = this.lineWidth;
-            ctx.strokeStyle = this.color;
-            ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
-            for (var i=1; i<this.data.length; i++) {
-                ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
-            }
-            ctx.stroke();
+            this.renderer.shapeRenderer.draw(ctx, this.gridData);
         
             // now draw the shadows
             if (this.shadow) {
-                ctx.save();
-                for (var j=0; j<this.shadowDepth; j++) {
-                    ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-                    ctx.beginPath();
-                    ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                    ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
-                    for (var i=1; i<this.data.length; i++) {
-                        ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
-                    }
-                    ctx.stroke();
-                }
-                ctx.restore();
+                this.renderer.shadowRenderer.draw(ctx, this.gridData);
             }
         }
         
