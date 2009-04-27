@@ -32,10 +32,20 @@
         // prop: shadowAlpha
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.07';
+        this.shadowRenderer = new $.jqplot.ShadowRenderer();
     };
     
     $.jqplot.MarkerRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
+        var sopt = {angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, lineWidth:this.lineWidth, depth:this.shadowDepth}
+        if (this.style.indexOf('filled') != -1) {
+            sopt.fill = true;
+        }
+        if (this.style.indexOf('ircle') != -1) {
+            sopt.isarc = true;
+            sopt.closePath = false;
+        }
+        this.shadowRenderer.init(sopt);
     }
     
     $.jqplot.MarkerRenderer.prototype.drawDiamond = function(x, y, ctx, fill) {
@@ -57,21 +67,8 @@
         else ctx.stroke();
         
         if (this.shadow) {
-            ctx.save();
-            for (var j=0; j<this.shadowDepth; j++) {
-                ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.fillStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.moveTo(x-dx, y);
-                ctx.lineTo(x, y+dy);
-                ctx.lineTo(x+dx, y);
-                ctx.lineTo(x, y-dy);
-                ctx.closePath();
-                if (fill) ctx.fill();
-                else ctx.stroke();
-            }
-            ctx.restore();
+            var points = [[x-dx, y], [x, y+dy], [x+dx, y], [x, y-dy]];
+            this.shadowRenderer.draw(ctx, points);
         }
         
         ctx.restore();
@@ -96,21 +93,8 @@
         else ctx.stroke();
         
         if (this.shadow) {
-            ctx.save();
-            for (var j=0; j<this.shadowDepth; j++) {
-                ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.fillStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.moveTo(x-dx, y-dy);
-                ctx.lineTo(x-dx, y+dy);
-                ctx.lineTo(x+dx, y+dy);
-                ctx.lineTo(x+dx, y-dy);
-                ctx.closePath();
-                if (fill) ctx.fill();
-                else ctx.stroke();
-            }
-            ctx.restore();
+            var points = [[x-dx, y-dy], [x-dx, y+dy], [x+dx, y+dy], [x+dx, y-dy]];
+            this.shadowRenderer.draw(ctx, points);
         }
         
         ctx.restore();
@@ -130,17 +114,8 @@
         else ctx.stroke();
         
         if (this.shadow) {
-            ctx.save();
-            for (var j=0; j<this.shadowDepth; j++) {
-                ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.fillStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                ctx.arc(x, y, radius, 0, end, true);
-                if (fill) ctx.fill();
-                else ctx.stroke();
-            }
-            ctx.restore();
+            var points = [x, y, radius, 0, end, true];
+            this.shadowRenderer.draw(ctx, points);
         }
         ctx.restore();
     };
