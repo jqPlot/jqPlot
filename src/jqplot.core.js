@@ -91,6 +91,16 @@
     
     $.jqplot.debug = 1;
     
+    $.jqplot.preInitHooks = [];
+    $.jqplot.postInitHooks = [];
+    $.jqplot.preParseOptionsHooks = [];
+    $.jqplot.postParseOptionsHooks = [];
+    $.jqplot.preDrawHooks = [];
+    $.jqplot.postDrawHooks = [];
+    $.jqplot.preDrawSeriesHooks = [];
+    $.jqplot.postDrawSeriesHooks = [];
+    $.jqplot.drawLegendHooks = [];
+    
     // A superclass holding some common properties and methods.
     $.jqplot.ElemContainer = function() {
         this._elem;
@@ -447,8 +457,14 @@
     }
     
     Series.prototype.draw = function(sctx) {
+        for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
+            $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx);
+        }
         this.renderer.setGridData.call(this);
         this.renderer.draw.call(this, sctx);
+        for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+            $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx);
+        }
     }
     
 
@@ -530,7 +546,8 @@
         this.renderer.draw.call(this);
     }
 
-    
+    // Canvas for drawing series.
+    // Sized to fit within the grid region.
     function SeriesCanvas() {
         $.jqplot.ElemContainer.call(this);
         this._ctx;
@@ -554,6 +571,35 @@
     };
     
     SeriesCanvas.prototype.setContext = function() {
+        this._ctx = this._elem.get(0).getContext("2d");
+        return this._ctx;
+    }
+    
+    // Canvas for drawing effects over the grid and series.
+    // Sized to fit within the grid region.
+    function OverlayCanvas() {
+        $.jqplot.ElemContainer.call(this);
+        this._ctx;
+    };
+    
+    OverlayCanvas.prototype = new $.jqplot.ElemContainer();
+    OverlayCanvas.prototype.constructor = OverlayCanvas;
+    
+    OverlayCanvas.prototype.createElement = function(offsets) {
+        this._offsets = offsets;
+        var elem = document.createElement('canvas');
+        var w = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+        var h = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+        elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        if ($.browser.msie) // excanvas hack
+            elem = window.G_vmlCanvasManager.initElement(elem);
+        this._elem = $(elem);
+        this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
+        return this._elem;
+    };
+    
+    OverlayCanvas.prototype.setContext = function() {
         this._ctx = this._elem.get(0).getContext("2d");
         return this._ctx;
     }
@@ -605,6 +651,7 @@
         // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
         this.seriesCanvas = new SeriesCanvas();
+        this.overlayCanvas = new OverlayCanvas();
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
@@ -634,6 +681,9 @@
         this.options = {};
             
         this.init = function(target, data, options) {
+            for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
+                $.jqplot.preInitHooks[i].call(this);
+            }
             this.targetId = target;
             this.target = $('#'+target);
             if (!this.target.get(0)) throw "No plot target specified";
@@ -651,6 +701,7 @@
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
             this.seriesCanvas._plotDimensions = this._plotDimensions;
+            this.overlayCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) throw "Canvas dimensions <=0";
             
@@ -677,6 +728,9 @@
             this.grid._axes = this.axes;
             
             this.legend._series = this.series;
+            for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
+                $.jqplot.postInitHooks[i].call(this);
+            }
         };        
         
         this.getNextSeriesColor = function() {
@@ -686,6 +740,9 @@
         }
     
         this.parseOptions = function(options){
+            for (var i=0; i<$.jqplot.preParseOptionsHooks.length; i++) {
+                $.jqplot.preParseOptionsHooks[i].call(this);
+            }
             this.options = $.extend(true, {}, this.defaults, options);
             this._gridPadding = this.options.gridPadding;
             for (var n in this.axes) {
@@ -775,6 +832,9 @@
         };
     
         this.draw = function(){
+            for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
+                $.jqplot.preDrawHooks[i].call(this);
+            }
             this.target.append(this.title.draw());
             this.title.pack({top:0, left:0});
             for (var name in this.axes) {
@@ -797,6 +857,8 @@
             this.grid.draw();
             this.target.append(this.seriesCanvas.createElement(this._gridPadding));
             var sctx = this.seriesCanvas.setContext();
+            this.target.append(this.overlayCanvas.createElement(this._gridPadding));
+            var octx = this.overlayCanvas.setContext();
             
             this.drawSeries(sctx);
 
@@ -804,14 +866,17 @@
             this.target.append(this.legend.draw());
             this.legend.pack(this._gridPadding);
 
-            // for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
-            //     $.jqplot.postDrawHooks[i].call(this);
-            // }
+            for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
+                $.jqplot.postDrawHooks[i].call(this);
+            }
         };
 
         this.drawSeries = function(sctx){
             for (var i=0; i<this.series.length; i++) {
                 if (this.series[i].show) {
+                    for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
+                        $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx);
+                    }
                     this.series[i].draw(sctx);
                     for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
                         $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx);
@@ -820,11 +885,6 @@
             }
         };
     };
-    
-    $.jqplot.postParseOptionsHooks = [];
-    $.jqplot.postDrawHooks = [];
-    $.jqplot.postDrawSeriesHooks = [];
-    $.jqplot.drawLegendHooks = [];
     
 	// Convienence function that won't hang IE.
 	$.jqplot.log = function() {
