@@ -56,7 +56,7 @@
         if (fill) ctx.fill();
         else ctx.stroke();
         
-        if (this.shadow) { ctx.save();
+        if (this.shadow) {
             ctx.save();
             for (var j=0; j<this.shadowDepth; j++) {
                 ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
@@ -95,7 +95,7 @@
         if (fill) ctx.fill();
         else ctx.stroke();
         
-        if (this.shadow) { ctx.save();
+        if (this.shadow) {
             ctx.save();
             for (var j=0; j<this.shadowDepth; j++) {
                 ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
