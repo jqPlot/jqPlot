@@ -1,7 +1,7 @@
 (function($) {
 	// class: $.jqplot.MarkerRenderer
 	// The default jqPlot marker renderer, rendering the points on the line.
-    $.jqplot.MarkerRenderer = function(){
+    $.jqplot.MarkerRenderer = function(options){
         // prop: show
         // wether or not to show the marker.
         this.show = true;
@@ -34,6 +34,8 @@
         this.shadowAlpha = '0.07';
         this.shadowRenderer = new $.jqplot.ShadowRenderer();
         this.shapeRenderer = new $.jqplot.ShapeRenderer();
+        
+        $.extend(true, this, options);
     };
     
     $.jqplot.MarkerRenderer.prototype.init = function(options) {

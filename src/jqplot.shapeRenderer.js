@@ -8,8 +8,8 @@
         this.closePath = false;
         this.fill = false;
         this.isarc = false;
-        this.strokeStyle;
-        this.fillStyle;
+        this.strokeStyle = '#999999';
+        this.fillStyle = '#999999'; 
         $.extend(true, this, options);
     };
     
