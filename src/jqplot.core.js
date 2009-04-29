@@ -5,7 +5,7 @@
 * 
 * About: Version
 *
-* Version: 0.4.0 
+* @VERSION 
 * 
 * About: Copyright
 * 
@@ -89,6 +89,10 @@
     };
     
     $.jqplot.debug = 1;
+    
+    // path to jqplot install, relative to the script that is including jqplot.
+    $.jqplot.installPath = 'jqplot';
+    $.jqplot.pluginsPath = 'jqplot/plugins';
     
     $.jqplot.preInitHooks = [];
     $.jqplot.postInitHooks = [];

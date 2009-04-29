@@ -28,6 +28,8 @@
   <!-- END: load jqplot -->
 
   <script language="javascript" type="text/javascript">
+    $.jqplot.installPath = "../src";
+    $.jqplot.pluginsPath = "../src/plugins";
     var uID = (function() {
       var id = 1;
       return function(){return id++};
@@ -171,7 +173,7 @@
         
       genplot(o);
   
-      //prettyPrint();
+      prettyPrint();
       
       JSpec.options.profile = false;
       JSpec

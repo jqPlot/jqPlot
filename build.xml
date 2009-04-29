@@ -18,7 +18,6 @@
 
     <target name="dist" description="Build uncompressed jqplot for distribution.">
         <echo message="Building jqPlot" />
-    	  <replaceregexp match="@VERSION" replace="${version}" file="${SRC_DIR}/jqplot.core.js" />
         <mkdir dir="${BUILD_DIR}" />
         <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
@@ -32,6 +31,7 @@
             <exclude name="jquery.jqplot.js" />
           </fileset>
         </copy>
+    	  <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
         <copy todir="${BUILD_DIR}/plugins">
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
         </copy>
@@ -122,14 +122,6 @@
     <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
 		<echo message="Test Suite Finished" />
 	</target>
-	
-<!--
-	<target name="mintests" depends="tests, min">
-	  <echo message="Modifying test suite to use minified distribution" />
-    <replaceregexp match="jquery\.jqplot\.js" replace="jquery\.jqplot\.min\.js" file="${DIST_DIR}/tests/index.html" />
-    <replaceregexp match="/jqplot\.([a-zA-Z0-9_-]+)\.js" replace="/jqplot\.\1\.min\.js" flags="g" file="${DIST_DIR}/tests/index.html" />
-  </target>
--->
 
 	<target name="docs" depends="dist" description="Create documentation for distribution.">
 		<echo message="Creating documentation" />
