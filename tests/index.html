@@ -24,6 +24,7 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <!-- END: load jqplot -->
 
   <script language="javascript" type="text/javascript">
@@ -127,6 +128,7 @@
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
       genplot(o);
+      
       o = "line1=[4, 25, 13, 22, 14, 17, 15]; \
       ticks = ['uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete']; \
       plot7 = $.jqplot('_target_', [line1], \
@@ -135,6 +137,7 @@
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
       genplot(o);
+      
       o = "line1=[['uno', 4], ['due', 25], ['tre', 13], ['quattro', 22], ['cinque', 14], ['sei', 17], ['sette', 15]]; \
       plot8 = $.jqplot('_target_', [line1], \
       {title:'Customized Category X Axis by Series Data Specificaiton', \
@@ -157,6 +160,15 @@
       axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer, tickOptions:{formatString:'%b %#d, %y'}, min:'May 30, 2008', tickInterval:'1 month'}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
+      genplot(o);
+      
+      o = "line1 = [1,4,9, 16]; \
+      line2 = [25, 12.5, 6.25, 3.125]; \
+      plot11 = $.jqplot('_target_', [line1, line2], \
+      {legend:{show:true, location:'ne'},title:'Bar Chart', \
+      series:[{label:'Rising', renderer:$.jqplot.BarRenderer}, {label:'Declining', renderer:$.jqplot.BarRenderer}], \
+      axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}});"
+        
       genplot(o);
   
       //prettyPrint();

@@ -28,7 +28,7 @@ describe 'jqPlot'
             plot1.series[2].markerRenderer.style.should.equal 'circle'
             plot1.series[3].lineWidth.should.be 5
             plot1.series[3].markerRenderer.style.should.equal 'filledSquare'
-            plot1.series[3].markerRenderer.size.should.equal 11 
+            plot1.series[3].markerRenderer.size.should.equal 14 
             plot1.title.text.should.be 'Line Style Options'
         end
         it plot2.title.text            

@@ -5,9 +5,7 @@
 * 
 * About: Version
 *
-* Version: 0.4.0 $Rev$
-*
-* $Id$
+* Version: 0.4.0 
 * 
 * About: Copyright
 * 
@@ -68,6 +66,7 @@
         
         // check to see if only 2 arguments were specified, what is what.
         if (data == null) throw "No data specified";
+        if (data.constructor == Array && data.length == 0 || data[0].constructor != Array) throw "Improper Data Array";
         if (options == null) {
             if (data instanceof Array) {
                 _data = data;
@@ -100,7 +99,12 @@
     $.jqplot.preDrawSeriesHooks = [];
     $.jqplot.postDrawSeriesHooks = [];
     $.jqplot.drawLegendHooks = [];
-    
+    $.jqplot.preSeriesInitHooks = [];
+    $.jqplot.postSeriesInitHooks = [];
+    $.jqplot.preParseSeriesOptionsHooks = [];
+    $.jqplot.postParseSeriesOptionsHooks = [];
+    $.jqplot.eventListenerHooks = [];
+
     // A superclass holding some common properties and methods.
     $.jqplot.ElemContainer = function() {
         this._elem;
@@ -682,7 +686,7 @@
             
         this.init = function(target, data, options) {
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
-                $.jqplot.preInitHooks[i].call(this);
+                $.jqplot.preInitHooks[i].call(this, target, data, options);
             }
             this.targetId = target;
             this.target = $('#'+target);
@@ -706,7 +710,7 @@
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) throw "Canvas dimensions <=0";
             
             // get a handle to the plot object from the target to help with events.
-            $(target).data('jqplot', this);
+            // $(target).data('jqplot', this);
             
             this.data = data;
             
@@ -715,8 +719,14 @@
             this.legend.init();
             
             for (var i=0; i<this.series.length; i++) {
+                for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
+                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, options);
+                }
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init();
+                for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
+                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, options);
+                }
             }
 
             for (var name in this.axes) {
@@ -728,10 +738,11 @@
             this.grid._axes = this.axes;
             
             this.legend._series = this.series;
+            
             for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
-                $.jqplot.postInitHooks[i].call(this);
+                $.jqplot.postInitHooks[i].call(this, target, data, options);
             }
-        };        
+        };  
         
         this.getNextSeriesColor = function() {
             var c = this.seriesColors[this._seriesColorsIndex];
@@ -741,7 +752,7 @@
     
         this.parseOptions = function(options){
             for (var i=0; i<$.jqplot.preParseOptionsHooks.length; i++) {
-                $.jqplot.preParseOptionsHooks[i].call(this);
+                $.jqplot.preParseOptionsHooks[i].call(this, options);
             }
             this.options = $.extend(true, {}, this.defaults, options);
             this._gridPadding = this.options.gridPadding;
@@ -779,8 +790,12 @@
                 return temp;
             };
 
-            for (var i=0; i<this.data.length; i++) {
-                var temp = $.extend(true, new Series(), this.options.seriesDefaults, this.options.series[i]);
+            for (var i=0; i<this.data.length; i++) { 
+                var temp = new Series();
+                for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
+                    $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+                }
+                $.extend(true, temp, this.options.seriesDefaults, this.options.series[i]);
                 temp.data = normalizeData(this.data[i]);
                 switch (temp.xaxis) {
                     case 'xaxis':
@@ -817,6 +832,9 @@
                 // temp.rendererOptions.show = temp.show;
                 // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
                 this.series.push(temp);  
+                for (var j=0; j<$.jqplot.postParseSeriesOptionsHooks.length; j++) {
+                    $.jqplot.postParseSeriesOptionsHooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
+                }
             }
             
             // copy the grid and title options into this object.
@@ -827,7 +845,7 @@
             $.extend(true, this.legend, this.options.legend);
             
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
-                $.jqplot.postParseOptionsHooks[i].call(this);
+                $.jqplot.postParseOptionsHooks[i].call(this, options);
             }
         };
     
@@ -860,18 +878,133 @@
             this.target.append(this.overlayCanvas.createElement(this._gridPadding));
             var octx = this.overlayCanvas.setContext();
             
+            // bind custom event handlers to regular events.
+            this.bindCustomEvents();
+            
             this.drawSeries(sctx);
 
             // finally, draw and pack the legend
             this.target.append(this.legend.draw());
             this.legend.pack(this._gridPadding);
+            
+            // register event listeners on the overlay canvas
+            for (i=0; i<$.jqplot.eventListenerHooks.length; i++) {
+                var h = $.jqplot.eventListenerHooks[i];
+                // in the handler, this will refer to the overlayCanvas dom element.
+                // make sure there are references back into plot objects.
+                this.overlayCanvas._elem.bind(h[0], {plot:this}, h[1]);
+            }
 
             for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
                 $.jqplot.postDrawHooks[i].call(this);
             }
         };
-
+        
+        this.bindCustomEvents = function() {
+            this.overlayCanvas._elem.bind('click', {plot:this}, this.onClick);
+            this.overlayCanvas._elem.bind('mousedown', {plot:this}, this.onMouseDown);
+            this.overlayCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
+            this.overlayCanvas._elem.bind('mousemove', {plot:this}, this.onMouseMove);
+            this.overlayCanvas._elem.bind('mouseenter', {plot:this}, this.onMouseEnter);
+            this.overlayCanvas._elem.bind('mouseleave', {plot:this}, this.onMouseLeave);
+        };
+        
+        function getEventPosition(ev) {
+    	    var plot = ev.data.plot;
+    	    var xaxis = plot.axes.xaxis;
+    	    var x2axis = plot.axes.x2axis;
+    	    var yaxis = plot.axes.yaxis;
+    	    var y2axis = plot.axes.y2axis;
+    	    var offsets = plot.overlayCanvas._elem.offset();
+    	    var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
+    	    var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
+    	    if (xaxis.show) {
+    	        if (yaxis.show) {
+    	            dataPos.x1y1.x = xaxis.series_p2u(gridPos.x);
+    	            dataPos.x1y1.y = yaxis.series_p2u(gridPos.y);
+    	        }
+    	        if (y2axis.show) {
+    	            dataPos.x1y2.x = xaxis.series_p2u(gridPos.x);
+    	            dataPos.x1y2.y = y2axis.series_p2u(gridPos.y);
+    	        }
+    	    }
+    	    if (x2axis.show) {
+    	        if (yaxis.show) {
+    	            dataPos.x2y1.x = x2axis.series_p2u(gridPos.x);
+    	            dataPos.x2y1.y = yaxis.series_p2u(gridPos.y);
+    	        }
+    	        if (y2axis.show) {
+    	            dataPos.x2y2.x = x2axis.series_p2u(gridPos.x);
+    	            dataPos.x2y2.y = y2axis.series_p2u(gridPos.y);
+    	        }
+    	    }
+            return ({offsets:offsets, gridPos:gridPos, dataPos:dataPos});
+        };
+        
+        function getNeighborPoint(plot, x, y) {
+            // won't you be mine?
+            var ret = null;
+            var s, i, d0, d, j;
+            var threshold;
+            for (i=0; i<plot.series.length; i++) {
+                s = plot.series[i];
+                if (s.show) {
+                    threshold = s.markerRenderer.size/2+4;
+                    for (j=0; j<s.gridData.length; j++) {
+                       p = s.gridData[j];
+                       d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
+                       if (d <= threshold && (d <= d0 || d0 == null)) {
+                           d0 = d;
+                           ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                       }
+                    } 
+                }
+            }
+            return ret;
+        };
+        
+        this.onClick = function(ev) {
+            // Event passed in is unnormalized and will have data attribute.
+            // Event passed out in normalized and won't have data attribute.
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
+    	    ev.data.plot.overlayCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+        };
+        
+        this.onMouseDown = function(ev) {
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
+    	    ev.data.plot.overlayCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
+        };
+        
+        this.onMouseUp = function(ev) {
+            var positions = getEventPosition(ev);
+    	    ev.data.plot.overlayCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
+        };
+        
+        this.onMouseMove = function(ev) {
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
+    	    ev.data.plot.overlayCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
+        };
+        
+        this.onMouseEnter = function(ev) {
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+    	    ev.data.plot.overlayCanvas._elem.trigger('jqplotMouseEnter', [positions.gridPos, positions.dataPos, null, p]);
+        };
+        
+        this.onMouseLeave = function(ev) {
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+    	    ev.data.plot.overlayCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
+        };
         this.drawSeries = function(sctx){
+            // first clear the canvas
+            sctx.clearRect(0,0,sctx.canvas.width, sctx.canvas.height);
             for (var i=0; i<this.series.length; i++) {
                 if (this.series[i].show) {
                     for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
@@ -885,7 +1018,70 @@
             }
         };
     };
+
+    // convert a hex color string to rgb string.
+    // h - 3 or 6 character hex string, with or without leading #
+    // a - optional alpha
+    $.jqplot.hex2rgb = function(h, a) {
+        h = h.replace('#', '');
+        if (h.length == 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        var rgb;
+        rgb = 'rgba('+parseInt(h.slice(0,2), 16)+', '+parseInt(h.slice(2,4), 16)+', '+parseInt(h.slice(4,6), 16);
+        if (a) rgb += ', '+a;
+        rgb += ')';
+        return rgb;
+    };
     
+    // convert an rgb color spec to a hex spec.  ignore any alpha specification.
+    $.jqplot.rgb2hex = function(s) {
+        var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *(?:, *[0-9.]*)?\)/;
+        var m = s.match(pat);
+        var h = '#';
+        for (var i=1; i<4; i++) {
+            var temp;
+            if (m[i].search(/%/) != -1) {
+                temp = parseInt(255*m[i]/100).toString(16);
+                if (temp.length == 1) temp = '0'+temp;
+            }
+            else {
+                temp = parseInt(m[i]).toString(16);
+                if (temp.length == 1) temp = '0'+temp;
+            }
+            h += temp;
+        }
+        return h
+    };
+    
+    // given a css color spec, return an rgb css color spec
+    $.jqplot.normalize2rgb = function(s, a) {
+        if (s.search(/^ *rgba?\(/) != -1) {
+            return s; 
+        }
+        else if (s.search(/^ *#?[0-9a-fA-F]?[0-9a-fA-F]/) != -1) {
+            return $.jqplot.hex2rgb(s, a);
+        }
+        else throw 'invalid color spec';
+    };
+    
+    // extract the r, g, b, a color components out of a css color spec.
+    $.jqplot.getColorComponents = function(s) {
+        var rgb = $.jqplot.normalize2rgb(s);
+        var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *,? *([0-9.]* *)?\)/;
+        var m = rgb.match(pat);
+        var ret = [];
+        for (var i=1; i<4; i++) {
+            if (m[i].search(/%/) != -1) {
+                ret[i-1] = parseInt(255*m[i]/100);
+            }
+            else {
+                ret[i-1] = parseInt(m[i]);
+            }
+        }
+        if (m[4] != null) ret[3] = parseFloat(m[4]);
+        else ret[3] = 1.0;
+        return ret;
+    };
+        
 	// Convienence function that won't hang IE.
 	$.jqplot.log = function() {
 	    if (window.console && $.jqplot.debug) {
