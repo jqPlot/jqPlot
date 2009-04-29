@@ -216,21 +216,22 @@
         this.u2p = function(u){
             return (u - min) * pixellength / unitlength + offmin;
         };
-        
-        // point to unit and unit to point conversions references to Grid DOM element top left corner.
-        this.series_p2u = function(p){
-            return p * unitlength / pixellength + min;
-        };
-        
+                
         if (this.name == 'xaxis' || this.name == 'x2axis'){
             this.series_u2p = function(u){
                 return (u - min) * pixellength / unitlength;
+            };
+            this.series_p2u = function(p){
+                return p * unitlength / pixellength + min;
             };
         }
         
         else {
             this.series_u2p = function(u){
                 return (u - max) * pixellength / unitlength;
+            };
+            this.series_p2u = function(p){
+                return p * unitlength / pixellength + max;
             };
         }
         

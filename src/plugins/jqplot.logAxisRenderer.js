@@ -259,6 +259,7 @@
         var lb = parseInt(this.base);
         var ticks = this._ticks;
         var trans = function (v) { return Math.log(v)/Math.log(lb); };
+        var invtrans = function (v) { return Math.pow(Math.E, (Math.log(lb)*v))};
         max = trans(this.max);
         min = trans(this.min);
         var offmax = offsets.max;
@@ -275,27 +276,28 @@
         
         // point to unit and unit to point conversions references to Plot DOM element top left corner.
         this.p2u = function(p){
-            return (p - offmin) * unitlength / pixellength + min;
+            return invtrans((p - offmin) * unitlength / pixellength + min);
         };
         
         this.u2p = function(u){
             return (trans(u) - min) * pixellength / unitlength + offmin;
         };
         
-        // point to unit and unit to point conversions references to Grid DOM element top left corner.
-        this.series_p2u = function(p){
-            return p * unitlength / pixellength + min;
-        };
-        
         if (this.name == 'xaxis' || this.name == 'x2axis'){
             this.series_u2p = function(u){
                 return (trans(u) - min) * pixellength / unitlength;
+            };
+            this.series_p2u = function(p){
+                return invtrans(p * unitlength / pixellength + min);
             };
         }
         // yaxis is max at top of canvas.
         else {
             this.series_u2p = function(u){
                 return (trans(u) - max) * pixellength / unitlength;
+            };
+            this.series_p2u = function(p){
+                return invtrans(p * unitlength / pixellength + max);
             };
         }
         
