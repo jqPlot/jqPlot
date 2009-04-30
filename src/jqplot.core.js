@@ -467,16 +467,20 @@
     // data - optional data point array to draw using this series renderer
     // gridData - optional grid data point array to draw using this series renderer
     Series.prototype.draw = function(sctx, options) {
+        // hooks get called even if series not shown
+        // we don't clear canvas here, it would wipe out all other series as well.
         for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
             $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx, options);
         }
-        this.renderer.setGridData.call(this);
+        if (this.show) {
+            this.renderer.setGridData.call(this);
         
-        var options = (options != undefined) ? options : {};
-        var data = options.data || this.data;
-        var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
+            var options = (options != undefined) ? options : {};
+            var data = options.data || this.data;
+            var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
         
-        this.renderer.draw.call(this, sctx, gridData, options);
+            this.renderer.draw.call(this, sctx, gridData, options);
+        }
         
         for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx, options);
@@ -929,27 +933,14 @@
     	    var y2axis = plot.axes.y2axis;
     	    var offsets = plot.overlayCanvas._elem.offset();
     	    var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
-    	    var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
-    	    if (xaxis.show) {
-    	        if (yaxis.show) {
-    	            dataPos.x1y1.x = xaxis.series_p2u(gridPos.x);
-    	            dataPos.x1y1.y = yaxis.series_p2u(gridPos.y);
-    	        }
-    	        if (y2axis.show) {
-    	            dataPos.x1y2.x = xaxis.series_p2u(gridPos.x);
-    	            dataPos.x1y2.y = y2axis.series_p2u(gridPos.y);
-    	        }
-    	    }
-    	    if (x2axis.show) {
-    	        if (yaxis.show) {
-    	            dataPos.x2y1.x = x2axis.series_p2u(gridPos.x);
-    	            dataPos.x2y1.y = yaxis.series_p2u(gridPos.y);
-    	        }
-    	        if (y2axis.show) {
-    	            dataPos.x2y2.x = x2axis.series_p2u(gridPos.x);
-    	            dataPos.x2y2.y = y2axis.series_p2u(gridPos.y);
-    	        }
-    	    }
+            // var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
+    	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null};
+    	    
+    	    if (xaxis.show) dataPos.xaxis = xaxis.series_p2u(gridPos.x);
+    	    if (yaxis.show) dataPos.yaxis = yaxis.series_p2u(gridPos.y);
+    	    if (x2axis.show) dataPos.x2axis = x2axis.series_p2u(gridPos.x);
+    	    if (y2axis.show) dataPos.y2axis = y2axis.series_p2u(gridPos.y);
+
             return ({offsets:offsets, gridPos:gridPos, dataPos:dataPos});
         };
         
@@ -1014,19 +1005,12 @@
             var p = ev.data.plot;
     	    ev.data.plot.overlayCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
         };
-        this.drawSeries = function(sctx){
-            // first clear the canvas
+        
+        this.drawSeries = function(sctx, options){
+            // first clear the canvas, since we are redrawing all series.
             sctx.clearRect(0,0,sctx.canvas.width, sctx.canvas.height);
             for (var i=0; i<this.series.length; i++) {
-                if (this.series[i].show) {
-                    for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
-                        $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx);
-                    }
-                    this.series[i].draw(sctx);
-                    for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
-                        $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx);
-                    }
-                }
+                this.series[i].draw(sctx, options);
             }
         };
     };

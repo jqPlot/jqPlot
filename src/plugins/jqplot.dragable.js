@@ -75,7 +75,6 @@
         var start = (neighbor.pointIndex > 0) ? neighbor.pointIndex - 1 : 0;
         var end = neighbor.pointIndex+2;
         drag._gridData = s.gridData.slice(start, end);
-        console.log(start, end, drag._gridData);
     };
 	
 	function handleMove(ev, gridpos, datapos, neighbor, plot) {
@@ -99,7 +98,6 @@
 	
 	function handleDown(ev, gridpos, datapos, neighbor, plot) {
 	    var drag = plot.dragable;
-	    console.log(neighbor);
 	    if (neighbor != null) {
 	        var s = plot.series[neighbor.seriesIndex];
 	        if (s.isDragable && !drag.isDragging) {
@@ -120,11 +118,18 @@
 	function handleUp(ev, gridpos, datapos, neighbor, plot) {
 	    if (plot.dragable.isDragging) {
 	        // clear the canvas
-	       var ctx = plot.dragable._ctx;
-	       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	       plot.dragable._point = null;
-	       plot.dragable.isDragging = false;
+	        var ctx = plot.dragable._ctx;
+	        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	        plot.dragable.isDragging = false;
 	        // redraw the series canvas at the new point.
+	        var drag = plot.dragable;
+	        var dp = drag._point;
+	        var s = plot.series[dp.seriesIndex];
+            var x = datapos[s.xaxis];
+            var y = datapos[s.yaxis];
+            s.data[dp.pointIndex] = [x,y];
+            plot.drawSeries(plot.seriesCanvas._ctx);
+	        plot.dragable._point = null;
 	    }
 	};
 	
