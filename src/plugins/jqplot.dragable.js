@@ -76,12 +76,17 @@
 	    if (plot.dragCanvas.isDragging) {
 	        var dc = plot.dragCanvas;
 	        var dp = dc._neighbor;
-	        var drag = plot.series[dp.seriesIndex].dragable;
-	        var gd = plot.series[dp.seriesIndex].gridData;
+	        var s = plot.series[dp.seriesIndex];
+	        var drag = s.dragable;
+	        var gd = s.gridData;
 	        
 	        // compute the new grid position with any constraints.
 	        var x = (drag.constrainTo == 'y') ? dp.gridData[0] : gridpos.x;
 	        var y = (drag.constrainTo == 'x') ? dp.gridData[1] : gridpos.y;
+	        
+	        // compute data values for any listeners.
+            var xu = s._xaxis.series_p2u(x);
+            var yu = s._yaxis.series_p2u(y);
 	        
 	        // clear the canvas then redraw effect at new position.
 	        var ctx = dc._ctx;
@@ -94,7 +99,8 @@
 	        else {
 	            drag._gridData[0] = [x, y];
 	        }
-	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false});
+	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false, preventJqPlotSeriesDrawTrigger:true});
+	        dc._elem.trigger('jqplotSeriesPointChange', [dp.seriesIndex, dp.pointIndex, [xu,yu], [x,y]]);
 	    }
 	};
 	
@@ -135,7 +141,7 @@
             // var x = datapos[s.xaxis];
             // var y = datapos[s.yaxis];
             s.data[dp.pointIndex] = [x,y];
-            plot.drawSeries(plot.seriesCanvas._ctx);
+            plot.drawSeries(plot.seriesCanvas._ctx, {preventJqPlotSeriesDrawTrigger:true});
 	        dc._neighbor = null;
 	    }
 	};

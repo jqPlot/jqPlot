@@ -466,7 +466,8 @@
     
     // data - optional data point array to draw using this series renderer
     // gridData - optional grid data point array to draw using this series renderer
-    Series.prototype.draw = function(sctx, options) {
+    Series.prototype.draw = function(sctx, opts) {
+        var options = (opts == undefined) ? {} : opts;
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
         for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
@@ -474,6 +475,9 @@
         }
         if (this.show) {
             this.renderer.setGridData.call(this);
+            if (!options.preventJqPlotSeriesDrawTrigger) {
+                $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
+            }
         
             var options = (options != undefined) ? options : {};
             var data = options.data || this.data;
