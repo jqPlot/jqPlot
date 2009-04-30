@@ -1081,8 +1081,7 @@
                 ret[i-1] = parseInt(m[i]);
             }
         }
-        if (m[4] != null) ret[3] = parseFloat(m[4]);
-        else ret[3] = 1.0;
+        ret[3] = parseFloat(m[4]) ? parseFloat(m[4]) : 1.0;
         return ret;
     };
         
