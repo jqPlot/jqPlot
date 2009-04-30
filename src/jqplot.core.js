@@ -464,14 +464,22 @@
         this.markerRenderer.init(this.markerOptions);
     }
     
-    Series.prototype.draw = function(sctx) {
+    // data - optional data point array to draw using this series renderer
+    // gridData - optional grid data point array to draw using this series renderer
+    Series.prototype.draw = function(sctx, options) {
         for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
-            $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx);
+            $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx, options);
         }
         this.renderer.setGridData.call(this);
-        this.renderer.draw.call(this, sctx);
+        
+        var options = (options != undefined) ? options : {};
+        var data = options.data || this.data;
+        var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
+        
+        this.renderer.draw.call(this, sctx, gridData, options);
+        
         for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
-            $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx);
+            $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx, options);
         }
     }
     
