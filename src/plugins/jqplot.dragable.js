@@ -13,14 +13,22 @@
 	    $.extend(true, this, options);
 	};
 	
-	// called with scope of plot
-	$.jqplot.Dragable.init = function (target, data, options){
-	    // add a dragable attribute to the plot
-	    this.dragable = new $.jqplot.Dragable(options.dragable);
-	};
+	function DragCanvas() {
+	    this.isDragging = false;
+	    this._ctx;
+	    this._elem;
+	    this._neighbor;
+	}
+	
+    // // called with scope of plot
+    // $.jqplot.Dragable.init = function (target, data, options){
+    //     // add a dragable attribute to the plot
+    //     this.dragable = new $.jqplot.Dragable(options.dragable);
+    // };
 	
 	// called within scope of series
 	$.jqplot.Dragable.parseOptions = function (defaults, options) {
+	    this.dragable = new $.jqplot.Dragable(options.dragable);
 	    this.isDragable = true;
 	};
 	
@@ -28,12 +36,13 @@
 	// create a copy of the overlay canvas which we can draw on.
 	// insert it before the overlay, so the overlay will still capture events.
 	$.jqplot.Dragable.postPlotDraw = function() {
-	    this.dragable._elem = this.overlayCanvas._elem.clone();
-	    this.dragable._elem.insertBefore(this.overlayCanvas._elem);
-	    this.dragable._ctx = this.dragable._elem.get(0).getContext("2d");
+	    this.dragCanvas = new DragCanvas();
+	    this.dragCanvas._elem = this.overlayCanvas._elem.clone();
+	    this.dragCanvas._elem.insertBefore(this.overlayCanvas._elem);
+	    this.dragCanvas._ctx = this.dragCanvas._elem.get(0).getContext("2d");
 	};
 	
-	$.jqplot.preInitHooks.push($.jqplot.Dragable.init);
+	//$.jqplot.preInitHooks.push($.jqplot.Dragable.init);
 	$.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Dragable.parseOptions);
 	$.jqplot.postDrawHooks.push($.jqplot.Dragable.postPlotDraw);
 	$.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
@@ -42,9 +51,8 @@
 
     
     function initDragPoint(plot, neighbor) {
-        var drag = plot.dragable;
-        var ds = drag._series;
         var s = plot.series[neighbor.seriesIndex];
+        var drag = s.dragable;
         
         // first, init the mark renderer for the dragged point
         var smr = s.markerRenderer;
@@ -65,9 +73,10 @@
     };
 	
 	function handleMove(ev, gridpos, datapos, neighbor, plot) {
-	    if (plot.dragable.isDragging) {
-	        var drag = plot.dragable;
-	        var dp = drag._point;
+	    if (plot.dragCanvas.isDragging) {
+	        var dc = plot.dragCanvas;
+	        var dp = dc._neighbor;
+	        var drag = plot.series[dp.seriesIndex].dragable;
 	        var gd = plot.series[dp.seriesIndex].gridData;
 	        
 	        // compute the new grid position with any constraints.
@@ -75,7 +84,7 @@
 	        var y = (drag.constrainTo == 'x') ? dp.gridData[1] : gridpos.y;
 	        
 	        // clear the canvas then redraw effect at new position.
-	        var ctx = drag._ctx;
+	        var ctx = dc._ctx;
 	        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	        
 	        // adjust our gridData for the new mouse position
@@ -85,39 +94,41 @@
 	        else {
 	            drag._gridData[0] = [x, y];
 	        }
-	        plot.series[dp.seriesIndex].draw(drag._ctx, {gridData:drag._gridData, shadow:false});
+	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false});
 	    }
 	};
 	
 	function handleDown(ev, gridpos, datapos, neighbor, plot) {
-	    var drag = plot.dragable;
+	    var dc = plot.dragCanvas;
 	    if (neighbor != null) {
 	        var s = plot.series[neighbor.seriesIndex];
-	        if (s.isDragable && !drag.isDragging) {
-	            drag._point = neighbor;
-    	        drag.isDragging = true;
+	        var drag = s.dragable;
+	        if (s.isDragable && !dc.isDragging) {
+	            dc._neighbor = neighbor;
+    	        dc.isDragging = true;
     	        initDragPoint(plot, neighbor);
-    	        drag.markerRenderer.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], drag._ctx);
+    	        drag.markerRenderer.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], dc._ctx);
             }
 	    }
 	    // Just in case of a hickup, we'll clear the drag canvas and reset.
 	    else {
-	       var ctx = plot.dragable._ctx;
+	       var ctx = dc._ctx;
 	       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	       plot.dragable.isDragging = false;
+	       dc.isDragging = false;
 	    }
 	};
 	
 	function handleUp(ev, gridpos, datapos, neighbor, plot) {
-	    if (plot.dragable.isDragging) {
+	    if (plot.dragCanvas.isDragging) {
+	        var dc = plot.dragCanvas;
 	        // clear the canvas
-	        var ctx = plot.dragable._ctx;
+	        var ctx = dc._ctx;
 	        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	        plot.dragable.isDragging = false;
+	        dc.isDragging = false;
 	        // redraw the series canvas at the new point.
-	        var drag = plot.dragable;
-	        var dp = drag._point;
+	        var dp = dc._neighbor;
 	        var s = plot.series[dp.seriesIndex];
+	        var drag = s.dragable;
 	        // compute the new grid position with any constraints.
 	        var x = (drag.constrainTo == 'y') ? dp.data[0] : datapos[s.xaxis];
 	        var y = (drag.constrainTo == 'x') ? dp.data[1] : datapos[s.yaxis];
@@ -125,7 +136,7 @@
             // var y = datapos[s.yaxis];
             s.data[dp.pointIndex] = [x,y];
             plot.drawSeries(plot.seriesCanvas._ctx);
-	        plot.dragable._point = null;
+	        dc._neighbor = null;
 	    }
 	};
 	
