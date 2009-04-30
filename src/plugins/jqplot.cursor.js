@@ -24,7 +24,7 @@
 	
 	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
 	    //ev.target.style.cursor = "url('"+$.jqplot.pluginsPath+"/"+plot.cursor.imagePath+"/crosscursor.png'), crosshair";
-	    ev.target.style.cursor = "crosshair";
+	    ev.target.style.cursor = plot.cursor.style;
 	};
 	
 	function handleMouseLeave(ev, gridpos, datapos, neighbors, plot) {

@@ -61,7 +61,7 @@
         mr.lineWidth = smr.lineWidth + 2.5;
         mr.size = smr.size + 5;
         var rgba = $.jqplot.getColorComponents(smr.color);
-        var alpha = rgba[3] - 0.4;
+        var alpha = rgba[3] - 0.5;
         var color = 'rgba('+rgba[0]+','+rgba[1]+','+rgba[2]+','+alpha+')';
         drag.color = color;
         mr.color = color;
@@ -106,6 +106,7 @@
 	
 	function handleDown(ev, gridpos, datapos, neighbor, plot) {
 	    var dc = plot.dragCanvas;
+	    dc._cursor = ev.target.style.cursor;
 	    if (neighbor != null) {
 	        var s = plot.series[neighbor.seriesIndex];
 	        var drag = s.dragable;
@@ -114,6 +115,7 @@
     	        dc.isDragging = true;
     	        initDragPoint(plot, neighbor);
     	        drag.markerRenderer.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], dc._ctx);
+    	        ev.target.style.cursor = "move";
             }
 	    }
 	    // Just in case of a hickup, we'll clear the drag canvas and reset.
@@ -143,6 +145,7 @@
             s.data[dp.pointIndex] = [x,y];
             plot.drawSeries(plot.seriesCanvas._ctx, {preventJqPlotSeriesDrawTrigger:true});
 	        dc._neighbor = null;
+	        ev.target.style.cursor = dc._cursor;
 	    }
 	};
 	
