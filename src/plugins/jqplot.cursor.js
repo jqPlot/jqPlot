@@ -23,7 +23,8 @@
 	function handleMove() {};
 	
 	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
-	    ev.target.style.cursor = "url('"+$.jqplot.pluginsPath+"/"+plot.cursor.imagePath+"/crosscursor.png'), crosshair";
+	    //ev.target.style.cursor = "url('"+$.jqplot.pluginsPath+"/"+plot.cursor.imagePath+"/crosscursor.png'), crosshair";
+	    ev.target.style.cursor = "crosshair";
 	};
 	
 	function handleMouseLeave(ev, gridpos, datapos, neighbors, plot) {
