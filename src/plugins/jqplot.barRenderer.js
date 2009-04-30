@@ -86,7 +86,7 @@
         this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
     };
     
-    $.jqplot.BarRenderer.prototype.draw = function(ctx) {
+    $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;
         var xaxis = this.xaxis;
         var yaxis = this.yaxis;
@@ -107,22 +107,22 @@
             ctx.fillStyle = this.barColor;
             
             if (this.barDirection == 'vertical') {
-                for (var i=0; i<this.gridData.length; i++) {
-                    var base = this.gridData[i][0] + this._barNudge;
+                for (var i=0; i<gridData.length; i++) {
+                    var base = gridData[i][0] + this._barNudge;
                     ctx.moveTo(base-this.barWidth/2, ctx.canvas.height);
-                    ctx.lineTo(base-this.barWidth/2, this.gridData[i][1]);
-                    ctx.lineTo(base+this.barWidth/2, this.gridData[i][1]);
+                    ctx.lineTo(base-this.barWidth/2, gridData[i][1]);
+                    ctx.lineTo(base+this.barWidth/2, gridData[i][1]);
                     ctx.lineTo(base+this.barWidth/2, ctx.canvas.height);
                     ctx.stroke();
                 }
             }
             
             else if (this.barDirection == 'horizontal'){
-                for (var i=0; i<this.gridData.length; i++) {
-                    var base = this.gridData[i][1] - this._barNudge;
+                for (var i=0; i<gridData.length; i++) {
+                    var base = gridData[i][1] - this._barNudge;
                     ctx.moveTo(0, base+this.barWidth/2);
-                    ctx.lineTo(this.gridData[i][0], base+this.barWidth/2);
-                    ctx.lineTo(this.gridData[i][0], base-this.barWidth/2);
+                    ctx.lineTo(gridData[i][0], base+this.barWidth/2);
+                    ctx.lineTo(gridData[i][0], base-this.barWidth/2);
                     ctx.lineTo(0, base-this.barWidth/2);
                     ctx.stroke();
                 }
@@ -133,11 +133,11 @@
             ctx.beginPath();
             
             if (this.barDirection == 'vertical') {
-                for (var i=0; i<this.gridData.length; i++) {
-                    var base = this.gridData[i][0] + this._barNudge;
+                for (var i=0; i<gridData.length; i++) {
+                    var base = gridData[i][0] + this._barNudge;
                     ctx.moveTo(base-this.barWidth/2, ctx.canvas.height);
-                    ctx.lineTo(base-this.barWidth/2, this.gridData[i][1]);
-                    ctx.lineTo(base+this.barWidth/2, this.gridData[i][1]);
+                    ctx.lineTo(base-this.barWidth/2, gridData[i][1]);
+                    ctx.lineTo(base+this.barWidth/2, gridData[i][1]);
                     ctx.lineTo(base+this.barWidth/2, ctx.canvas.height);
                     ctx.closePath();
                     ctx.fill();
@@ -145,11 +145,11 @@
             }
             
             else if (this.barDirection == 'horizontal'){
-                for (var i=0; i<this.gridData.length; i++) {
-                    var base = this.gridData[i][1] - this._barNudge;
+                for (var i=0; i<gridData.length; i++) {
+                    var base = gridData[i][1] - this._barNudge;
                     ctx.moveTo(0, base+this.barWidth/2);
-                    ctx.lineTo(this.gridData[i][0], base+this.barWidth/2);
-                    ctx.lineTo(this.gridData[i][0], base-this.barWidth/2);
+                    ctx.lineTo(gridData[i][0], base+this.barWidth/2);
+                    ctx.lineTo(gridData[i][0], base-this.barWidth/2);
                     ctx.lineTo(0, base-this.barWidth/2);
                     ctx.closePath();
                     ctx.fill();
