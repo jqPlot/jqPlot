@@ -22,10 +22,15 @@
         var h = this._plotDimensions.height;
         elem.width = w;
         elem.height = h;
-        if ($.browser.msie) // excanvas hack
-            elem = window.G_vmlCanvasManager.initElement(elem);
         this._elem = $(elem);
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
+        // borrowed from flot by Ole Laursen
+        if ($.browser.msie) {
+            window.G_vmlCanvasManager.init_(document);
+        }
+        if ($.browser.msie) {
+            elem = window.G_vmlCanvasManager.initElement(elem);
+        }
         this._top = this._offsets.top;
         this._bottom = h - this._offsets.bottom;
         this._left = this._offsets.left;

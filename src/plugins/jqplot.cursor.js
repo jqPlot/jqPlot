@@ -1,5 +1,4 @@
 (function($) {
-	$.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
 	$.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleMouseEnter]);
 	$.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
 	
@@ -13,14 +12,13 @@
 	}
 	
 	// called with scope of plot
-	$.jqplot.Cursor.init = function (target, data, options){
+	$.jqplot.Cursor.init = function (target, data, opts){
 	    // add a cursor attribute to the plot
+	    var options = opts || {};
 	    this.cursor = new $.jqplot.Cursor(options.cursor);
 	}
 	
 	$.jqplot.preInitHooks.push($.jqplot.Cursor.init);
-	
-	function handleMove() {};
 	
 	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
 	    //ev.target.style.cursor = "url('"+$.jqplot.pluginsPath+"/"+plot.cursor.imagePath+"/crosscursor.png'), crosshair";

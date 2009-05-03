@@ -1,5 +1,5 @@
 (function($) {
-	$.jqplot.Dragable = function(options) {
+    $.jqplot.Dragable = function(options) {
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
 	    this.shapeRenderer = new $.jqplot.ShapeRenderer();
 	    this.isDragging = false;
@@ -14,11 +14,14 @@
 	};
 	
 	function DragCanvas() {
+	    $.jqplot.GenericCanvas.call(this);
 	    this.isDragging = false;
-	    this._ctx;
-	    this._elem;
 	    this._neighbor;
-	}
+	    this._cursor;
+	};
+	
+	DragCanvas.prototype = new $.jqplot.GenericCanvas();
+	DragCanvas.prototype.constructor = DragCanvas;
 	
     // // called with scope of plot
     // $.jqplot.Dragable.init = function (target, data, options){
@@ -27,7 +30,8 @@
     // };
 	
 	// called within scope of series
-	$.jqplot.Dragable.parseOptions = function (defaults, options) {
+	$.jqplot.Dragable.parseOptions = function (defaults, opts) {
+	    var options = opts || {};
 	    this.dragable = new $.jqplot.Dragable(options.dragable);
 	    this.isDragable = true;
 	};
@@ -37,9 +41,9 @@
 	// insert it before the overlay, so the overlay will still capture events.
 	$.jqplot.Dragable.postPlotDraw = function() {
 	    this.dragCanvas = new DragCanvas();
-	    this.dragCanvas._elem = this.overlayCanvas._elem.clone();
-	    this.dragCanvas._elem.insertBefore(this.overlayCanvas._elem);
-	    this.dragCanvas._ctx = this.dragCanvas._elem.get(0).getContext("2d");
+	    
+        this.eventCanvas._elem.before(this.dragCanvas.createElement(this._gridPadding, 'jqplot-event-canvas', this._plotDimensions));
+        var dctx = this.dragCanvas.setContext();
 	};
 	
 	//$.jqplot.preInitHooks.push($.jqplot.Dragable.init);
@@ -148,7 +152,4 @@
 	        ev.target.style.cursor = dc._cursor;
 	    }
 	};
-	
-	
-
 })(jQuery);

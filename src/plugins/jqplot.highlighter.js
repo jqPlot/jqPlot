@@ -9,7 +9,8 @@
 	}
 	
 	// called with scope of plot
-	$.jqplot.Highlighter.init = function (target, data, options){
+	$.jqplot.Highlighter.init = function (target, data, opts){
+	    var options = opts || {};
 	    // add a highlighter attribute to the plot
 	    this.highlighter = new $.jqplot.Highlighter(options.highlighter);
 	}
