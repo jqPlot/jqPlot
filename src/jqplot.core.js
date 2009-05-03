@@ -664,7 +664,6 @@
         // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
         this.seriesCanvas = new $.jqplot.GenericCanvas();
-        this.overlayCanvas = new $.jqplot.GenericCanvas();
         this.eventCanvas = new $.jqplot.GenericCanvas();
         this._width = null;
         this._height = null; 
@@ -719,7 +718,6 @@
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
             this.seriesCanvas._plotDimensions = this._plotDimensions;
-            this.overlayCanvas._plotDimensions = this._plotDimensions;
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
@@ -910,8 +908,6 @@
             this.grid.draw();
             this.target.append(this.seriesCanvas.createElement(this._gridPadding, 'jqplot-series-canvas'));
             var sctx = this.seriesCanvas.setContext();
-            this.target.append(this.overlayCanvas.createElement(this._gridPadding, 'jqplot-overlay-canvas'));
-            var octx = this.overlayCanvas.setContext();
             this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas'));
             var ectx = this.eventCanvas.setContext();
             ectx.fillStyle = 'rgba(0,0,0,0)';
@@ -929,7 +925,7 @@
             // register event listeners on the overlay canvas
             for (var i=0; i<$.jqplot.eventListenerHooks.length; i++) {
                 var h = $.jqplot.eventListenerHooks[i];
-                // in the handler, this will refer to the overlayCanvas dom element.
+                // in the handler, this will refer to the eventCanvas dom element.
                 // make sure there are references back into plot objects.
                 this.eventCanvas._elem.bind(h[0], {plot:this}, h[1]);
             }
@@ -940,12 +936,6 @@
         };
         
         this.bindCustomEvents = function() {
-            // this.overlayCanvas._elem.bind('click', {plot:this}, this.onClick);
-            // this.overlayCanvas._elem.bind('mousedown', {plot:this}, this.onMouseDown);
-            // this.overlayCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
-            // this.overlayCanvas._elem.bind('mousemove', {plot:this}, this.onMouseMove);
-            // this.overlayCanvas._elem.bind('mouseenter', {plot:this}, this.onMouseEnter);
-            // this.overlayCanvas._elem.bind('mouseleave', {plot:this}, this.onMouseLeave);
             this.eventCanvas._elem.bind('click', {plot:this}, this.onClick);
             this.eventCanvas._elem.bind('mousedown', {plot:this}, this.onMouseDown);
             this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
@@ -960,7 +950,7 @@
     	    var x2axis = plot.axes.x2axis;
     	    var yaxis = plot.axes.yaxis;
     	    var y2axis = plot.axes.y2axis;
-    	    var offsets = plot.overlayCanvas._elem.offset();
+    	    var offsets = plot.eventCanvas._elem.offset();
     	    var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
             // var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
     	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null};

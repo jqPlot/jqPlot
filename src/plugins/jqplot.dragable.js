@@ -37,8 +37,8 @@
 	};
 	
 	// called within context of plot
-	// create a copy of the overlay canvas which we can draw on.
-	// insert it before the overlay, so the overlay will still capture events.
+	// create a canvas which we can draw on.
+	// insert it before the eventCanvas, so eventCanvas will still capture events.
 	$.jqplot.Dragable.postPlotDraw = function() {
 	    this.dragCanvas = new DragCanvas();
 	    
