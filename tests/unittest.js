@@ -8,10 +8,6 @@ describe 'jqPlot'
         it 'catch no plot target specified'
             -{ $.jqplot('nada', [[1,2,3,4]]) }.should.throw_error 'No plot target specified'
         end
-
-        it 'catch canvas dimensions <=0'
-            -{ $.jqplot('chart0', [[1,2,3,4]]) }.should.throw_error 'Canvas dimensions <=0'
-        end
     end
     
     describe 'Line options'

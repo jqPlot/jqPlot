@@ -10,7 +10,9 @@
         if (this.show) {
             var series = this._series;
             // make a table.  one line label per row.
-            var ss = 'background:'+this.background+';border:'+this.border+';position:absolute;';
+            var ss = 'position:absolute;';
+            ss += (this.background) ? 'background:'+this.background+';' : '';
+            ss += (this.border) ? 'border:'+this.border+';' : '';
             ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
             ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';

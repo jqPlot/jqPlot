@@ -38,13 +38,13 @@
         this.formatString = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
-        this.fontFamily='';
+        this.fontFamily;
         // prop: fontSize
         // css spec for the font-size css attribute.
-        this.fontSize = '0.75em';
+        this.fontSize;
         // prop: textColor
         // css spec for the color attribute.
-        this.textColor = '';
+        this.textColor;
         this._elem;
         
         $.extend(true, this, options);

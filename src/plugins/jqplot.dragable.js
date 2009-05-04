@@ -39,11 +39,12 @@
 	// called within context of plot
 	// create a canvas which we can draw on.
 	// insert it before the eventCanvas, so eventCanvas will still capture events.
+	// add a new DragCanvas object to the plot plugins to handle drawing on this new canvas.
 	$.jqplot.Dragable.postPlotDraw = function() {
 	    this.plugins.dragable = {};
 	    this.plugins.dragable.dragCanvas = new DragCanvas();
 	    
-        this.eventCanvas._elem.before(this.plugins.dragable.dragCanvas.createElement(this._gridPadding, 'jqplot-event-canvas', this._plotDimensions));
+        this.eventCanvas._elem.before(this.plugins.dragable.dragCanvas.createElement(this._gridPadding, 'jqplot-dragable-canvas', this._plotDimensions));
         var dctx = this.plugins.dragable.dragCanvas.setContext();
 	};
 	

@@ -269,19 +269,19 @@
         this.yoffset = 12;
         // prop: border
         // css spec for the border around the legend box.
-        this.border = '1px solid #cccccc';
+        this.border;
         // prop: background
         // css spec for the background of the legend box.
-        this.background = 'rgba(255,255,255,0.6)';
+        this.background;
         // prop: textColor
         // css color spec for the legend text.
-        this.textColor = '';
+        this.textColor;
         // prop: fontFamily
         // css font-family spec for the legend text.
-        this.fontFamily = ''; 
+        this.fontFamily; 
         // prop: fontSize
         // css font-size spec for the legend text.
-        this.fontSize = '0.75em';
+        this.fontSize ;
         // prop: rowSpacing
         // css padding-top spec for the rows in the legend.
         this.rowSpacing = '0.5em';
@@ -334,16 +334,16 @@
         this.show = true;
         // prop: fontFamily
         // css font-family spec for the text.
-        this.fontFamily = '';
+        this.fontFamily;
         // prop: fontSize
         // css font-size spec for the text.
-        this.fontSize = '1.2em';
+        this.fontSize ;
         // prop: textAlign
         // css text-align spec for the text.
-        this.textAlign = 'center';
+        this.textAlign;
         // prop: textColor
         // css color spec for the text.
-        this.textColor = '';
+        this.textColor;
         // prop: renderer
         // A class for creating a DOM element for the title,
         // see <$.jqplot.DivTitleRenderer>.
@@ -682,13 +682,13 @@
         this._seriesColorsIndex = 0;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
-        this.textColor = '#666666';
+        this.textColor;
         // prop; fontFamily
         // css spec for the font-family attribute.  Default for the entire plot.
-        this.fontFamily = 'Trebuchet MS, Arial, Helvetica, sans-serif';
+        this.fontFamily;
         // prop: fontSize
         // css spec for the font-size attribute.  Default for the entire plot.
-        this.fontSize = '1em';
+        this.fontSize;
         // prop: title
         this.title = new Title();
         // container to hold all of the merged options.  Convienence for plugins.
@@ -709,12 +709,26 @@
             if (this.target.css('position') == 'static') {
                 this.target.css('position', 'relative');
             }
-            this.target.css('color', this.textColor);
-            this.target.css('font-family', this.fontFamily);
-            this.target.css('font-size', this.fontSize);
+            if (!this.target.hasClass('jqplot-target')) {
+                this.target.addClass('jqplot-target');
+            }
             
-            this._height = parseFloat(this.target.css('height'));
-            this._width = parseFloat(this.target.css('width'));
+            // if no height or width specified, use a default.
+            if (!this.target.height()) {
+                this._height = 300;
+                this.target.css('height', '300px');
+            }
+            else {
+                this._height = this.target.height();
+            }
+            if (!this.target.width()) {
+                this._width = 400;
+                this.target.css('width', '400px');
+            }
+            else {
+                this._width = this.target.width();
+            }
+            
             this._plotDimensions.height = this._height;
             this._plotDimensions.width = this._width;
             this.grid._plotDimensions = this._plotDimensions;
@@ -726,12 +740,20 @@
                 throw "Canvas dimensions <=0";
             }
             
-            // get a handle to the plot object from the target to help with events.
-            // $(target).data('jqplot', this);
-            
             this.data = data;
             
             this.parseOptions(options);
+            
+            if (this.textColor) {
+                this.target.css('color', this.textColor);
+            }
+            if (this.fontFamily) {
+                this.target.css('font-family', this.fontFamily);
+            }
+            if (this.fontSize) {
+                this.target.css('font-size', this.fontSize);
+            }
+            
             this.title.init();
             this.legend.init();
                         
@@ -1008,13 +1030,11 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            //log('mouse down, neighbors ', neighbor);
     	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseUp = function(ev) {
             var positions = getEventPosition(ev);
-            //log('mouse up');
     	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
         };
         
@@ -1028,14 +1048,12 @@
         this.onMouseEnter = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            //log('mouse enter');
     	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseEnter', [positions.gridPos, positions.dataPos, null, p]);
         };
         
         this.onMouseLeave = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            //log('mouse leave');
     	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
         };
         

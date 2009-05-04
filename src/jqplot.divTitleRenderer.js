@@ -15,11 +15,12 @@
             this._elem = $('<div style="height:0px;width:0px;"></div>');
         }
         else if (this.text) {
-            var styletext = 'padding-bottom:0.5em;position:absolute;top:0px;left:0px;';
+            // don't trust that a stylesheet is present, set the position.
+            var styletext = 'position:absolute;top:0px;left:0px;';
             styletext += (this._plotWidth) ? 'width:'+this._plotWidth+'px;' : '';
             styletext += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             styletext += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
-            styletext += (this.textAlign) ? 'text-align:'+this.textAlign+';' : '';
+            styletext += (this.textAlign) ? 'text-align:'+this.textAlign+';' : 'text-align:center;';
             styletext += (this.textColor) ? 'color:'+this.textColor+';' : '';
             this._elem = $('<div class="jqplot-title" style="'+styletext+'">'+this.text+'</div>');
         }
