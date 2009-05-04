@@ -12,7 +12,7 @@
 	$.jqplot.Highlighter.init = function (target, data, opts){
 	    var options = opts || {};
 	    // add a highlighter attribute to the plot
-	    this.highlighter = new $.jqplot.Highlighter(options.highlighter);
+	    this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
 	};
 	
 	// called within scope of series
@@ -24,10 +24,10 @@
 	// create a canvas which we can draw on.
 	// insert it before the eventCanvas, so eventCanvas will still capture events.
 	$.jqplot.Highlighter.postPlotDraw = function() {
-	    this.highlightCanvas = new $.jqplot.GenericCanvas();
+	    this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
 	    
-        this.eventCanvas._elem.before(this.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
-        var hctx = this.highlightCanvas.setContext();
+        this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
+        var hctx = this.plugins.highlighter.highlightCanvas.setContext();
 	};
 	
 	$.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
@@ -35,10 +35,10 @@
 	$.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
 	
     function draw(plot, neighbor) {
-        var hl = plot.highlighter;
+        var hl = plot.plugins.highlighter;
         var s = plot.series[neighbor.seriesIndex];
         var smr = s.markerRenderer;
-        var mr = plot.highlighter.markerRenderer;
+        var mr = hl.markerRenderer;
         mr.style = smr.style;
         mr.lineWidth = smr.lineWidth + 2.5;
         mr.size = smr.size + 5;
@@ -46,18 +46,19 @@
         var alpha = rgba[3] - 0.4;
         mr.color = 'rgba('+rgba[0]+','+rgba[1]+','+rgba[2]+','+alpha+')';
         mr.init();
-        mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], plot.highlightCanvas._ctx);
+        mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], hl.highlightCanvas._ctx);
     }
 	
 	function handleMove(ev, gridpos, datapos, neighbors, plot) {
-	    if (neighbors == null && plot.highlighter.isHighlighting) {
-	       var ctx = plot.highlightCanvas._ctx;
+	    var hl = plot.plugins.highlighter;
+	    if (neighbors == null && hl.isHighlighting) {
+	       var ctx = hl.highlightCanvas._ctx;
 	       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	       plot.highlighter.isHighlighting = false;
+	       hl.isHighlighting = false;
 	        
 	    }
-	    if (neighbors != null && plot.series[neighbors.seriesIndex].showHighlight && !plot.highlighter.isHighlighting) {
-	        plot.highlighter.isHighlighting = true;
+	    if (neighbors != null && plot.series[neighbors.seriesIndex].showHighlight && !hl.isHighlighting) {
+	        hl.isHighlighting = true;
 	        draw(plot, neighbors);
 	    }
 	}

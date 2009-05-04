@@ -5,9 +5,6 @@
 	$.jqplot.Cursor = function(options) {
 	    this.style = 'crosshair';
 	    this.show = true;
-	    // path to images, relative to this script. don't include initial "." or "./"
-	    this.imagePath = '';
-
 	    $.extend(true, this, options);
 	};
 	
@@ -15,14 +12,14 @@
 	$.jqplot.Cursor.init = function (target, data, opts){
 	    // add a cursor attribute to the plot
 	    var options = opts || {};
-	    this.cursor = new $.jqplot.Cursor(options.cursor);
+	    this.plugins.cursor = new $.jqplot.Cursor(options.cursor);
 	};
 	
 	$.jqplot.preInitHooks.push($.jqplot.Cursor.init);
 	
 	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
 	    //ev.target.style.cursor = "url('"+$.jqplot.pluginsPath+"/"+plot.cursor.imagePath+"/crosscursor.png'), crosshair";
-	    ev.target.style.cursor = plot.cursor.style;
+	    ev.target.style.cursor = plot.plugins.cursor.style;
 	}
 	
 	function handleMouseLeave(ev, gridpos, datapos, neighbors, plot) {

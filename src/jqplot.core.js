@@ -444,7 +444,8 @@
         this.showLine = true;
         // prop: showMarker
         // wether or not to show the markers at the data points.
-        this.showMarker = true;   
+        this.showMarker = true;
+        this.plugins = {};
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
@@ -692,6 +693,7 @@
         this.title = new Title();
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
+        this.plugins = {};
             
         this.init = function(target, data, options) {
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
