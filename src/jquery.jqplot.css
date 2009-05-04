@@ -1,0 +1,48 @@
+/*rules for the plot target div.  These will be cascaded down to all plot elements according to css rules*/
+.jqplot-target {
+    position: relative;
+    color: #666666;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    height: 300px;
+    width: 400px;
+}
+
+/*rules applied to all axes*/
+.jqplot-axis {
+    font-size: 0.75em;
+}
+
+/*rules for an individual axis*/
+.jqplot-xaxis {
+}
+
+/*rules applied to all axis tick divs*/
+.jqplot-axis-tick {
+}
+
+table.jqplot-legend {
+    background-color: rgba(255,255,255,0.6);
+    border: 1px solid #cccccc;
+    position: absolute;
+    font-size: 0.75em;
+}
+
+.jqplot-title {
+    top: 0px;
+    left: 0px;
+    padding-bottom: 0.5em;
+    font-size: 1.2em;
+}
+
+table.jqplot-cursor-tooltip {
+    border: 1px solid #cccccc;
+    font-size: 0.75em;
+}
+
+
+.jqplot-cursor-tooltip {
+    border: 1px solid #cccccc;
+    font-size: 0.75em;
+    white-space: nowrap;
+}
