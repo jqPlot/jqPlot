@@ -9,23 +9,23 @@
 	    this.imagePath = '';
 
 	    $.extend(true, this, options);
-	}
+	};
 	
 	// called with scope of plot
 	$.jqplot.Cursor.init = function (target, data, opts){
 	    // add a cursor attribute to the plot
 	    var options = opts || {};
 	    this.cursor = new $.jqplot.Cursor(options.cursor);
-	}
+	};
 	
 	$.jqplot.preInitHooks.push($.jqplot.Cursor.init);
 	
 	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
 	    //ev.target.style.cursor = "url('"+$.jqplot.pluginsPath+"/"+plot.cursor.imagePath+"/crosscursor.png'), crosshair";
 	    ev.target.style.cursor = plot.cursor.style;
-	};
+	}
 	
 	function handleMouseLeave(ev, gridpos, datapos, neighbors, plot) {
 	    $(ev.target).css('cursor', 'auto');
-	};
+	}
 })(jQuery);

@@ -84,9 +84,11 @@
     $.jqplot.DateAxisRenderer.prototype.constructor = $.jqplot.DateAxisRenderer;
     
     $.jqplot.DateTickFormatter = function(format, val) {
-        if (!format) format = '%Y/%m/%d';
+        if (!format) {
+        	format = '%Y/%m/%d';
+        }
         return Date.create(val).strftime(format);
-    }
+    };
     
     $.jqplot.DateAxisRenderer.prototype.init = function(options){
         this.tickOptions.formatter = $.jqplot.DateTickFormatter;
@@ -102,13 +104,21 @@
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
                     d[j][0] = Date.create(d[j][0]).getTime();
-                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
-                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                    if (d[j][0] < db.min || db.min == null) {
+                    	db.min = d[j][0];
+                    }
+                    if (d[j][0] > db.max || db.max == null) {
+                    	db.max = d[j][0];
+                    }
                 }              
                 else {
                     d[j][1] = Date.create(d[j][1]).getTime();
-                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
-                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                    if (d[j][1] < db.min || db.min == null) {
+                    	db.min = d[j][1];
+                    }
+                    if (d[j][1] > db.max || db.max == null) {
+                    	db.max = d[j][1];
+                    }
                 }              
             }
         }
@@ -141,7 +151,9 @@
                         t.showLabel = false;
                         t.showMark = false;
                     }
-                    else if (!this.showTickMarks) t.showMark = false;
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
@@ -152,7 +164,9 @@
                         t.showLabel = false;
                         t.showMark = false;
                     }
-                    else if (!this.showTickMarks) t.showMark = false;
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
                     t.setTick(t.value, this.name);
                     this._ticks.push(t);
                 }
@@ -219,12 +233,16 @@
                     this.max = Date.create(this.min).add(this.numberTicks-1, this._tickInterval[1]).getTime();
                 }
                 else if (dim > 100) {
-                    this.numberTicks = parseInt(3+(dim-100)/75);
+                    this.numberTicks = parseInt(3+(dim-100)/75, 10);
                 }
-                else this.numberTicks = 2;
+                else {
+                    this.numberTicks = 2;
+                }
             }
     
-            if (this._tickInterval == null) this._tickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
+            if (this._tickInterval == null) {
+            	this._tickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
+            }
             for (var i=0; i<this.numberTicks; i++){
                 var min = Date.create(this.min);
                 tt = min.add(i*this._tickInterval[0], this._tickInterval[1]).getTime();
@@ -234,7 +252,9 @@
                     t.showLabel = false;
                     t.showMark = false;
                 }
-                else if (!this.showTickMarks) t.showMark = false;
+                else if (!this.showTickMarks) {
+                    t.showMark = false;
+                }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
@@ -269,7 +289,9 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
     //
     var zeroPad = function(number, digits) {
         number = String(number);
-        while (number.length < digits) number = '0' + number;
+        while (number.length < digits) {
+            number = '0' + number;
+        }
         return number;
     };
     //
@@ -341,7 +363,9 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
                     var getter = (Date.prototype.strftime.formatCodes[code] || '').split('.');
                     var nbr = d['get' + getter[0]] ? d['get' + getter[0]]() : '';
                     // run toPaddedString() if specified
-                    if (getter[1]) nbr = zeroPad(nbr, getter[1]);
+                    if (getter[1]) {
+                    	nbr = zeroPad(nbr, getter[1]);
+                    }
                     // prepend the leading character
                     return nbr;
             }       
@@ -387,7 +411,9 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
         diff: function(dateObj, unit, allowDecimal) {
             // ensure we have a Date object
             dateObj = Date.create(dateObj);
-            if (dateObj === null) return null;
+            if (dateObj === null) {
+            	return null;
+            }
             // get the multiplying factor integer or factor function
             var factor = multipliers[unit] || multipliers.day;
             if (typeof factor == 'number') {
@@ -416,7 +442,8 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
                     result += (match[1] || '') + format(this, match[2]);
                     source = source.slice(match.index + match[0].length);
                 } else {
-                    result += source, source = '';
+                    result += source;
+                    source = '';
                 }
             }
             return result;
@@ -543,7 +570,9 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
                 return new Date(this.getTime());
         }
     };
-    for (var name in instanceMethods) Date.prototype[name] = instanceMethods[name];
+    for (var name in instanceMethods) {
+        Date.prototype[name] = instanceMethods[name];
+    }
     //
     // Add static methods to the date object
     //
@@ -556,21 +585,29 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
         //
         create: function(date) {
             // If the passed value is already a date object, return it
-            if (date instanceof Date) return date;
+            if (date instanceof Date) {
+            	return date;
+            }
             // If the passed value is an integer, interpret it as a unix timestamp
             // if (typeof date == 'number') return new Date(date * 1000);
             // If the passed value is an integer, interpret it as a javascript timestamp
-            if (typeof date == 'number') return new Date(date);
+            if (typeof date == 'number') {
+            	return new Date(date);
+            }
             // If the passed value is a string, attempt to parse it using Date.parse()
             var parsable = String(date).replace(/^\s*(.+)\s*$/, '$1'), i = 0, length = Date.create.patterns.length, pattern;
             var current = parsable;
             while (i < length) {
                 ms = Date.parse(current);
-                if (!isNaN(ms)) return new Date(ms);
+                if (!isNaN(ms)) {
+                	return new Date(ms);
+                }
                 pattern = Date.create.patterns[i];
                 if (typeof pattern == 'function') {
                     obj = pattern(current);
-                    if (obj instanceof Date) return obj;
+                    if (obj instanceof Date) {
+                    	return obj;
+                    }
                 } else {
                     current = parsable.replace(pattern[0], pattern[1]);
                 }
@@ -601,11 +638,15 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
         // @param object newNames
         //
         daysInMonth: function(year, month) {
-            if (month == 2) return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
+            if (month == 2) {
+            	return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
+            }
             return [undefined,31,undefined,31,30,31,30,31,31,30,31,30,31][month];
         }
     };
-    for (var name in staticMethods) Date[name] = staticMethods[name];
+    for (var name in staticMethods) {
+        Date[name] = staticMethods[name];
+    }
     //
     // format codes for strftime
     //
@@ -698,7 +739,9 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
             if (match) {
                 if (match[1]) {
                     var d = Date.create(match[1]);
-                    if (isNaN(d)) return;
+                    if (isNaN(d)) {
+                    	return;
+                    }
                 } else {
                     var d = new Date();
                     d.setMilliseconds(0);
@@ -707,7 +750,7 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
                 if (match[6]) {
                     hour = match[6].toLowerCase() == 'am' ? (hour == 12 ? 0 : hour) : (hour == 12 ? 12 : hour + 12);
                 }
-                d.setHours(hour, parseInt(match[3] || 0), parseInt(match[4] || 0), ((parseFloat(match[5] || 0)) || 0)*1000);
+                d.setHours(hour, parseInt(match[3] || 0, 10), parseInt(match[4] || 0, 10), ((parseFloat(match[5] || 0)) || 0)*1000);
                 return d;
             }
             else {
@@ -719,22 +762,26 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
             if (match) {
                 if (match[1]) {
                     var d = Date.create(match[1]);
-                    if (isNaN(d)) return;
+                    if (isNaN(d)) {
+                    	return;
+                    }
                 } else {
                     var d = new Date();
                     d.setMilliseconds(0);
                 }
                 var hour = parseFloat(match[2]);
-                d.setHours(hour, parseInt(match[3]), parseInt(match[4]), parseFloat(match[5])*1000);
+                d.setHours(hour, parseInt(match[3], 10), parseInt(match[4], 10), parseFloat(match[5])*1000);
                 return d;
             }
             else {
                     return str;
             }
-        }               
+        }
     ];
     
-    if ($.jqplot.debug) $.date = Date.create;
+    if ($.jqplot.debug) {
+    	$.date = Date.create;
+    }
    
 })(jQuery);
 

@@ -16,12 +16,20 @@
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
-                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                    if (d[j][0] < db.min || db.min == null) {
+                    	db.min = d[j][0];
+                    }
+                    if (d[j][0] > db.max || db.max == null) {
+                    	db.max = d[j][0];
+                    }
                 }              
                 else {
-                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
-                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                    if (d[j][1] < db.min || db.min == null) {
+                    	db.min = d[j][1];
+                    }
+                    if (d[j][1] > db.max || db.max == null) {
+                    	db.max = d[j][1];
+                    }
                 }              
             }
         }
@@ -70,13 +78,23 @@
                     else {
                         temp = tick._elem.outerWidth(true);
                     }
-                    if (temp > dim) dim = temp;
+                    if (temp > dim) {
+                    	dim = temp;
+                    }
                 }
             }
-            if (this.name == 'xaxis') this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
-            else if (this.name == 'x2axis') this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
-            else if (this.name == 'yaxis') this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
-            else if (this.name == 'y2axis') this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+            if (this.name == 'xaxis') {
+            	this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
+            }
+            else if (this.name == 'x2axis') {
+            	this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
+            }
+            else if (this.name == 'yaxis') {
+            	this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+            }
+            else if (this.name == 'y2axis') {
+            	this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+            }
         }  
     };
     
@@ -108,7 +126,9 @@
                         t.showLabel = false;
                         t.showMark = false;
                     }
-                    else if (!this.showTickMarks) t.showMark = false;
+                    else if (!this.showTickMarks) {
+                    	t.showMark = false;
+                    }
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
@@ -119,7 +139,9 @@
                         t.showLabel = false;
                         t.showMark = false;
                     }
-                    else if (!this.showTickMarks) t.showMark = false;
+                    else if (!this.showTickMarks) {
+                    	t.showMark = false;
+                    }
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
                 }
@@ -146,7 +168,7 @@
             
             // if max, min, and interval specified and interval won't fit, ignore interval.
             if (this.min != null && this.max != null && this.tickInterval != null) {
-                if (parseInt((this.max-this.min)/this.tickInterval) != (this.max-this.min)/this.tickInterval) {
+                if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
                     this.tickInterval = null;
                 }
             }
@@ -171,12 +193,16 @@
                     this.max = this.min + this.tickInterval*this.numberTicks;
                 }
                 if (dim > 100) {
-                    this.numberTicks = parseInt(3+(dim-100)/75);
+                    this.numberTicks = parseInt(3+(dim-100)/75, 10);
                 }
-                else this.numberTicks = 2;
+                else {
+                    this.numberTicks = 2;
+                }
             }
             
-            if (this.tickInterval == null) this.tickInterval = range / (this.numberTicks-1);
+            if (this.tickInterval == null) {
+            	this.tickInterval = range / (this.numberTicks-1);
+            }
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
@@ -185,7 +211,9 @@
                     t.showLabel = false;
                     t.showMark = false;
                 }
-                else if (!this.showTickMarks) t.showMark = false;
+                else if (!this.showTickMarks) {
+                	t.showMark = false;
+                }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }

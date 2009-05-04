@@ -3,7 +3,7 @@
     // The default legend renderer for jqPlot, this class has no options beyond the <Legend> class.
     $.jqplot.TableLegendRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-    }
+    };
     
     $.jqplot.TableLegendRenderer.prototype.draw = function() {
         var legend = this;
@@ -44,14 +44,14 @@
                 '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
                 '</div></td>').appendTo(tr);
             $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';">'+label+'</td>').appendTo(tr);
-        };
+        }
         return this._elem;
     };
     
     $.jqplot.TableLegendRenderer.prototype.pack = function(offsets) {
         if (this.show) {
             // fake a grid for positioning
-            var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom}        
+            var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom};      
             switch (this.location) {
                 case 'nw':
                     var a = grid._left + this.xoffset;

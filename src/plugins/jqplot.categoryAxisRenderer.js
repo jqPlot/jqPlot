@@ -29,12 +29,20 @@
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
-                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                    if (d[j][0] < db.min || db.min == null) {
+                    	db.min = d[j][0];
+                    }
+                    if (d[j][0] > db.max || db.max == null) {
+                    	db.max = d[j][0];
+                    }
                 }              
                 else {
-                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
-                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                    if (d[j][1] < db.min || db.min == null) {
+                    	db.min = d[j][1];
+                    }
+                    if (d[j][1] > db.max || db.max == null) {
+                    	db.max = d[j][1];
+                    }
                 }              
             }
         }
@@ -101,7 +109,7 @@
             
             // if max, min, and interval specified and interval won't fit, ignore interval.
             if (this.min != null && this.max != null && this.tickInterval != null) {
-                if (parseInt((this.max-this.min)/this.tickInterval) != (this.max-this.min)/this.tickInterval) {
+                if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
                     this.tickInterval = null;
                 }
             }
@@ -141,17 +149,20 @@
             this.min = min;
             this.max = max;
             var track = 0;
-            var maxVisibleTicks = parseInt(3+dim/45);
-            var skip = parseInt(numcats/maxVisibleTicks);
+            var maxVisibleTicks = parseInt(3+dim/45, 10);
+            var skip = parseInt(numcats/maxVisibleTicks, 10);
 
+            if (this.tickInterval == null) {
 
-            if (this.tickInterval == null) this.tickInterval = range / (this.numberTicks-1);
+            	this.tickInterval = range / (this.numberTicks-1);
+
+            }
             // if tickInterval is specified, we will ignore any computed maximum.
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
                 // if even tick, it isn't a category, it's a divider
-                if (i/2 == parseInt(i/2)) {
+                if (i/2 == parseInt(i/2, 10)) {
                     t.showLabel = false;
                     t.showMark = true;
                     t.showGridline = true;
@@ -173,7 +184,9 @@
                     t.showLabel = false;
                     t.showMark = false;
                 }
-                else if (!this.showTickMarks) t.showMark = false;
+                else if (!this.showTickMarks) {
+                    t.showMark = false;
+                }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }

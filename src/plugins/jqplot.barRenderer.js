@@ -31,7 +31,9 @@
     $.jqplot.BarRenderer.prototype.init = function(options) {
         $.extend(true, this.renderer, options);
         for (var d in this.renderer.seriesDefaults) {
-            if (this[d] == null) this[d] = this.renderer.seriesDefaults[d];
+            if (this[d] == null) {
+                this[d] = this.renderer.seriesDefaults[d];
+            }
         }
         if (this.barColor == null) {
             this.barColor = this.color;

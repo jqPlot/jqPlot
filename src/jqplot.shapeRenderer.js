@@ -41,9 +41,15 @@
             }
             
         }
-        if (this.closePath) ctx.closePath();
-        if (this.fill) ctx.fill();
-        else ctx.stroke();
+        if (this.closePath) {
+        	ctx.closePath();
+        }
+        if (this.fill) {
+        	ctx.fill();
+        }
+        else {
+            ctx.stroke();
+        }
         ctx.restore();
     };
 })(jQuery);    

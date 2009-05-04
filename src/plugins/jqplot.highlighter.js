@@ -60,8 +60,5 @@
 	        plot.highlighter.isHighlighting = true;
 	        draw(plot, neighbors);
 	    }
-	};
-	
-	
-
+	}
 })(jQuery);

@@ -13,7 +13,7 @@
         // set the shadow renderer options
         var sopts = {lineJoin:'miter', lineCap:'round', fill:false, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.shadowWidth, closePath:false};
         this.renderer.shadowRenderer.init(sopts);
-    }
+    };
     
     // called with context of Grid.
     $.jqplot.CanvasGridRenderer.prototype.createElement = function() {
@@ -75,6 +75,8 @@
                                     break;
                                 case 'y2axis':
                                     drawLine(this._left, pos, this._right, pos);
+                                    break;
+                                default:
                                     break;
                             }
                         }
@@ -190,6 +192,8 @@
                                         break;
                                 }
                                 drawLine(b, pos, e, pos);
+                                break;
+                            default:
                                 break;
                         }
                     }

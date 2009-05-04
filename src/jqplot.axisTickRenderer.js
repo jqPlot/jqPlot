@@ -52,7 +52,7 @@
     
     $.jqplot.AxisTickRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-    }
+    };
     
     $.jqplot.AxisTickRenderer.prototype = new $.jqplot.ElemContainer();
     $.jqplot.AxisTickRenderer.prototype.constructor = $.jqplot.AxisTickRenderer;
@@ -73,30 +73,48 @@
             case 'y2axis':
                 this._styles = {position:'absolute', right:'0px', top:pox, paddingLeft:'10px'};
                 break;
+            default:
+                break;
         }
-        if (isMinor) this.isMinorTick = true;
+        if (isMinor) {
+        	this.isMinorTick = true;
+        }
         return this;
     };
     
     $.jqplot.AxisTickRenderer.prototype.draw = function() {
-        if (!this.label) this.label = this.formatter(this.formatString, this.value);
+        if (!this.label) {
+        	this.label = this.formatter(this.formatString, this.value);
+        }
         style='';
-        if (Number(this.label)) style='style="white-space:nowrap;" ';
+        if (Number(this.label)) {
+            style='style="white-space:nowrap;" ';
+        }
         this._elem = $('<div '+style+'class="jqplot-axis-tick">'+this.label+'</div>');
         for (var s in this._styles) {
             this._elem.css(s, this._styles[s]);
         }
-        if (this.fontFamily) this._elem.css('font-family', this.fontFamily);
-        if (this.fontSize) this._elem.css('font-size', this.fontSize);
-        if (this.textColor) this._elem.css('color', this.textColor);
+        if (this.fontFamily) {
+        	this._elem.css('font-family', this.fontFamily);
+        }
+        if (this.fontSize) {
+        	this._elem.css('font-size', this.fontSize);
+        }
+        if (this.textColor) {
+        	this._elem.css('color', this.textColor);
+        }
         return this._elem;
     };
         
     $.jqplot.DefaultTickFormatter = function (format, val) {
         if (typeof val == 'number') {
-            if (!format) format = '%.1f';
+            if (!format) {
+            	format = '%.1f';
+            }
             return $.jqplot.sprintf(format, val);
         }
-        else return String(val);
-    }
+        else {
+            return String(val);
+        }
+    };
 })(jQuery);

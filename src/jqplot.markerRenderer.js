@@ -59,7 +59,7 @@
             shopt.closePath = false;
         }
         this.shapeRenderer.init(shopt);
-    }
+    };
     
     $.jqplot.MarkerRenderer.prototype.drawDiamond = function(x, y, ctx, fill) {
         var stretch = 1.2;

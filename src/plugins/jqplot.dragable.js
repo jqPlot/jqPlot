@@ -18,7 +18,7 @@
 	    this.isDragging = false;
 	    this._neighbor;
 	    this._cursor;
-	};
+	}
 	
 	DragCanvas.prototype = new $.jqplot.GenericCanvas();
 	DragCanvas.prototype.constructor = DragCanvas;
@@ -74,7 +74,7 @@
         var start = (neighbor.pointIndex > 0) ? neighbor.pointIndex - 1 : 0;
         var end = neighbor.pointIndex+2;
         drag._gridData = s.gridData.slice(start, end);
-    };
+    }
 	
 	function handleMove(ev, gridpos, datapos, neighbor, plot) {
 	    if (plot.dragCanvas.isDragging) {
@@ -106,7 +106,7 @@
 	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false, preventJqPlotSeriesDrawTrigger:true});
 	        dc._elem.trigger('jqplotSeriesPointChange', [dp.seriesIndex, dp.pointIndex, [xu,yu], [x,y]]);
 	    }
-	};
+	}
 	
 	function handleDown(ev, gridpos, datapos, neighbor, plot) {
 	    var dc = plot.dragCanvas;
@@ -128,7 +128,7 @@
 	       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	       dc.isDragging = false;
 	    }
-	};
+	}
 	
 	function handleUp(ev, gridpos, datapos, neighbor, plot) {
 	    if (plot.dragCanvas.isDragging) {
@@ -151,5 +151,5 @@
 	        dc._neighbor = null;
 	        ev.target.style.cursor = dc._cursor;
 	    }
-	};
+	}
 })(jQuery);

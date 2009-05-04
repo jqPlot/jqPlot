@@ -30,7 +30,9 @@
     $.jqplot.LogAxisRenderer.prototype.init = function(options) {
         $.extend(true, this.renderer, options);
         for (var d in this.renderer.axisDefaults) {
-            if (this[d] == null) this[d] = this.renderer.axisDefaults[d];
+            if (this[d] == null) {
+                this[d] = this.renderer.axisDefaults[d];
+            }
         }
         var db = this._dataBounds;
         // Go through all the series attached to this axis and find
@@ -41,12 +43,20 @@
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) db.min = d[j][0];
-                    if (d[j][0] > db.max || db.max == null) db.max = d[j][0];
+                    if (d[j][0] > db.max || db.max == null) {
+                        db.max = d[j][0];
+                    }
+                    if (d[j][0] > db.max || db.max == null) {
+                        db.max = d[j][0];
+                    }
                 }              
                 else {
-                    if (d[j][1] < db.min || db.min == null) db.min = d[j][1];
-                    if (d[j][1] > db.max || db.max == null) db.max = d[j][1];
+                    if (d[j][1] < db.min || db.min == null) {
+                        db.min = d[j][1];
+                    }
+                    if (d[j][1] > db.max || db.max == null) {
+                        db.max = d[j][1];
+                    }
                 }              
             }
         }
@@ -94,13 +104,23 @@
                     else {
                         temp = tick._elem.outerWidth(true);
                     }
-                    if (temp > dim) dim = temp;
+                    if (temp > dim) {
+                        dim = temp;
+                    }
                 }
             }
-            if (this.name == 'xaxis') this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
-            else if (this.name == 'x2axis') this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
-            else if (this.name == 'yaxis') this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
-            else if (this.name == 'y2axis') this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+            if (this.name == 'xaxis') {
+                this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
+            }
+            else if (this.name == 'x2axis') {
+                this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
+            }
+            else if (this.name == 'yaxis') {
+                this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+            }
+            else if (this.name == 'y2axis') {
+                this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+            }
         } 
     };
     
@@ -119,31 +139,35 @@
         /////////////////
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
-        if (ticks.length) {
-            // for (i=0; i<ticks.length; i++){
-            //     var t = ticks[i];
-            //     if (!t.label) t.label = t.value.toString();
-            //     // set iitial css positioning styles for the ticks.
-            //     var pox = i*15+'px';
-            //     switch (name) {
-            //         case 'xaxis':
-            //             t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
-            //             break;
-            //         case 'x2axis':
-            //             t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
-            //             break;
-            //         case 'yaxis':
-            //             t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
-            //             break;
-            //         case 'y2axis':
-            //             t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};
-            //             break;
-            //     }
-            // }
-            // this.numberTicks = ticks.length;
-            // this.min = ticks[0].value;
-            // this.max = ticks[this.numberTicks-1].value;
-            // this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
+        if (false) {
+            for (i=0; i<ticks.length; i++){
+                var t = ticks[i];
+                if (!t.label) {
+                    t.label = t.value.toString();
+                }
+                // set iitial css positioning styles for the ticks.
+                var pox = i*15+'px';
+                switch (name) {
+                    case 'xaxis':
+                        t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
+                        break;
+                    case 'x2axis':
+                        t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
+                        break;
+                    case 'yaxis':
+                        t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
+                        break;
+                    case 'y2axis':
+                        t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};
+                        break;
+                    default:
+                        break;
+                }
+            }
+            this.numberTicks = ticks.length;
+            this.min = ticks[0].value;
+            this.max = ticks[this.numberTicks-1].value;
+            this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
         }
         
         // we don't have any ticks yet, let's make some!
@@ -158,8 +182,12 @@
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
             // perform some checks
-            if (this.min != null && this.min <= 0) throw('log axis minimum must be greater than 0');
-            if (this.max != null && this.max <= 0) throw('log axis maximum must be greater than 0');
+            if (this.min != null && this.min <= 0) {
+                throw('log axis minimum must be greater than 0');
+            }
+            if (this.max != null && this.max <= 0) {
+                throw('log axis maximum must be greater than 0');
+            }
             // if (this.pad >1.99) this.pad = 1.99;
             var range = max - min;
             var rmin, rmax;
@@ -173,7 +201,7 @@
         
                 if (this.numberTicks == null){
                     if (dim > 100) {
-                        this.numberTicks = parseInt(3+(dim-100)/75);
+                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
                     }
                     else {
                         this.numberTicks = 2;
@@ -188,7 +216,9 @@
                         t.showLabel = false;
                         t.showMark = false;
                     }
-                    else if (!this.showTickMarks) t.showMark = false;
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
                     t.setTick(tt, this.name);
                     this._ticks.push(t);
                 }
@@ -209,8 +239,10 @@
                 if (this.numberTicks == null){
                     if (dim > 100) {
                         this.numberTicks = Math.round(Math.log(this.max/this.min)/Math.log(this.base) + 1);
-                        if (this.numberTicks < 2) this.numberTicks = 2;
-                        fittedTicks = parseInt(3+(dim-100)/75);
+                        if (this.numberTicks < 2) {
+                            this.numberTicks = 2;
+                        }
+                        fittedTicks = parseInt(3+(dim-100)/75, 10);
                     }
                     else {
                         this.numberTicks = 2;
@@ -230,7 +262,9 @@
                         t.showLabel = false;
                         t.showMark = false;
                     }
-                    else if (!this.showTickMarks) t.showMark = false;
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
                     t.setTick(tt, this.name);
                     this._ticks.push(t);
             
@@ -245,7 +279,9 @@
                                 t.showLabel = false;
                                 t.showMark = false;
                             }
-                            else if (!this.showTickMarks) t.showMark = false;
+                            else if (!this.showTickMarks) {
+                                t.showMark = false;
+                            }
                             t.setTick(val, this.name);
                             this._ticks.push(t);
                         }
@@ -256,10 +292,10 @@
     };
     
     $.jqplot.LogAxisRenderer.prototype.pack = function(pos, offsets) {
-        var lb = parseInt(this.base);
+        var lb = parseInt(this.base, 10);
         var ticks = this._ticks;
         var trans = function (v) { return Math.log(v)/Math.log(lb); };
-        var invtrans = function (v) { return Math.pow(Math.E, (Math.log(lb)*v))};
+        var invtrans = function (v) { return Math.pow(Math.E, (Math.log(lb)*v)); };
         max = trans(this.max);
         min = trans(this.min);
         var offmax = offsets.max;
