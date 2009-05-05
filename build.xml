@@ -26,9 +26,10 @@
         <!-- copy all needed files from src to build -->
         <copy todir="${BUILD_DIR}">
           <fileset dir="${SRC_DIR}">
-            <include name="excanvas.min.js" />
-            <include name="jqplot.*.js" />
+            <include name="*" />
             <exclude name="jquery.jqplot.js" />
+            <exclude name="*.txt" />
+            <exclude name="jsl.conf" />
           </fileset>
         </copy>
     	  <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
@@ -64,14 +65,13 @@
         <!-- now copy files to dist dir. -->
         <copy todir="${DIST_DIR}">
           <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
+          <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
+          <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
+          <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
         </copy>
         
         <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
-        </copy>
-        
-        <copy todir="${DIST_DIR}">
-          <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
         </copy>
         
         <echo message="jqPlot built." />
@@ -91,6 +91,18 @@
     			<targetfile />
     			<mapper type="glob" from="jquery.jqplot.js" to="jquery.jqplot.min.js" />
     		</apply>
+    		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
+    			<fileset dir="${DIST_DIR}">
+    				<include name="jquery.jqplot.css" />
+    			</fileset>
+    			<arg line="-jar" />
+    			<arg path="${YUICompressor}" />
+    			<arg value="--charset" />
+    			<arg value="ANSI" />
+    			<arg value="-o" />
+    			<targetfile />
+    			<mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
+    		</apply>
     		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
     			<fileset dir="${DIST_DIR}/plugins">
     				<include name="jqplot.*.js" />
@@ -108,7 +120,7 @@
     </target>
 
 	<target name="tests" depends="dist" description="Create test suite for distribution.">
-		<echo message="Creating automated test suite for distribtion" />
+		<echo message="Creating test suite for distribtion" />
     <mkdir dir="${DIST_DIR}/tests" />
     <copy todir="${DIST_DIR}/tests">
       <fileset dir="tests" includes="*" />
@@ -119,7 +131,11 @@
     <copy todir="${DIST_DIR}/tests/jspec/lib/images">
       <fileset dir="tests/jspec/lib/images" includes="*" />
     </copy>
-    <replaceregexp match="\.\./src/" replace="\.\./" flags="g" file="${DIST_DIR}/tests/index.html" />
+    <replaceregexp match="\.\./src/" replace="\.\./" flags="g">
+      <fileset dir="${DIST_DIR}/tests">
+        <include name="*.html" />
+      </fileset>
+    </replaceregexp>
 		<echo message="Test Suite Finished" />
 	</target>
 
