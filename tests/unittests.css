@@ -1,0 +1,50 @@
+body {
+  background-color: #efefef;
+  font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+div.jqPLot {
+  font-size: 16px;
+  margin: 4em auto 3em auto;
+}
+pre.prettyprint {
+  text-align: left;
+  margin: auto;
+  padding: 15px;
+  width: 900px;
+  background-color: #ffffff;
+}
+#jspec, #jspec-top, #jspec-bottom {
+  background: #ffffff;
+  width: 900px;
+  margin: 0 auto;
+}
+
+#jspec-top {
+  border: 1px solid #888888;
+  border-bottom: 0px;
+}
+
+#jspec {
+  border: 1px solid #888888;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+#jspec-bottom {
+  border: 1px solid #888888;
+  border-top: 0px;
+}
+
+#jspec-report td + td {
+  width: auto;
+}
+
+#jspec-report .heading {
+  margin-top: 10px;
+}
+
+#jspec-title {
+  width: auto;
+  text-align: left;
+  padding-left: 33px;
+}
