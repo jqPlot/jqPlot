@@ -46,34 +46,7 @@ describe 'Shadow options'
     end
 end
 
-describe 'Axes options' 
-    it plot3.title.text
-        plot3.axes.xaxis.should.have_property '_elem'
-        plot3.axes.yaxis.should.have_property '_elem'
-        plot3.axes.y2axis.should.have_property '_elem'
-        plot3.title.should.have_property '_elem'
-        plot3.seriesCanvas.should.have_property '_elem'
-        plot3.axes.y2axis.renderer.constructor.should.be $.jqplot.LogAxisRenderer
-        plot3.axes.y2axis.base.should.equal 10
-        plot3.legend.location.should.be 'e'
-        plot3.title.text.should.be 'Secondary Log Axis'
-        plot3.axes.xaxis.min.should.be 0
-        plot3.axes.xaxis.max.should.be 5
-    end
-    
-    it plot4.title.text
-        plot4.axes.xaxis.should.have_property '_elem'
-        plot4.axes.yaxis.should.have_property '_elem'
-        plot4.title.should.have_property '_elem'
-        plot4.seriesCanvas.should.have_property '_elem'
-        plot4.axes.yaxis.renderer.constructor.should.equal $.jqplot.LogAxisRenderer
-        plot4.axes.yaxis.base.should.equal 10
-        plot4.legend.location.should.be 'e'
-        plot4.axes.xaxis.min.should.be 0
-        plot4.axes.xaxis.max.should.be 5
-        plot4.axes.yaxis.tickDistribution.should.be 'power'
-    end
-    
+describe 'Axes options'     
     it plot5.title.text
         plot5.axes.xaxis.should.have_property '_elem'
         plot5.axes.yaxis.should.have_property '_elem'

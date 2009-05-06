@@ -127,47 +127,51 @@
     $.jqplot.LogAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
         var ticks = this._ticks;
+        var userTicks = this.ticks;
         var name = this.name;
         var db = this._dataBounds;
         var dim, interval;
         var min, max;
         var pos1, pos2;
         var tt, i;
-        
-        //////////////////
-        // fix me
-        /////////////////
+
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
-        if (false) {
-            for (i=0; i<ticks.length; i++){
-                var t = ticks[i];
-                if (!t.label) {
-                    t.label = t.value.toString();
+        if (userTicks.length) {
+            // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
+            for (i=0; i<userTicks.length; i++){
+                var ut = userTicks[i];
+                var t = new this.tickRenderer(this.tickOptions);
+                if (ut.constructor == Array) {
+                    t.value = ut[0];
+                    t.label = ut[1];
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                    	t.showMark = false;
+                    }
+                    t.setTick(ut[0], this.name);
+                    this._ticks.push(t);
                 }
-                // set iitial css positioning styles for the ticks.
-                var pox = i*15+'px';
-                switch (name) {
-                    case 'xaxis':
-                        t._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px'};
-                        break;
-                    case 'x2axis':
-                        t._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px'};
-                        break;
-                    case 'yaxis':
-                        t._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px'};
-                        break;
-                    case 'y2axis':
-                        t._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px'};
-                        break;
-                    default:
-                        break;
+                
+                else {
+                    t.value = ut;
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                    	t.showMark = false;
+                    }
+                    t.setTick(ut, this.name);
+                    this._ticks.push(t);
                 }
             }
-            this.numberTicks = ticks.length;
-            this.min = ticks[0].value;
-            this.max = ticks[this.numberTicks-1].value;
-            this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
+            this.numberTicks = userTicks.length;
+            this.min = this._ticks[0].value;
+            this.max = this._ticks[this.numberTicks-1].value;
         }
         
         // we don't have any ticks yet, let's make some!
@@ -227,7 +231,7 @@
             
             else if (this.tickDistribution == 'power'){
                 // for power distribution, open up range to get a nice power of axis.renderer.base.
-                // don't respect the user's min/max settings. (fix this).
+                // power distribution won't respect the user's min/max settings.
                 rmin = Math.pow(this.base, Math.ceil(Math.log(min*(2-this.pad))/Math.log(this.base))-1);
                 rmax = Math.pow(this.base, Math.floor(Math.log(max*this.pad)/Math.log(this.base))+1);
                 this.min = rmin;
