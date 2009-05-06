@@ -54,6 +54,8 @@
 * */
 
 (function($) {
+    // make sure undefined is undefined
+    var undefined;
     // Class: $.jqplot
     // jQuery function called by the user to create a plot.
     //
@@ -108,7 +110,9 @@
     $.jqplot.postDrawHooks = [];
     $.jqplot.preDrawSeriesHooks = [];
     $.jqplot.postDrawSeriesHooks = [];
-    $.jqplot.drawLegendHooks = [];
+    $.jqplot.preDrawLegendHooks = [];
+    $.jqplot.postDrawLegendHooks = [];
+    $.jqplot.addLegendRowHooks = [];
     $.jqplot.preSeriesInitHooks = [];
     $.jqplot.postSeriesInitHooks = [];
     $.jqplot.preParseSeriesOptionsHooks = [];
@@ -304,7 +308,13 @@
     };
     
     Legend.prototype.draw = function(offsets) {
+        for (var i=0; i<$.jqplot.preDrawLegendHooks.length; i++){
+            $.jqplot.preDrawLegendHooks[i].call(this, offsets);
+        }
         return this.renderer.draw.call(this, offsets);
+        for (var i=0; i<$.jqplot.postDrawLegendHooks.length; i++){
+            $.jqplot.postDrawLegendHooks[i].call(this, offsets);
+        }
     };
     
     Legend.prototype.pack = function(offsets) {

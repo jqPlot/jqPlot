@@ -51,8 +51,9 @@
         var pointx, pointy;
         var opts = (options != undefined) ? options : {};
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         ctx.save();
-        if (this.showLine) {
+        if (showLine) {
             this.renderer.shapeRenderer.draw(ctx, gd);
         
             // now draw the shadows

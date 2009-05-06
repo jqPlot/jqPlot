@@ -27,8 +27,8 @@
                         addrow.call(this, lt, s.color, pad);
                         pad = true;
                     }
-                    for (var j=0; j<$.jqplot.drawLegendHooks.length; j++) {
-                        var item = $.jqplot.drawLegendHooks[j].call(this, s);
+                    for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
+                        var item = $.jqplot.addLegendRowHooks[j].call(this, s);
                         if (item) {
                             addrow(item.label, item.color, pad);
                             pad = true;

@@ -1,69 +1,48 @@
 (function($) {
-    var debug = 1;
-	// Convienence function that won't hang IE.
-	function log(something) {
-	    if (window.console && debug) {
-	        console.log(something);
-	    }
-	};
     
-    $.jqplot.postParseOptionsHooks.push(parseTrendLineOptions);
-    $.jqplot.postDrawSeriesHooks.push(drawTrendLines);
-    $.jqplot.drawLegendHooks.push(addTrendLineLegend);
+    $.jqplot.Trendline = function() {
+        this.show = true;
+        this.color = '#666666';
+        this.rendererOptions:{marker:{show:false}};
+        this.label:'';
+        this.type = 'linear';
+        // don't rely on series renderer, it may not draw lines.
+        this.renderer = new $.jqplot.lineRenderer();
+        this.shadow = true;
+    };
+    
+    $.jqplot.postParseSeriesOptionsHooks.push(parseTrendLineOptions);
+    $.jqplot.postDrawSeriesHooks.push(drawTrendLine);
+    $.jqplot.addLegendRowHooks.push(drawTrendLineLegend);
     
     // called witin scope of the legend object
     // current series passed in
     // must return null or an object {label:label, color:color}
     function addTrendLineLegend(series) {
-        var lt = series.trendLines.label.toString();
+        var lt = series.trendline.label.toString();
         var ret = null;
-        if (series.trendLines.show && lt) ret = {label:lt, color:series.trendLines.color};
+        if (series.trendline.show && lt) ret = {label:lt, color:series.trendline.color};
         return ret;
-    }
+    };
 
-    // called within scope of ._jqPlot
-    function parseTrendLineOptions () {
-        var s, i;
-        var series = this.series;
-        var options = this.options;
-        var defaults = {
-            show: false,
-            color: '#666666',
-            rendererOptions:{marker:{show:false}},
-            // lineWidth:2.5,
-            // shadows:true,
-            // // shadow angle in degrees
-            // shadowAngle:45,
-            // // shadow offset in pixels
-            // shadowOffset:1,
-            // shadowDepth:3,
-            // shadowAlpha:'0.07',
-            label:'',
-            // linear or exp or exponential
-            type: 'linear'
-        };
-        for (i = 0; i < series.length; ++i) {
-            s = series[i];
-        	// merge user supplied trendline options with defaults.
-        	if (!s.hasOwnProperty('trendLines')) s.trendLines = {};
-        	s.trendLines = $.extend(true, {}, defaults, options.trendLines, s.trendLines);
-    	}
+    // called within scope of a series
+    function parseTrendLineOptions (seriesDefaults, options) {
+        this.trendline = new $.jqplot.Trendline();
+        $.extend(true, this.trendline, seriesDefaults.trendline, options.trendline);
     };
     
     // called within scope of series object
-    function drawTrendLines(grid, ctx) {
-        var fit;
-        if (this.trendLines.show) {
-            fit = fitData(this.data, this.trendLines.type);
-            // make a trendline series
-            var tl = $.extend(true, {}, this, this.trendLines);
-            tl.data = fit.data;
-            tl.gridData = [];
-            var lineRenderer = new $.jqplot.lineRenderer();
-            lineRenderer.init(tl.trendLines.rendererOptions);
-            lineRenderer.draw.call(lineRenderer, tl, grid, ctx); 
-        }  
-    }
+    function drawTrendLines(sctx, options) {
+        if (this.trendline.show) {
+            var fit;
+            // this.renderer.setGridData.call(this);
+            var data = options.data || this.data;
+            fit = fitData(data, this.trendline.type);
+            var gridData = options.gridData || this.renderer.makeGridData.call(this, fit.data);
+        
+            this.trendline.renderer.draw.call(this, sctx, gridData, {showline:true, shadow:this.trendline.shadow});
+        }
+    };
 	
 	function regression(x, y, type)  {
 		var type = (type == null) ? 'linear' : type;
