@@ -44,11 +44,6 @@
     // called within scope of series.
     $.jqplot.LineRenderer.prototype.draw = function(ctx, gd, options) {
         var i;
-        var xaxis = this.xaxis;
-        var yaxis = this.yaxis;
-        var xp = this._xaxis.series_u2p;
-        var yp = this._yaxis.series_u2p;
-        var pointx, pointy;
         var opts = (options != undefined) ? options : {};
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;

@@ -30,7 +30,7 @@
                     for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
                         var item = $.jqplot.addLegendRowHooks[j].call(this, s);
                         if (item) {
-                            addrow(item.label, item.color, pad);
+                            addrow.call(this, item.label, item.color, pad);
                             pad = true;
                         } 
                     }

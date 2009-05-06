@@ -3,22 +3,29 @@
     $.jqplot.Trendline = function() {
         this.show = true;
         this.color = '#666666';
-        this.rendererOptions:{marker:{show:false}};
-        this.label:'';
+        this.rendererOptions = {marker:{show:false}};
+        this.label = '';
         this.type = 'linear';
         // don't rely on series renderer, it may not draw lines.
-        this.renderer = new $.jqplot.lineRenderer();
+        this.renderer = new $.jqplot.LineRenderer();
         this.shadow = true;
+        this.markerRenderer = {show:false};
+        this.lineWidth = 1.5;
+        this.shadowAngle = 45;
+        this.shadowOffset = 1.0;
+        this.shadowAlpha = 0.07;
+        this.shadowDepth = 3;
+        
     };
     
     $.jqplot.postParseSeriesOptionsHooks.push(parseTrendLineOptions);
-    $.jqplot.postDrawSeriesHooks.push(drawTrendLine);
-    $.jqplot.addLegendRowHooks.push(drawTrendLineLegend);
+    $.jqplot.postDrawSeriesHooks.push(drawTrendline);
+    $.jqplot.addLegendRowHooks.push(addTrendlineLegend);
     
     // called witin scope of the legend object
     // current series passed in
     // must return null or an object {label:label, color:color}
-    function addTrendLineLegend(series) {
+    function addTrendlineLegend(series) {
         var lt = series.trendline.label.toString();
         var ret = null;
         if (series.trendline.show && lt) ret = {label:lt, color:series.trendline.color};
@@ -28,11 +35,12 @@
     // called within scope of a series
     function parseTrendLineOptions (seriesDefaults, options) {
         this.trendline = new $.jqplot.Trendline();
-        $.extend(true, this.trendline, seriesDefaults.trendline, options.trendline);
+        $.extend(true, this.trendline, {color:this.color}, seriesDefaults.trendline, options.trendline);
+        this.trendline.renderer.init.call(this.trendline, null);
     };
     
     // called within scope of series object
-    function drawTrendLines(sctx, options) {
+    function drawTrendline(sctx, options) {
         if (this.trendline.show) {
             var fit;
             // this.renderer.setGridData.call(this);
@@ -40,7 +48,7 @@
             fit = fitData(data, this.trendline.type);
             var gridData = options.gridData || this.renderer.makeGridData.call(this, fit.data);
         
-            this.trendline.renderer.draw.call(this, sctx, gridData, {showline:true, shadow:this.trendline.shadow});
+            this.trendline.renderer.draw.call(this.trendline, sctx, gridData, {showLine:true, shadow:this.trendline.shadow});
         }
     };
 	

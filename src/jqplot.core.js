@@ -506,7 +506,7 @@
         }
         
         for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
-            $.jqplot.postDrawSeriesHooks[j].call(this.series[i], sctx, options);
+            $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
         }
     };
     
