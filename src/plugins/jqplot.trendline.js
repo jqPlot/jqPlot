@@ -28,16 +28,18 @@
     function addTrendlineLegend(series) {
         var lt = series.trendline.label.toString();
         var ret = null;
-        if (series.trendline.show && lt) ret = {label:lt, color:series.trendline.color};
+        if (series.trendline.show && lt) {
+            ret = {label:lt, color:series.trendline.color};
+        }
         return ret;
-    };
+    }
 
     // called within scope of a series
     function parseTrendLineOptions (seriesDefaults, options) {
         this.trendline = new $.jqplot.Trendline();
         $.extend(true, this.trendline, {color:this.color}, seriesDefaults.trendline, options.trendline);
         this.trendline.renderer.init.call(this.trendline, null);
-    };
+    }
     
     // called within scope of series object
     function drawTrendline(sctx, options) {
@@ -50,10 +52,10 @@
         
             this.trendline.renderer.draw.call(this.trendline, sctx, gridData, {showLine:true, shadow:this.trendline.shadow});
         }
-    };
+    }
 	
-	function regression(x, y, type)  {
-		var type = (type == null) ? 'linear' : type;
+	function regression(x, y, typ)  {
+		var type = (typ == null) ? 'linear' : typ;
 	    var N = x.length;
 	    var slope;
 	    var intercept;	
@@ -112,8 +114,8 @@
 		return [base, coeff];
 	}
 
-	function fitData(data, type) {
-		var type = (type == null) ?  'linear' : type;
+	function fitData(data, typ) {
+		var type = (typ == null) ?  'linear' : typ;
 		var ret;
 		var res;
 		var x = [];
@@ -142,6 +144,6 @@
 			}
 		}
 		return {data: ypred, slope: ret[0], intercept: ret[1]};
-	};    
+	} 
 
 })(jQuery);

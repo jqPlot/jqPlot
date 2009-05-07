@@ -206,7 +206,7 @@
                         this._tickInterval = [1, parts[0]];
                     }
                     else if (parts.length == 2) {
-                        this._tickInterval = [parts[0], parts[1]]
+                        this._tickInterval = [parts[0], parts[1]];
                     }
                 }
             }

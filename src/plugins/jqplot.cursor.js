@@ -11,7 +11,7 @@
 	    this.showTooltip = false;
 	    this.tooltipLocation = 'se';
 	    this.tooltipOffset = 6;
-	    this.showTooltipGridPosition = true;
+	    this.showTooltipGridPosition = false;
 	    this.showTooltipUnitPosition = true;
 	    this.tooltipAxisGroups = [];
 	    this._tooltipElem;
@@ -78,14 +78,20 @@
         c._tooltipElem.css('left', x);
         c._tooltipElem.css('top', y);
         var s = '';
+        var addbr = false;
         if (c.showTooltipGridPosition) {
             s = gridpos.x+', '+gridpos.y;
+            addbr = true;
         }
         if (c.showTooltipUnitPosition) {
             var g;
             for (var i=0; i<c.tooltipAxisGroups.length; i++) {
                 g = c.tooltipAxisGroups[i];
-                s += '<br />'+datapos[g[0]].toFixed(2)+', '+datapos[g[1]].toFixed(2);
+                if (addbr) {
+                    s += '<br />';
+                }
+                s += datapos[g[0]].toFixed(2)+', '+datapos[g[1]].toFixed(2);
+                addbr = true;
             }
         }
         c._tooltipElem.html(s);

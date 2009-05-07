@@ -111,7 +111,6 @@
     $.jqplot.preDrawSeriesHooks = [];
     $.jqplot.postDrawSeriesHooks = [];
     $.jqplot.preDrawLegendHooks = [];
-    $.jqplot.postDrawLegendHooks = [];
     $.jqplot.addLegendRowHooks = [];
     $.jqplot.preSeriesInitHooks = [];
     $.jqplot.postSeriesInitHooks = [];
@@ -312,9 +311,6 @@
             $.jqplot.preDrawLegendHooks[i].call(this, offsets);
         }
         return this.renderer.draw.call(this, offsets);
-        for (var i=0; i<$.jqplot.postDrawLegendHooks.length; i++){
-            $.jqplot.postDrawLegendHooks[i].call(this, offsets);
-        }
     };
     
     Legend.prototype.pack = function(offsets) {
