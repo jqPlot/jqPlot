@@ -29,7 +29,7 @@
     
     // called with scope of series.
     $.jqplot.BarRenderer.prototype.init = function(options) {
-        $.extend(true, this.renderer, options);
+        $.extend(true, this, options);
         for (var d in this.renderer.seriesDefaults) {
             if (this[d] == null) {
                 this[d] = this.renderer.seriesDefaults[d];
@@ -79,10 +79,10 @@
         }
         // so, now we have total number of axis values.
         if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
-            this.barWidth = (paxis._offsets.max - paxis._offsets.min - this.barMargin*2) / nvals - this.barPadding;
+            this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/2;
         }
         else {
-            this.barWidth = (paxis._offsets.min - paxis._offsets.max - this.barMargin*2) / nvals - this.barPadding;
+            this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/2;
         }
 //        this.barWidth = Math.abs(paxis._offsets.max - paxis._offsets.min - this.barMargin*2) / nvals - this.barPadding;
         this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
