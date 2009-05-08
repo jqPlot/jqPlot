@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>jqPlot Bar Renderer Plugin</title>
+  <title><?php echo $title ?></title>
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.min.js"></script><![endif]-->
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   
@@ -29,8 +29,8 @@
   <!-- END: load jqplot -->
 
   <link rel="stylesheet" type="text/css" href="unittests.css" />
-
-  <script language="javascript" type="text/javascript">
+  
+    <script language="javascript" type="text/javascript">
     $.jqplot.installPath = "../src";
     $.jqplot.pluginsPath = "../src/plugins";
     var uID = (function() {
@@ -47,59 +47,4 @@
       $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').appendTo('body');
       eval(o);
     }
-  
-    function runSuites() {
-      var o, n, nid;
-      
-      
-      nid = uID();
-      
-      o = "line1 = [1,4,9, 16]; \
-      line2 = [25, 12.5, 6.25, 3.125]; \
-      plot1 = $.jqplot('_target_', [line1, line2], \
-      {legend:{show:true, location:'ne'},title:'Bar Chart', \
-      series:[{label:'Profits', renderer:$.jqplot.BarRenderer}, {label:'Expenses', renderer:$.jqplot.BarRenderer}], \
-      axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}});"
-        
-      genplot(o);
-      
-      o = "line1 = [1,4,9, 16]; \
-      line2 = [25, 12.5, 6.25, 3.125]; \
-      line3 = [2, 7, 15, 30]; \
-      plot2 = $.jqplot('_target_', [line1, line2, line3], \
-      {legend:{show:true, location:'ne', xoffset:55}, \
-      title:'Bar Chart With Options', \
-      seriesDefaults:{renderer:$.jqplot.BarRenderer, rendererOptions:{barPadding: 8, barMargin: 20}}, \
-      series:[{label:'Profits'}, {label:'Expenses'}, {label:'Sales'}], \
-      axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer, ticks:['1st Qtr', '2nd Qtr', '3rd Qtr', '4th Qtr']}}});"
-        
-      genplot(o);
-      
-      o = "line1 = [[1,1], [4,2], [9,3], [16,4]]; \
-      line2 = [[25,1], [12.5,2], [6.25,3], [3.125,4]]; \
-      plot1 = $.jqplot('_target_', [line1, line2], \
-      {legend:{show:true, location:'ne'}, \
-      title:'Vertically Oriented Bar Chart', \
-      seriesDefaults:{renderer:$.jqplot.BarRenderer, rendererOptions:{barDirection:'horizontal', barPadding: 6, barMargin:15}}, \
-      series:[{label:'Cats'}, {label:'Dogs'}], \
-      axes:{yaxis:{renderer:$.jqplot.CategoryAxisRenderer, ticks:['Once', 'Twice', 'Three Times', 'More']}}});"
-        
-      genplot(o);
-  
-      prettyPrint();
-      
-      JSpec.options.profile = false;
-      JSpec
-      .exec('barRendererTests.js')
-      .run()
-      .report()
-    }
-  </script>
-</head>
-  <body onLoad="runSuites();">
-    <div id="jspec-top"><h2 id="jspec-title">jqPlot Bar Renderer Plugin Tests and Examples</h2></div>
-    <div id="jspec"></div>
-    <div id="jspec-bottom"></div>
-
-</body>
-</html>
+  </script>A
