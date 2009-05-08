@@ -1,6 +1,6 @@
 <?php
   $title = "jqPlot Category Axis Renderer Plugin";
-  $jspec_title = "jqPlot Category Axis Renderer Plugin Tests and Examples"
+  $jspec_title = "jqPlot Category Axis Renderer Plugin Tests and Examples";
   require("opener.php");
 ?>
   <script language="javascript" type="text/javascript">

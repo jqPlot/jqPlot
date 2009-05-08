@@ -47,4 +47,4 @@
       $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').appendTo('body');
       eval(o);
     }
-  </script>A
+  </script>
