@@ -43,8 +43,8 @@
       nid = uID();
       o = o.replace(/_target_/, 'chart'+nid);
       n = js_beautify(o);
-      $('<div class="jqPLot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').appendTo('body');
-      $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').appendTo('body');
+      $('<div class="jqPLot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').insertBefore('.nav:last');
+      $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').insertBefore('.nav:last');
       eval(o);
     }
   </script>

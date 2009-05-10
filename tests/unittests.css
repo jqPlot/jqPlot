@@ -1,21 +1,74 @@
-body {
-  background-color: #efefef;
-  font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+html { 
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
 }
+body {
+	font-size: 14px;
+	background-color: #7f7f7f;
+	height: 100%;
+	padding: 0px;
+	border: 0px;
+	margin: 0px;
+  font-family: "Helvetica Neue Light", "Trebuchet MS", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+
+#main {
+	padding-right: 30px;
+	padding-left: 30px;
+	margin-bottom: 0px;
+	min-height: 100%;
+	top: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin-top: 0px;
+	width: 860px;
+	margin-right: auto;
+	margin-left: auto;
+	background-color: white;
+}
+
+#content {
+    padding-top: 24px;
+    padding-bottom: 16px;
+}
+
 div.jqPLot {
   font-size: 16px;
   margin: 4em auto 3em auto;
 }
+
 pre.prettyprint {
+  font-size: 12px;
   text-align: left;
   margin: auto;
   padding: 15px;
-  width: 900px;
-  background-color: #ffffff;
+  width: 800px;
+  background: #fffdf6;
 }
+
+div.nav {
+    width: 800px;
+    margin: auto;
+    padding: 15px;
+    text-align: right;
+    font-size: 12px;
+}
+
+div.nav a:link {
+    text-decoration: none;
+    border: 0px;
+}
+
+div.nav img {
+    border: 0px;
+    height: 24px;
+    width: 24px;
+}
+
 #jspec, #jspec-top, #jspec-bottom {
-  background: #ffffff;
-  width: 900px;
+  background: #fffdf6;
+  width: 800px;
   margin: 0 auto;
 }
 
