@@ -25,7 +25,7 @@
     //
     // ctx - canvas drawing context
     // points - array of points or [x, y, radius, start angle (rad), end angle (rad)]
-    $.jqplot.ShadowRenderer.prototype.draw = function(ctx, points) {
+    $.jqplot.ShadowRenderer.prototype.draw = function(ctx, points, options) {
         ctx.save();
         ctx.lineWidth = this.lineWidth;
         ctx.lineJoin = this.lineJoin;

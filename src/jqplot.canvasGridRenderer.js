@@ -23,6 +23,7 @@
         elem.width = w;
         elem.height = h;
         this._elem = $(elem);
+        this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
         // borrowed from flot by Ole Laursen
         if ($.browser.msie) {

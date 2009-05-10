@@ -23,13 +23,14 @@
     // ctx - canvas drawing context
     // points - array of points for shapes or 
     // [x, y, radius, start angle (rad), end angle (rad)] for circles and arcs.
-    $.jqplot.ShapeRenderer.prototype.draw = function(ctx, points) {
+    $.jqplot.ShapeRenderer.prototype.draw = function(ctx, points, options) {
         ctx.save();
-        ctx.lineWidth = this.lineWidth;
-        ctx.lineJoin = this.lineJoin;
-        ctx.lineCap = this.lineCap;
-        ctx.strokeStyle = this.strokeStyle;
-        ctx.fillStyle = this.fillStyle;
+        var opts = (options != null) ? options : {};
+        ctx.lineWidth = opts.lineWidth || this.lineWidth;
+        ctx.lineJoin = opts.lineJoing || this.lineJoin;
+        ctx.lineCap = opts.lineCap || this.lineCap;
+        ctx.strokeStyle = (opts.strokeStyle || opts.color) || this.strokeStyle;
+        ctx.fillStyle = opts.fillStyle || this.fillStyle;
         ctx.beginPath();
         if (this.isarc) {
             ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                

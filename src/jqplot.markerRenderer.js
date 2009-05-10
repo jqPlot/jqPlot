@@ -101,7 +101,7 @@
         ctx.restore();
     };
     
-    $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx) {
+    $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
         switch (this.style) {
             case 'diamond':
                 this.drawDiamond(x,y,ctx, false);

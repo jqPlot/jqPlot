@@ -49,18 +49,18 @@
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         ctx.save();
         if (showLine) {
-            this.renderer.shapeRenderer.draw(ctx, gd);
+            this.renderer.shapeRenderer.draw(ctx, gd, opts);
         
             // now draw the shadows
             if (shadow) {
-                this.renderer.shadowRenderer.draw(ctx, gd);
+                this.renderer.shadowRenderer.draw(ctx, gd, opts);
             }
         }
         
         // now draw the markers
         if (this.markerRenderer.show) {
             for (i=0; i<gd.length; i++) {
-                this.markerRenderer.draw(gd[i][0], gd[i][1], ctx);
+                this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts);
             }
         }
         
