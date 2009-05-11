@@ -27,11 +27,11 @@
   <body onLoad="runSuites();">
     <div id="main">
     <div id="content">
+    <div class="nav"><?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" /></a>'; ?>  <a href="index.html"><img src="images/arrow_up_48.png" /></a>  <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" /></a>'; ?>
+    </div>
     <div id="jspec-top"><h2 id="jspec-title"><?php echo $jspec_title ?></h2></div>
     <div id="jspec"></div>
     <div id="jspec-bottom"></div>
-    <div class="nav"><?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" /></a>'; ?>  <a href="index.html"><img src="images/arrow_up_48.png" /></a>  <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" /></a>'; ?>
-    </div>
     
     <div class="nav"><?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" /></a>'; ?>  <a href="index.html"><img src="images/arrow_up_48.png" /></a>  <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" /></a>'; ?>
     </div>
