@@ -5,6 +5,8 @@ NDdata*
 .DS_Store*
 *.pyc
 *~
+build
+dist
 
 # switch to regexp syntax.
 # syntax: regexp

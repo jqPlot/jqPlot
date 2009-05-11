@@ -32,7 +32,7 @@
             <exclude name="jsl.conf" />
           </fileset>
         </copy>
-    	  <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
+        <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
         <copy todir="${BUILD_DIR}/plugins">
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
         </copy>
@@ -121,38 +121,46 @@
 
 	<target name="tests" depends="dist" description="Create test suite for distribution.">
 		<echo message="Creating test suite for distribtion" />
-    <mkdir dir="${DIST_DIR}/tests" />
-    <copy todir="${DIST_DIR}/tests">
-      <fileset dir="tests" includes="*" />
-    </copy>
-    <copy todir="${DIST_DIR}/tests/jspec/lib">
-      <fileset dir="tests/jspec/lib" includes="jspec.min.*" />
-    </copy>
-    <copy todir="${DIST_DIR}/tests/jspec/lib/images">
-      <fileset dir="tests/jspec/lib/images" includes="*" />
-    </copy>
-    <replaceregexp match="\.\./src/" replace="\.\./" flags="g">
-      <fileset dir="${DIST_DIR}/tests">
-        <include name="*.html" />
-      </fileset>
-    </replaceregexp>
+        <mkdir dir="${DIST_DIR}/tests" />
+        <copy todir="${DIST_DIR}/tests">
+          <fileset dir="tests" includes="*" />
+        </copy>
+        <copy todir="${DIST_DIR}/tests/jspec/lib">
+          <fileset dir="tests/jspec/lib" includes="jspec.min.*" />
+        </copy>
+        <copy todir="${DIST_DIR}/tests/jspec/lib/images">
+          <fileset dir="tests/jspec/lib/images" includes="*" />
+        </copy>
+        <copy todir="${DIST_DIR}/tests/images">
+          <fileset dir="tests/images" includes="*" />
+        </copy>
+        <replaceregexp match="\.\./src/" replace="\.\./" flags="g">
+          <fileset dir="${DIST_DIR}/tests">
+            <include name="*.php" />
+            <include name="*.html" />
+          </fileset>
+        </replaceregexp>
 		<echo message="Test Suite Finished" />
 	</target>
 
 	<target name="docs" depends="dist" description="Create documentation for distribution.">
 		<echo message="Creating documentation" />
-    <mkdir dir="${DIST_DIR}/docs" />
-    <exec executable="${ND}">
-      <arg value="-r" />
-      <arg value="-i" />
-      <arg path="src" />
-      <arg line="-o HTML " />
-      <arg path="dist/docs" />
-      <arg value="-p" />
-      <arg path="NDdata/" />
-      <arg line="-s Default docstyles" />
-    </exec>
-		<echo message="Documentation Finished" />
+        <mkdir dir="${DIST_DIR}/docs" />
+        <exec executable="${ND}">
+          <arg value="-r" />
+          <arg value="-i" />
+          <arg path="src" />
+          <arg line="-o HTML " />
+          <arg path="dist/docs" />
+          <arg value="-p" />
+          <arg path="NDdata/" />
+          <arg line="-s Default docstyles" />
+        </exec>
+        <replaceregexp match="@VERSION" replace="${version}" flags="g">
+          <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
+          <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
+        </replaceregexp>
+        <echo message="Documentation Finished" />
 	</target>
 
     <target name="clean" description="Clean up, removing build and distribution directories and everything underneath.">
