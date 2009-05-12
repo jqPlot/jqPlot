@@ -5,7 +5,12 @@
     $.jqplot.LinearAxisRenderer = function() {
     };
     
+    // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
+        // prop: tickRenderer
+        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
+        // See <$.jqplot.AxisTickRenderer>.
+        this.tickRenderer = $.jqplot.AxisTickRenderer;
         $.extend(true, this, options);
         var db = this._dataBounds;
         // Go through all the series attached to this axis and find
@@ -47,7 +52,6 @@
             var temp;
             
             this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
-            //for (var s in axis.style) $(axis._elem).css(s, axis.style[s]);
     
             if (this.showTicks) {
                 var t = this._ticks;

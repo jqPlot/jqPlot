@@ -200,10 +200,6 @@
         // prop: rendererOptions
         // renderer specific options.  Not commonly used.
         this.rendererOptions = {};
-        // prop: tickRenderer
-        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
-        // See <$.jqplot.AxisTickRenderer>.
-        this.tickRenderer = $.jqplot.AxisTickRenderer;
         // prop: tickOptions
         // Options that will be passed to the tickRenderer, see <$.jqplot.AxisTickRenderer> options.
         this.tickOptions = {};
