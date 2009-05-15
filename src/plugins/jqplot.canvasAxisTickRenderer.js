@@ -57,58 +57,47 @@
         this.angle = 0;
         
         $.extend(true, this, options);
-        this._textRenderer = new $.jqplot.CanvasTextRenderer({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad()});
-    };
-    
-    // convert css spec into point size
-    function normalizeFontSize(sz) {
-        n = parseFlot(sz);
-        if (sz.indexOf('px') > -1) {
-            return n*0.75;
+        
+        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
+        
+        if (true) {
+            this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
         }
-        else if (sz.indexOf('pt') > -1) {
-            return n;
-        }
-        else if (sz.indexOf('em') > -1) {
-            return n*12;
-        }
-        else if (sz.indexOf('%') > -1) {
-            return n*12/100;
-        }
-        // default to pixels;
         else {
-            return n*0.75;
+            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts);   
         }
-    }
+    };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad()});
+        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
     };
     
     // return width along the x axis
-    $.jqplot.CanvasAxisTickRenderer.prototype.getWidth = function() {
-     	if (this._elem) {
-     		return this._elem.outerWidth(true);
-     	}
+    // will check first to see if an element exists.
+    // if not, will return the computed text box width.
+    $.jqplot.CanvasAxisTickRenderer.prototype.getWidth = function(ctx) {
+        if (this._elem) {
+         return this._elem.outerWidth(true);
+        }
      	else {
      	    var tr = this._textRenderer;
-	        var l = tr.getWidth();
-	        var h = tr.getHeight();
+	        var l = tr.getWidth(ctx);
+	        var h = tr.getHeight(ctx);
 	        var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
 	        return w;
      	}
     };
     
     // return height along the y axis.
-    $.jqplot.CanvasAxisTickRenderer.prototype.getHeight = function() {
-     	if (this._elem) {
-     		return this._elem.outerHeight(true);
-     	}
+    $.jqplot.CanvasAxisTickRenderer.prototype.getHeight = function(ctx) {
+        if (this._elem) {
+         return this._elem.outerHeight(true);
+        }
      	else {
      	    var tr = this._textRenderer;
-	        var l = tr.getWidth();
-	        var h = tr.getHeight();
+	        var l = tr.getWidth(ctx);
+	        var h = tr.getHeight(ctx);
             var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
             return w;
         }
@@ -117,7 +106,7 @@
     $.jqplot.CanvasAxisTickRenderer.prototype.getAngleRad = function() {
         var a = this.angle * Math.PI/180;
         return a;
-    }
+    };
     
     
     $.jqplot.CanvasAxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
@@ -128,15 +117,41 @@
         return this;
     };
     
+    $.jqplot.CanvasAxisTickRenderer.prototype.createElem  = function() {
+        var domelem = document.createElement('canvas');
+        if ($.browser.msie) {
+            window.G_vmlCanvasManager.init_(document);
+        }
+        if ($.browser.msie) {
+            domelem = window.G_vmlCanvasManager.initElement(domelem);
+        }
+		this._domelem = domelem;
+        this._elem = $(domelem);
+        this._elem.css(this._styles);
+        //var cstr = '.jqplot-axis-tick';
+        //console.log('axis: %s, cstr: %s, style: %s', this.axis, cstr, $(cstr).css('font-weight'));
+        //this._elem.css('border', '1px dotted #dd99bb');
+        //ctx.drawText(0, h-h*7/25, this.label);
+        this._elem.addClass('jqplot-axis-tick');
+        return this._elem;
+        
+    }
+    
     $.jqplot.CanvasAxisTickRenderer.prototype.draw = function() {
         if (!this.label) {
         	this.label = this.formatter(this.formatString, this.value);
         }
-        this._textRenderer.setText(this.label);
-        // var style='width:'+this.getWidth()+';height:'+this.getHeight();
         var domelem = document.createElement('canvas');
-        var w = this.getWidth();
-        var h = this.getHeight();
+        if ($.browser.msie) {
+            window.G_vmlCanvasManager.init_(document);
+        }
+        if ($.browser.msie) {
+            domelem = window.G_vmlCanvasManager.initElement(domelem);
+        }
+        var ctx = domelem.getContext("2d");
+        this._textRenderer.setText(this.label, ctx);
+        var w = this.getWidth(ctx);
+        var h = this.getHeight(ctx);
 		domelem.width = w;
 		domelem.height = h;
 		this._domelem = domelem;
@@ -145,21 +160,11 @@
         //var cstr = '.jqplot-axis-tick';
         //console.log('axis: %s, cstr: %s, style: %s', this.axis, cstr, $(cstr).css('font-weight'));
         //this._elem.css('border', '1px dotted #dd99bb');
-        var ctx = domelem.getContext("2d");
         this._textRenderer.draw(ctx, this.label);
         //ctx.drawText(0, h-h*7/25, this.label);
 
         this._elem.addClass('jqplot-axis-tick');
         
-       if (this.fontFamily) {
-        this._domelem.fontFamily = this.fontFamily;
-       }
-       if (this.fontSize) {
-        this._domelem.fontSize = this.fontSize;
-       }
-       if (this.textColor) {
-        this._domelem.color = this.textColor;
-       }
         return this._elem;
     };    
 })(jQuery);

@@ -1,17 +1,69 @@
 (function($) {
     
+    var pt2px = 1.28
+    // convert css spec into point size
+    function normalizeFontSize(sz) {
+        sz = String(sz);
+        n = parseFloat(sz);
+        if (sz.indexOf('px') > -1) {
+            return n/pt2px;
+        }
+        else if (sz.indexOf('pt') > -1) {
+            return n;
+        }
+        else if (sz.indexOf('em') > -1) {
+            return n*12;
+        }
+        else if (sz.indexOf('%') > -1) {
+            return n*12/100;
+        }
+        // default to pixels;
+        else {
+            return n/pt2px;
+        }
+    }
+    
+    function fontWeight2Float(w) {
+        // w = normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
+        // return values adjusted for Hershey font.
+        if (Number(w)) {
+            return w/400;
+        }
+        else {
+            switch (w) {
+                case 'normal':
+                    return 1;
+                    break;
+                case 'bold':
+                    return 1.75;
+                    break;
+                case 'bolder':
+                    return 2.25;
+                    break;
+                case 'lighter':
+                    return 0.75;
+                    break;
+                default:
+                    return 1;
+                    break;
+             }   
+        }
+    }
+    
     // This code is a modified version of the canvastext.js code, copyright below:
     //
     // This code is released to the public domain by Jim Studt, 2007.
     // He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/
     //
     $.jqplot.CanvasTextRenderer = function(options){
-        this.fontSize = 12;
-        this.fontWeight = 1.0;
+        this.fontStyle = 'normal';  // normal, italic, oblique
+        this.fontVariant = 'normal';    // normal, small caps
+        this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
+        this.fontSize = '12pt'; 
+        this.fontFamily = 'sans-serif';
         this.fontStretch = 1.0;
         this.strokeStyle = '#444444';
         this.angle = 0;
-        this.font = '10px sans-serif';
         this.textAlign = 'start';
         this.textBaseline = 'alphabetic';
         var text = '';
@@ -22,6 +74,7 @@
                 this[opt] = options[opt];
             }
         }
+        this.normalizedFontSize = normalizeFontSize(this.fontSize);
         if (options.text) {
             this.setText(options.text);
         }
@@ -34,6 +87,7 @@
                 this[opt] = options[opt];
             }
         }
+        this.normalizedFontSize = normalizeFontSize(this.fontSize);
         if (options.text) {
             this.setText(options.text);
         }
@@ -44,19 +98,20 @@
         return text;
     };
     
-    $.jqplot.CanvasTextRenderer.prototype.setText = function(t) {
+    $.jqplot.CanvasTextRenderer.prototype.setText = function(t, ctx) {
         text = t;
-        this.setWidth();
+        this.setWidth(ctx);
         return this;
     };
     
-    $.jqplot.CanvasTextRenderer.prototype.getWidth = function() {
+    $.jqplot.CanvasTextRenderer.prototype.getWidth = function(ctx) {
+        return 25;
         return width;
     };
     
-    $.jqplot.CanvasTextRenderer.prototype.setWidth = function(w) {
+    $.jqplot.CanvasTextRenderer.prototype.setWidth = function(ctx, w) {
         if (!w) {
-            width = this.measure(this.getText());
+            width = this.measure(ctx, this.getText());
         }
         else {
             width = w;   
@@ -64,14 +119,18 @@
         return this;
     };
     
-    $.jqplot.CanvasTextRenderer.prototype.getHeight = function() {
+    // return height in pixels.
+    $.jqplot.CanvasTextRenderer.prototype.getHeight = function(ctx) {
+        return 25;
         return height;
     };
     
+    // w - height in pt
+    // set heigh in px
     $.jqplot.CanvasTextRenderer.prototype.setHeight = function(w) {
         if (!w) {
             //height = this.fontSize /0.75;
-            height = this.fontSize * 1.28;
+            height = this.normalizedFontSize * pt2px;
         }
         else {
             height = w;   
@@ -86,22 +145,22 @@
 
     $.jqplot.CanvasTextRenderer.prototype.ascent = function()
     {
-        return this.fontSize;
+        return this.normalizedFontSize;
     };
 
     $.jqplot.CanvasTextRenderer.prototype.descent = function()
     {
-        return 7.0*this.fontSize/25.0;
+        return 7.0*this.normalizedFontSize/25.0;
     };
 
-    $.jqplot.CanvasTextRenderer.prototype.measure = function(str)
+    $.jqplot.CanvasTextRenderer.prototype.measure = function(ctx, str)
     {
         var total = 0;
         var len = str.length;
  
         for ( i = 0; i < len; i++) {
         	var c = this.letter(str.charAt(i));
-        	if (c) total += c.width * this.fontSize / 25.0 * this.fontStretch;
+        	if (c) total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
         }
         return total;
     };
@@ -113,7 +172,7 @@
         var y = height*0.72;
          var total = 0;
          var len = str.length;
-         var mag = this.fontSize / 25.0;
+         var mag = this.normalizedFontSize / 25.0;
 
          ctx.save();
          var tx, ty;
@@ -140,10 +199,11 @@
          }
          
          ctx.strokeStyle = this.strokeStyle;
+         ctx.fillStyle = this.fillStyle;
          ctx.translate(tx, ty);
          ctx.rotate(this.angle);
          ctx.lineCap = "round";
-         ctx.lineWidth = 2.0 * mag * this.fontWeight;
+         ctx.lineWidth = 2.0 * mag * fontWeight2Float(this.fontWeight);
          //ctx.strokeRect(0,0,width, height);
          
          for ( i = 0; i < len; i++) {
@@ -278,5 +338,64 @@
     
     $.jqplot.CanvasFontRenderer.prototype = new $.jqplot.CanvasTextRenderer({});
     $.jqplot.CanvasFontRenderer.prototype.constructor = $.jqplot.CanvasFontRenderer;
+
+    $.jqplot.CanvasFontRenderer.prototype.measure = function(ctx, str)
+    {
+        return ctx.measureText(str).width;
+    };
+
+    $.jqplot.CanvasFontRenderer.prototype.draw = function(ctx, str)
+    {
+        var x = 0;
+        // leave room at bottom for descenders.
+        var y = height*0.72;
+        //var y = 12;
+
+         ctx.save();
+         var tx, ty;
+         
+         // 1st quadrant
+         if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
+             tx = 0;
+             ty = -Math.sin(this.angle) * width;
+         }
+         // 4th quadrant
+         else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
+             tx = Math.sin(this.angle) * height;
+             ty = 0;
+         }
+         // 2nd quadrant
+         else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
+             tx = -Math.cos(this.angle) * width;
+             ty = -Math.sin(this.angle) * width - Math.cos(this.angle) * height;
+         }
+         // 3rd quadrant
+         else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
+             tx = Math.sin(this.angle) * height - Math.cos(this.angle)*width;
+             ty = -Math.cos(this.angle) * height;
+         }
+         
+         ctx.fillStyle = this.strokeStyle;
+         ctx.font = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontStyle+' '+this.fontFamily;
+         //ctx.translate(tx, ty);
+         ctx.rotate(this.angle);
+         ctx.fillText(str, x+tx, y+ty);
+         // ctx.font = 'bold 14px Arial';
+         // ctx.textAlign = 'center';
+         // ctx.textBaseline = 'middle';
+         // ctx.strokeStyle = '#992244';
+         //ctx.fillStyle = '#992244';
+         //  var g = ctx.createLinearGradient(0, 0, 0, 25);
+         //  g.addColorStop(0, '#d4f4f5');
+         //  g.addColorStop(0.4, '#d4f4f5');
+         //  g.addColorStop(0.6, '#c2d7c4');
+         //  g.addColorStop(1, '#c2d7c4');
+         //  ctx.fillStyle = g;
+         // ctx.strokeText('H3', 15,15);
+         // ctx.fillText('H3', 15,15);
+         //ctx.fillRect(5,5,5,5);
+
+         ctx.restore();
+    };
     
 })(jQuery);
