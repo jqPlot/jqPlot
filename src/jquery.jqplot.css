@@ -13,10 +13,6 @@
     font-size: 0.75em;
 }
 
-/*rules for an individual axis*/
-.jqplot-xaxis {
-}
-
 /*rules applied to all axis tick divs*/
 .jqplot-axis-tick {
 }
