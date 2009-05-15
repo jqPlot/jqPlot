@@ -228,6 +228,7 @@
     
     Axis.prototype.init = function() {
         this.renderer = new this.renderer();
+        this.tickOptions.axis = this.name;
         this.renderer.init.call(this, this.rendererOptions);
         
     };
