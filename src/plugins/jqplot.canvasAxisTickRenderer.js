@@ -115,7 +115,7 @@
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.getAngleRad = function() {
-        var a = this.angle * 0.017453292;
+        var a = this.angle * Math.PI/180;
         return a;
     }
     
@@ -159,9 +159,9 @@
 		this._domelem = domelem;
         this._elem = $(domelem);
         this._elem.css(this._styles);
-        this._elem.css('border', '1px solid blue');
+        //this._elem.css('border', '1px dotted #dd99bb');
         var ctx = domelem.getContext("2d");
-        this._textRenderer.draw(ctx, 0, h-h*7/25, this.label);
+        this._textRenderer.draw(ctx, this.label);
         //ctx.drawText(0, h-h*7/25, this.label);
 
         this._elem.addClass('jqplot-axis-tick');
@@ -276,36 +276,51 @@
  
         for ( i = 0; i < len; i++) {
         	var c = this.letter(str.charAt(i));
-        	if (c) total += c.width * this.fontSize / 25.0;
+        	if (c) total += c.width * this.fontSize / 25.0 * this.fontStretch;
         }
         return total;
     };
 
-    $.jqplot.CanvasTextRenderer.prototype.draw = function(ctx,x,y,str)
+    $.jqplot.CanvasTextRenderer.prototype.draw = function(ctx,str)
     {
+        var x = 0;
+        // leave room at bottom for descenders.
+        var y = height*0.72;
          var total = 0;
          var len = str.length;
          var mag = this.fontSize / 25.0;
 
          ctx.save();
-         // var tx = Math.sin(this.angle)*height;
-         var tx = 0;
-         var ty = Math.sin(-this.angle)*width;
-         //var ty = 0;
-         console.log('w: %s, tx: %s, h: %s, ty: %s', width, tx, height, ty);
-         ctx.translate(tx, ty);
+         var tx, ty;
+         
+         // 1st quadrant
+         if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
+             tx = 0;
+             ty = -Math.sin(this.angle) * width;
+         }
+         // 4th quadrant
+         else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
+             tx = Math.sin(this.angle) * height;
+             ty = 0;
+         }
+         // 2nd quadrant
+         else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
+             tx = -Math.cos(this.angle) * width;
+             ty = -Math.sin(this.angle) * width - Math.cos(this.angle) * height;
+         }
+         // 3rd quadrant
+         else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
+             tx = Math.sin(this.angle) * height - Math.cos(this.angle)*width;
+             ty = -Math.cos(this.angle) * height;
+         }
+         
          ctx.strokeStyle = this.strokeStyle;
+         ctx.translate(tx, ty);
          ctx.rotate(this.angle);
          ctx.lineCap = "round";
-         ctx.lineWidth = 2.0 * mag;
-         ctx.moveTo(0,0);
-         ctx.lineTo(0,15);
-         ctx.stroke();
-         ctx.moveTo(0,0);
-         ctx.lineTo(15,0);
-         ctx.stroke();
-         ctx.moveTo(0,0);
-
+         ctx.lineWidth = 2.0 * mag * this.fontWeight;
+         //ctx.strokeRect(0,0,width, height);
+         
          for ( i = 0; i < len; i++) {
             var c = this.letter( str.charAt(i));
             if ( !c) continue;
@@ -321,14 +336,14 @@
                   continue;
               }
               if ( penUp) {
-                  ctx.moveTo( x + a[0]*mag, y - a[1]*mag);
+                  ctx.moveTo( x + a[0]*mag*this.fontStretch, y - a[1]*mag);
                   penUp = false;
               } else {
-                  ctx.lineTo( x + a[0]*mag, y - a[1]*mag);
+                  ctx.lineTo( x + a[0]*mag*this.fontStretch, y - a[1]*mag);
               }
             }
             ctx.stroke();
-            x += c.width*mag;
+            x += c.width*mag*this.fontStretch;
          }
          ctx.restore();
          return total;
@@ -348,7 +363,7 @@
          '*': { width: 16, points: [[8,21],[8,9],[-1,-1],[3,18],[13,12],[-1,-1],[13,18],[3,12]] },
          '+': { width: 26, points: [[13,18],[13,0],[-1,-1],[4,9],[22,9]] },
          ',': { width: 10, points: [[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
-         '-': { width: 26, points: [[8,9],[18,9]] },
+         '-': { width: 16, points: [[6,9],[12,9]] },
          '.': { width: 10, points: [[5,2],[4,1],[5,0],[6,1],[5,2]] },
          '/': { width: 22, points: [[20,25],[2,-7]] },
          '0': { width: 20, points: [[9,21],[6,20],[4,17],[3,12],[3,9],[4,4],[6,1],[9,0],[11,0],[14,1],[16,4],[17,9],[17,12],[16,17],[14,20],[11,21],[9,21]] },
