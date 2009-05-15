@@ -59,23 +59,6 @@
     
     $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
         this.value = value;
-        var pox = '15px';
-        switch (axisName) {
-            case 'xaxis':
-                this._styles = {position:'absolute', top:'0px', left:pox, paddingTop:'10px', textAlign:'top'};
-                break;
-            case 'x2axis':
-                this._styles = {position:'absolute', bottom:'0px', left:pox, paddingBottom:'10px', textAlign:'bottom'};
-                break;
-            case 'yaxis':
-                this._styles = {position:'absolute', right:'0px', top:pox, paddingRight:'10px', textAlign:'right'};
-                break;
-            case 'y2axis':
-                this._styles = {position:'absolute', left:'0px', top:pox, paddingLeft:'10px', textAlign:'left'};
-                break;
-            default:
-                break;
-        }
         if (isMinor) {
         	this.isMinorTick = true;
         }

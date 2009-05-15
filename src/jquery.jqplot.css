@@ -17,6 +17,42 @@
 .jqplot-axis-tick {
 }
 
+.jqplot-xaxis > .jqplot-axis-tick {
+    position: absolute;
+    top: 0px;
+    /* initial position untill tick is drawn in proper place */
+    left: 15px;
+    padding-top: 10px;
+    text-align: top;
+}
+
+.jqplot-x2axis > .jqplot-axis-tick {
+    position: absolute;
+    bottom: 0px;
+    /* initial position untill tick is drawn in proper place */
+    left: 15px;
+    padding-bottom: 10px;
+    text-align: bottom;
+}
+
+.jqplot-yaxis > .jqplot-axis-tick {
+    position: absolute;
+    right: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.jqplot-y2axis > .jqplot-axis-tick {
+    position: absolute;
+    left: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+    padding-left: 10px;
+    text-align: left;
+}
+
 table.jqplot-legend {
     background-color: rgba(255,255,255,0.6);
     border: 1px solid #cccccc;
