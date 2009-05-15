@@ -117,46 +117,29 @@
         return this;
     };
     
-    $.jqplot.CanvasAxisTickRenderer.prototype.createElem  = function() {
-        var domelem = document.createElement('canvas');
-        if ($.browser.msie) {
-            window.G_vmlCanvasManager.init_(document);
-        }
-        if ($.browser.msie) {
-            domelem = window.G_vmlCanvasManager.initElement(domelem);
-        }
-		this._domelem = domelem;
-        this._elem = $(domelem);
-        this._elem.css(this._styles);
-        //var cstr = '.jqplot-axis-tick';
-        //console.log('axis: %s, cstr: %s, style: %s', this.axis, cstr, $(cstr).css('font-weight'));
-        //this._elem.css('border', '1px dotted #dd99bb');
-        //ctx.drawText(0, h-h*7/25, this.label);
-        this._elem.addClass('jqplot-axis-tick');
-        return this._elem;
-        
-    }
-    
     $.jqplot.CanvasAxisTickRenderer.prototype.draw = function() {
         if (!this.label) {
         	this.label = this.formatter(this.formatString, this.value);
         }
         var domelem = document.createElement('canvas');
+        var ctx = domelem.getContext("2d");
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
         }
         if ($.browser.msie) {
             domelem = window.G_vmlCanvasManager.initElement(domelem);
         }
-        var ctx = domelem.getContext("2d");
         this._textRenderer.setText(this.label, ctx);
         var w = this.getWidth(ctx);
         var h = this.getHeight(ctx);
-		domelem.width = w;
-		domelem.height = h;
+        domelem.width = w;
+        domelem.height = h;
+        console.log('width: %s, height: %s', w, h);
 		this._domelem = domelem;
         this._elem = $(domelem);
         this._elem.css(this._styles);
+        // this._elem.css('width', w);
+        // this._elem.css('height', h);
         //var cstr = '.jqplot-axis-tick';
         //console.log('axis: %s, cstr: %s, style: %s', this.axis, cstr, $(cstr).css('font-weight'));
         //this._elem.css('border', '1px dotted #dd99bb');

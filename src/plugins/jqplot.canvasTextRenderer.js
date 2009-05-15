@@ -66,63 +66,48 @@
         this.angle = 0;
         this.textAlign = 'start';
         this.textBaseline = 'alphabetic';
-        var text = '';
-        var width;
-        var height;
-        for (var opt in options) {
-            if (this.hasOwnProperty(opt)) {
-                this[opt] = options[opt];
-            }
-        }
+        this.text;
+        this.width;
+        this.height;
+
+        $.extend(true, this, options);
         this.normalizedFontSize = normalizeFontSize(this.fontSize);
-        if (options.text) {
-            this.setText(options.text);
-        }
         this.setHeight();
     };
     
     $.jqplot.CanvasTextRenderer.prototype.init = function(options) {
-        for (var opt in options) {
-            if (this.hasOwnProperty(opt)) {
-                this[opt] = options[opt];
-            }
-        }
+        $.extend(true, this, options);
         this.normalizedFontSize = normalizeFontSize(this.fontSize);
-        if (options.text) {
-            this.setText(options.text);
-        }
         this.setHeight();
     };
     
     $.jqplot.CanvasTextRenderer.prototype.getText = function() {
-        return text;
+        return this.text;
     };
     
     $.jqplot.CanvasTextRenderer.prototype.setText = function(t, ctx) {
-        text = t;
+        this.text = t;
         this.setWidth(ctx);
         return this;
     };
     
     $.jqplot.CanvasTextRenderer.prototype.getWidth = function(ctx) {
-        return 25;
-        return width;
+        return this.width;
     };
     
     $.jqplot.CanvasTextRenderer.prototype.setWidth = function(ctx, w) {
         if (!w) {
-            width = this.measure(ctx, this.getText());
+            this.width = this.measure(ctx, this.text);
         }
         else {
-            width = w;   
+            this.width = w;   
         }
         return this;
     };
     
     // return height in pixels.
     $.jqplot.CanvasTextRenderer.prototype.getHeight = function(ctx) {
-        return 25;
-        return height;
+        return this.height;
     };
     
     // w - height in pt
@@ -130,10 +115,10 @@
     $.jqplot.CanvasTextRenderer.prototype.setHeight = function(w) {
         if (!w) {
             //height = this.fontSize /0.75;
-            height = this.normalizedFontSize * pt2px;
+            this.height = this.normalizedFontSize * pt2px;
         }
         else {
-            height = w;   
+            this.height = w;   
         }
         return this;
     };
@@ -169,7 +154,7 @@
     {
         var x = 0;
         // leave room at bottom for descenders.
-        var y = height*0.72;
+        var y = this.height*0.72;
          var total = 0;
          var len = str.length;
          var mag = this.normalizedFontSize / 25.0;
@@ -180,22 +165,22 @@
          // 1st quadrant
          if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
              tx = 0;
-             ty = -Math.sin(this.angle) * width;
+             ty = -Math.sin(this.angle) * this.width;
          }
          // 4th quadrant
          else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
-             tx = Math.sin(this.angle) * height;
+             tx = Math.sin(this.angle) * this.height;
              ty = 0;
          }
          // 2nd quadrant
          else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
-             tx = -Math.cos(this.angle) * width;
-             ty = -Math.sin(this.angle) * width - Math.cos(this.angle) * height;
+             tx = -Math.cos(this.angle) * this.width;
+             ty = -Math.sin(this.angle) * this.width - Math.cos(this.angle) * this.height;
          }
          // 3rd quadrant
          else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
-             tx = Math.sin(this.angle) * height - Math.cos(this.angle)*width;
-             ty = -Math.cos(this.angle) * height;
+             tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
+             ty = -Math.cos(this.angle) * this.height;
          }
          
          ctx.strokeStyle = this.strokeStyle;
@@ -348,7 +333,7 @@
     {
         var x = 0;
         // leave room at bottom for descenders.
-        var y = height*0.72;
+        var y = this.height*0.72;
         //var y = 12;
 
          ctx.save();
@@ -357,22 +342,22 @@
          // 1st quadrant
          if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
              tx = 0;
-             ty = -Math.sin(this.angle) * width;
+             ty = -Math.sin(this.angle) * this.width;
          }
          // 4th quadrant
          else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
-             tx = Math.sin(this.angle) * height;
+             tx = Math.sin(this.angle) * this.height;
              ty = 0;
          }
          // 2nd quadrant
          else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
-             tx = -Math.cos(this.angle) * width;
-             ty = -Math.sin(this.angle) * width - Math.cos(this.angle) * height;
+             tx = -Math.cos(this.angle) * this.width;
+             ty = -Math.sin(this.angle) * this.width - Math.cos(this.angle) * this.height;
          }
          // 3rd quadrant
          else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
-             tx = Math.sin(this.angle) * height - Math.cos(this.angle)*width;
-             ty = -Math.cos(this.angle) * height;
+             tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
+             ty = -Math.cos(this.angle) * this.height;
          }
          
          ctx.fillStyle = this.strokeStyle;
