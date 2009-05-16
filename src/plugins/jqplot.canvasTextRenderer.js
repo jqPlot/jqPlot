@@ -1,12 +1,42 @@
-(function($) {
+(function($) {    
+    // This code is a modified version of the canvastext.js code, copyright below:
+    //
+    // This code is released to the public domain by Jim Studt, 2007.
+    // He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/
+    //
+    $.jqplot.CanvasTextRenderer = function(options){
+        this.fontStyle = 'normal';  // normal, italic, oblique
+        this.fontVariant = 'normal';    // normal, small caps
+        this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
+        this.fontSize = '12pt'; 
+        this.fontFamily = 'sans-serif';
+        this.fontStretch = 1.0;
+        this.strokeStyle = '#444444';
+        this.angle = 0;
+        this.textAlign = 'start';
+        this.textBaseline = 'alphabetic';
+        this.text;
+        this.width;
+        this.height;
+        this.pt2px = 1.28;
+
+        $.extend(true, this, options);
+        this.normalizedFontSize = this.normalizeFontSize(this.fontSize);
+        this.setHeight();
+    };
     
-    var pt2px = 1.28
+    $.jqplot.CanvasTextRenderer.prototype.init = function(options) {
+        $.extend(true, this, options);
+        this.normalizedFontSize = this.normalizeFontSize(this.fontSize);
+        this.setHeight();
+    };
+    
     // convert css spec into point size
-    function normalizeFontSize(sz) {
+    $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
         sz = String(sz);
         n = parseFloat(sz);
         if (sz.indexOf('px') > -1) {
-            return n/pt2px;
+            return n/this.pt2px;
         }
         else if (sz.indexOf('pt') > -1) {
             return n;
@@ -19,11 +49,12 @@
         }
         // default to pixels;
         else {
-            return n/pt2px;
+            return n/this.pt2px;
         }
-    }
+    };
     
-    function fontWeight2Float(w) {
+    
+    $.jqplot.CanvasTextRenderer.prototype.fontWeight2Float = function(w) {
         // w = normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
         // return values adjusted for Hershey font.
         if (Number(w)) {
@@ -48,37 +79,6 @@
                     break;
              }   
         }
-    }
-    
-    // This code is a modified version of the canvastext.js code, copyright below:
-    //
-    // This code is released to the public domain by Jim Studt, 2007.
-    // He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/
-    //
-    $.jqplot.CanvasTextRenderer = function(options){
-        this.fontStyle = 'normal';  // normal, italic, oblique
-        this.fontVariant = 'normal';    // normal, small caps
-        this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
-        this.fontSize = '12pt'; 
-        this.fontFamily = 'sans-serif';
-        this.fontStretch = 1.0;
-        this.strokeStyle = '#444444';
-        this.angle = 0;
-        this.textAlign = 'start';
-        this.textBaseline = 'alphabetic';
-        this.text;
-        this.width;
-        this.height;
-
-        $.extend(true, this, options);
-        this.normalizedFontSize = normalizeFontSize(this.fontSize);
-        this.setHeight();
-    };
-    
-    $.jqplot.CanvasTextRenderer.prototype.init = function(options) {
-        $.extend(true, this, options);
-        this.normalizedFontSize = normalizeFontSize(this.fontSize);
-        this.setHeight();
     };
     
     $.jqplot.CanvasTextRenderer.prototype.getText = function() {
@@ -115,7 +115,7 @@
     $.jqplot.CanvasTextRenderer.prototype.setHeight = function(w) {
         if (!w) {
             //height = this.fontSize /0.75;
-            this.height = this.normalizedFontSize * pt2px;
+            this.height = this.normalizedFontSize * this.pt2px;
         }
         else {
             this.height = w;   
@@ -188,10 +188,10 @@
          ctx.translate(tx, ty);
          ctx.rotate(this.angle);
          ctx.lineCap = "round";
-         ctx.lineWidth = 2.0 * mag * fontWeight2Float(this.fontWeight);
+         ctx.lineWidth = 2.0 * mag * this.fontWeight2Float(this.fontWeight);
          //ctx.strokeRect(0,0,width, height);
          
-         for ( i = 0; i < len; i++) {
+         for ( var i = 0; i < len; i++) {
             var c = this.letter( str.charAt(i));
             if ( !c) continue;
 
@@ -199,7 +199,7 @@
 
             var penUp = 1;
             var needStroke = 0;
-            for ( j = 0; j < c.points.length; j++) {
+            for ( var j = 0; j < c.points.length; j++) {
               var a = c.points[j];
               if ( a[0] == -1 && a[1] == -1) {
                   penUp = 1;

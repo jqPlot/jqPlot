@@ -233,8 +233,8 @@
         
     };
     
-    Axis.prototype.draw = function() {
-        return this.renderer.draw.call(this);
+    Axis.prototype.draw = function(ctx) {
+        return this.renderer.draw.call(this, ctx);
     };
     
     Axis.prototype.set = function() {
@@ -667,6 +667,7 @@
         // prop: legend
         // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
+        this.baseCanvas = new $.jqplot.GenericCanvas();
         this.seriesCanvas = new $.jqplot.GenericCanvas();
         this.eventCanvas = new $.jqplot.GenericCanvas();
         this._width = null;
@@ -736,6 +737,7 @@
             this._plotDimensions.width = this._width;
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
+            this.baseCanvas._plotDimensions = this._plotDimensions;
             this.seriesCanvas._plotDimensions = this._plotDimensions;
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
@@ -811,7 +813,7 @@
                 }    
             }
                 
-            function normalizeData(data) {
+            var normalizeData = function(data) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
@@ -901,10 +903,13 @@
             for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
                 $.jqplot.preDrawHooks[i].call(this);
             }
+            // create an underlying canvas to be used for special features.
+            this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas'));
+            var bctx = this.baseCanvas.setContext();
             this.target.append(this.title.draw());
             this.title.pack({top:0, left:0});
             for (var name in this.axes) {
-                this.target.append(this.axes[name].draw());
+                this.target.append(this.axes[name].draw(bctx));
                 this.axes[name].set();
             }
             if (this.axes.yaxis.show) {
@@ -926,9 +931,9 @@
                 this._gridPadding.bottom = this.axes.xaxis.getHeight();
             }
             
+            this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
             this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
-            this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
             this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
             this.target.append(this.grid.createElement(this._gridPadding));

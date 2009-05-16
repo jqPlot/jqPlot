@@ -100,4 +100,7 @@
             return String(val);
         }
     };
+    
+    $.jqplot.AxisTickRenderer.prototype.pack = function() {
+    };
 })(jQuery);

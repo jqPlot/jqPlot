@@ -5,6 +5,7 @@
         // Group: Properties
         // have to provide our own element container attributes.
         this._elem;
+        this._ctx;
         this._plotWidth;
         this._plotHeight;
         this._plotDimensions = {height:null, width:null};
@@ -43,7 +44,7 @@
         this.formatString = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
-        this.fontFamily = 'Hershey';
+        this.fontFamily = 'Arial';
         // prop: fontSize
         // integer font size in points.
         this.fontSize = 12;
@@ -60,11 +61,15 @@
         
         var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
         
-        if (true) {
+        if ($.browser.safari && $.browser.version >= 528.16) {
             this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
         }
+        else if ($.browser.mozilla && $.browser.version == '1.9.1') {
+            this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+        }
+            
         else {
-            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts);   
+            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
         }
     };
     
@@ -117,12 +122,13 @@
         return this;
     };
     
-    $.jqplot.CanvasAxisTickRenderer.prototype.draw = function() {
+    $.jqplot.CanvasAxisTickRenderer.prototype.draw = function(ctx) {
         if (!this.label) {
         	this.label = this.formatter(this.formatString, this.value);
         }
+        // create a canvas here, but can't draw on it untill it is appended
+        // to dom for IE compatability.
         var domelem = document.createElement('canvas');
-        var ctx = domelem.getContext("2d");
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
         }
@@ -134,20 +140,28 @@
         var h = this.getHeight(ctx);
         domelem.width = w;
         domelem.height = h;
-        console.log('width: %s, height: %s', w, h);
+        domelem.style.width = w;
+        domelem.style.height = h;
+        domelem.style.textAlign = 'left';
 		this._domelem = domelem;
         this._elem = $(domelem);
         this._elem.css(this._styles);
+        this._elem.addClass('jqplot-axis-tick');
+        //this._ctx = ctx;
         // this._elem.css('width', w);
         // this._elem.css('height', h);
         //var cstr = '.jqplot-axis-tick';
         //console.log('axis: %s, cstr: %s, style: %s', this.axis, cstr, $(cstr).css('font-weight'));
         //this._elem.css('border', '1px dotted #dd99bb');
-        this._textRenderer.draw(ctx, this.label);
-        //ctx.drawText(0, h-h*7/25, this.label);
 
-        this._elem.addClass('jqplot-axis-tick');
+	    //this._textRenderer.draw(ctx, this.label);
         
         return this._elem;
-    };    
+    };
+    
+    $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
+    	var ctx = this._elem.get(0).getContext("2d");
+    	this._textRenderer.draw(ctx, this.label);
+    };
+    
 })(jQuery);

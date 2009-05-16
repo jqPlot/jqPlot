@@ -41,7 +41,7 @@
     };
     
 
-    $.jqplot.LinearAxisRenderer.prototype.draw = function() {
+    $.jqplot.LinearAxisRenderer.prototype.draw = function(ctx) {
         if (this.show) {
             // populate the axis label and value properties.
             this.renderer.createTicks.call(this);
@@ -58,8 +58,7 @@
                 for (var i=0; i<t.length; i++) {
                     var tick = t[i];
                     if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw();
-                        //var elem = $(frag).appendTo(axis._elem).get(0);
+                        var elem = tick.draw(ctx);
                         elem.appendTo(this._elem);
                     }
                 }
@@ -275,6 +274,7 @@
                         var shim = t.getWidth()/2;
                         var val = this.u2p(t.value) - shim + 'px';
                         t._elem.css('left', val);
+                        t.pack();
                     }
                 }
             }
@@ -285,6 +285,7 @@
                         var shim = t.getHeight()/2;
                         var val = this.u2p(t.value) - shim + 'px';
                         t._elem.css('top', val);
+                        t.pack();
                     }
                 }
             }
