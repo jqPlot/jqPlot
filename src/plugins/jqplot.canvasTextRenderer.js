@@ -145,7 +145,9 @@
  
         for ( i = 0; i < len; i++) {
         	var c = this.letter(str.charAt(i));
-        	if (c) total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
+        	if (c) {
+        	    total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
+            }
         }
         return total;
     };
@@ -193,7 +195,9 @@
          
          for ( var i = 0; i < len; i++) {
             var c = this.letter( str.charAt(i));
-            if ( !c) continue;
+            if ( !c) {
+                continue;
+            }
 
             ctx.beginPath();
 

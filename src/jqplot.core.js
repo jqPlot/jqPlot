@@ -832,7 +832,7 @@
                     $.extend(true, temp, data);
                 }
                 return temp;
-            }
+            };
 
             for (var i=0; i<this.data.length; i++) { 
                 var temp = new Series();
