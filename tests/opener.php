@@ -26,6 +26,8 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
   <!-- END: load jqplot -->
 
   <link rel="stylesheet" type="text/css" href="unittests.css" />

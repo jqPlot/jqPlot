@@ -47,22 +47,23 @@
         this.fontFamily = 'sans-serif';
         // prop: fontSize
         // integer font size in points.
-        this.fontSize = 12;
-        this.fontWeight = 1.0;
+        this.fontSize = '10px';
+        this.fontWeight = 'normal';
         this.fontStretch = 1.0;
         // prop: textColor
         // css spec for the color attribute.
-        this.textColor = '#444444';
+        this.textColor = '#000000';
         // prop: angle
         // angle of text, measured clockwise from x axis.
         this.angle = 0;
         
         $.extend(true, this, options);
         
-        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
+        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
         
         if ($.browser.safari && $.browser.version >= 528.16) {
             this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
         }
         else if ($.browser.mozilla) {
             var p = $.browser.version.split(".");
@@ -81,7 +82,7 @@
     
     $.jqplot.CanvasAxisTickRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, strokeStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
+        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
     };
     
     // return width along the x axis

@@ -8,10 +8,10 @@
         this.fontStyle = 'normal';  // normal, italic, oblique
         this.fontVariant = 'normal';    // normal, small caps
         this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
-        this.fontSize = '12pt'; 
+        this.fontSize = '10px'; 
         this.fontFamily = 'sans-serif';
         this.fontStretch = 1.0;
-        this.strokeStyle = '#444444';
+        this.fillStyle = '#000000';
         this.angle = 0;
         this.textAlign = 'start';
         this.textBaseline = 'alphabetic';
@@ -183,7 +183,7 @@
              ty = -Math.cos(this.angle) * this.height;
          }
          
-         ctx.strokeStyle = this.strokeStyle;
+         ctx.strokeStyle = this.fillStyle;
          ctx.fillStyle = this.fillStyle;
          ctx.translate(tx, ty);
          ctx.rotate(this.angle);
@@ -247,7 +247,7 @@
          '8': { width: 20, points: [[8,21],[5,20],[4,18],[4,16],[5,14],[7,13],[11,12],[14,11],[16,9],[17,7],[17,4],[16,2],[15,1],[12,0],[8,0],[5,1],[4,2],[3,4],[3,7],[4,9],[6,11],[9,12],[13,13],[15,14],[16,16],[16,18],[15,20],[12,21],[8,21]] },
          '9': { width: 20, points: [[16,14],[15,11],[13,9],[10,8],[9,8],[6,9],[4,11],[3,14],[3,15],[4,18],[6,20],[9,21],[10,21],[13,20],[15,18],[16,14],[16,9],[15,4],[13,1],[10,0],[8,0],[5,1],[4,3]] },
          ':': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[5,2],[4,1],[5,0],[6,1],[5,2]] },
-         ',': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
+         ';': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
          '<': { width: 24, points: [[20,18],[4,9],[20,0]] },
          '=': { width: 26, points: [[4,12],[22,12],[-1,-1],[4,6],[22,6]] },
          '>': { width: 24, points: [[4,18],[20,9],[4,0]] },
@@ -365,7 +365,7 @@
              tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
              ty = -Math.cos(this.angle) * this.height;
          }
-         ctx.fillStyle = this.strokeStyle;
+         ctx.fillStyle = this.fillStyle;
         // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
         var fstyle = this.fontSize+' '+this.fontFamily;
          ctx.font = fstyle;

@@ -4,8 +4,8 @@
       'dateAxisTests.php' => 'Date Axes', 
       'CategoryAxisTests.php' => 'Category Axes', 
       'barRendererTests.php' => 'Bar Plots');
-  $pages = array('coretests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php');
-  $labels = array('Core', 'Log Axes', 'Date Axes', 'Category Axes', 'Bar Plots');
+  $pages = array('coretests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'canvasAxisTests.php');
+  $labels = array('Core', 'Log Axes', 'Date Axes', 'Category Axes', 'Bar Plots', 'Rotated Text');
       
       $len = count($pages);
       $parts = explode("/", $_SERVER["REQUEST_URI"]);
