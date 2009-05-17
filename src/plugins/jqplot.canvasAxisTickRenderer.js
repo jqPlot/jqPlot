@@ -44,7 +44,7 @@
         this.formatString = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
-        this.fontFamily = 'Arial';
+        this.fontFamily = 'sans-serif';
         // prop: fontSize
         // integer font size in points.
         this.fontSize = 12;
@@ -64,8 +64,14 @@
         if ($.browser.safari && $.browser.version >= 528.16) {
             this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
         }
-        else if ($.browser.mozilla && $.browser.version == '1.9.1') {
-            this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+        else if ($.browser.mozilla) {
+            var p = $.browser.version.split(".");
+            if (p[0] > 1 || p[0] == 1 && (p[1] > 9 || (p[1] == 9 && p[2] > 0))) {
+                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+            }
+            else {
+                this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts);
+            }
         }
             
         else {

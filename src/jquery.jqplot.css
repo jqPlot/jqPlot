@@ -23,7 +23,7 @@
     /* initial position untill tick is drawn in proper place */
     left: 15px;
     padding-top: 10px;
-    text-align: top;
+    vertical-align: top;
 }
 
 .jqplot-x2axis > .jqplot-axis-tick {
@@ -32,7 +32,7 @@
     /* initial position untill tick is drawn in proper place */
     left: 15px;
     padding-bottom: 10px;
-    text-align: bottom;
+    vertical-align: bottom;
 }
 
 .jqplot-yaxis > .jqplot-axis-tick {

@@ -326,7 +326,13 @@
 
     $.jqplot.CanvasFontRenderer.prototype.measure = function(ctx, str)
     {
-        return ctx.measureText(str).width;
+        // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
+        var fstyle = this.fontSize+' '+this.fontFamily;
+        ctx.save();
+        ctx.font = fstyle;
+        var w = ctx.measureText(str).width;
+        ctx.restore();
+        return w;
     };
 
     $.jqplot.CanvasFontRenderer.prototype.draw = function(ctx, str)
@@ -359,13 +365,14 @@
              tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
              ty = -Math.cos(this.angle) * this.height;
          }
-         
          ctx.fillStyle = this.strokeStyle;
-         ctx.font = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontStyle+' '+this.fontFamily;
-         //ctx.translate(tx, ty);
+        // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
+        var fstyle = this.fontSize+' '+this.fontFamily;
+         ctx.font = fstyle;
+         // ctx.font = 'bold 12px Arial';
+         ctx.translate(tx, ty);
          ctx.rotate(this.angle);
-         ctx.fillText(str, x+tx, y+ty);
-         // ctx.font = 'bold 14px Arial';
+         ctx.fillText(str, x, y);
          // ctx.textAlign = 'center';
          // ctx.textBaseline = 'middle';
          // ctx.strokeStyle = '#992244';
