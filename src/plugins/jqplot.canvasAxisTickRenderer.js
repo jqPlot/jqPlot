@@ -153,7 +153,7 @@
 		this._domelem = domelem;
         this._elem = $(domelem);
         this._elem.css(this._styles);
-        this._elem.addClass('jqplot-axis-tick');
+        this._elem.addClass('jqplot-'+this.axis+'-tick');
         //this._ctx = ctx;
         // this._elem.css('width', w);
         // this._elem.css('height', h);
