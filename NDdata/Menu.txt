@@ -45,13 +45,15 @@ Link: Unit Tests &amp; Examples  (../../tests/)
 
 Group: Default Renderers  {
 
-   File: AxisTickRenderer  (jqplot.axisTickRenderer.js)
-   File: CanvasGridRenderer  (jqplot.canvasGridRenderer.js)
-   File: DivTitleRenderer  (jqplot.divTitleRenderer.js)
-   File: LinearAxisRenderer  (jqplot.linearAxisRenderer.js)
-   File: MarkerRenderer  (jqplot.markerRenderer.js)
+   File: $.jqplot.AxisTickRenderer  (jqplot.axisTickRenderer.js)
+   File: $.jqplot.CanvasGridRenderer  (jqplot.canvasGridRenderer.js)
+   File: $.jqplot.DivTitleRenderer  (jqplot.divTitleRenderer.js)
+   File: $.jqplot.LinearAxisRenderer  (jqplot.linearAxisRenderer.js)
+   File: $.jqplot.MarkerRenderer  (jqplot.markerRenderer.js)
    File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
    File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
+   File: GNU GENERAL PUBLIC LICENSE  (gpl-2.0.txt)
+   File: MIT License  (MIT-LICENSE.txt)
    }  # Group: Default Renderers
 
 Group: Plugin Renderers  {
@@ -59,6 +61,8 @@ Group: Plugin Renderers  {
    File: LogAxisRenderer  (plugins/jqplot.logAxisRenderer.js)
    File: CategoryAxisRenderer  (plugins/jqplot.categoryAxisRenderer.js)
    File: DateAxisRenderer  (plugins/jqplot.dateAxisRenderer.js)
+   File: CanvasAxisTickRenderer  (plugins/jqplot.canvasAxisTickRenderer.js)
+   File: CanvasLinearAxisRenderer  (plugins/jqplot.canvasLinearAxisRenderer.js)
    }  # Group: Plugin Renderers
 
 Group: Index  {

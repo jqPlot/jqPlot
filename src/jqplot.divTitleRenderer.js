@@ -1,3 +1,7 @@
+/**
+* Copyright (c) 2009 Chris Leonello
+* This software is licensed under the GPL version 2.0 and MIT licenses.
+*/
 (function($) {
     // Class: $.jqplot.DivTitleRenderer
     // The default title renderer for jqPlot.  This class has no options beyond the <Title> class. 

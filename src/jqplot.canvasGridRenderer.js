@@ -1,3 +1,7 @@
+/**
+* Copyright (c) 2009 Chris Leonello
+* This software is licensed under the GPL version 2.0 and MIT licenses.
+*/
 (function($) {     
     // class: $.jqplot.CanvasGridRenderer
     // The default jqPlot grid renderer, creating a grid on a canvas element.

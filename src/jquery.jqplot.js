@@ -1,6 +1,11 @@
-// This is a bootstrap loader for using the source distribution of jqPlot.
-// Unless you are doing development, you probably want one of the prepackaged distributions.
-// You could also load all of the source files separately.
+/**
+* Copyright (c) 2009 Chris Leonello
+* This software is licensed under the GPL version 2.0 and MIT licenses.
+*
+* This is a bootstrap loader for using the source distribution of jqPlot.
+* Unless you are doing development, you probably want one of the prepackaged distributions.
+* You could also load all of the source files separately.
+*/
 (function(){
 	var getRootNode = function(){
 		// figure out the path to this loader

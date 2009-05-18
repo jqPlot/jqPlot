@@ -12,6 +12,7 @@
 	  <!-- misc. properties -->
     <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.2.jar" />
 	  <loadfile description="Version to build" property="version" srcfile="version.txt" />
+	  <loadfile description="Copyright and license" property="copyright" srcfile="copyright.txt" />
 	  <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
 
     <!-- MAIN -->
@@ -38,7 +39,7 @@
         </copy>
                 
         <!-- remove appropriate opening and closing of closures -->
-        <replaceregexp match="\(function\(\$\) \{" replace="">
+        <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
             <exclude name="jqplot.core.js" />
