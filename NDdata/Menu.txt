@@ -40,9 +40,7 @@ Timestamp: Updated month day, year
 
 File: jqPlot  (no auto-title, jqplot.core.js)
 File: Usage  (no auto-title, usage.txt)
-Link: Unit Tests &amp; Examples  (no auto-title,../../tests/)
-File: GPL License  (no auto-title, gpl-2.0.txt)
-File: MIT License  (no auto-title, MIT-LICENSE.txt)
+Link: Unit Tests &amp; Examples  (../../tests/)
 
 Group: Core Renderers  {
 
@@ -68,6 +66,9 @@ Group: Plugins  {
    File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
    File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
    }  # Group: Plugins
+
+File: GPL License  (no auto-title, gpl-2.0.txt)
+File: MIT License  (no auto-title, MIT-LICENSE.txt)
 
 Group: Index  {
 
