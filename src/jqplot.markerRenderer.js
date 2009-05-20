@@ -6,6 +6,8 @@
 	// class: $.jqplot.MarkerRenderer
 	// The default jqPlot marker renderer, rendering the points on the line.
     $.jqplot.MarkerRenderer = function(options){
+        // Group: Properties
+        
         // prop: show
         // wether or not to show the marker.
         this.show = true;
@@ -36,7 +38,11 @@
         // prop: shadowAlpha
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.07';
+        // prop: shadowRenderer
+        // Renderer that will draws the shadows on the marker.
         this.shadowRenderer = new $.jqplot.ShadowRenderer();
+        // prop: shapeRenderer
+        // Renderer that will draw the marker.
         this.shapeRenderer = new $.jqplot.ShapeRenderer();
         
         $.extend(true, this, options);

@@ -1,48 +1,52 @@
-/* *
-* Title: jqPlot Graphs
-* 
-* Pure JavaScript plotting library for jQuery.
-* 
-* About: Version
-*
-* @VERSION 
-* 
-* About: Copyright & License
-* 
-* Copyright (c) 2009 Chris Leonello.  This software is licensed under the GPL version 2.0 and MIT licenses.
-* See <gpl-2.0.txt> and <MIT-LICENSE.txt> contained within this
-* distribution for further information.
-*
-* About: Introduction
-* 
-* jqPlot can be customized by overriding the defaults of any of the objects which make
-* up the plot.  The general usage of jqplot is:
-* 
-* > chart = $.jqplot('targetElemId', [dataArray,...], {optionsObject});
-* 
-* The optionsObject corresponds to an properties on a <jqPlot> instance, so customization
-* may look like this:
-* 
-* > chart = $.jqplot('targetElemId', [dataArray, ...], {title:'My Plot', axes:{xaxis:{min:0, max:10}}});
-*
-* For more inforrmation, see <jqPlot Usage>.
-*
-* About: Usage
-*
-* See <jqPlot Usage>
-* 
-* */
+/**
+ * Title: jqPlot
+ * 
+ * Pure JavaScript plotting library for jQuery.
+ * 
+ * About: Version
+ * 
+ * @VERSION 
+ * 
+ * About: Copyright & License
+ * 
+ * Copyright (c) 2009 Chris Leonello.  This software is licensed under the GPL version 2.0 and MIT licenses.
+ * See <GPL Version 2> and <MIT License> contained within this
+ * distribution for further information.
+ * 
+ * About: Introduction
+ * 
+ * jqPlot can be customized by overriding the defaults of any of the objects which make
+ * up the plot.  The general usage of jqplot is:
+ * 
+ * > chart = $.jqplot('targetElemId', [dataArray,...], {optionsObject});
+ * 
+ * The optionsObject corresponds to an properties on a <jqPlot> instance, so customization
+ * may look like this:
+ * 
+ * > chart = $.jqplot('targetElemId', [dataArray, ...], {title:'My Plot', axes:{xaxis:{min:0, max:10}}});
+ * 
+ * For more inforrmation, see <jqPlot Usage>.
+ * 
+ * About: Usage
+ * 
+ * See <jqPlot Usage>
+ * 
+**/
 
 (function($) {
     // make sure undefined is undefined
     var undefined;
-    // Class: $.jqplot
-    // jQuery function called by the user to create a plot.
-    //
-    // Parameters:
-    // target - ID of target element to render the plot into.
-    // data - an array of data series.
-    // options - user defined options object.  See the individual classes for available options.
+
+    /**
+     * Class: $.jqplot
+     * jQuery function called by the user to create a plot.
+     *  
+     * Parameters:
+     * target - ID of target element to render the plot into.
+     * data - an array of data series.
+     * options - user defined options object.  See the individual classes for available options.
+     */
+
     $.jqplot = function(target, data, options) {
         var _data, _options;
         
@@ -135,13 +139,15 @@
     };
     
 
-    // Class: Axis
-    // An individual axis object.  Cannot be instantiated directly, but created
-    // by the Plot oject.  Axis properties can be set or overriden by the 
-    // options passed in from the user.
-    // 
-    // Parameters:
-    //     name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
+    /**
+     * Class: Axis
+     * An individual axis object.  Cannot be instantiated directly, but created
+     * by the Plot oject.  Axis properties can be set or overriden by the 
+     * options passed in from the user.
+     * 
+     * Parameters:
+     * name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
+     */
     function Axis(name) {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
@@ -227,10 +233,12 @@
         }
     };
 
-    // Class: Legend
-    // Legend object.  Cannot be instantiated directly, but created
-    // by the Plot oject.  Legend properties can be set or overriden by the 
-    // options passed in from the user.
+    /**
+     * Class: Legend
+     * Legend object.  Cannot be instantiated directly, but created
+     * by the Plot oject.  Legend properties can be set or overriden by the 
+     * options passed in from the user.
+     */
     function Legend() {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
@@ -298,13 +306,15 @@
         //
     };
 
-    // Class: Title
-    // Plot Title object.  Cannot be instantiated directly, but created
-    // by the Plot oject.  Title properties can be set or overriden by the 
-    // options passed in from the user.
-    // 
-    // Parameters:
-    //     text - text of the title.
+    /**
+     * Class: Title
+     * Plot Title object.  Cannot be instantiated directly, but created
+     * by the Plot oject.  Title properties can be set or overriden by the 
+     * options passed in from the user.
+     * 
+     * Parameters:
+     * text - text of the title.
+     */
     function Title(text) {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
@@ -353,10 +363,12 @@
     };
 
 
-    // Class: Series
-    // An individual data series object.  Cannot be instantiated directly, but created
-    // by the Plot oject.  Series properties can be set or overriden by the 
-    // options passed in from the user.
+    /**
+     * Class: Series
+     * An individual data series object.  Cannot be instantiated directly, but created
+     * by the Plot oject.  Series properties can be set or overriden by the 
+     * options passed in from the user.
+     */
     function Series() {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
@@ -484,15 +496,16 @@
     };
     
 
-    /* 
-        Class: Grid
-        
-        Object representing the grid on which the plot is drawn.  The grid in this
-        context is the area bounded by the axes, the area which will contain the series.
-        Note, the series are drawn on their own canvas.
-        The Grid object cannot be instantiated directly, but is created by the Plot oject.  
-        Grid properties can be set or overriden by the options passed in from the user.
-    */
+
+    /**
+     * Class: Grid
+     * 
+     * Object representing the grid on which the plot is drawn.  The grid in this
+     * context is the area bounded by the axes, the area which will contain the series.
+     * Note, the series are drawn on their own canvas.
+     * The Grid object cannot be instantiated directly, but is created by the Plot oject.  
+     * Grid properties can be set or overriden by the options passed in from the user.
+     */
     function Grid() {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
@@ -601,9 +614,11 @@
         return this._ctx;
     };
 
-    // Class: jqPlot
-    // Plot object returned to call to $.jqplot.  Handles parsing user options,
-    // creating sub objects (Axes, legend, title, series) and rendering the plot.
+    /**
+     * Class: jqPlot
+     * Plot object returned to call to $.jqplot.  Handles parsing user options,
+     * creating sub objects (Axes, legend, title, series) and rendering the plot.
+     */
     function jqPlot() {
         // Group: Properties
         
@@ -616,11 +631,12 @@
         this.targetId = null;
         // the jquery object for the dom target.
         this.target = null; 
-        // prop: default
+        // prop: defaults
         // Default options.  Any of these can be specified individually and be applied
         // to all objects of the type.  A quick way to override all axes or series options.   
         // 
         // Properties
+        //
         // axesDefaults - defaults applied to all axes.
         // axes - axis by axis defaults.  Include all 4 axes, even if they are empty.
         // seriesDefaults - deraults applied to all series.
@@ -639,10 +655,10 @@
         this.series = [];
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
-        // see <$.jqplot.LinearAxisRenderer>
+        // See <Axis> for axis specific options.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
         // prop: grid
-        // see <$.jqplot.canvasGridRenderer>
+        // See <Grid> for grid specific options.
         this.grid = new Grid();
         // prop: legend
         // see <$.jqplot.TableLegendRenderer>
@@ -663,7 +679,7 @@
         // prop: seriesColors
         // default colors for the series.#c29549
         this.seriesColors = [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12", "#953579"];
-        this._seriesColorsIndex = 0;
+        var seriesColorsIndex = 0;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
         this.textColor;
@@ -677,6 +693,7 @@
         this.title = new Title();
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
+        // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
             
         this.init = function(target, data, options) {
@@ -769,8 +786,8 @@
         };  
         
         this.getNextSeriesColor = function() {
-            var c = this.seriesColors[this._seriesColorsIndex];
-            this._seriesColorsIndex++;
+            var c = this.seriesColors[seriesColorsIndex];
+            seriesColorsIndex++;
             return c;
         };
     

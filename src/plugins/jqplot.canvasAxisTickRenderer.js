@@ -3,16 +3,12 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
-    // class: $.jqplot.CanvasAxisTickRenderer
-    // A "tick" object showing the value of a tick/gridline on the plot.
+    /**
+    *  Class: $.jqplot.CanvasAxisTickRenderer
+    *  A tick renderer supporting rotated text by drawing text onto a canvas element.
+    */
     $.jqplot.CanvasAxisTickRenderer = function(options) {
         // Group: Properties
-        // have to provide our own element container attributes.
-        this._elem;
-        this._ctx;
-        this._plotWidth;
-        this._plotHeight;
-        this._plotDimensions = {height:null, width:null};
         
         // prop: mark
         // tick mark on the axis.  One of 'inside', 'outside', 'cross', '' or null.
@@ -26,7 +22,9 @@
         // prop: isMinorTick
         // if this is a minor tick.
         this.isMinorTick = false;
-        this.size = 4;
+        // prop: angle
+        // angle of text, measured clockwise from x axis.
+        this.angle = 0;
         // prop:  markSize
         // Length of the tick marks in pixels.  For 'cross' style, length
         // will be stoked above and below axis, so total length will be twice this.
@@ -41,7 +39,8 @@
         this.value = null;
         this._styles = {};
         // prop: formatter
-        // A class of a formatter for the tick text.  sprintf by default.
+        // A class of a formatter for the tick text.
+        // The default $.jqplot.DefaultTickFormatter uses sprintf.
         this.formatter = $.jqplot.DefaultTickFormatter;
         // prop: formatString
         // string passed to the formatter.
@@ -50,16 +49,24 @@
         // css spec for the font-family css attribute.
         this.fontFamily = 'sans-serif';
         // prop: fontSize
-        // integer font size in points.
+        // CSS spec for font size.
         this.fontSize = '10px';
+        // prop: fontWeight
+        // CSS spec for fontWeight
         this.fontWeight = 'normal';
+        // prop: fontStretch
+        // Multiplier to condense or expand font width.  
+        // Applies only to browsers which don't support canvas native font rendering.
         this.fontStretch = 1.0;
         // prop: textColor
         // css spec for the color attribute.
         this.textColor = '#000000';
-        // prop: angle
-        // angle of text, measured clockwise from x axis.
-        this.angle = 0;
+        
+        this._elem;
+        this._ctx;
+        this._plotWidth;
+        this._plotHeight;
+        this._plotDimensions = {height:null, width:null};
         
         $.extend(true, this, options);
         

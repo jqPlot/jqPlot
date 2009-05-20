@@ -7,16 +7,40 @@
 	$.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
     $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);
 	
+	/**
+	 * Class: $.jqplot.Cursor
+	 * Plugin class representing the cursor as displayed on the plot.
+	 */
 	$.jqplot.Cursor = function(options) {
+	    // Group: Properties
+	    //
+	    // prop: style
+	    // CSS spec for cursor style
 	    this.style = 'crosshair';
 	    this.previousCursor = 'auto';
+	    // prop: show
+	    // wether to show the cursor or not.
 	    this.show = true;
-	    $.extend(true, this, options);
+	    // prop: showTooltip
+	    // show a cursor position tooltip near the cursor
 	    this.showTooltip = false;
+	    // prop: tooltipLocation
+	    // Where to position tooltip relative to cursor.
+	    // One of 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
 	    this.tooltipLocation = 'se';
+	    // prop: tooltipOffset
+	    // Pixel offset of tooltip from the cursor
 	    this.tooltipOffset = 6;
+	    // prop: showTooltipGridPosition
+	    // show the grid pixel coordinates of the mouse.
 	    this.showTooltipGridPosition = false;
+	    // prop: showTooltipUnitPosition
+	    // show the unit (data) coordinates of the mouse.
 	    this.showTooltipUnitPosition = true;
+	    // prop: tooltipAxisGroups
+	    // Show position for the specified axes.
+	    // This is an array like [['xaxis', 'yaxis'], ['xaxis', 'y2axis']]
+	    // Default is to compute automatically for all visible axes.
 	    this.tooltipAxisGroups = [];
 	    this._tooltipElem;
 	    $.extend(true, this, options);

@@ -38,32 +38,36 @@ Timestamp: Updated month day, year
 # --------------------------------------------------------------------------
 
 
-File: jqPlot Graphs  (jqplot.core.js)
+File: jqPlot  (no auto-title, jqplot.core.js)
 File: Usage  (no auto-title, usage.txt)
-File: Examples  (no auto-title, examples.txt)
-Link: Unit Tests &amp; Examples  (../../tests/)
+Link: Unit Tests &amp; Examples  (no auto-title,../../tests/)
+File: GPL License  (no auto-title, gpl-2.0.txt)
+File: MIT License  (no auto-title, MIT-LICENSE.txt)
 
-Group: Default Renderers  {
+Group: Core Renderers  {
 
-   File: $.jqplot.AxisTickRenderer  (jqplot.axisTickRenderer.js)
-   File: $.jqplot.CanvasGridRenderer  (jqplot.canvasGridRenderer.js)
-   File: $.jqplot.DivTitleRenderer  (jqplot.divTitleRenderer.js)
-   File: $.jqplot.LinearAxisRenderer  (jqplot.linearAxisRenderer.js)
-   File: $.jqplot.MarkerRenderer  (jqplot.markerRenderer.js)
+   File: AxisTickRenderer  (no auto-title, jqplot.axisTickRenderer.js)
+   File: CanvasGridRenderer  (no auto-title, jqplot.canvasGridRenderer.js)
+   File: DivTitleRenderer  (no auto-title, jqplot.divTitleRenderer.js)
+   File: LinearAxisRenderer  (no auto-title, jqplot.linearAxisRenderer.js)
+   File: MarkerRenderer  (no auto-title, jqplot.markerRenderer.js)
    File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
    File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
-   File: GNU GENERAL PUBLIC LICENSE  (gpl-2.0.txt)
-   File: MIT License  (MIT-LICENSE.txt)
-   }  # Group: Default Renderers
+   File: LineRenderer  (jqplot.lineRenderer.js)
+   }  # Group: Core Renderers
 
-Group: Plugin Renderers  {
+Group: Plugins  {
 
-   File: LogAxisRenderer  (plugins/jqplot.logAxisRenderer.js)
-   File: CategoryAxisRenderer  (plugins/jqplot.categoryAxisRenderer.js)
-   File: DateAxisRenderer  (plugins/jqplot.dateAxisRenderer.js)
-   File: CanvasAxisTickRenderer  (plugins/jqplot.canvasAxisTickRenderer.js)
-   File: CanvasLinearAxisRenderer  (plugins/jqplot.canvasLinearAxisRenderer.js)
-   }  # Group: Plugin Renderers
+   File: BarRenderer  (no auto-title, plugins/jqplot.barRenderer.js)
+   File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
+   File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
+   File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
+   File: DateAxisRenderer  (no auto-title, plugins/jqplot.dateAxisRenderer.js)
+   File: Dragable  (no auto-title, plugins/jqplot.dragable.js)
+   File: Highlighter  (no auto-title, plugins/jqplot.highlighter.js)
+   File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
+   File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
+   }  # Group: Plugins
 
 Group: Index  {
 

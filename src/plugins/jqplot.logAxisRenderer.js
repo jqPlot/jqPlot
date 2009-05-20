@@ -21,6 +21,7 @@
         // Group: Properties
         //
         // Properties
+        //
         /// base - the logarithmic base, commonly 2, 10 or Math.E
         // tickDistribution - 'even' or 'power'.  'even' gives equal pixel
         // spacing of the ticks on the plot.  'power' gives ticks in powers

@@ -5,7 +5,16 @@
 (function($) {
 	$.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
 	
+	/**
+	 * Class: $.jqplot.Highlighter
+	 * Plugin which will highlight data points when they are moused over.
+	 */
 	$.jqplot.Highlighter = function(options) {
+	    // Group: Properties
+	    
+	    // prop: markerRenderer
+	    // Renderer used to draw the marker of the highlighted point.
+	    // Default is to turn off shadow drawing on the highlighted point.
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
 	    this.isHighlighting = false;
 

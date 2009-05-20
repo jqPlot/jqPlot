@@ -6,14 +6,30 @@
 	// class: $.jqplot.shadowRenderer
 	// The default jqPlot shadow renderer, rendering shadows behind shapes.
     $.jqplot.ShapeRenderer = function(options){
+        
         this.lineWidth = 1.5;
+        // prop: lineJoin
+        // How line segments of the shadow are joined.
         this.lineJoin = 'miter';
+        // prop: lineCap
+        // how ends of the shadow line are rendered.
         this.lineCap = 'round';
+        // prop; closePath
+        // whether line path segment is closed upon itself.
         this.closePath = false;
+        // prop: fill
+        // whether to fill the shape.
         this.fill = false;
+        // prop: isarc
+        // wether the shadow is an arc or not.
         this.isarc = false;
+        // prop: strokeStyle
+        // css color spec for the stoke style
         this.strokeStyle = '#999999';
+        // prop: fillStyle
+        // css color spec for the fill style.
         this.fillStyle = '#999999'; 
+        
         $.extend(true, this, options);
     };
     

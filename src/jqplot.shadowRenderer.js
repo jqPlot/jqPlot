@@ -5,18 +5,40 @@
 (function($) {
 	// class: $.jqplot.shadowRenderer
 	// The default jqPlot shadow renderer, rendering shadows behind shapes.
-    $.jqplot.ShadowRenderer = function(options){
-        // degrees
+    $.jqplot.ShadowRenderer = function(options){ 
+        // Group: Properties
+        
+        // prop: angle
+        // Angle of the shadow in degrees.  Measured counter-clockwise from the x axis.
         this.angle = 45;
+        // prop: offset
+        // Pixel offset at the given shadow angle of each shadow stroke from the last stroke.
         this.offset = 1;
+        // prop: alpha
+        // alpha transparency of shadow stroke.
         this.alpha = 0.07;
+        // prop: lineWidth
+        // width of the shadow line stroke.
         this.lineWidth = 1.5;
+        // prop: lineJoin
+        // How line segments of the shadow are joined.
         this.lineJoin = 'miter';
+        // prop: lineCap
+        // how ends of the shadow line are rendered.
         this.lineCap = 'round';
+        // prop; closePath
+        // whether line path segment is closed upon itself.
         this.closePath = false;
+        // prop: fill
+        // whether to fill the shape.
         this.fill = false;
+        // prop: depth
+        // how many times the shadow is stroked.  Each stroke will be offset by offset at angle degrees.
         this.depth = 3;
+        // prop: isarc
+        // wether the shadow is an arc or not.
         this.isarc = false;
+        
         $.extend(true, this, options);
     };
     

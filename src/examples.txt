@@ -1,3 +1,0 @@
-Title: jqPlot Examples
-
-Examples as well as unit tests can be found here: <../../tests/>

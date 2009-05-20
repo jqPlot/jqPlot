@@ -3,7 +3,16 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
+    
+    /**
+     * Class: $.jqplot.Dragable
+     * Plugin to make plotted points dragable by the user.
+     */
     $.jqplot.Dragable = function(options) {
+        // Group: Properties
+        
+        // prop: markerRenderer
+        // Renderer used to draw the markers of the point being dragged.
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
 	    this.shapeRenderer = new $.jqplot.ShapeRenderer();
 	    this.isDragging = false;
@@ -11,7 +20,12 @@
 	    this._elem;
 	    this._point;
 	    this._gridData;
+	    // prop: color
+	    // CSS color spec for the dragged point (and adjacent line segment or bar).
 	    this.color;
+	    // prop: contstrainTo
+	    // Constrain dragging motion to an axis or to none.
+	    // Allowable values are 'none', 'x', 'y'
 	    this.contstrainTo = 'none';  // 'x', 'y', or 'none';
 
 	    $.extend(true, this, options);

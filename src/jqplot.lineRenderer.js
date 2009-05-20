@@ -3,7 +3,7 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
-    // class $.jqplot.LineRenderer
+    // Class: $.jqplot.LineRenderer
     // The default line renderer for jqPlot, this class has no options beyond the <Series> class.
     // Draws series as a line.
     $.jqplot.LineRenderer = function(){

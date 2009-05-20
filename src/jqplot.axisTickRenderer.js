@@ -20,6 +20,8 @@
         // prop: isMinorTick
         // if this is a minor tick.
         this.isMinorTick = false;
+        // prop: size
+        // Length of the tick beyond the grid in pixels.
         this.size = 4;
         // prop:  markSize
         // Length of the tick marks in pixels.  For 'cross' style, length

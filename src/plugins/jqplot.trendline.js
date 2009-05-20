@@ -4,20 +4,56 @@
 */
 (function($) {
     
+    /**
+     * Class: $.jqplot.Trendline
+     * Plugin which will automatically compute and draw trendlines for plotted data.
+     */
     $.jqplot.Trendline = function() {
+        // Group: Properties
+        
+        // prop: show
+        // Wether or not to show the trend line.
         this.show = true;
+        // prop: color
+        // CSS color spec for the trend line.
+        // By default this wil be the same color as the primary line.
         this.color = '#666666';
-        this.rendererOptions = {marker:{show:false}};
-        this.label = '';
-        this.type = 'linear';
-        // don't rely on series renderer, it may not draw lines.
+        // prop: renderer
+        // Renderer to use to draw the trend line.
+        // The data series that is plotted may not be rendered as a line.
+        // Therefore, we use our own line renderer here to draw a trend line.
         this.renderer = new $.jqplot.LineRenderer();
+        // prop: rendererOptions
+        // Options to pass to the line renderer.
+        // By default, markers are not shown on trend lines.
+        this.rendererOptions = {marker:{show:false}};
+        // prop: label
+        // Label for the trend line to use in the legend.
+        this.label = '';
+        // prop: type
+        // Either 'exponential', 'exp', or 'linear'.
+        this.type = 'linear';
+        // prop: shadow
+        // true or false, wether or not to show the shadow.
         this.shadow = true;
+        // prop: markerRenderer
+        // Renderer to use to draw markers on the line.
+        // I think this is wrong.
         this.markerRenderer = {show:false};
+        // prop: lineWidth
+        // Width of the trend line.
         this.lineWidth = 1.5;
+        // prop: shadowAngle
+        // Angle of the shadow on the trend line.
         this.shadowAngle = 45;
+        // prop: shadowOffset
+        // pixel offset for each stroke of the shadow.
         this.shadowOffset = 1.0;
+        // prop: shadowAlpha
+        // Alpha transparency of the shadow.
         this.shadowAlpha = 0.07;
+        // prop: shadowDepth
+        // number of strokes to make of the shadow.
         this.shadowDepth = 3;
         
     };

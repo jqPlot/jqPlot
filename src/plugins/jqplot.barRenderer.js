@@ -3,11 +3,29 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
-    // class $.jqplot.BarRenderer
-    // The default line renderer for jqPlot, this class has no options beyond the <Series> class.
-    // Draws series as a line.
+    /**
+    *  Class: $.jqplot.BarRenderer
+    *  A plugin renderer for jqPlot to draw a bar plot.
+    *  Draws series as a line.
+    */
     $.jqplot.BarRenderer = function(){
         $.jqplot.LineRenderer.call(this);
+        /**
+        *  Group: Properties
+        *  
+        *  prop: seriesDefaults
+        *  Attributes that will be added to the series object which
+        *  are needed for bar renderering.
+        * 
+        *  Properties
+        * 
+        *  barPadding - Number of pixels between adjacent bars at the same axis value.
+        *  barDirection - 'vertical' = up and down bars, 'horizontal' = side to side bars
+        *  barColor - CSS color spec for the bar
+        *  barWidth - width of the bars.  Auto calculated by default.
+        *  fillBar - wether bars are filled or not.
+        *  prop: barPadding
+        */
         this.seriesDefaults = {
             barPadding : null,
             barMargin : null,
@@ -16,16 +34,6 @@
             barWidth : null,
             fillBar : true
         };
-        // // prop: padding
-        // // Number of pixels between adjacent bars at the same axis value.
-        // this.padding = 0;
-        // // prop: margin
-        // // Number of pixels between bars at adjacent x values.
-        // this.margin = 0;
-        // // prop: direction
-        // // Either 'vertical' or 'horizontal'.  Wether to draw bar from the x axis
-        // // up to the y value of the series or from the y axis across to the x value of the series.
-        // this.direction = 'vertical';
     };
     
     $.jqplot.BarRenderer.prototype = new $.jqplot.LineRenderer();
