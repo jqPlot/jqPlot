@@ -14,8 +14,12 @@
 	    
 	    // prop: markerRenderer
 	    // Renderer used to draw the marker of the highlighted point.
+	    // Renderer will assimilate attributes from the data point being highlighted,
+	    // so no attributes need set on the renderer directly.
 	    // Default is to turn off shadow drawing on the highlighted point.
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+	    this.lineWidthAdjust = 2.5;
+	    this.sizeAdjust = 5;
 	    this.isHighlighting = false;
 
 	    $.extend(true, this, options);
@@ -47,17 +51,19 @@
 	$.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
 	$.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
 	
+	// called with scope of plot
     function draw(plot, neighbor) {
         var hl = plot.plugins.highlighter;
         var s = plot.series[neighbor.seriesIndex];
         var smr = s.markerRenderer;
         var mr = hl.markerRenderer;
         mr.style = smr.style;
-        mr.lineWidth = smr.lineWidth + 2.5;
-        mr.size = smr.size + 5;
+        mr.lineWidth = smr.lineWidth + hl.lineWidthAdjust;
+        mr.size = smr.size + hl.sizeAdjust;
         var rgba = $.jqplot.getColorComponents(smr.color);
-        var alpha = rgba[3] - 0.4;
-        mr.color = 'rgba('+rgba[0]+','+rgba[1]+','+rgba[2]+','+alpha+')';
+        var newrgb = [rgba[0], rgba[1], rgba[2]];
+        var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
+        mr.color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
         mr.init();
         mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], hl.highlightCanvas._ctx);
     }
