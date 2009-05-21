@@ -275,8 +275,8 @@
      *
      * @author Ken Snyder (ken d snyder at gmail dot com)
      * @date 2008-09-10
-     * @version 2.0.2 (
-http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
+     * @version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
+     * @license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
      *
      * @contributions Chris Leonello
      * @comment Bug fix to 12 hour time and additions to handle milliseconds and 
@@ -595,7 +595,6 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
             if (date instanceof Date) {
             	return date;
             }
-            // If the passed value is an integer, interpret it as a unix timestamp
             // if (typeof date == 'number') return new Date(date * 1000);
             // If the passed value is an integer, interpret it as a javascript timestamp
             if (typeof date == 'number') {
@@ -783,7 +782,52 @@ http://kendsnyder.com/sandbox/date/)     * @license Creative Commons Attribution
             else {
                     return str;
             }
-        }
+        },
+        function(str) {
+            var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
+            if (match) {
+                var d = new Date();
+                var y = parseFloat(String(d.getFullYear()).slice(2,4));
+                var cent = parseInt(String(d.getFullYear())/100)*100;
+                var centoffset = 1;
+                var m1 = parseFloat(match[1]);
+                var m3 = parseFloat(match[3]);
+                var ny, nd, nm;
+                if (m1 > 31) { // first number is a year
+                    nd = match[3];
+                    if (m1 < y+centoffset) { // if less than 1 year out, assume it is this century.
+                        ny = cent + m1;
+                    }
+                    else {
+                        ny = cent - 100 + m1;
+                    }
+                }
+                
+                else { // last number is the year
+                    nd = match[1];
+                    if (m3 < y+centoffset) { // if less than 1 year out, assume it is this century.
+                        ny = cent + m3;
+                    }
+                    else {
+                        ny = cent - 100 + m3;
+                    }
+                }
+                
+                var nm = $.inArray(match[2], Date.ABBR_MONTHNAMES);
+                
+                if (nm == -1) {
+                    nm = $.inArray(match[2], Date.MONTHNAMES);
+                }
+            
+                d.setUTCFullYear(ny, nm, nd);
+                d.setUTCHours(0,0,0,0);
+                return d;
+            }
+            
+            else {
+                return str;
+            }
+        }        
     ];
     
     if ($.jqplot.debug) {
