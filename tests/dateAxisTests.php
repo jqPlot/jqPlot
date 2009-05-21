@@ -1,6 +1,8 @@
 <?php
   $title = "jqPlot Date Axis Renderer Plugin";
   $jspec_title = "jqPlot Date Axis Renderer Plugin Tests and Examples";
+  $jqplot_js_includes = array();
+  $jqplot_js_includes[] = "../src/plugins/jqplot.dateAxisRenderer.js";
   require("opener.php");
 ?>  
   <script language="javascript" type="text/javascript">

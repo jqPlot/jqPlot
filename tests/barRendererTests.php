@@ -1,6 +1,9 @@
 <?php
   $title = "jqplot Bar Renderer Plugin";
   $jspec_title = "jqPlot Bar Renderer Tests and Examples";
+  $jqplot_js_includes = array();
+  $jqplot_js_includes[] = "../src/plugins/jqplot.categoryAxisRenderer.js";
+  $jqplot_js_includes[] = "../src/plugins/jqplot.barRenderer.js";
   require("opener.php");
 ?>
   

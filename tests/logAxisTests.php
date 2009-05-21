@@ -1,6 +1,8 @@
 <?php
   $title = "jqPlot Log Axis Renderer Plugin";
   $jspec_title = "jqPlot Log Axis Renderer Plugin Tests and Examples";
+  $jqplot_js_includes = array();
+  $jqplot_js_includes[] = "../src/plugins/jqplot.logAxisRenderer.js";
   require("opener.php");
 ?>
 

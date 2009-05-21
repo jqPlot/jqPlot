@@ -22,12 +22,14 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <?php
+    echo '<!--'.$jqplot_js_includes.'-->';
+    if (count($jqplot_js_includes) > 0) {
+      foreach ($jqplot_js_includes as $ji) {
+        echo '<script language="javascript" type="text/javascript" src="'.$ji.'"></script>';
+      }
+    }
+  ?>
   <!-- END: load jqplot -->
 
   <link rel="stylesheet" type="text/css" href="unittests.css" />

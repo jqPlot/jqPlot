@@ -1,6 +1,7 @@
 <?php
   $title = "jqPlot Core Test and Examples";
   $jspec_title = "jqPlot Core Tests and Examples";
+  $jqplot_js_includes = array();
   require("opener.php");
 ?>
 
