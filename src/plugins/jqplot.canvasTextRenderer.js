@@ -15,7 +15,7 @@
         this.fontSize = '10px'; 
         this.fontFamily = 'sans-serif';
         this.fontStretch = 1.0;
-        this.fillStyle = '#000000';
+        this.fillStyle = '#666666';
         this.angle = 0;
         this.textAlign = 'start';
         this.textBaseline = 'alphabetic';
@@ -36,6 +36,7 @@
     };
     
     // convert css spec into point size
+    // returns float
     $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
         sz = String(sz);
         n = parseFloat(sz);
@@ -194,8 +195,9 @@
          ctx.translate(tx, ty);
          ctx.rotate(this.angle);
          ctx.lineCap = "round";
-         ctx.lineWidth = 2.0 * mag * this.fontWeight2Float(this.fontWeight);
-         //ctx.strokeRect(0,0,width, height);
+         // multiplier was 2.0
+         var fact = (this.normalizedFontSize > 30) ? 2.0 : 2 + (30 - this.normalizedFontSize)/20;
+         ctx.lineWidth = fact * mag * this.fontWeight2Float(this.fontWeight);
          
          for ( var i = 0; i < len; i++) {
             var c = this.letter( str.charAt(i));

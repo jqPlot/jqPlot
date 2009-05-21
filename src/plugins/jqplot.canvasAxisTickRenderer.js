@@ -60,7 +60,7 @@
         this.fontStretch = 1.0;
         // prop: textColor
         // css spec for the color attribute.
-        this.textColor = '#000000';
+        this.textColor = '#666666';
         
         this._elem;
         this._ctx;
