@@ -60,7 +60,7 @@
     plot1 = $.jqplot('chart', [cosPoints, sinPoints, powPoints1, powPoints2], {
         // title: 'jqPlot',
         grid:{background:'#fefbf3', borderWidth:2.5},
-        cursor:{showTooltip:true},
+        cursor:{showTooltip:true, followMouse:true, tooltipLocation:'se', tooltipCSS:{background:'#000000'}},
         axes:{yaxis:{min:-6, max:6, tickOptions:{formatString:'%d'}},
           xaxis:{min:-.5, max:6.5}},
         series: [

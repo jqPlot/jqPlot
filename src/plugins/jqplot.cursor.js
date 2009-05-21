@@ -24,12 +24,18 @@
 	    // prop: showTooltip
 	    // show a cursor position tooltip near the cursor
 	    this.showTooltip = false;
+	    // prop: followMouse
+	    // Tooltip follows the mouse, it is not at a fixed location.
+	    // Tooltip will show on the grid at the location given by
+	    // tooltipLocation, offset from the grid edge by tooltipOffset.
+	    this.followMouse = true;
 	    // prop: tooltipLocation
-	    // Where to position tooltip relative to cursor.
+	    // Where to position tooltip.  If followMouse is true, this is
+	    // relative to the cursor, otherwise, it is relative to the grid.
 	    // One of 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
 	    this.tooltipLocation = 'se';
 	    // prop: tooltipOffset
-	    // Pixel offset of tooltip from the cursor
+	    // Pixel offset of tooltip from the grid boudaries or cursor center.
 	    this.tooltipOffset = 6;
 	    // prop: showTooltipGridPosition
 	    // show the grid pixel coordinates of the mouse.
@@ -99,12 +105,8 @@
 	$.jqplot.preInitHooks.push($.jqplot.Cursor.init);
 	$.jqplot.postDrawHooks.push($.jqplot.Cursor.postDraw);
 	
-	function moveTooltip(gridpos, datapos, plot) {
+	function updateTooltip(gridpos, datapos, plot) {
     	var c = plot.plugins.cursor;
-        var x = gridpos.x + plot._gridPadding.left + c.tooltipOffset;
-        var y = gridpos.y + plot._gridPadding.top + c.tooltipOffset;
-        c._tooltipElem.css('left', x);
-        c._tooltipElem.css('top', y);
         var s = '';
         var addbr = false;
         if (c.showTooltipGridPosition) {
@@ -125,13 +127,121 @@
         c._tooltipElem.html(s);
 	}
 	
+	function moveTooltip(gridpos, plot) {
+    	var c = plot.plugins.cursor;  
+    	var elem = c._tooltipElem;
+        switch (c.tooltipLocation) {
+            case 'nw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - c.tooltipOffset - elem.outerHeight(true);
+                break;
+            case 'n':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - c.tooltipOffset - elem.outerHeight(true);
+                break;
+            case 'ne':
+                var x = gridpos.x + plot._gridPadding.left + c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - c.tooltipOffset - elem.outerHeight(true);
+                break;
+            case 'e':
+                var x = gridpos.x + plot._gridPadding.left + c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                var x = gridpos.x + plot._gridPadding.left + c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top + c.tooltipOffset;
+                break;
+            case 's':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top + c.tooltipOffset;
+                break;
+            case 'sw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top + c.tooltipOffset;
+                break;
+            case 'w':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            default:
+                var x = gridpos.x + plot._gridPadding.left + c.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top + c.tooltipOffset;
+                break;
+        }
+            
+        c._tooltipElem.css('left', x);
+        c._tooltipElem.css('top', y);
+	}
+	
+	function positionTooltip(plot) { 
+	    // fake a grid for positioning
+	    var grid = plot._gridPadding; 
+    	var c = plot.plugins.cursor;
+    	var elem = c._tooltipElem;  
+        switch (c.tooltipLocation) {
+            case 'nw':
+                var a = grid.left + c.tooltipOffset;
+                var b = grid.top + c.tooltipOffset;
+                elem.css('left', a);
+                elem.css('top', b);
+                break;
+            case 'n':
+                var a = (grid.left + (plot._plotDimensions.width - grid.right))/2 - elem.outerWidth(true)/2;
+                var b = grid.top + c.tooltipOffset;
+                elem.css('left', a);
+                elem.css('top', b);
+                break;
+            case 'ne':
+                var a = grid.right + c.tooltipOffset;
+                var b = grid.top + c.tooltipOffset;
+                elem.css({right:a, top:b});
+                break;
+            case 'e':
+                var a = grid.right + c.tooltipOffset;
+                var b = (grid.top + (plot._plotDimensions.height - grid.bottom))/2 - elem.outerHeight(true)/2;
+                elem.css({right:a, top:b});
+                break;
+            case 'se':
+                var a = grid.right + c.tooltipOffset;
+                var b = grid.bottom + c.tooltipOffset;
+                elem.css({right:a, bottom:b});
+                break;
+            case 's':
+                var a = (grid.left + (plot._plotDimensions.width - grid.right))/2 - elem.outerWidth(true)/2;
+                var b = grid.bottom + c.tooltipOffset;
+                elem.css({left:a, bottom:b});
+                break;
+            case 'sw':
+                var a = grid.left + c.tooltipOffset;
+                var b = grid.bottom + c.tooltipOffset;
+                elem.css({left:a, bottom:b});
+                break;
+            case 'w':
+                var a = grid.left + c.tooltipOffset;
+                var b = (grid.top + (plot._plotDimensions.height - grid.bottom))/2 - elem.outerHeight(true)/2;
+                elem.css({left:a, top:b});
+                break;
+            default:  // same as 'se'
+                var a = grid.right - c.tooltipOffset;
+                var b = grid.bottom + c.tooltipOffset;
+                elem.css({right:a, bottom:b});
+                break;
+        }
+	}
+	
 	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
 	    var c = plot.plugins.cursor;
 	    if (c.show) {
     	    c.previousCursor = ev.target.style.cursor;
     	    ev.target.style.cursor = c.style;
             if (c.showTooltip) {
-                moveTooltip(gridpos, datapos, plot);
+                updateTooltip(gridpos, datapos, plot);
+                if (c.followMouse) {
+                    moveTooltip(gridpos, plot);
+                }
+                else {
+                    positionTooltip(plot);
+                }
                 c._tooltipElem.show();
             }
 	    }
@@ -150,7 +260,10 @@
 	function handleMouseMove(ev, gridpos, datapos, neighbors, plot) {
     	var c = plot.plugins.cursor;
     	if (c.show && c.showTooltip) {
-            moveTooltip(gridpos, datapos, plot);
+            updateTooltip(gridpos, datapos, plot);
+            if (c.followMouse) {
+                moveTooltip(gridpos, plot);
+            }
     	}
 	}
 })(jQuery);
