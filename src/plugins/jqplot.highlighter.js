@@ -20,6 +20,30 @@
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
 	    this.lineWidthAdjust = 2.5;
 	    this.sizeAdjust = 5;
+	    // prop: showTooltip
+	    // show a cursor position tooltip near the cursor
+	    this.showTooltip = true;
+	    // prop: tooltipLocation
+	    // Where to position tooltip.  If followMouse is true, this is
+	    // relative to the cursor, otherwise, it is relative to the grid.
+	    // One of 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+	    this.tooltipLocation = 'nw';
+	    // prop: tooltipFade
+	    // true = fade in/out tooltip, flase = show/hide tooltip
+	    this.fadeTooltip = true;
+	    // prop: tooltipFadeSpeed
+	    // 'slow', 'def', 'fast', or number of milliseconds.
+	    this.tooltipFadeSpeed = "fast";
+	    // prop: tooltipOffset
+	    // Pixel offset of tooltip from the grid boudaries or cursor center.
+	    this.tooltipOffset = 8;
+	    // prop: tooltipFormatString
+	    // sprintf format string for the tooltip.
+	    // Uses Ash Searle's javascript sprintf implementation
+	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
+	    // See http://perldoc.perl.org/functions/sprintf.html for reference
+	    this.tooltipFormatString = '%.3g';
+	    this._tooltipElem;
 	    this.isHighlighting = false;
 
 	    $.extend(true, this, options);
@@ -45,13 +69,16 @@
 	    
         this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
         var hctx = this.plugins.highlighter.highlightCanvas.setContext();
+        
+    	var p = this.plugins.highlighter;
+        p._tooltipElem = $('<div id="jqplotHighlighterTooltip" class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
+	    this.target.append(p._tooltipElem);
 	};
 	
 	$.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
 	$.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
 	$.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
 	
-	// called with scope of plot
     function draw(plot, neighbor) {
         var hl = plot.plugins.highlighter;
         var s = plot.series[neighbor.seriesIndex];
@@ -67,18 +94,49 @@
         mr.init();
         mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], hl.highlightCanvas._ctx);
     }
+    
+    function showTooltip(plot, neighbor) {
+        // neighbor looks like: {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]}
+        // gridData should be x,y pixel coords on the grid.
+        // add the plot._gridPadding to that to get x,y in the target.
+        var hl = plot.plugins.highlighter;
+        var elem = hl._tooltipElem;
+        var str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + ', '+ $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+        elem.html(str);
+        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]}
+        var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset;
+        var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true);
+        elem.css('left', x);
+        elem.css('top', y);
+        if (hl.fadeTooltip) {
+            elem.fadeIn(hl.tooltipFadeSpeed);
+        }
+        else {
+            elem.show();
+        }
+        
+    }
 	
-	function handleMove(ev, gridpos, datapos, neighbors, plot) {
+	function handleMove(ev, gridpos, datapos, neighbor, plot) {
 	    var hl = plot.plugins.highlighter;
-	    if (neighbors == null && hl.isHighlighting) {
+	    if (neighbor == null && hl.isHighlighting) {
 	       var ctx = hl.highlightCanvas._ctx;
 	       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            if (hl.fadeTooltip) {
+                hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
+            }
+            else {
+                hl._tooltipElem.hide();
+            }
 	       hl.isHighlighting = false;
 	        
 	    }
-	    if (neighbors != null && plot.series[neighbors.seriesIndex].showHighlight && !hl.isHighlighting) {
+	    if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
 	        hl.isHighlighting = true;
-	        draw(plot, neighbors);
+	        draw(plot, neighbor);
+            if (hl.showTooltip) {
+                showTooltip(plot, neighbor);
+            }
 	    }
 	}
 })(jQuery);

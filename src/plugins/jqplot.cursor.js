@@ -43,6 +43,12 @@
 	    // prop: showTooltipUnitPosition
 	    // show the unit (data) coordinates of the mouse.
 	    this.showTooltipUnitPosition = true;
+	    // prop: tooltipFormatString
+	    // sprintf format string for the tooltip.
+	    // Uses Ash Searle's javascript sprintf implementation
+	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
+	    // See http://perldoc.perl.org/functions/sprintf.html for reference
+	    this.tooltipFormatString = '%.3g';
 	    // prop: tooltipAxisGroups
 	    // Show position for the specified axes.
 	    // This is an array like [['xaxis', 'yaxis'], ['xaxis', 'y2axis']]
@@ -62,44 +68,42 @@
 	// called with context of plot
 	$.jqplot.Cursor.postDraw = function() {
     	var c = this.plugins.cursor;
-	    if (c.showTooltip) {
-	        c._tooltipElem = $('<div id="jqplotCursorTooltip" class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
-    	    this.target.append(c._tooltipElem);
+        c._tooltipElem = $('<div id="jqplotCursorTooltip" class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
+	    this.target.append(c._tooltipElem);
 
-	        // if we are showing the positions in unit coordinates, and no axes groups
-	        // were specified, create a default set.
-	        if (c.showTooltipUnitPosition){
-    	        if (c.tooltipAxisGroups.length === 0) {
-    	            if (this.axes.xaxis.show && !this.axes.x2axis.show) {
-    	                if (this.axes.yaxis.show) {
-    	                    c.tooltipAxisGroups.push(['xaxis', 'yaxis']);
-    	                }
-    	                if (this.axes.y2axis.show) {
-    	                    c.tooltipAxisGroups.push(['xaxis', 'y2axis']);
-    	                }
-    	            }
-    	            else if (this.axes.xaxis.show && this.axes.x2axis.show) {
-    	                if (this.axes.yaxis.show) {
-    	                    c.tooltipAxisGroups.push(['xaxis', 'yaxis']);
-    	                }
-    	                if (this.axes.y2axis.show) {
-    	                    c.tooltipAxisGroups.push(['x2axis', 'y2axis']);
-    	                }
-    	                else {
-    	                    c.tooltipAxisGroups.push(['x2axis', 'yaxis']);
-    	                }
-    	            }
-    	            else if (!this.axes.xaxis.show && this.axes.x2axis.show) {
-    	                if (this.axes.yaxis.show) {
-    	                    c.tooltipAxisGroups.push(['x2axis', 'yaxis']);
-    	                }
-    	                if (this.axes.y2axis.show) {
-    	                    c.tooltipAxisGroups.push(['x2axis', 'y2axis']);
-    	                }
-    	            }           
-    	        }
+        // if we are showing the positions in unit coordinates, and no axes groups
+        // were specified, create a default set.
+        if (c.showTooltipUnitPosition){
+	        if (c.tooltipAxisGroups.length === 0) {
+	            if (this.axes.xaxis.show && !this.axes.x2axis.show) {
+	                if (this.axes.yaxis.show) {
+	                    c.tooltipAxisGroups.push(['xaxis', 'yaxis']);
+	                }
+	                if (this.axes.y2axis.show) {
+	                    c.tooltipAxisGroups.push(['xaxis', 'y2axis']);
+	                }
+	            }
+	            else if (this.axes.xaxis.show && this.axes.x2axis.show) {
+	                if (this.axes.yaxis.show) {
+	                    c.tooltipAxisGroups.push(['xaxis', 'yaxis']);
+	                }
+	                if (this.axes.y2axis.show) {
+	                    c.tooltipAxisGroups.push(['x2axis', 'y2axis']);
+	                }
+	                else {
+	                    c.tooltipAxisGroups.push(['x2axis', 'yaxis']);
+	                }
+	            }
+	            else if (!this.axes.xaxis.show && this.axes.x2axis.show) {
+	                if (this.axes.yaxis.show) {
+	                    c.tooltipAxisGroups.push(['x2axis', 'yaxis']);
+	                }
+	                if (this.axes.y2axis.show) {
+	                    c.tooltipAxisGroups.push(['x2axis', 'y2axis']);
+	                }
+	            }           
 	        }
-	    }
+        }
 	};
 	
 	$.jqplot.preInitHooks.push($.jqplot.Cursor.init);
@@ -120,7 +124,7 @@
                 if (addbr) {
                     s += '<br />';
                 }
-                s += datapos[g[0]].toFixed(2)+', '+datapos[g[1]].toFixed(2);
+                s += $.jqplot.sprintf(c.tooltipFormatString, datapos[g[0]])+', '+$.jqplot.sprintf(c.tooltipFormatString, datapos[g[1]]);
                 addbr = true;
             }
         }

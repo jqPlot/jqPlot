@@ -57,47 +57,50 @@
     for (var i = 0; i < 6.3; i += 0.6) {
         powPoints2.push([i, -3 - Math.pow(i / 4, 2)]);
     }
-    plot1 = $.jqplot('chart', [cosPoints, sinPoints, powPoints1, powPoints2], {
+    var largepoints = [123456789, 133456789, 143456789, 153456789];
+    var smallpoints = [.0000153, .0000129, .0000123, .0000143];
+    plot1 = $.jqplot('chart', [largepoints, smallpoints], {
         // title: 'jqPlot',
         grid:{background:'#fefbf3', borderWidth:2.5},
-        cursor:{showTooltip:true, followMouse:true, tooltipLocation:'se', tooltipCSS:{background:'#000000'}},
-        axes:{yaxis:{min:-6, max:6, tickOptions:{formatString:'%d'}},
-          xaxis:{min:-.5, max:6.5}},
-        series: [
-        {
-        	
-        },
-        {
-            showLine: false,
-            lineWidth: 1.5,
-            markerOptions: {
-                style: 'diamond',
-                size: 12
-            }
-        },
-        {
-          //color: '#FFA372',
-          //color: '#D59622',
-          lineWidth: 3.5,
-            markerOptions: {
-                style: 'circle'
-            }
-        },
-        {
-            lineWidth: 6,
-            markerOptions: {
-                style: 'filledSquare',
-                size: 15,
-                shadowOffset: 1.8,
-                shadowDepth: 3,
-                shadowAngle: 55,
-                shadowAlpha: 0.08
-            },
-            // shadowOffset: 1.8,
-            // shadowDepth: 3,
-            // shadowAngle: 55,
-            // shadowAlpha: 0.08
-        }]
+        cursor:{showTooltip:true, followMouse:false, tooltipLocation:'sw', tooltipCSS:{background:'#000000'}},
+        axes:{yaxis:{},
+          xaxis:{}},
+          series:[{}, {yaxis:'y2axis'}]
+        // series: [
+        // {
+        //  
+        // },
+        // {
+        //     showLine: false,
+        //     lineWidth: 1.5,
+        //     markerOptions: {
+        //         style: 'diamond',
+        //         size: 12
+        //     }
+        // },
+        // {
+        //   //color: '#FFA372',
+        //   //color: '#D59622',
+        //   lineWidth: 3.5,
+        //     markerOptions: {
+        //         style: 'circle'
+        //     }
+        // },
+        // {
+        //     lineWidth: 6,
+        //     markerOptions: {
+        //         style: 'filledSquare',
+        //         size: 15,
+        //         shadowOffset: 1.8,
+        //         shadowDepth: 3,
+        //         shadowAngle: 55,
+        //         shadowAlpha: 0.08
+        //     },
+        //     // shadowOffset: 1.8,
+        //     // shadowDepth: 3,
+        //     // shadowAngle: 55,
+        //     // shadowAlpha: 0.08
+        // }]
     });
 
     

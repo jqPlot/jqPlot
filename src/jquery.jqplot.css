@@ -112,7 +112,18 @@ table.jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
     white-space: nowrap;
-    background: #cccccc;
-	opacity: 0.7;
-	filter:alpha(opacity=70);
+    background: rgba(208,208,208,0.5);
+/*  opacity: 0.7;
+    filter:alpha(opacity=70);*/
+	padding: 1px;
+}
+
+.jqplot-highlighter-tooltip {
+    border: 1px solid #cccccc;
+    font-size: 0.75em;
+    white-space: nowrap;
+    background: rgba(208,208,208,0.5);
+/*  opacity: 0.7;
+    filter:alpha(opacity=70);*/
+	padding: 1px;
 }
