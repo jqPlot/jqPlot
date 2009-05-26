@@ -42,7 +42,7 @@
 	    // Uses Ash Searle's javascript sprintf implementation
 	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
 	    // See http://perldoc.perl.org/functions/sprintf.html for reference
-	    this.tooltipFormatString = '%.3g';
+	    this.tooltipFormatString = '%.5P';
 	    this._tooltipElem;
 	    this.isHighlighting = false;
 

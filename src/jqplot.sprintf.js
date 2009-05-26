@@ -33,6 +33,21 @@
      * @version 2007.04.27
      * @author Ash Searle
      */
+     
+     /**
+      * @Modifications 2009.05.26
+      * @author Chris Leonello
+      * 
+      * Added %p %P specifier
+      * Acts like %g or %G but will not add more significant digits to the output than present in the input.
+      * Example:
+      * Format: '%.3p', Input: 0.012, Output: 0.012
+      * Format: '%.3g', Input: 0.012, Output: 0.0120
+      * Format: '%.4p', Input: 12.0, Output: 12.0
+      * Format: '%.4g', Input: 12.0, Output: 12.00
+      * Format: '%.4p', Input: 4.321e-5, Output: 4.321e-5
+      * Format: '%.4g', Input: 4.321e-5, Output: 4.3210e-5
+      */
     $.jqplot.sprintf = function() {
         function pad(str, len, chr, leftJustify) {
     	    var padding = (str.length >= len) ? '' : Array(1 + len - str.length >>> 0).join(chr);
@@ -74,25 +89,28 @@
 
     	    // parse flags
     	    var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false;
-    	    for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
-    		case ' ': positivePrefix = ' '; break;
-    		case '+': positivePrefix = '+'; break;
-    		case '-': leftJustify = true; break;
-    		case '0': zeroPad = true; break;
-    		case '#': prefixBaseX = true; break;
+        	    for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
+        		case ' ': positivePrefix = ' '; break;
+        		case '+': positivePrefix = '+'; break;
+        		case '-': leftJustify = true; break;
+        		case '0': zeroPad = true; break;
+        		case '#': prefixBaseX = true; break;
     	    }
 
     	    // parameters may be null, undefined, empty-string or real valued
     	    // we want to ignore null, undefined and empty-string values
 
     	    if (!minWidth) {
-    		minWidth = 0;
-    	    } else if (minWidth == '*') {
-    		minWidth = +a[i++];
-    	    } else if (minWidth.charAt(0) == '*') {
-    		minWidth = +a[minWidth.slice(1, -1)];
-    	    } else {
-    		minWidth = +minWidth;
+    		    minWidth = 0;
+    	    } 
+    	    else if (minWidth == '*') {
+    		    minWidth = +a[i++];
+    	    } 
+    	    else if (minWidth.charAt(0) == '*') {
+    		    minWidth = +a[minWidth.slice(1, -1)];
+    	    } 
+    	    else {
+    		    minWidth = +minWidth;
     	    }
 
     	    // Note: undocumented perl feature:
@@ -145,16 +163,42 @@
     		          {
     			      var number = +value;
     			      var prefix = number < 0 ? '-' : positivePrefix;
-    			      var method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
+    			      var method = ['toExponential', 'toFixed']['efg'.indexOf(type.toLowerCase())];
     			      var textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
     			      value = prefix + Math.abs(number)[method](precision);
     			      return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
     			  }
+    		case 'p':
+    		case 'P':
+    		{
+    		    // make sure number is a number
+                var number = +value;
+                var prefix = number < 0 ? '-' : positivePrefix;
+
+                var parts = String(Number(Math.abs(number)).toExponential()).split(/e|E/);
+                var sd = (parts[0].indexOf('.') != -1) ? parts[0].length - 1 : parts[0].length;
+                var zeros = (parts[1] < 0) ? -parts[1] - 1 : 0
+                
+                if (Math.abs(number) < 1) {
+                    if (sd + zeros  <= precision) {
+                        value = prefix + Math.abs(number).toPrecision(sd);
+                    }
+                    else {
+                        value = prefix + Math.abs(number).toExponential(precision-1);
+                    }
+                }
+                else {
+                    var prec = (sd <= precision) ? sd : precision
+                    value = prefix + Math.abs(number).toPrecision(prec);
+                }
+                var textTransform = ['toString', 'toUpperCase']['pP'.indexOf(type) % 2];
+                return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
+            }
     		default: return substring;
     	    }
     		    });
     }
     
-    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegEG])/g;
+    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegpEGP])/g;
 
 })(jQuery);  

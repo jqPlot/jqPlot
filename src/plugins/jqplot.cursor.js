@@ -48,7 +48,7 @@
 	    // Uses Ash Searle's javascript sprintf implementation
 	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
 	    // See http://perldoc.perl.org/functions/sprintf.html for reference
-	    this.tooltipFormatString = '%.3g';
+	    this.tooltipFormatString = '%.5P';
 	    // prop: tooltipAxisGroups
 	    // Show position for the specified axes.
 	    // This is an array like [['xaxis', 'yaxis'], ['xaxis', 'y2axis']]
