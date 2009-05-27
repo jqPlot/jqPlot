@@ -57,14 +57,14 @@
     for (var i = 0; i < 6.3; i += 0.6) {
         powPoints2.push([i, -3 - Math.pow(i / 4, 2)]);
     }
-    var largepoints = [.2, 15, 134, 1452];
-    var smallpoints = [.96, .074, .0067, .00052];
-    var allpoints = [15432, 1432, 132, 12, 1, .87, .01234567, .0021, .000321, .0000456789]
-    plot1 = $.jqplot('chart', [allpoints], {
+    var largepoints = [15, 134.345321, 1452, 15432, 1134.2, 18.2];
+    var smallpoints = [2.34458232, 1.23, .87, .01234567, .0021, .000321, .0000456789];
+//    var allpoints = [15432, 1432, 132, 12, 1, .87, .01234567, .0021, .000321, .0000456789]
+    plot1 = $.jqplot('chart', [largepoints, smallpoints], {
         // title: 'jqPlot',
         grid:{background:'#fefbf3', borderWidth:2.5},
-        cursor:{showTooltip:false, followMouse:false, tooltipLocation:'sw', tooltipCSS:{background:'#000000'}},
-        axes:{yaxis:{min:-2000.0, max: 18000, numberTicks: 6},
+        cursor:{showTooltip:true, followMouse:false, tooltipLocation:'sw'},
+        axes:{yaxis:{min:-3000},
           xaxis:{}},
           series:[{}, {yaxis:'y2axis'}]
         // series: [

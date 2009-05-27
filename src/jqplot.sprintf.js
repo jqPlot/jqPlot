@@ -163,7 +163,7 @@
     		          {
     			      var number = +value;
     			      var prefix = number < 0 ? '-' : positivePrefix;
-    			      var method = ['toExponential', 'toFixed']['efg'.indexOf(type.toLowerCase())];
+    			      var method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
     			      var textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
     			      value = prefix + Math.abs(number)[method](precision);
     			      return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
@@ -184,13 +184,19 @@
                         value = prefix + Math.abs(number).toPrecision(sd);
                     }
                     else {
-                        value = prefix + Math.abs(number).toExponential(precision-1);
+                        if (sd  <= precision - 1) {
+                            value = prefix + Math.abs(number).toExponential(sd-1);
+                        }
+                        else {
+                            value = prefix + Math.abs(number).toExponential(precision-1);
+                        }
                     }
                 }
                 else {
                     var prec = (sd <= precision) ? sd : precision
                     value = prefix + Math.abs(number).toPrecision(prec);
                 }
+                //console.log('number: %s, sd: %s, zeros: %s, value: %s', number, sd, zeros, value);
                 var textTransform = ['toString', 'toUpperCase']['pP'.indexOf(type) % 2];
                 return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
             }
