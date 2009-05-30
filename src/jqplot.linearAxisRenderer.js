@@ -105,7 +105,7 @@
         }  
     };
     
-
+    // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
         var ticks = this._ticks;

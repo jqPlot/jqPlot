@@ -26,15 +26,28 @@
 </head>
   <body onLoad="runSuites();">
     <div id="main">
-    <div id="content">
-    <div class="nav"><?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" /></a>'; ?>  <a href="index.html"><img src="images/arrow_up_48.png" /></a>  <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" /></a>'; ?>
-    </div>
-    <div id="jspec-top"><h2 id="jspec-title"><?php echo $jspec_title ?></h2></div>
-    <div id="jspec"></div>
-    <div id="jspec-bottom"></div>
+      <div class="logo">  
+        <img id="home" src="images/examples_on.png" alt="home" name="home"> <img id="examples" src="images/examples_on.png" alt="examples" name="examples"> <img id="docs" src="images/examples_on.png" alt="docs" name="docs"> <img id="download" src="images/examples_on.png" alt="download" name="download">
+      </div>
     
-    <div class="nav"><?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" /></a>'; ?>  <a href="index.html"><img src="images/arrow_up_48.png" /></a>  <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" /></a>'; ?>
+      <div id="content">
+        <div id="jspec-top">
+          <div id="jspec-title"><?php echo $jspec_title ?></div>
+          <div class="nav top">
+            <?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" height="24" width="24" /></a>'; ?> 
+            <a href="./index.html"><img src="images/arrow_up_48.png" height="24" width="24" /></a> 
+            <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" height="24" width="24" /></a>'; ?>
+          </div>
+        </div>
+        <div id="jspec"></div>
+        <div id="jspec-bottom"></div>
+    
+        <div class="nav">
+          <?php echo '<a href="'.$prevpage.'"><img src="images/arrow_left_48.png" height="24" width="24" /></a>'; ?> 
+          <a href="./index.html"><img src="images/arrow_up_48.png" height="24" width="24" /></a> 
+          <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" height="24" width="24" /></a>'; ?>
+        </div>
+      </div>
     </div>
-    </div>
-</body>
+  </body>
 </html>

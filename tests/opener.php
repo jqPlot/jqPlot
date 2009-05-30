@@ -23,7 +23,6 @@
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <?php
-    echo '<!--'.$jqplot_js_includes.'-->';
     if (count($jqplot_js_includes) > 0) {
       foreach ($jqplot_js_includes as $ji) {
         echo '<script language="javascript" type="text/javascript" src="'.$ji.'"></script>';
@@ -42,12 +41,13 @@
       return function(){return id++};
     })();
     
-    function genplot(o) {
+    function genplot(o, c) {
       var nid, n, no;
       nid = uID();
       o = o.replace(/_target_/, 'chart'+nid);
-      n = js_beautify(o);
-      $('<div class="jqPLot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').insertBefore('.nav:last');
+      n = js_beautify(o, {preserve_newlines:true, indent_size:4});
+      if (c) $('<div class="description"></div>').insertBefore('.nav:last').html(c);
+      $('<div class="jqPlot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').insertBefore('.nav:last');
       $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').insertBefore('.nav:last');
       eval(o);
     }

@@ -98,7 +98,7 @@
     $.jqplot.DefaultTickFormatter = function (format, val) {
         if (typeof val == 'number') {
             if (!format) {
-            	format = '%.5p';
+            	format = '%.1f';
             }
             return $.jqplot.sprintf(format, val);
         }

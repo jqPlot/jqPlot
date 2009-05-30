@@ -23,12 +23,12 @@
 	    this.show = true;
 	    // prop: showTooltip
 	    // show a cursor position tooltip near the cursor
-	    this.showTooltip = false;
+	    this.showTooltip = true;
 	    // prop: followMouse
 	    // Tooltip follows the mouse, it is not at a fixed location.
 	    // Tooltip will show on the grid at the location given by
 	    // tooltipLocation, offset from the grid edge by tooltipOffset.
-	    this.followMouse = true;
+	    this.followMouse = false;
 	    // prop: tooltipLocation
 	    // Where to position tooltip.  If followMouse is true, this is
 	    // relative to the cursor, otherwise, it is relative to the grid.
@@ -49,6 +49,9 @@
 	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
 	    // See http://perldoc.perl.org/functions/sprintf.html for reference
 	    this.tooltipFormatString = '%.4P';
+	    // prop: useAxesFormatters
+	    // Use the x and y axes formatters to format the text in the tooltip.
+	    this.useAxesFormatters = true;
 	    // prop: tooltipAxisGroups
 	    // Show position for the specified axes.
 	    // This is an array like [['xaxis', 'yaxis'], ['xaxis', 'y2axis']]
@@ -124,7 +127,16 @@
                 if (addbr) {
                     s += '<br />';
                 }
-                s += $.jqplot.sprintf(c.tooltipFormatString, datapos[g[0]])+', '+$.jqplot.sprintf(c.tooltipFormatString, datapos[g[1]]);
+                if (c.useAxesFormatters) {
+                    var xf = plot.axes[g[0]]._ticks[0].formatter;
+                    var yf = plot.axes[g[1]]._ticks[0].formatter;
+                    var xfstr = plot.axes[g[0]]._ticks[0].formatString;
+                    var yfstr = plot.axes[g[1]]._ticks[0].formatString;
+                    s += xf(xfstr, datapos[g[0]]) + ', '+ yf(yfstr, datapos[g[1]]);
+                }
+                else {
+                    s += $.jqplot.sprintf(c.tooltipFormatString, datapos[g[0]]) + ', '+ $.jqplot.sprintf(c.tooltipFormatString, datapos[g[1]]);
+                }
                 addbr = true;
             }
         }
@@ -233,7 +245,7 @@
         }
 	}
 	
-	function handleMouseEnter(ev, gridpos, datapos, neighbors, plot) {
+	function handleMouseEnter(ev, gridpos, datapos, neighbor, plot) {
 	    var c = plot.plugins.cursor;
 	    if (c.show) {
     	    c.previousCursor = ev.target.style.cursor;
@@ -251,7 +263,7 @@
 	    }
 	}
 	
-	function handleMouseLeave(ev, gridpos, datapos, neighbors, plot) {
+	function handleMouseLeave(ev, gridpos, datapos, neighbor, plot) {
 	    var c = plot.plugins.cursor;
 	    if (c.show) {
 	        $(ev.target).css('cursor', c.previousCursor);
@@ -261,7 +273,7 @@
 	    }
 	}
 	
-	function handleMouseMove(ev, gridpos, datapos, neighbors, plot) {
+	function handleMouseMove(ev, gridpos, datapos, neighbor, plot) {
     	var c = plot.plugins.cursor;
     	if (c.show && c.showTooltip) {
             updateTooltip(gridpos, datapos, plot);
