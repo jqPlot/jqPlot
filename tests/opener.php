@@ -41,11 +41,11 @@
       return function(){return id++};
     })();
     
-    function genplot(o, c) {
+    function genplot(o, c, vs) {
       var nid, n, no;
       nid = uID();
       o = o.replace(/_target_/, 'chart'+nid);
-      n = js_beautify(o, {preserve_newlines:true, indent_size:4});
+      n = js_beautify(o, {preserve_newlines:true, indent_size:4, var_space: vs});
       if (c) $('<div class="description"></div>').insertBefore('.nav:last').html(c);
       $('<div class="jqPlot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').insertBefore('.nav:last');
       $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').insertBefore('.nav:last');

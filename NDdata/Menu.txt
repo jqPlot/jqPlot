@@ -1,8 +1,9 @@
 Format: 1.4
 
 
-Title: jqPlot
-SubTitle: Pure Javascript plotting the jQuery way.
+# You can add a title and sub-title to your menu like this:
+# Title: [project name]
+# SubTitle: [subtitle]
 
 Footer: Copyright (c) 2009 Chris Leonello
 Timestamp: Updated month day, year

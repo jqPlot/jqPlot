@@ -36,7 +36,7 @@
       highlighter: {sizeAdjust: 7.5}, \
       cursor: {show: false}});";
       
-      genplot(o, c);
+      genplot(o, c, false);
       
       c ='The Cursor plugin changes the mouse cursor when it enters the graph area and displays an optional tooltip with the mouse position.  The tooltip can be in a fixed location, or it can follow the mouse.  The pointer style, set to "crosshair" by default, can also be customized.  Tooltip values are formatted similar to the Highlighter plugin.  By default they use the axes formatters, but can be customized with a sprintf format string.';
       

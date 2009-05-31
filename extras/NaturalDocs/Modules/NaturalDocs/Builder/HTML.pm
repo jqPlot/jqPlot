@@ -175,7 +175,7 @@ sub BuildIndex #(type)
 
         . "\n\n\n"
 
-        . '<div id=Index>'
+        . '<div id="IPageLogo">&nbsp;</div><div id=Index>'
             . '<div class=IPageTitle>'
                 . $indexTitle
             . '</div>';

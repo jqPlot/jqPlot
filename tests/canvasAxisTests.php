@@ -22,7 +22,7 @@
       tickOptions:{formatString:'%b %#d, %Y', fontSize:'10pt', fontFamily:'Tahoma', angle:-40}}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o);
+      genplot(o, '', false);
   
       prettyPrint();
       

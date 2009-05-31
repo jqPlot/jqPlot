@@ -18,7 +18,7 @@
       axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o);
+      genplot(o, '', false);
       
       o = "line1=[['2008-06-30', 4], ['2008-7-30', 6.5], ['2008-8-30', 5.7], ['2008-9-30', 9], ['2008-10-30', 8.2]]; \
       plot10 = $.jqplot('_target_', [line1], \
@@ -26,7 +26,7 @@
       axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer, tickOptions:{formatString:'%b %#d, %y'}, min:'May 30, 2008', tickInterval:'1 month'}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o);
+      genplot(o, '', false);
   
       prettyPrint();
       

@@ -144,7 +144,7 @@
 		<echo message="Test Suite Finished" />
 	</target>
 
-	<target name="docs" depends="dist" description="Create documentation for distribution.">
+	<target name="docs" description="Create documentation for distribution.">
 		<echo message="Creating documentation" />
         <mkdir dir="${DIST_DIR}/docs" />
         <exec executable="${ND}">
@@ -161,6 +161,10 @@
           <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
           <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
         </replaceregexp>
+        <copy todir="${DIST_DIR}/docs/files/samples">
+          <fileset dir="${SRC_DIR}/samples" includes="background.jpg" />
+          <fileset dir="${SRC_DIR}/samples" includes="logo.jpg" />
+    		</copy>
         <echo message="Documentation Finished" />
 	</target>
 
