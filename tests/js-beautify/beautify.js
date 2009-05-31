@@ -45,6 +45,8 @@ function js_beautify(js_source_text, options)
     var opt_preserve_newlines =
         typeof options['preserve_newlines'] === 'undefined' ? true : options['preserve_newlines'];
     var opt_indent_level      = options['indent_level'] || 0; // starting indentation
+    var opt_var_space         = 
+        typeof options['var_space'] === 'undefined' ? true : options['var_space'];
 
 
     function trim_output()
@@ -571,7 +573,9 @@ function js_beautify(js_source_text, options)
                     } else {
                         // EXPR od DO_BLOCK
                         print_token();
-                        print_space();
+                        if (opt_var_space) {
+                          print_space();                        
+                        }
                     }
                 }
                 break;
