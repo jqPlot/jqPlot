@@ -4,17 +4,23 @@ jqPlot is a jQuery plugin to generate pure client-side javascript charts in your
 
 Below are a few static samples to demonstrate jqPlot usage.  These plots are not actually generated, but shown as images.  Many more examples of dynamically rendered plots can be seen on the unit test page here: <../../tests/>.
 
-To use jqPlot include jquery, the jqPlot jQuery plugin, and optionally the excanvas script for IE 
-support in your web page:
+Include the Files:
 
+jqPlot requires jQuery (tested with 1.3.2 or better). jQuery 1.3.2 is included in the distribution.  
+To use jqPlot include jquery, the jqPlot jQuery plugin, and optionally the excanvas script for IE support in your web page:
+
+> <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
 > <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
 > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
-> <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
     
+Add a plot container:
+
 Add a container (target) to your web page where you want your plot to show up.
 Be sure to give your target a width and a height:
 
 > <div id="chartdiv" style="height:400px;width:300px; "></div> 
+
+Create a plot:
 
 Then, create the actual plot by calling the 
 $.jqplot plugin with the id of your target and some data:
@@ -40,10 +46,15 @@ a plot like:
 
 (see samples/basicoptions.png)
 
+Using Plugins:
+
 You can use jqPlot plugins (that is, plugins to the jqPlot plugin) by including them in your html 
 after you include the jqPlot plugin.  Here is how to include the log axis plugin:
 
-: <script language="javascript" type="text/javascript" src="jqplot.LogAxisRenderer.js"></script>
+> <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
+> <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
+> <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
+> <script language="javascript" type="text/javascript" src="jqplot.LogAxisRenderer.js"></script>
 
 Here is a the same $.jqplot call 
 but with a log y axis:
@@ -72,5 +83,18 @@ Which makes a
 plot like:
 
 (see samples/basiclogoptions.png)
+
+You can add as many plugins as you wish.  Order is generally not important.  Some plugins, like the highlighter plugin which highlights data points near the mouse,  don't need any extra options or setup to function.  Highlighter does have additional options which the user can set.
+
+Other plugins, the barRenderer for example, provide functionality the must be specified in the chart options object.  To render a series as a bar graph with the bar renderer, you would first include the plugin after jqPlot:
+
+> <script language="javascript" type="text/javascript" src="plugins/jqplot.barRenderer.min.js"></script>
+
+Then you would create a chart like:
+
+> $.jqplot('chartdiv',  [[34.53, 56.32, 25.1, 18.6]], series:[{renderer:$.jqplot.BarRenderer}]);
+
+Here the default LineRenderer is replaced by a BarRenderer to generate a bar graph for the first (an only) series.
+
 
 Propeties that can be set through the options object are documented in the rest of this site.
