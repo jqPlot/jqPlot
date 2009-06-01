@@ -27,7 +27,7 @@
   <body onLoad="runSuites();">
     <div id="main">
       <div class="logo">  
-        <img id="home" src="images/examples_on.png" alt="home" name="home"> <img id="examples" src="images/examples_on.png" alt="examples" name="examples"> <img id="docs" src="images/examples_on.png" alt="docs" name="docs"> <img id="download" src="images/examples_on.png" alt="download" name="download">
+        <a href="../../index.html" id="home"><span>Home</span></a> <a href="./index.html" id="examples"><span>Examples</span></a> <a href="../docs/" id="docs"><span>Docs</span></a> <a href="http://www.bitbucket.org/cleonello/jqplot/" id="download"><span>Download</span></a>
       </div>
     
       <div id="content">
@@ -48,6 +48,13 @@
           <?php echo '<a href="'.$nextpage.'"><img src="images/arrow_right_48.png" height="24" width="24" /></a>'; ?>
         </div>
       </div>
+    </div>
+        <div id="preloader" style="display: none;">
+        <img src="images/navdownloadover.png" alt="navdownloadover" width="89" height="26"/>
+        <img src="images/navexamplesover.png" alt="navexamplesover" width="88" height="26"/>
+        <img src="images/navhomeover.png" alt="navhomeover" width="59" height="26"/>
+        <img src="images/navdocsover.png" alt="navdocsover" width="55" height="26"/>
+        <img src="images/downloadnowover.png" alt="downloadnowover" width="102" height="39"/>
     </div>
   </body>
 </html>

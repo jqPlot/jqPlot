@@ -16,9 +16,10 @@ body {
   font-family: Tahoma, "Helvetica Neue", "Trebuchet MS", Verdana, Arial, sans-serif;
 }
 
+
 div.logo {
-  background-position: left top;
-  background-repeat: no-repeat;
+background-position: left top;
+background-repeat: no-repeat;
   position: relative;
   width: 780px;
   height: 94px;
@@ -29,10 +30,83 @@ div.logo {
   background-color: #292929;
 }
 
-div.logo img {
-    left: 400px;
-    top: 70px;
-    position: relative;
+div.logo a {
+    border: 0px;
+    text-decoration: none;
+  font-family: "Arial Narrow Bold", sans-serif;
+  background-position: left top;
+  background-repeat: no-repeat;  
+}
+
+div.logo a span {
+    display: none;
+}
+
+div.logo a:hover {
+    text-decoration: none;
+    border: 0px;
+}
+
+div.logo a:active {
+    text-decoration: none;
+    border: 0px;
+}
+
+div.logo a:visited {
+    text-decoration: none;
+    border: 0px;
+}
+
+#home {
+  background-image: url(images/navhome.png);
+  height: 26px;
+  width: 59px;
+  position: absolute;
+  top: 65px;
+  left: 437px;
+}
+
+#examples {
+  background-image: url(images/navexamples.png);
+  height: 26px;
+  width: 88px;
+  position: absolute;
+  top: 65px;
+  left: 503px;
+}
+
+#docs {
+  background-image: url(images/navdocs.png);
+  height: 26px;
+  width: 55px;
+  position: absolute;
+  top: 65px;
+  left: 598px;
+}
+
+#download {
+  background-image: url(images/navdownload.png);
+  height: 26px;
+  width: 89px;
+  position: absolute;
+  top: 65px;
+  left: 660px;
+}
+
+#home:hover {
+    background-image: url(images/navhomeover.png);
+}
+
+#examples:hover {
+    background-image: url(images/navexamplesover.png);
+}
+
+#docs:hover {
+    background-image: url(images/navdocsover.png);
+}
+
+#download:hover {
+    background-image: url(images/navdownloadover.png);
 }
 
 #main {

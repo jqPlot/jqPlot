@@ -25,8 +25,7 @@
   <body>
     <div id="main">
       <div class="logo">
-        
-        <img id="home" src="images/examples_on.png" alt="home" name="home"> <img id="examples" src="images/examples_on.png" alt="examples" name="examples"> <img id="docs" src="images/examples_on.png" alt="docs" name="docs"> <img id="download" src="images/examples_on.png" alt="download" name="download">
+        <a href="../../index.html" id="home"><span>Home</span></a> <a href="./index.html" id="examples"><span>Examples</span></a> <a href="../docs/" id="docs"><span>Docs</span></a> <a href="http://www.bitbucket.org/cleonello/jqplot/" id="download"><span>Download</span></a>
         
       </div>
       <div id="content">
@@ -42,6 +41,7 @@
       
         <div id="jspec">
           <div id="jspec-report">
+            <div style="font-size: 14px;padding-top: 12px;">jqPlot Examples are built into the jqPlot unit tests.  Each category below contains examples/tests related to certain plotting functionality. The source code used to generate the examples is also shown. The automated tests are handled by <a href="http://visionmedia.github.com/jspec/">VisionMedia's powerful JSpec testing framework</a>.</div>
             <table class="suites">
               <tr class="description"><td><a href="coretests.php">Core plotting functionality.</a></td></tr>
               <tr class="description"><td><a href="logAxisTests.php">Log axis renderer plugin.</a></td></tr>
@@ -57,6 +57,13 @@
         <div id="jspec-bottom"></div>
 
       </div>
+    </div>
+        <div id="preloader" style="display: none;">
+        <img src="images/navdownloadover.png" alt="navdownloadover" width="89" height="26"/>
+        <img src="images/navexamplesover.png" alt="navexamplesover" width="88" height="26"/>
+        <img src="images/navhomeover.png" alt="navhomeover" width="59" height="26"/>
+        <img src="images/navdocsover.png" alt="navdocsover" width="55" height="26"/>
+        <img src="images/downloadnowover.png" alt="downloadnowover" width="102" height="39"/>
     </div>
 </body>
 </html>
