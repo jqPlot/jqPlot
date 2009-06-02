@@ -73,6 +73,7 @@
           <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
           <fileset dir="" includes="index.html" />
           <fileset dir="" includes="style.css" />
+          <fileset dir="" includes="README.txt" />
           <fileset dir="tests" includes="jquery*.js" />
         </copy>
         
@@ -132,7 +133,7 @@
   <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
        basedir="${DIST_DIR}"
-       includes="jquery*.min.js jquery.jqplot.* plugins/*"
+       includes="jquery*.min.js jquery.jqplot.* README.txt plugins/*"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tgz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
