@@ -27,6 +27,7 @@
 
     #main {
       padding:0;
+      padding-bottom: 20px;
       margin: 0 auto;
       width: 780px;
       background-color: white;
