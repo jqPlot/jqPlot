@@ -7,7 +7,7 @@ body {
 	font-size: 14px;
 	background-color: #818181;
   background-repeat: repeat-x;
-  background-image: url(images/background.jpg);
+  background-image: url('../images/background.jpg');
 	height: 100%;
 	padding: 0px;
 	border: 0px;
@@ -26,7 +26,7 @@ background-repeat: no-repeat;
   margin: 0px auto;
   padding: 0px;
   top: 0px;
-  background-image: url('images/logo.jpg');
+  background-image: url('../images/logo.jpg');
   background-color: #292929;
 }
 
@@ -58,7 +58,7 @@ div.logo a:visited {
 }
 
 #home {
-  background-image: url(images/navhome.png);
+  background-image: url(../images/navhome.png);
   height: 26px;
   width: 59px;
   position: absolute;
@@ -67,7 +67,7 @@ div.logo a:visited {
 }
 
 #examples {
-  background-image: url(images/navexamples.png);
+  background-image: url(../images/navexamples.png);
   height: 26px;
   width: 88px;
   position: absolute;
@@ -76,7 +76,7 @@ div.logo a:visited {
 }
 
 #docs {
-  background-image: url(images/navdocs.png);
+  background-image: url(../images/navdocs.png);
   height: 26px;
   width: 55px;
   position: absolute;
@@ -85,7 +85,7 @@ div.logo a:visited {
 }
 
 #download {
-  background-image: url(images/navdownload.png);
+  background-image: url(../images/navdownload.png);
   height: 26px;
   width: 89px;
   position: absolute;
@@ -94,19 +94,19 @@ div.logo a:visited {
 }
 
 #home:hover {
-    background-image: url(images/navhomeover.png);
+    background-image: url(../images/navhomeover.png);
 }
 
 #examples:hover {
-    background-image: url(images/navexamplesover.png);
+    background-image: url(../images/navexamplesover.png);
 }
 
 #docs:hover {
-    background-image: url(images/navdocsover.png);
+    background-image: url(../images/navdocsover.png);
 }
 
 #download:hover {
-    background-image: url(images/navdownloadover.png);
+    background-image: url(../images/navdownloadover.png);
 }
 
 #main {

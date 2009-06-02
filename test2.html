@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title>jqPlot Test 2</title>
+		
+		<!--[if IE]><script language="javascript" type="text/javascript" src="src/excanvas.js"></script><![endif]-->
+		  
+		<link rel="stylesheet" type="text/css" href="src/jquery.jqplot.css" />
+		
+		<!-- BEGIN: load jquery -->
+		<script language="javascript" type="text/javascript" src="tests/jquery-1.3.2.min.js"></script>
+		<!-- END: load jquery -->
+		
+		<!-- BEGIN: load jqplot -->
+		<script language="javascript" type="text/javascript" src="src/jquery.jqplot.js"></script>
+		<script language="javascript" type="text/javascript" src="src/plugins/jqplot.canvasTextRenderer.js"></script>
+		<script language="javascript" type="text/javascript" src="src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+		<script language="javascript" type="text/javascript" src="src/plugins/jqplot.dateAxisRenderer.js"></script>
+		<!-- END: load jqplot -->
+
+<style type="text/css" media="screen">
+  .jqplot-axis-tick {
+
+  }
+</style>
+
+	<script type="text/javascript" language="javascript">
+	  
+	$(document).ready(function(){
+	
+	var cosPoints = [];
+	for (var i = 0; i < 2 * Math.PI; i += 0.3) {
+	    cosPoints.push([i, 1.5* Math.cos(i + 0.5)]);
+	}
+	var sinPoints = [];
+	for (var i = 0; i < 2 * Math.PI; i += 0.6) {
+	    sinPoints.push([i, 2 * Math.sin(i - 1.4)]);
+	}
+	var powPoints1 = [];
+	for (var i = 0; i < 6.3; i += 0.6) {
+	    powPoints1.push([i, 3 + Math.pow(i / 4, 2)]);
+	}
+	var powPoints2 = [];
+	for (var i = 0; i < 6.3; i += 0.6) {
+	    powPoints2.push([i, -3 - Math.pow(i / 4, 2)]);
+	}
+	
+//	plot1 = $.jqplot('chart', [cosPoints], {
+//        axesDefaults:{
+//            rendererOptions:{
+//                tickRenderer:$.jqplot.CanvasAxisTickRenderer}, 
+//                tickOptions:{formatString:'%.3f', fontWeight:550, fontStretch:1}
+//            },
+//    	axes:{
+//    	    yaxis:{
+//    	        tickOptions:{fontSize:'15px', fontFamily:'Trebuchet MS', angle:20}
+//    	    }, 
+//    	    xaxis:{
+//    	        tickOptions:{fontSize:'16pt', fontFamily:'Trebuchet MS', angle:-30}
+//    	    }
+//    	}
+//	});
+	
+	line1=[['2008-09-30', 4], ['2008-10-30', 6.5], ['2008-11-30', 5.7], ['2008-12-30', 9], ['2009-01-30', 8.2]];
+	
+    plot1 = $.jqplot('chart', [line1], {
+        title:'Rotated Axis Text',
+        axes:{
+            xaxis:{
+                renderer:$.jqplot.DateAxisRenderer, 
+                min:'August 30, 2008', 
+                tickInterval:'1 month',
+                rendererOptions:{
+                    tickRenderer:$.jqplot.CanvasAxisTickRenderer},
+                    tickOptions:{formatString:'%b %#d, %Y', fontSize:'10pt', fontFamily:'Tahoma', angle:-40, fontWeight:'normal', fontStretch:1}
+            }
+        },
+        series:[{lineWidth:4, markerOptions:{style:'square'}}]
+    });
+	
+	});
+	</script>
+
+	</head>
+	<body>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
+
+	</body>
+</html>

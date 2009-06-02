@@ -24,6 +24,7 @@
         <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
         <mkdir dir="${DIST_DIR}/plugins" />
+        <mkdir dir="${DIST_DIR}/images" />
         <!-- stip out top level closures, concat everything, and wrap in a closure. -->
         <!-- copy all needed files from src to build -->
         <copy todir="${BUILD_DIR}">
@@ -70,10 +71,16 @@
           <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
           <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
           <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
+          <fileset dir="" includes="index.html" />
+          <fileset dir="" includes="style.css" />
         </copy>
         
         <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
+        </copy>
+        
+        <copy todir="${DIST_DIR}/images">
+          <fileset dir="./images" includes="*" />
         </copy>
         
         <echo message="jqPlot built." />
@@ -169,11 +176,7 @@
         <replace dir="${DIST_DIR}/docs/files/plugins" token="${h1Token}" value="${h1Value}" />
         <replace dir="${DIST_DIR}/docs/files" token="${h1CloseToken}" value="${h1CloseValue}" />
         <replace dir="${DIST_DIR}/docs/files/plugins" token="${h1CloseToken}" value="${h1CloseValue}" />
-        <!-- <replaceregexp match="\<div id\=Index\>" replace="\<div id\=\"IPageLogo\"\>\&nbsp\;\<\/div\>\<div id\=Index\>" flags="">
-          <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
-          <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
-          <fileset dir="${DIST_DIR}/docs/search" includes="*.html" />
-        </replaceregexp> -->
+
         <copy todir="${DIST_DIR}/docs/files/images">
           <fileset dir="${SRC_DIR}/images" includes="*.jpg" />
           <fileset dir="${SRC_DIR}/images" includes="*.png" />

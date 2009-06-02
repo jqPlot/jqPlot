@@ -1,0 +1,249 @@
+
+    html { 
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    }
+
+    body {
+      font-family: Tahoma, "Helvetica Neue", "Trebuchet MS", Verdana, Arial, sans-serif;
+      font-size: 14px;
+      padding: 0px;
+      border-width: 0px;
+      margin: 0px;
+      background-color: #818181;
+      background: #818181 repeat-x;
+      height: 100%;
+      background-image: url(images/background.jpg)
+    }
+    
+    .heading {
+    	margin-left: 60px;
+    	margin-top: 50px;
+    	color: #ffc53c;
+    	font-weight: bold;
+    	font-size: 22px;
+    }
+
+    #main {
+      padding:0;
+      margin: 0 auto;
+      width: 780px;
+      background-color: white;
+      min-height: 100%;
+      top: 0px;
+    }
+
+    div.logo {
+      position: relative;
+      width: 780px;
+      height: 94px;
+      margin: 0px auto;
+      padding: 0px;
+      top: 0px;
+      background-image: url('images/logo.jpg');
+      background-color: #292929;
+    }
+    
+    div.logo a {
+        border: 0px;
+        text-decoration: none;
+      font-family: "Arial Narrow Bold", sans-serif;
+      background-position: left top;
+      background-repeat: no-repeat;  
+    }
+    
+    div.logo a span {
+        display: none;
+    }
+    
+    div.logo a:hover {
+        text-decoration: none;
+        border: 0px;
+    }
+    
+    div.logo a:active {
+        text-decoration: none;
+        border: 0px;
+    }
+    
+    div.logo a:visited {
+        text-decoration: none;
+        border: 0px;
+    }
+
+    #home {
+      background-image: url(images/navhome.png);
+      height: 26px;
+      width: 59px;
+      position: absolute;
+      top: 65px;
+      left: 437px;
+    }
+
+    #examples {
+      background-image: url(images/navexamples.png);
+      height: 26px;
+      width: 88px;
+      position: absolute;
+      top: 65px;
+      left: 503px;
+    }
+
+    #docs {
+      background-image: url(images/navdocs.png);
+      height: 26px;
+      width: 55px;
+      position: absolute;
+      top: 65px;
+      left: 598px;
+    }
+
+    #download {
+      background-image: url(images/navdownload.png);
+      height: 26px;
+      width: 89px;
+      position: absolute;
+      top: 65px;
+      left: 660px;
+    }
+    
+    #home:hover {
+        background-image: url(images/navhomeover.png);
+    }
+    
+    #examples:hover {
+        background-image: url(images/navexamplesover.png);
+    }
+    
+    #docs:hover {
+        background-image: url(images/navdocsover.png);
+    }
+    
+    #download:hover {
+        background-image: url(images/navdownloadover.png);
+    }
+
+    #heading1 {
+    }
+    
+    #holder1{
+    	margin-top: 35px;
+    	height: 325px;
+    	position: relative;
+    	width: 780px;
+    }
+    
+    #floater1 {
+      line-height: 1.25em;
+      left: 347px;
+      top: 0px;
+      position: absolute;
+      background: white url('images/backgroundchart.jpg') center center no-repeat;
+      width: 325px;
+      height: 319px;
+    }
+
+    #floater1 .paragraph {
+    	padding-left: 30px;
+    	padding-bottom: 15px;
+    	padding-right: 20px;
+    	padding-top: 15px;
+    	font-size: 14px;
+    	font-weight: bold;
+    }
+    
+    #floater1 ul {
+    	font-size: 13px;
+    }
+    
+    #floater1 li {
+    	margin-right: 20px;
+    	margin-left: 30px;
+    	list-style-type: disc;
+    }
+    
+    #chartsImage {
+      left: 30px;
+      top: 51px;
+      position: absolute;
+    }
+    
+    #heading2{
+    }
+    
+    .text{
+    	margin-right: 60px;
+    	margin-left: 60px;
+    }
+    
+    table{
+    	border-collapse: collapse;
+    	border-width: 0px;
+    	margin-top: 40px;
+    	margin-right: auto;
+    	margin-left: auto;
+    	width: 640px;
+    }
+    
+    td{
+        vertical-align: top;
+    	text-align: center;
+    	padding-right: 25px;
+    	padding-left: 25px;
+    	border-style: none;
+    	border-color: #7e7e7e;
+    	border-width: 0px;
+    	border-collapse: collapse;
+    	width: 33%;
+    }
+    
+    td div{
+    	margin-bottom: 20px;
+    	margin-top: 10px;
+    	margin-left: 5px;
+    	width: 149px;
+    	text-align: left;
+    }
+    
+    td img{
+    	margin-top: 20px;
+    }
+    #downloadButton{
+        text-decoration: none;
+      font-family: "Arial Narrow Bold", sans-serif;
+      font-size: 12pt;
+      background-position: left top;
+      background-repeat: no-repeat;
+      border: 0px;
+    	bottom: 20px;
+    	right: 20px;
+    	position: absolute;
+    	width: 102px;
+    	height: 39px;
+    	background-image: url(images/downloadnow.png);
+    }
+    
+    #downloadButton span {
+        display: none;
+    }
+    
+    #downloadButton:hover, #downloadButton:active {
+        background-image: url(images/downloadnowover.png);
+        text-decoration: none;
+        border: 0px;
+    }
+    
+    #downloadButton:visited {
+        text-decoration: none;
+        border: 0px;
+    }
+    
+    #openSourceProject{
+    	width: 160px;
+    	color: #a5a5a5;
+    	left: 30px;
+    	bottom: 24px;
+    	position: absolute;
+    }
+    
