@@ -39,7 +39,7 @@ p {
 }
 
 body.ContentPage {
-  background-image: url('../files/images/background.jpg');
+  background-image: url('../../images/background.jpg');
   background-color: #818181;
 	background-position: left top;
 	background-repeat: repeat-x;
@@ -74,7 +74,7 @@ body.ContentPage {
 	margin: 0px;
 	background-position: left top;
 	background-repeat: no-repeat;
-	background-image: url('../files/images/logo.jpg');
+	background-image: url('../../images/logo.jpg');
 	background-color: #292929;
 	height: 94px;
 	position: relative;
@@ -105,7 +105,7 @@ body.ContentPage {
 	margin: 0px;
 	background-position: left top;
 	background-repeat: no-repeat;
-	background-image: url('../files/images/logo.jpg');
+	background-image: url('../../images/logo.jpg');
 	background-color: #292929;
 	height: 94px;
 	position: relative;
@@ -127,7 +127,7 @@ body.ContentPage {
 }
 
 #navhome {
-  background-image: url(../files/images/navhome.png);
+  background-image: url(../../images/navhome.png);
   height: 26px;
   width: 59px;
   position: absolute;
@@ -136,7 +136,7 @@ body.ContentPage {
 }
 
 #navexamples {
-  background-image: url(../files/images/navexamples.png);
+  background-image: url(../../images/navexamples.png);
   height: 26px;
   width: 88px;
   position: absolute;
@@ -145,7 +145,7 @@ body.ContentPage {
 }
 
 #navdocs {
-  background-image: url(../files/images/navdocs.png);
+  background-image: url(../../images/navdocs.png);
   height: 26px;
   width: 55px;
   position: absolute;
@@ -154,7 +154,7 @@ body.ContentPage {
 }
 
 #navdownload {
-  background-image: url(../files/images/navdownload.png);
+  background-image: url(../../images/navdownload.png);
   height: 26px;
   width: 89px;
   position: absolute;
@@ -163,22 +163,22 @@ body.ContentPage {
 }
 
 #navhome:hover {
-    background-image: url(../files/images/navhomeover.png);
+    background-image: url(../../images/navhomeover.png);
     cursor: pointer;
 }
 
 #navexamples:hover {
-    background-image: url(../files/images/navexamplesover.png);
+    background-image: url(../../images/navexamplesover.png);
     cursor: pointer;
 }
 
 #navdocs:hover {
-    background-image: url(../files/images/navdocsover.png);
+    background-image: url(../../images/navdocsover.png);
     cursor: pointer;
 }
 
 #navdownload:hover {
-    background-image: url(../files/images/navdownloadover.png);
+    background-image: url(../../images/navdownloadover.png);
     cursor: pointer;
 }
 
