@@ -73,6 +73,7 @@
           <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
           <fileset dir="" includes="index.html" />
           <fileset dir="" includes="style.css" />
+          <fileset dir="tests" includes="jquery*.js" />
         </copy>
         
         <copy todir="${DIST_DIR}/plugins">
@@ -127,6 +128,19 @@
     		</apply>
         <echo message="Minified sources built." />
     </target>
+    
+  <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
+      <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
+       basedir="${DIST_DIR}"
+       includes="jquery*.min.js jquery.jqplot.* plugins/*"
+      />
+      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tgz" compression="gzip">
+          <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
+      </tar>
+      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tbz" compression="bzip2">
+          <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
+      </tar>
+  </target>
 
 	<target name="tests" depends="dist" description="Create test suite for distribution.">
 		<echo message="Creating test suite for distribtion" />
@@ -189,7 +203,7 @@
         <delete dir="${DIST_DIR}" />
     </target>
 
-    <target name="all" depends="clean,dist,min,tests,docs" description="Clean then build everything (distribution, minify, tests and docs).">
+    <target name="all" depends="clean, dist, min, compress, tests, docs" description="Clean then build everything (distribution, minify, tests and docs).">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 
