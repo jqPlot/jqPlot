@@ -8,6 +8,7 @@
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
 	  <loadfile property="version" srcfile="version.txt" /> 
+	  <property file="dist.props" />
 	  
 	  <!-- misc. properties -->
     <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.2.jar" />
@@ -161,9 +162,21 @@
           <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
           <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
         </replaceregexp>
-        <copy todir="${DIST_DIR}/docs/files/samples">
-          <fileset dir="${SRC_DIR}/samples" includes="background.jpg" />
-          <fileset dir="${SRC_DIR}/samples" includes="logo.jpg" />
+        <replace dir="${DIST_DIR}/docs/index" token="${logoDivToken}" value="${logoDivValue}" />
+        <replace dir="${DIST_DIR}/docs/files" token="${logoDivToken}" value="${logoDivValue}" />
+        <replace dir="${DIST_DIR}/docs/search" token="${logoDivToken}" value="${logoDivValue}" />
+        <replace dir="${DIST_DIR}/docs/files" token="${h1Token}" value="${h1Value}" />
+        <replace dir="${DIST_DIR}/docs/files/plugins" token="${h1Token}" value="${h1Value}" />
+        <replace dir="${DIST_DIR}/docs/files" token="${h1CloseToken}" value="${h1CloseValue}" />
+        <replace dir="${DIST_DIR}/docs/files/plugins" token="${h1CloseToken}" value="${h1CloseValue}" />
+        <!-- <replaceregexp match="\<div id\=Index\>" replace="\<div id\=\"IPageLogo\"\>\&nbsp\;\<\/div\>\<div id\=Index\>" flags="">
+          <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
+          <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
+          <fileset dir="${DIST_DIR}/docs/search" includes="*.html" />
+        </replaceregexp> -->
+        <copy todir="${DIST_DIR}/docs/files/images">
+          <fileset dir="${SRC_DIR}/images" includes="*.jpg" />
+          <fileset dir="${SRC_DIR}/images" includes="*.png" />
     		</copy>
         <echo message="Documentation Finished" />
 	</target>

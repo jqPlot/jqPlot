@@ -2,7 +2,7 @@ Title: jqPlot Usage
 
 jqPlot is a jQuery plugin to generate pure client-side javascript charts in your web pages. The jqPlot home page is at <http://www.jqplot.com/>.  The project page and downloads are at <http://www.bitbucket.org/cleonello/jqplot/>.  jqPlot is .  
 
-Below are a few static samples to demonstrate jqPlot usage.  These plots are not actually generated, but shown as images.  Many more examples of dynamically rendered plots can be seen on the unit test page here: <../../tests/>.
+Below are a few static images to demonstrate jqPlot usage.  These plots are not actually generated, but shown as images.  Many more examples of dynamically rendered plots can be seen on the unit test page here: <../../tests/>.
 
 Include the Files:
 
@@ -30,7 +30,7 @@ $.jqplot plugin with the id of your target and some data:
 Which will produce a 
 chart like:
 
-(see samples/basicline.png)
+(see images/basicline.png)
 
 You can customize the plot by passing options to the 
 $.jqplot function:
@@ -44,7 +44,7 @@ $.jqplot function:
 Which will produce 
 a plot like:
 
-(see samples/basicoptions.png)
+(see images/basicoptions.png)
 
 Using Plugins:
 
@@ -68,7 +68,7 @@ but with a log y axis:
 Which produces 
 a plot like:
 
-(see samples/basiclogaxis.png)
+(see images/basiclogaxis.png)
 
 You can further customize with options specific 
 to the log axis plugin:
@@ -82,15 +82,17 @@ to the log axis plugin:
 Which makes a 
 plot like:
 
-(see samples/basiclogoptions.png)
+(see images/basiclogoptions.png)
 
 You can add as many plugins as you wish.  Order is generally not important.  Some plugins, like the highlighter plugin which highlights data points near the mouse,  don't need any extra options or setup to function.  Highlighter does have additional options which the user can set.
 
-Other plugins, the barRenderer for example, provide functionality the must be specified in the chart options object.  To render a series as a bar graph with the bar renderer, you would first include the plugin after jqPlot:
+Other plugins, the barRenderer for example, provide functionality the must be specified in the chart options object.  
+To render a series as a bar graph with the bar renderer, you would first include the plugin after jqPlot:
 
 > <script language="javascript" type="text/javascript" src="plugins/jqplot.barRenderer.min.js"></script>
 
-Then you would create a chart like:
+Then you would create 
+a chart like:
 
 > $.jqplot('chartdiv',  [[34.53, 56.32, 25.1, 18.6]], series:[{renderer:$.jqplot.BarRenderer}]);
 

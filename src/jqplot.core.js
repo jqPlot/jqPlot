@@ -1,7 +1,7 @@
 /**
- * Title: jqPlot
+ * Title: jqPlot Charts
  * 
- * Pure JavaScript plotting library for jQuery.
+ * Pure JavaScript plotting plugin for jQuery.
  * 
  * About: Version
  * 
@@ -27,7 +27,8 @@
  * 
  * > chart = $.jqplot('targetElemId', [dataArray,...], {optionsObject});
  * 
- * Which would look like this in actual code:
+ * Which would look like this 
+ * in actual code:
  * 
  * > $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
  * 

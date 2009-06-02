@@ -38,9 +38,11 @@ p {
   border: 0px;
 }
 
-body {
-  background-image: url('../files/samples/background.jpg');
+body.ContentPage {
+  background-image: url('../files/images/background.jpg');
   background-color: #818181;
+	background-position: left top;
+	background-repeat: repeat-x;
 }
 
 .MGroup a:link,
@@ -62,7 +64,7 @@ body {
   color: #5c93f0;
 }
 
-#MainTopic h1.CTitle {
+#MainTopic div.CTitle.logo {
 	color: #292929;
 	font-size: 0px;
 	font-style: normal;
@@ -72,9 +74,10 @@ body {
 	margin: 0px;
 	background-position: left top;
 	background-repeat: no-repeat;
-	background-image: url('../files/samples/logo.jpg');
+	background-image: url('../files/images/logo.jpg');
 	background-color: #292929;
 	height: 94px;
+	position: relative;
 
 }
 
@@ -93,24 +96,90 @@ body {
 }
 
 #IPageLogo {
-	width: 100%;
+	width: 780px;
 	color: #292929;
-	font-size: 0px;
 	font-style: normal;
 	font-weight: normal;
 	border-width: 0px;
 	padding: 0px;
 	margin: 0px;
-	background-position: 27ex top;
+	background-position: left top;
 	background-repeat: no-repeat;
-	background-image: url('../files/samples/logo.jpg');
+	background-image: url('../files/images/logo.jpg');
 	background-color: #292929;
 	height: 94px;
+	position: relative;
+	left: 27ex;
 }
+
+#Menu, #IPageLogo {
+    font-size: 9pt;
+}
+
+/*#IPageLogo:hover {
+    cursor: pointer;
+}*/
 
 .IPageTitle {
   background-color:#FFFFF0;
   color: #333333;
   border: 0px;
 }
+
+#navhome {
+  background-image: url(../files/images/navhome.png);
+  height: 26px;
+  width: 59px;
+  position: absolute;
+  top: 65px;
+  left: 437px;
+}
+
+#navexamples {
+  background-image: url(../files/images/navexamples.png);
+  height: 26px;
+  width: 88px;
+  position: absolute;
+  top: 65px;
+  left: 503px;
+}
+
+#navdocs {
+  background-image: url(../files/images/navdocs.png);
+  height: 26px;
+  width: 55px;
+  position: absolute;
+  top: 65px;
+  left: 598px;
+}
+
+#navdownload {
+  background-image: url(../files/images/navdownload.png);
+  height: 26px;
+  width: 89px;
+  position: absolute;
+  top: 65px;
+  left: 660px;
+}
+
+#navhome:hover {
+    background-image: url(../files/images/navhomeover.png);
+    cursor: pointer;
+}
+
+#navexamples:hover {
+    background-image: url(../files/images/navexamplesover.png);
+    cursor: pointer;
+}
+
+#navdocs:hover {
+    background-image: url(../files/images/navdocsover.png);
+    cursor: pointer;
+}
+
+#navdownload:hover {
+    background-image: url(../files/images/navdownloadover.png);
+    cursor: pointer;
+}
+
 
