@@ -466,6 +466,9 @@
         this._stack = false;
         this._stackData = [];
         this._plotData = [];
+        // data from the previous series, for stacked charts.
+        this._prevPlotData = [];
+        this._prevGridData = [];
         this._stackAxis = 'y';
         this.plugins = {};
     }
@@ -861,7 +864,7 @@
                     //this._stackData.push(this.series[i].data);
                     var temp = $.extend(true, [], this.series[i].data);
                     // create the data that will be plotted for this series
-                    var plotdata = $.extend(this, [], this.series[i].data);
+                    var plotdata = $.extend(true, [], this.series[i].data);
                     // for first series, nothing to add to stackData.
                     for (var j=0; j<i; j++) {
                         var cd = this.series[j].data;
@@ -882,6 +885,9 @@
                     this.series[i]._stackData = this.series[i].data;
                     this._plotData.push(this.series[i].data);
                     this.series[i]._plotData = this.series[i].data;
+                }
+                if (i>0) {
+                    this.series[i]._prevPlotData = this.series[i-1]._plotData;
                 }
             }
         };
@@ -999,7 +1005,6 @@
         };
     
         this.draw = function(){
-            console.log(this);
             for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
                 $.jqplot.preDrawHooks[i].call(this);
             }

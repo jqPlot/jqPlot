@@ -21,7 +21,7 @@
         // the min/max bounds for this axis.
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
-            var d = s.data;
+            var d = s._plotData;
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {

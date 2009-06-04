@@ -30,28 +30,15 @@
         // recalculate the grid data
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var gd = [];
-        var data = [];
+        var data = this._plotData;
+        var pdata = this._prevPlotData;
         this.gridData = [];
-        // if (this._stack) {
-        //     var sidx = this._stackAxis == 'x' ? 0 : 1;
-        //     var idx = s ? 0 : 1;
-        //     for (var i=0; i<this.data.length; i++) {
-        //         var temp = [];
-        //         temp[sidx] = this._stackData[i][sidx];
-        //         temp[idx] = this.data[i][idx];
-        //         data.push(temp);
-        //     }
-        // }
-        // else {
-        //     data = this.data;
-        // }
-        data = this._plotData;
-//        gd.push([xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])]); //????
         for (var i=0; i<this.data.length; i++) {
-            gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+            this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+            if (pdata.length) {
+                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])])
+            }
         }
-        this.gridData = gd;
     };
     
     // Method: makeGridData
@@ -65,7 +52,7 @@
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
         var gd = [];
-        // gd.push([xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])]);
+        var pgd = [];
         for (var i=0; i<data.length; i++) {
             gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
         }
@@ -84,12 +71,23 @@
         if (showLine) {
             // if we fill, we'll have to add points to close the curve.
             if (fill) {
-                var gridymin = this._yaxis.series_u2p(this._yaxis.min) - this.gridBorderWidth / 2;
-                // IE doesn't return new length on unshift
-                gd.unshift([gd[0][0], gridymin]);
-                len = gd.length;
-                gd.push([gd[len - 1][0], gridymin]);
+                // if not stacked, fill down to axis
+                if (this.index == 0 || !this._stack) {
+                    var gridymin = this._yaxis.series_u2p(this._yaxis.min) - this.gridBorderWidth / 2;
+                    // IE doesn't return new length on unshift
+                    gd.unshift([gd[0][0], gridymin]);
+                    len = gd.length;
+                    gd.push([gd[len - 1][0], gridymin]);                    
+                }
+                // if stacked, fill to line below 
+                else {
+                    var prev = this._prevGridData;
+                    for (var i=prev.length-1; i>-1; i--) {
+                        gd.push(prev[i]);
+                    }
+                }
             }
+            
             this.renderer.shapeRenderer.draw(ctx, gd, opts);                
 
             // now draw the shadows
