@@ -396,6 +396,7 @@
         // name of y axis to associate with this series, either 'yaxis' or 'y2axis'.
         this.yaxis = 'yaxis';
         this._yaxis;
+        this.gridBorderWidth = 2.0;
         // prop: renderer
         // A class of a renderer which will draw the series, 
         // see <$.jqplot.LineRenderer>.
@@ -427,7 +428,7 @@
         this.shadowAngle = 45;
         // prop: shadowOffset
         // Shadow offset from line in pixels
-        this.shadowOffset = 1;
+        this.shadowOffset = 1.5;
         // prop: shadowDepth
         // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
         this.shadowDepth = 3;
@@ -452,21 +453,42 @@
         // prop: showMarker
         // wether or not to show the markers at the data points.
         this.showMarker = true;
+        // prop: index
+        // 0 based index of this series in the plot series array.
+        this.index;
+        // prop: fill
+        // true or false, wether to fill under lines or in bars.
+        // May not be implemented in all renderers.
+        this.fill = false;
+        // _stack is set by the Plot if the plot is a stacked chart.
+        // will stack lines or bars on top of one another to build a "mountain" style chart.
+        // May not be implemented in all renderers.
+        this._stack = false;
+        this._stackData = [];
+        this._plotData = [];
+        this._stackAxis = 'y';
         this.plugins = {};
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
     Series.prototype.constructor = Series;
     
-    Series.prototype.init = function() {
+    Series.prototype.init = function(index, gridbw) {
         // weed out any null values in the data.
+        this.index = index;
+        this.gridBorderWidth = gridbw;
         var d = this.data;
         for (var i=0; i<d.length; i++) {
-            if (d[i] == null || d[i][0] == null || d[i][1] == null) {
-                // For the time being, just delete null values
-                // could keep them if wanted to break lines on null.
-                d.splice(i,1);
-                continue;
+            if (! this.breakOnNull) {
+                if (d[i] == null || d[i][0] == null || d[i][1] == null) {
+                    d.splice(i,1);
+                    continue;
+                }
+            }
+            else {
+                if (d[i] == null || d[i][0] == null || d[i][1] == null) {
+                    // figure out what to do with null values
+                }
             }
         }
         this.renderer = new this.renderer();
@@ -484,19 +506,38 @@
     
     // data - optional data point array to draw using this series renderer
     // gridData - optional grid data point array to draw using this series renderer
+    // stackData - array of cumulative data for stacked plots.
     Series.prototype.draw = function(sctx, opts) {
         var options = (opts == undefined) ? {} : opts;
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
         for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
-            $.jqplot.preDrawSeriesHooks[j].call(this.series[i], sctx, options);
+            $.jqplot.preDrawSeriesHooks[j].call(this, sctx, options);
         }
         if (this.show) {
             this.renderer.setGridData.call(this);
             if (!options.preventJqPlotSeriesDrawTrigger) {
                 $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
             }
-            var data = options.data || this.data;
+            var data = [];
+            if (options.data) {
+                data = options.data;
+            }
+            else if (!this._stack) {
+                data = this.data;
+            }
+            else {
+                // var sidx = this._stackAxis == 'x' ? 0 : 1;
+                // var idx = s ? 0 : 1;
+                // for (var i=0; i<this.data.length; i++) {
+                //     var temp = [];
+                //     temp[sidx] = this._stackData[i][sidx];
+                //     temp[idx] = this.data[i][idx];
+                //     data.push(temp);
+                // }
+                //data = this._stackData;
+                data = this._plotData;
+            }
             var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
         
             this.renderer.draw.call(this, sctx, gridData, options);
@@ -705,6 +746,17 @@
         this.title = new Title();
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
+        // prop: stackSeries
+        // true or false, creates a stack or "mountain" plot.
+        // Not all series renderers may implement this option.
+        this.stackSeries = false;
+        // array to hold the cumulative stacked series data.
+        // used to ajust the individual series data, which won't have access to other
+        // series data.
+        this._stackData = [];
+        // array that holds the data to be plotted. This will be the series data
+        // merged with the the appropriate data from _stackData according to the stackAxis.
+        this._plotData = [];
         // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
             
@@ -770,13 +822,13 @@
             
             this.title.init();
             this.legend.init();
-                        
             for (var i=0; i<this.series.length; i++) {
+                this.populatePlotData();
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
                     $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, options);
                 }
                 this.series[i]._plotDimensions = this._plotDimensions;
-                this.series[i].init();
+                this.series[i].init(i, this.grid.borderWidth);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
                     $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, options);
                 }
@@ -797,6 +849,43 @@
             }
         };  
         
+        // populate the _stackData and _plotData arrays for the plot and the series.
+        this.populatePlotData = function() {
+            for (var i=0; i<this.series.length; i++) {
+                // if a stacked chart, compute the stacked data
+                if (this.stackSeries) {
+                    this.series[i]._stack = true;
+                    var sidx = this.series[i]._stackAxis == 'x' ? 0 : 1;
+                    var idx = sidx ? 0 : 1;
+                    // push the current data into stackData
+                    //this._stackData.push(this.series[i].data);
+                    var temp = $.extend(true, [], this.series[i].data);
+                    // create the data that will be plotted for this series
+                    var plotdata = $.extend(this, [], this.series[i].data);
+                    // for first series, nothing to add to stackData.
+                    for (var j=0; j<i; j++) {
+                        var cd = this.series[j].data;
+                        for (var k=0; k<cd.length; k++) {
+                            temp[k][0] += cd[k][0];
+                            temp[k][1] += cd[k][1];
+                            // only need to sum up the stack axis column of data
+                            plotdata[k][sidx] += cd[k][sidx];
+                        }
+                    }
+                    this._plotData.push(plotdata);
+                    this._stackData.push(temp);
+                    this.series[i]._stackData = this._stackData[i];
+                    this.series[i]._plotData = this._plotData[i];
+                }
+                else {
+                    this._stackData.push(this.series[i].data);
+                    this.series[i]._stackData = this.series[i].data;
+                    this._plotData.push(this.series[i].data);
+                    this.series[i]._plotData = this.series[i].data;
+                }
+            }
+        };
+        
         this.getNextSeriesColor = function() {
             var c = this.seriesColors[seriesColorsIndex];
             seriesColorsIndex++;
@@ -808,6 +897,7 @@
                 $.jqplot.preParseOptionsHooks[i].call(this, options);
             }
             this.options = $.extend(true, {}, this.defaults, options);
+            this.stackSeries = this.options.stackSeries;
             this._gridPadding = this.options.gridPadding;
             for (var n in this.axes) {
                 var axis = this.axes[n];
@@ -843,7 +933,7 @@
                 return temp;
             };
 
-            for (var i=0; i<this.data.length; i++) { 
+            for (var i=0; i<this.data.length; i++) { ;
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
@@ -909,6 +999,7 @@
         };
     
         this.draw = function(){
+            console.log(this);
             for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
                 $.jqplot.preDrawHooks[i].call(this);
             }

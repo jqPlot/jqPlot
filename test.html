@@ -15,10 +15,10 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="src/plugins/jqplot.logAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="src/plugins/jqplot.cursor.js"></script>
-  <script language="javascript" type="text/javascript" src="src/plugins/jqplot.highlighter.js"></script>
-  <script language="javascript" type="text/javascript" src="src/plugins/jqplot.dragable.js"></script>
+  <!-- // <script language="javascript" type="text/javascript" src="src/plugins/jqplot.logAxisRenderer.js"></script>
+  // <script language="javascript" type="text/javascript" src="src/plugins/jqplot.cursor.js"></script>
+  // <script language="javascript" type="text/javascript" src="src/plugins/jqplot.highlighter.js"></script>
+  // <script language="javascript" type="text/javascript" src="src/plugins/jqplot.dragable.js"></script> -->
   <!-- <script language="javascript" type="text/javascript" src="src/plugins/jqplot.trendline.js"></script>-->
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
@@ -29,16 +29,6 @@
   <script type="text/javascript" language="javascript">
   
   $(document).ready(function(){
-    // $.jqplot.installPath = 'src';
-    // $.jqplot.pluginsPath = 'src/plugins';
-    
-    // plot = $.jqplot('chart', [[4,2,5,9,1], [7,6,9,3,5]], {
-    //   series:[{dragable:{constrainTo:'x'}, trendline:{label:'tl 1'}}, {dragable:{constrainTo:'y'}, trendline:{label:'tl 2'}}],
-    //   axes:{xaxis:{ tickOptions:{formatString:'%.2f'}}, yaxis:{ tickOptions:{formatString:'%.2f'}}},
-    //   legend:{show:true},
-    //   title:'dP vs. Q relation',
-    //   cursor:{showTooltip:true}
-    //   });
       
 
     var cosPoints = [];
@@ -57,65 +47,24 @@
     for (var i = 0; i < 6.3; i += 0.6) {
         powPoints2.push([i, -3 - Math.pow(i / 4, 2)]);
     }
-    var largepoints = [15, 134.345321, 1452, 15432, 1134.2, 18.2];
-    var smallpoints = [2.34458232, 1.23, .87, .01234567, .0021, .000321, .0000456789];
-//    var allpoints = [15432, 1432, 132, 12, 1, .87, .01234567, .0021, .000321, .0000456789]
-    plot1 = $.jqplot('chart', [largepoints, smallpoints], {
-        // title: 'jqPlot',
+
+    var l1 = [4, 2, 3, 9, 3];
+    var l2 = [8, 1, 5, 6, 8];
+
+
+    plot1 = $.jqplot('chart', [l1, l2], {
+        stackSeries: false,
         grid:{background:'#fefbf3', borderWidth:2.5},
-        cursor:{showTooltip:true, followMouse:false, tooltipLocation:'sw'},
-        axes:{yaxis:{min:-3000},
-          xaxis:{}},
-          series:[{}, {yaxis:'y2axis'}]
-        // series: [
-        // {
-        //  
-        // },
-        // {
-        //     showLine: false,
-        //     lineWidth: 1.5,
-        //     markerOptions: {
-        //         style: 'diamond',
-        //         size: 12
-        //     }
-        // },
-        // {
-        //   //color: '#FFA372',
-        //   //color: '#D59622',
-        //   lineWidth: 3.5,
-        //     markerOptions: {
-        //         style: 'circle'
-        //     }
-        // },
-        // {
-        //     lineWidth: 6,
-        //     markerOptions: {
-        //         style: 'filledSquare',
-        //         size: 15,
-        //         shadowOffset: 1.8,
-        //         shadowDepth: 3,
-        //         shadowAngle: 55,
-        //         shadowAlpha: 0.08
-        //     },
-        //     // shadowOffset: 1.8,
-        //     // shadowDepth: 3,
-        //     // shadowAngle: 55,
-        //     // shadowAlpha: 0.08
-        // }]
+        seriesDefaults: {fill: true, showMarker: false, shadow: true},
+        axes:{xaxis:{pad:1.0, numberTicks:5}},
+        series:[{}, {color:'rgba(200, 45, 120, 0.5)'}]
     });
 
-    
-    // $('#chart').bind('jqplotSeriesDraw', function(ev, data, griddata) {
-    //   console.log('series draw: ', data, griddata);
-    // });
-    // 
-    // $('#chart').bind('jqplotSeriesPointChange', function(ev, s, p, d, g) {
-    //   console.log('point changed. series: ', s, ' point: ', p, ' data: ', d, ' grid data: ', g);
-    // });
+
   });
   </script>
   </head>
   <body>
-    <div id="chart" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:400px; height:270px;"></div>
   </body>
 </html>

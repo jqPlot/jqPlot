@@ -1,4 +1,4 @@
-Title: jqPlot Charts
+Title: jqPlot Readme
 
 Pure JavaScript plotting plugin for jQuery.
 
@@ -6,10 +6,18 @@ Copyright (c) 2009 Chris Leonello
 This software is licensed under the GPL version 2.0 and MIT licenses.
 
 The jqPlot home page is at <http://www.jqplot.com/>.
-Examples and unit tests are at <http://www.jqplot.com/tests/>.
-Documentation is at <http://www.jqplot.com/docs/>.
-The jqplot project page and source code is at <http://www.bitbucket.org/cleonello/jqplot/>.
+
 Downloads can be found at <http://bitbucket.org/cleonello/jqplot/downloads/>.
+
+The mailing list is at <http://groups.google.com/group/jqplot-users>.
+
+Examples and unit tests are at <http://www.jqplot.com/tests/>.
+
+Documentation is at <http://www.jqplot.com/docs/>.
+
+The project page and source code is at <http://www.bitbucket.org/cleonello/jqplot/>.
+
+Bugs, issues, feature requests: <http://www.bitbucket.org/cleonello/jqplot/issues/>.
 
 To build a distribution from source you need to have ant <http://ant.apache.org> 
 installed.  There are 6 targets: clean, dist, min, tests, docs and all.  Use
