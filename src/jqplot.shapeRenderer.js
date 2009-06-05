@@ -3,8 +3,11 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
-	// class: $.jqplot.shadowRenderer
-	// The default jqPlot shadow renderer, rendering shadows behind shapes.
+	// class: $.jqplot.shapeRenderer
+	// The default jqPlot shape renderer.  Given a set of points will
+	// plot them and either stroke a line (fill = false) or fill them (fill = true).
+	// If a filled shape is desired, closePath = true must also be set to close
+	// the shape.
     $.jqplot.ShapeRenderer = function(options){
         
         this.lineWidth = 1.5;
@@ -38,7 +41,7 @@
     };
     
     // function: draw
-    // draws an transparent black (i.e. gray) shadow.
+    // draws the shape.
     //
     // ctx - canvas drawing context
     // points - array of points for shapes or 
@@ -63,7 +66,7 @@
             
         }
         if (this.closePath) {
-        	ctx.closePath();
+            ctx.closePath();
         }
         if (this.fill) {
         	ctx.fill();

@@ -530,15 +530,6 @@
                 data = this.data;
             }
             else {
-                // var sidx = this._stackAxis == 'x' ? 0 : 1;
-                // var idx = s ? 0 : 1;
-                // for (var i=0; i<this.data.length; i++) {
-                //     var temp = [];
-                //     temp[sidx] = this._stackData[i][sidx];
-                //     temp[idx] = this.data[i][idx];
-                //     data.push(temp);
-                // }
-                //data = this._stackData;
                 data = this._plotData;
             }
             var gridData = options.gridData || this.renderer.makeGridData.call(this, data);

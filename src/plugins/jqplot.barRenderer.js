@@ -10,30 +10,6 @@
     */
     $.jqplot.BarRenderer = function(){
         $.jqplot.LineRenderer.call(this);
-        /**
-        *  Group: Properties
-        *  
-        *  prop: seriesDefaults
-        *  Attributes that will be added to the series object which
-        *  are needed for bar renderering.
-        * 
-        *  Properties
-        * 
-        *  barPadding - Number of pixels between adjacent bars at the same axis value.
-        *  barDirection - 'vertical' = up and down bars, 'horizontal' = side to side bars
-        *  barColor - CSS color spec for the bar
-        *  barWidth - width of the bars.  Auto calculated by default.
-        *  fillBar - wether bars are filled or not.
-        *  prop: barPadding
-        */
-        this.seriesDefaults = {
-            barPadding : null,
-            barMargin : null,
-            barDirection : 'vertical',
-            barColor : null,
-            barWidth : null,
-            fillBar : true
-        };
     };
     
     $.jqplot.BarRenderer.prototype = new $.jqplot.LineRenderer();
@@ -41,15 +17,24 @@
     
     // called with scope of series.
     $.jqplot.BarRenderer.prototype.init = function(options) {
+        // Group: Properties
+        
+        // prop: fill
+        // true or false, fill the bars.
+        this.fill = true
+        // prop: barPadding
+        // Number of pixels between adjacent bars at the same axis value (auto by default). null = calculated automatically.
+        this.barPadding = null;
+        // prop: barMargin
+        // Number of pixels between groups of bars at adjacent axis values (auto by default).  null = calculated automatically.
+        this.barMargin = null;
+        // prop: barDirection
+        // 'vertical' = up and down bars, 'horizontal' = side to side bars
+        this.barDirection = 'vertical';
+        // prop: barWidth
+        // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
+        this.barWidth = null;
         $.extend(true, this, options);
-        for (var d in this.renderer.seriesDefaults) {
-            if (this[d] == null) {
-                this[d] = this.renderer.seriesDefaults[d];
-            }
-        }
-        if (this.barColor == null) {
-            this.barColor = this.color;
-        }
         if (this.barPadding == null) {
             this.barPadding = 2*this.lineWidth;
         }
@@ -63,15 +48,22 @@
         }
         if (this.barDirection == 'vertical' ) {
             this._primaryAxis = '_xaxis';
+            this._stackAxis = 'x';
         }
         else {
             this._primaryAxis = '_yaxis';
+            this._stackAxis = 'y';
         }
+        // set the shape renderer options
+        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:this.fill};
+        this.renderer.shapeRenderer.init(opts);
+        // set the shadow renderer options
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        this.renderer.shadowRenderer.init(sopts);
     };
     
-    $.jqplot.BarRenderer.prototype.setBarWidth = function() {
-        // need to know how many data values we have on the approprate axis and figure it out.
-        var i;
+    // needs to be called with scope of series, not renderer.
+    $.jqplot.BarRenderer.prototype.calcSeriesNumbers = function() {
         var nvals = 0;
         var nseries = 0;
         var paxis = this[this._primaryAxis];
@@ -89,112 +81,118 @@
                 nseries += 1;
             }
         }
+        return [nvals, nseries, pos];
+    }
+
+    $.jqplot.BarRenderer.prototype.setBarWidth = function() {
+        // need to know how many data values we have on the approprate axis and figure it out.
+        var i;
+        var nvals = 0;
+        var nseries = 0;
+        var paxis = this[this._primaryAxis];
+        var s, series, pos;
+        var temp = this.renderer.calcSeriesNumbers.call(this);
+        nvals = temp[0];
+        nseries = temp[1];
         // so, now we have total number of axis values.
         if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
-            this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/2;
+            if (this._stack) {
+                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin/2;
+            }
+            else {
+                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/2;
+            }
         }
         else {
-            this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/2;
+            if (this._stack) {
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin/2;
+            }
+            else {
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/2;
+            }
         }
-//        this.barWidth = Math.abs(paxis._offsets.max - paxis._offsets.min - this.barMargin*2) / nvals - this.barPadding;
-        this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
+        return [nvals, nseries];
     };
     
     $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;
+        var opts = (options != undefined) ? options : {};
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
+        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var xaxis = this.xaxis;
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy;
+        var pointx, pointy, nvals, nseries, pos;
+        
         if (this.barWidth == null) {
-            //this.barWidth = computeBarWidth(this);
             this.renderer.setBarWidth.call(this);
         }
-        ctx.save();
-        if (this.showLine) {
-            ctx.beginPath();
-            ctx.lineJoin = 'miter';
-            ctx.lineCap = 'butt';
-            ctx.lineWidth = this.lineWidth;
-            ctx.strokeStyle = this.color;
-            ctx.fillStyle = this.barColor;
+        
+        var temp = this.renderer.calcSeriesNumbers.call(this);
+        nvals = temp[0];
+        nseries = temp[1];
+        pos = temp[2];
+        
+        if (this._stack) {
+            this._barNudge = 0;
+        }
+        else {
+            this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
+        }
+        if (showLine) {
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
+                    points = [];
                     var base = gridData[i][0] + this._barNudge;
-                    ctx.moveTo(base-this.barWidth/2, ctx.canvas.height);
-                    ctx.lineTo(base-this.barWidth/2, gridData[i][1]);
-                    ctx.lineTo(base+this.barWidth/2, gridData[i][1]);
-                    ctx.lineTo(base+this.barWidth/2, ctx.canvas.height);
-                    ctx.stroke();
+                    var ystart;
+                    
+                    if (this._stack && this._prevGridData.length) {
+                        ystart = this._prevGridData[i][1];
+                    }
+                    else {
+                        ystart = ctx.canvas.height;
+                    }
+                    
+                    points.push([base-this.barWidth/2, ystart]);
+                    points.push([base-this.barWidth/2, gridData[i][1]]);
+                    points.push([base+this.barWidth/2, gridData[i][1]]);
+                    points.push([base+this.barWidth/2, ystart]);
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
+                    // now draw the shadows
+                    if (shadow) {
+                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                    }
                 }
             }
             
             else if (this.barDirection == 'horizontal'){
                 for (var i=0; i<gridData.length; i++) {
+                    points = [];
                     var base = gridData[i][1] - this._barNudge;
-                    ctx.moveTo(0, base+this.barWidth/2);
-                    ctx.lineTo(gridData[i][0], base+this.barWidth/2);
-                    ctx.lineTo(gridData[i][0], base-this.barWidth/2);
-                    ctx.lineTo(0, base-this.barWidth/2);
-                    ctx.stroke();
-                }
+                    var xstart;
+                    
+                    if (this._stack && this._prevGridData.length) {
+                        xstart = this._prevGridData[i][0];
+                    }
+                    else {
+                        xstart = 0;
+                    }
+                    
+                    points.push([xstart, base+this.barWidth/2]);
+                    points.push([gridData[i][0], base+this.barWidth/2]);
+                    points.push([gridData[i][0], base-this.barWidth/2]);
+                    points.push([xstart, base-this.barWidth/2]);
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
+                    // now draw the shadows
+                    if (shadow) {
+                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                    }
+                }  
             }
-        }
-        
-        if (this.fillBar) {
-            ctx.beginPath();
-            
-            if (this.barDirection == 'vertical') {
-                for (var i=0; i<gridData.length; i++) {
-                    var base = gridData[i][0] + this._barNudge;
-                    ctx.moveTo(base-this.barWidth/2, ctx.canvas.height);
-                    ctx.lineTo(base-this.barWidth/2, gridData[i][1]);
-                    ctx.lineTo(base+this.barWidth/2, gridData[i][1]);
-                    ctx.lineTo(base+this.barWidth/2, ctx.canvas.height);
-                    ctx.closePath();
-                    ctx.fill();
-                }
-            }
-            
-            else if (this.barDirection == 'horizontal'){
-                for (var i=0; i<gridData.length; i++) {
-                    var base = gridData[i][1] - this._barNudge;
-                    ctx.moveTo(0, base+this.barWidth/2);
-                    ctx.lineTo(gridData[i][0], base+this.barWidth/2);
-                    ctx.lineTo(gridData[i][0], base-this.barWidth/2);
-                    ctx.lineTo(0, base-this.barWidth/2);
-                    ctx.closePath();
-                    ctx.fill();
-                }
-            }
-            
-        }
-        
-        //     // now draw the shadows
-        //     if (this.shadow) {
-        //         ctx.save();
-        //         for (var j=0; j<this.shadowDepth; j++) {
-        //             ctx.translate(Math.cos(this.shadowAngle*Math.PI/180)*this.shadowOffset, Math.sin(this.shadowAngle*Math.PI/180)*this.shadowOffset);
-        //             ctx.beginPath();
-        //             ctx.strokeStyle = 'rgba(0,0,0,'+this.shadowAlpha+')';
-        //             ctx.moveTo(this.gridData[0][0], this.gridData[0][1]);
-        //             for (var i=1; i<this.gridData.length; i++) {
-        //                 ctx.lineTo(this.gridData[i][0], this.gridData[i][1]);
-        //             }
-        //             ctx.stroke();
-        //         }
-        //         ctx.restore();
-        //     }
-        // 
-        // // now draw the markers
-        // if (this.markerRenderer.show) {
-        //     for (i=0; i<this.gridData.length; i++) {
-        //         this.markerRenderer.draw(this.gridData[i][0], this.gridData[i][1], ctx);
-        //     }
-        // }
-        
-        ctx.restore();
+        }                
+
     };
 })(jQuery);    
