@@ -8,6 +8,7 @@
     body {
       font-family: Tahoma, "Helvetica Neue", "Trebuchet MS", Verdana, Arial, sans-serif;
       font-size: 14px;
+      color: #444444;
       padding: 0px;
       border-width: 0px;
       margin: 0px;
@@ -73,56 +74,74 @@
         border: 0px;
     }
 
-    #home {
+    #navhome {
       background-image: url(images/navhome.png);
       height: 26px;
       width: 59px;
       position: absolute;
       top: 65px;
-      left: 437px;
+      left: 389px;
     }
 
-    #examples {
+    #navexamples {
       background-image: url(images/navexamples.png);
       height: 26px;
       width: 88px;
       position: absolute;
       top: 65px;
-      left: 503px;
+      left: 452px;
     }
 
-    #docs {
+    #navdocs {
       background-image: url(images/navdocs.png);
       height: 26px;
       width: 55px;
       position: absolute;
       top: 65px;
-      left: 598px;
+      left: 544px;
     }
 
-    #download {
+    #navdownload {
       background-image: url(images/navdownload.png);
       height: 26px;
       width: 89px;
       position: absolute;
       top: 65px;
-      left: 660px;
+      left: 603px;
+    }
+
+    #navinfo {
+      background-image: url(images/navinfo.png);
+      height: 26px;
+      width: 46px;
+      position: absolute;
+      top: 65px;
+      left: 696px;
     }
     
-    #home:hover {
+    #navhome:hover {
         background-image: url(images/navhomeover.png);
+        cursor: pointer;
     }
     
-    #examples:hover {
+    #navexamples:hover {
         background-image: url(images/navexamplesover.png);
+        cursor: pointer;
     }
     
-    #docs:hover {
+    #navdocs:hover {
         background-image: url(images/navdocsover.png);
+        cursor: pointer;
     }
     
-    #download:hover {
+    #navdownload:hover {
         background-image: url(images/navdownloadover.png);
+        cursor: pointer;
+    }
+    
+    #navinfo:hover {
+        background-image: url(images/navinfoover.png);
+        cursor: pointer;
     }
 
     #heading1 {
@@ -176,6 +195,10 @@
     .text{
     	margin-right: 60px;
     	margin-left: 60px;
+    }
+    
+    .text.large {
+        font-size: 16px;
     }
     
     table{
@@ -242,7 +265,7 @@
     
     #openSourceProject{
     	width: 160px;
-    	color: #a5a5a5;
+    	color: #999999;
     	left: 30px;
     	bottom: 24px;
     	position: absolute;

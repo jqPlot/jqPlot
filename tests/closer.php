@@ -26,8 +26,10 @@
 </head>
   <body onLoad="runSuites();">
     <div id="main">
-      <div class="logo">  
-        <a href="../../index.html" id="home"><span>Home</span></a> <a href="./index.html" id="examples"><span>Examples</span></a> <a href="../docs/" id="docs"><span>Docs</span></a> <a href="http://www.bitbucket.org/cleonello/jqplot/downloads/" id="download"><span>Download</span></a>
+      <div class="logo">
+      
+        <div id="navhome" onclick="location.href='../../index.php';"></div> <div id="navexamples" onclick="location.href='./';"></div> <div id="navdocs" onclick="location.href='../docs/';"></div> <div id="navdownload" onclick="location.href='http://bitbucket.org/cleonello/jqplot/downloads/';"></div> <div id="navinfo" onclick="location.href='../info.php';"></div>
+        
       </div>
     
       <div id="content">
@@ -54,6 +56,7 @@
         <img src="../images/navexamplesover.png" alt="navexamplesover" width="88" height="26"/>
         <img src="../images/navhomeover.png" alt="navhomeover" width="59" height="26"/>
         <img src="../images/navdocsover.png" alt="navdocsover" width="55" height="26"/>
+        <img src="../images/navinfoover.png" alt="navinfoover" width="46" height="26"/>
         <img src="../images/downloadnowover.png" alt="downloadnowover" width="102" height="39"/>
     </div>
   </body>

@@ -1,21 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-<html lang="en">
-  <head>
-    <link rel="stylesheet" type="text/css" href="style.css" >
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>
-      jqPlot - Pure Javascript Plotting
-    </title>
-  </head>
-  <body>
-    <div id="main">
-    
-      <div class="logo">
-      
-        <a href="./index.html" id="home"><span>Home</span></a> <a href="./tests/" id="examples"><span>Examples</span></a> <a href="./docs/" id="docs"><span>Docs</span></a> <a href="http://www.bitbucket.org/cleonello/jqplot/downloads/" id="download"><span>Download</span></a>
-        
-      </div>
+<?php
+  require("opener.php");
+?> 
       
       <p id="heading1" class="heading">A Versatile and Expandable jQuery Plotting Plugin!</p>
       
@@ -38,7 +23,7 @@
           <img id="chartsImage" src="images/leftcharts.jpg" alt="leftcharts" width="317" height="268"/>
       </div>
       
-      <p id="heading2" class="heading">jqPlots Strongest Feature is it's Plugability!</p>
+      <p id="heading2" class="heading">jqPlot's Strongest Feature is its Pluggability!</p>
       
       <p class="text">Computation and drawing of lines, axes, shadows even the grid itself is handled by pluggable "renderers".  Not only are the plot elements customizable, plugins can expand functionality of the plot too!  There are plenty of hooks into the core jqPlot code allowing for custom event handlers, creation of new plot types, adding canvases to the plot, and more!</p>
       
@@ -79,14 +64,7 @@
       
       <p style="padding-bottom: 20px;" class="text">jqPlot has been tested on IE 6, IE 7, IE 8, Firefox, Safari, and Opera.  You can see jqPlot in action on the <a href="./tests/">tests &amp; examples page</a>.
       
-    </div>
-    
-    <div id="preloader" style="display: none;">
-        <img src="images/navdownloadover.png" alt="navdownloadover" width="89" height="26"/>
-        <img src="images/navexamplesover.png" alt="navexamplesover" width="88" height="26"/>
-        <img src="images/navhomeover.png" alt="navhomeover" width="59" height="26"/>
-        <img src="images/navdocsover.png" alt="navdocsover" width="55" height="26"/>
-        <img src="images/downloadnowover.png" alt="downloadnowover" width="102" height="39"/>
-    </div>
-  </body>
-</html>
+<?php
+  require("closer.php");
+?> 
+     

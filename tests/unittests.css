@@ -57,57 +57,76 @@ div.logo a:visited {
     border: 0px;
 }
 
-#home {
-  background-image: url(../images/navhome.png);
-  height: 26px;
-  width: 59px;
-  position: absolute;
-  top: 65px;
-  left: 437px;
-}
 
-#examples {
-  background-image: url(../images/navexamples.png);
-  height: 26px;
-  width: 88px;
-  position: absolute;
-  top: 65px;
-  left: 503px;
-}
+    #navhome {
+      background-image: url(../images/navhome.png);
+      height: 26px;
+      width: 59px;
+      position: absolute;
+      top: 65px;
+      left: 389px;
+    }
 
-#docs {
-  background-image: url(../images/navdocs.png);
-  height: 26px;
-  width: 55px;
-  position: absolute;
-  top: 65px;
-  left: 598px;
-}
+    #navexamples {
+      background-image: url(../images/navexamples.png);
+      height: 26px;
+      width: 88px;
+      position: absolute;
+      top: 65px;
+      left: 452px;
+    }
 
-#download {
-  background-image: url(../images/navdownload.png);
-  height: 26px;
-  width: 89px;
-  position: absolute;
-  top: 65px;
-  left: 660px;
-}
+    #navdocs {
+      background-image: url(../images/navdocs.png);
+      height: 26px;
+      width: 55px;
+      position: absolute;
+      top: 65px;
+      left: 544px;
+    }
 
-#home:hover {
-    background-image: url(../images/navhomeover.png);
-}
+    #navdownload {
+      background-image: url(../images/navdownload.png);
+      height: 26px;
+      width: 89px;
+      position: absolute;
+      top: 65px;
+      left: 603px;
+    }
 
-#examples:hover {
-    background-image: url(../images/navexamplesover.png);
-}
-
-#docs:hover {
-    background-image: url(../images/navdocsover.png);
-}
-
-#download:hover {
-    background-image: url(../images/navdownloadover.png);
-}
+    #navinfo {
+      background-image: url(../images/navinfo.png);
+      height: 26px;
+      width: 46px;
+      position: absolute;
+      top: 65px;
+      left: 696px;
+    }
+    
+    #navhome:hover {
+        background-image: url(../images/navhomeover.png);
+        cursor: pointer;
+    }
+    
+    #navexamples:hover {
+        background-image: url(../images/navexamplesover.png);
+        cursor: pointer;
+    }
+    
+    #navdocs:hover {
+        background-image: url(../images/navdocsover.png);
+        cursor: pointer;
+    }
+    
+    #navdownload:hover {
+        background-image: url(../images/navdownloadover.png);
+        cursor: pointer;
+    }
+    
+    #navinfo:hover {
+        background-image: url(../images/navinfoover.png);
+        cursor: pointer;
+    }
 
 #main {
 	margin-bottom: 0px;
