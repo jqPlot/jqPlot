@@ -817,10 +817,10 @@
             this.title.init();
             this.legend.init();
             for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData();
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
                     $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, options);
                 }
+                this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -844,20 +844,22 @@
         };  
         
         // populate the _stackData and _plotData arrays for the plot and the series.
-        this.populatePlotData = function() {
-            for (var i=0; i<this.series.length; i++) {
+        this.populatePlotData = function(series, index) {
+            /////////////////
+            ///// shouldn't loop through all the series.  it's already being called for each series.
+            //for (var i=0; i<this.series.length; i++) {
                 // if a stacked chart, compute the stacked data
                 if (this.stackSeries) {
-                    this.series[i]._stack = true;
-                    var sidx = this.series[i]._stackAxis == 'x' ? 0 : 1;
+                    series._stack = true;
+                    var sidx = series._stackAxis == 'x' ? 0 : 1;
                     var idx = sidx ? 0 : 1;
                     // push the current data into stackData
                     //this._stackData.push(this.series[i].data);
-                    var temp = $.extend(true, [], this.series[i].data);
+                    var temp = $.extend(true, [], series.data);
                     // create the data that will be plotted for this series
-                    var plotdata = $.extend(true, [], this.series[i].data);
+                    var plotdata = $.extend(true, [], series.data);
                     // for first series, nothing to add to stackData.
-                    for (var j=0; j<i; j++) {
+                    for (var j=0; j<index; j++) {
                         var cd = this.series[j].data;
                         for (var k=0; k<cd.length; k++) {
                             temp[k][0] += cd[k][0];
@@ -868,19 +870,19 @@
                     }
                     this._plotData.push(plotdata);
                     this._stackData.push(temp);
-                    this.series[i]._stackData = this._stackData[i];
-                    this.series[i]._plotData = this._plotData[i];
+                    series._stackData = temp;
+                    series._plotData = plotdata;
                 }
                 else {
-                    this._stackData.push(this.series[i].data);
-                    this.series[i]._stackData = this.series[i].data;
-                    this._plotData.push(this.series[i].data);
-                    this.series[i]._plotData = this.series[i].data;
+                    this._stackData.push(series.data);
+                    this.series[index]._stackData = series.data;
+                    this._plotData.push(series.data);
+                    series._plotData = series.data;
                 }
-                if (i>0) {
-                    this.series[i]._prevPlotData = this.series[i-1]._plotData;
+                if (index>0) {
+                    series._prevPlotData = this.series[index-1]._plotData;
                 }
-            }
+            //}
         };
         
         this.getNextSeriesColor = function() {

@@ -62,6 +62,16 @@
         this.renderer.shadowRenderer.init(sopts);
     };
     
+    // called with scope of series
+    function barPreInit(target, data, options) {
+        console.log(this.rendererOptions.barDirection);
+        if (this.rendererOptions.barDirection == 'horizontal') {
+            this._stackAxis = 'x';
+        }
+    }
+    
+    $.jqplot.preSeriesInitHooks.push(barPreInit);
+    
     // needs to be called with scope of series, not renderer.
     $.jqplot.BarRenderer.prototype.calcSeriesNumbers = function() {
         var nvals = 0;

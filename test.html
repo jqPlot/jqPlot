@@ -48,16 +48,16 @@
         powPoints2.push([i, -3 - Math.pow(i / 4, 2)]);
     }
 
-    var l1 = [4, 2, 3, 9, 3];
-    var l2 = [8, 1, 5, 6, 8];
+    var l1 = [2, 3, 1, 4, 3];
+    var l2 = [1, 4, 3, 2, 5];
 
 
     plot1 = $.jqplot('chart', [l1, l2], {
         stackSeries: true,
         grid:{background:'#fefbf3', borderWidth:2.5},
-        seriesDefaults: {fill: true, showMarker: false, shadow: true},
-        axes:{xaxis:{pad:1.0, numberTicks:5}},
-        series:[{}, {color:'rgba(200, 45, 120, 0.5)'}]
+        seriesDefaults: {fill: true, showMarker: false, shadow: false},
+        axes:{xaxis:{pad:1.0, numberTicks:5}, yaxis:{min:0, max:12, numberTicks:5}},
+        series:[{color:'rgba(68, 124, 147, 0.7)'}, {color:'rgba(150, 35, 90, 0.7)'}]
     });
 
 
@@ -65,6 +65,6 @@
   </script>
   </head>
   <body>
-    <div id="chart" style="margin-top:20px; margin-left:20px; width:400px; height:270px;"></div>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:270px; height:210px;"></div>
   </body>
 </html>
