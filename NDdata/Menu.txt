@@ -53,6 +53,7 @@ Group: Core Renderers  {
    File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
    File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
    File: LineRenderer  (jqplot.lineRenderer.js)
+   File: StackedLineRenderer  (jqplot.stackedLineRenderer.js)
    }  # Group: Core Renderers
 
 Group: Plugins  {

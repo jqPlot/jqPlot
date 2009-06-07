@@ -1,7 +1,6 @@
 <?php
   require("opener.php");
 ?> 
-      
       <p id="heading1" class="heading">A Versatile and Expandable jQuery Plotting Plugin!</p>
       
       <div id="holder1">

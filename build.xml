@@ -71,7 +71,7 @@
           <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
           <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
           <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
-          <fileset dir="" includes="index.html" />
+          <fileset dir="" includes="*.php" />
           <fileset dir="" includes="style.css" />
           <fileset dir="" includes="README.txt" />
           <fileset dir="" includes="copyright.txt" />
