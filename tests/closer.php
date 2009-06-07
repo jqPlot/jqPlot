@@ -1,10 +1,5 @@
 <?php
-  $test_pages = array('coretests.php' => 'Core', 
-      'logAxisTests.php' => 'Log Axes', 
-      'dateAxisTests.php' => 'Date Axes', 
-      'CategoryAxisTests.php' => 'Category Axes', 
-      'barRendererTests.php' => 'Bar Plots');
-  $pages = array('coretests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'canvasAxisTests.php', 'highlighterTests.php');
+  $pages = array('coretests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'stackedTests.php', 'canvasAxisTests.php', 'highlighterTests.php');
   $labels = array('Core', 'Log Axes', 'Date Axes', 'Category Axes', 'Bar Plots', 'Rotated Text', 'Point Highlighter');
       
       $len = count($pages);

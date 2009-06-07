@@ -196,7 +196,6 @@
                     var prec = (sd <= precision) ? sd : precision
                     value = prefix + Math.abs(number).toPrecision(prec);
                 }
-                //console.log('number: %s, sd: %s, zeros: %s, value: %s', number, sd, zeros, value);
                 var textTransform = ['toString', 'toUpperCase']['pP'.indexOf(type) % 2];
                 return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
             }

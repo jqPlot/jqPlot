@@ -41,13 +41,18 @@
       return function(){return id++};
     })();
     
-    function genplot(o, c, vs) {
+    function genplot(o, args) {
       var nid, n, no;
+      var opts = (args != undefined) ? args : {};
+      var c = opts.comment;
+      var vs = opts.var_space;
+      var h = opts.height || 380;
+      var w = opts.width || 540;
       nid = uID();
       o = o.replace(/_target_/, 'chart'+nid);
       n = js_beautify(o, {preserve_newlines:true, indent_size:4, var_space: vs});
       if (c) $('<div class="description"></div>').insertBefore('.nav:last').html(c);
-      $('<div class="jqPlot"  id="chart'+nid+'" style="height:380px; width:540px;"></div>').insertBefore('.nav:last');
+      $('<div class="jqPlot"  id="chart'+nid+'" style="height:'+h+'px; width:'+w+'px;"></div>').insertBefore('.nav:last');
       $('<pre id="code'+nid+'" class="prettyprint">'+n+'</pre>').insertBefore('.nav:last');
       eval(o);
     }

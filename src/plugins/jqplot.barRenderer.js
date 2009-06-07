@@ -64,7 +64,6 @@
     
     // called with scope of series
     function barPreInit(target, data, options) {
-        console.log(this.rendererOptions.barDirection);
         if (this.rendererOptions.barDirection == 'horizontal') {
             this._stackAxis = 'x';
         }

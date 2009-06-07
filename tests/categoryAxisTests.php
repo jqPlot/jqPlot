@@ -37,7 +37,7 @@
       axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o, '', false);
+      genplot(o, {var_space:false});
   
       prettyPrint();
       

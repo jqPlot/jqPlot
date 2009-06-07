@@ -38,7 +38,7 @@
       {markerOptions:{style:'circle'}}, \
       {lineWidth:5, markerOptions:{style:'filledSquare', size:14}}]});";
     
-      genplot(o, c);
+      genplot(o, {comment:c});
       
       c = 'Shadows are also customizable.  The angle, offset (distance from the line), alpha (transparency or darkness) and depth (number of shadow strokes, offset by "shadowOffset" from eachother) are all customizable.';
       
@@ -50,7 +50,7 @@
           title:'Shadow Options', \
           series:[{showMarker:false, lineWidth:5, shadowAngle:0, shadowOffset:2, shadowAlpha:.06, shadowDepth:5}]});"
       
-      genplot(o, c);
+      genplot(o, {comment:c});
       
       c = 'Line data can be specified as an array of [x, y] pairs, or as an simple 1-D array.  If a 1-D array is given, x values are automatically generated starting at one and increasing by one for each y value in the array. <p>Line labels are specified in the "series" options.  The "series" option is an array of option objects, one for each series.  Here, the first series ("Rising line") is rendered as only markers by setting "showLine:false".';
       
@@ -62,7 +62,7 @@
       series:[{label:'Rising line', showLine:false, markerOptions:{style:'square'}}, \
       {label:'Declining line'}, {label:'Zig Zag Line', lineWidth:5, showMarker:false}]});";
             
-      genplot(o, c);
+      genplot(o, {comment:c});
       
       c = 'Axes ticks are computed automatically from the data, but can be customized if desired.  Ticks can be specified as an array of [value, label] pairs, or as a 1-D array of values. <p>Here the y axis ticks use a custom format string ("%d") to produce integer tick labels.  The default format string is %.1f and can be customized to any sprintf style format string.';
       
@@ -75,7 +75,7 @@
       series:[{label:'Rising line', markerOptions:{style:'square'}}, {label:'Declining line'}], \
       axes:{xaxis:{ticks:xticks}, yaxis:{ticks:yticks, tickOptions:{formatString:'%d'}}}});";
             
-      genplot(o, c);
+      genplot(o, {comment:c});
   
       prettyPrint();
       
