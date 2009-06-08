@@ -1,11 +1,13 @@
-0.6.3
+0.6.4
+Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
+or single value data series would crash.
 
+0.6.3
 Support for stacked line (a.k.a. area) and stacked bar (horizontal and vertical) charts.
 Refactored barRenderer to use default shape and shadow renderers.
 Added info (contacts & support information) page to web site.
 
 0.6.2
-
 This is a minor upgrade to docs and build only.  No functionality has changed.
 Ant build script generates entire site, examples, tests and distribution.
 Improvements to documentation.
