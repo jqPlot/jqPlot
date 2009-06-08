@@ -194,6 +194,14 @@
         
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
+            
+            // if min and max are same, space them out a bit
+            if (min == max) {
+                var adj = 0.05;
+                min = min*(1-adj);
+                max = max*(1+adj);
+            }
+            
             // perform some checks
             if (this.min != null && this.min <= 0) {
                 throw('log axis minimum must be greater than 0');

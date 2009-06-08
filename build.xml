@@ -74,6 +74,7 @@
           <fileset dir="" includes="*.php" />
           <fileset dir="" includes="style.css" />
           <fileset dir="" includes="README.txt" />
+          <fileset dir="" includes="changes.txt" />
           <fileset dir="" includes="copyright.txt" />
           <fileset dir="${SRC_DIR}" includes="MIT-LICENSE.txt" />
           <fileset dir="${SRC_DIR}" includes="gpl-2.0.txt" />
@@ -86,7 +87,7 @@
         </copy>
         
         <copy todir="${DIST_DIR}/images">
-          <fileset dir="./images" includes="*" />
+          <fileset dir="./images" includes="*.jpg *.png" />
         </copy>
         
         <echo message="jqPlot built." />
@@ -137,7 +138,7 @@
   <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
        basedir=""
-       includes="${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/README.txt ${DIST_DIR}/usage.txt ${DIST_DIR}/copyright.txt ${DIST_DIR}/MIT-LICENSE.txt ${DIST_DIR}/gpl-2.0.txt ${DIST_DIR}/plugins/*"
+       includes="${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/*"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tgz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>

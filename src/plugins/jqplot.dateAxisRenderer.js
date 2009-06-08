@@ -220,6 +220,13 @@
         
             min = ((this.min != null) ? Date.create(this.min).getTime() : db.min);
             max = ((this.max != null) ? Date.create(this.max).getTime() : db.max);
+            
+            // if min and max are same, space them out a bit
+            if (min == max) {
+                var adj = 24*60*60*500;  // 1/2 day
+                min -= adj;
+                max += adj;
+            }
 
             var range = max - min;
             var rmin, rmax;
