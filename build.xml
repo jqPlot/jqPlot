@@ -140,10 +140,10 @@
        basedir=""
        includes="${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/*"
       />
-      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tgz" compression="gzip">
+      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tar.gz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
       </tar>
-      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tbz" compression="bzip2">
+      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tar.bz2" compression="bzip2">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
       </tar>
   </target>
