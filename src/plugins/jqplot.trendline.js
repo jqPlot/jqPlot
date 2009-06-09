@@ -77,6 +77,7 @@
     // called within scope of a series
     function parseTrendLineOptions (seriesDefaults, options) {
         this.trendline = new $.jqplot.Trendline();
+        options = options || {};
         $.extend(true, this.trendline, {color:this.color}, seriesDefaults.trendline, options.trendline);
         this.trendline.renderer.init.call(this.trendline, null);
     }

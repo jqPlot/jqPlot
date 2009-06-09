@@ -35,6 +35,7 @@
                         addrow.call(this, lt, color, pad);
                         pad = true;
                     }
+                    // let plugins add more rows to legend.  Used by trend line plugin.
                     for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
                         var item = $.jqplot.addLegendRowHooks[j].call(this, s);
                         if (item) {
