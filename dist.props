@@ -1,6 +1,6 @@
 logoDivToken = <div id=Index>
-logoDivValue = <div id=IPageLogo> <div id="navhome" onclick="location.href='../../index.php';"></div> <div id="navexamples" onclick="location.href='../../tests/';"></div> <div id="navdocs" onclick="location.href='../index.html';"></div><div id="navdownload" onclick="location.href='http://www.bitbucket.org/cleonello/jqplot';"></div> </div><div id=Index>
+logoDivValue = <div id=IPageLogo> <div id="navhome" onclick="location.href='http://www.jqplot.com/index.php';"></div> <div id="navexamples" onclick="location.href='../../tests/';"></div> <div id="navdocs" onclick="location.href='../index.html';"></div><div id="navdownload" onclick="location.href='http://www.bitbucket.org/cleonello/jqplot';"></div> </div><div id=Index>
 h1Token = <h1 class=CTitle>
-h1Value = <div class="CTitle logo"> <div id="navhome" onclick="location.href='../../index.php';"></div> <div id="navexamples" onclick="location.href='../../tests/';"></div> <div id="navdocs" onclick="location.href='../index.html';"></div><div id="navdownload" onclick="location.href='http://www.bitbucket.org/cleonello/jqplot/downloads/';"></div>
+h1Value = <div class="CTitle logo"> <div id="navhome" onclick="location.href='http://www.jqplot.com/index.php';"></div> <div id="navexamples" onclick="location.href='../../tests/';"></div> <div id="navdocs" onclick="location.href='../index.html';"></div><div id="navdownload" onclick="location.href='http://www.bitbucket.org/cleonello/jqplot/downloads/';"></div>
 h1CloseToken = </h1>
 h1CloseValue = </div>
