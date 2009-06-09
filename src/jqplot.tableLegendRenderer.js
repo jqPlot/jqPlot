@@ -28,7 +28,11 @@
                 if (s.show) {
                     var lt = s.label.toString();
                     if (lt) {
-                        addrow.call(this, lt, s.color, pad);
+                        var color = s.color;
+                        if (s._stack && !s.fill) {
+                            color = '';
+                        }
+                        addrow.call(this, lt, color, pad);
                         pad = true;
                     }
                     for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
