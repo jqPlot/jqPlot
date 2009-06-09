@@ -1,3 +1,7 @@
+0.6.5
+Fixed bug #4, series of unequal data length not rendering correctly.
+This is a bugfix release only.
+
 0.6.4
 Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
 or single value data series would crash.
