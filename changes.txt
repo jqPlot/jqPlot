@@ -1,42 +1,50 @@
+jqPlot change log
+
 0.6.5
-Fixed bug #4, series of unequal data length not rendering correctly.
+
+* Fixed bug #4, series of unequal data length not rendering correctly.
 This is a bugfix release only.
 
 0.6.4
-Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
+
+* Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
 or single value data series would crash.
 
 0.6.3
-Support for stacked line (a.k.a. area) and stacked bar (horizontal and vertical) charts.
-Refactored barRenderer to use default shape and shadow renderers.
-Added info (contacts & support information) page to web site.
+
+* Support for stacked line (a.k.a. area) and stacked bar (horizontal and vertical) charts.
+* Refactored barRenderer to use default shape and shadow renderers.
+* Added info (contacts & support information) page to web site.
 
 0.6.2
-This is a minor upgrade to docs and build only.  No functionality has changed.
-Ant build script generates entire site, examples, tests and distribution.
-Improvements to documentation.
+
+* This is a minor upgrade to docs and build only.  No functionality has changed.
+* Ant build script generates entire site, examples, tests and distribution.
+* Improvements to documentation.
 
 0.6.1
-New sprintf implementation from Ash Searle that implements %g.
-Fix to sprintf e/f formats.
-Created new format specifier, %p and %P to preserve significance.
-Modified p/P format to better display larger numbers.
-Fixed and simplified significant digits calculation for sprintf.
-Added option to have cursor tooltip follow the mouse or not.
-Added options to change size of highlight.
-Updates to handle dates like '6-May-09'.
-Mods to improve look of web site.
-Updates to documentation.
-Added license and copyright statement to source files.
+
+* New sprintf implementation from Ash Searle that implements %g.
+* Fix to sprintf e/f formats.
+* Created new format specifier, %p and %P to preserve significance.
+* Modified p/P format to better display larger numbers.
+* Fixed and simplified significant digits calculation for sprintf.
+* Added option to have cursor tooltip follow the mouse or not.
+* Added options to change size of highlight.
+* Updates to handle dates like '6-May-09'.
+* Mods to improve look of web site.
+* Updates to documentation.
+* Added license and copyright statement to source files.
 
 0.6.0
-Added rotated text support.  Uses native canvas text functionality in
+
+* Added rotated text support.  Uses native canvas text functionality in
 browsers that support it or draws text on canvas with Hershey font
-metrics for non-supporting browsers.
-Removed lots of lint in js code.
-Moved tick css from js code into css file.
-Fix to tick positioning css.  y axis ticks were positioned to wrong side of axis div.
-Refactored axis tick renderer instantiation into the axes renderers themselves.
+* metrics for non-supporting browsers.
+* Removed lots of lint in js code.
+* Moved tick css from js code into css file.
+* Fix to tick positioning css.  y axis ticks were positioned to wrong side of axis div.
+* Refactored axis tick renderer instantiation into the axes renderers themselves.
 
 
 For chnages prior to 0.6.0 release, please see change log at http://bitbucket.org/cleonello/jqplot/changesets/

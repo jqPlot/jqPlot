@@ -140,12 +140,29 @@
                         numcats += 1;      
                         labels.push(val);
                     }
-                    // for category axis, force the values into category bins.
+                }
+            }
+            
+            labels.sort(function (a, b) { return a - b;});
+            
+            // now bin the data values to the right lables.
+            for (var i=0; i<this._series.length; i++) {
+                var s = this._series[i];
+                for (var j=0; j<s.data.length; j++) {
                     if (this.name == 'xaxis' || this.name == 'x2axis') {
-                        s.data[j][0] = j+1;
+                        val = s.data[j][0];
                     }
                     else {
-                        s.data[j][1] = j+1;
+                        val = s.data[j][1];
+                    }
+                    // for category axis, force the values into category bins.
+                    // we should have the value in the label array now.
+                    var idx = $.inArray(val, labels)+1;
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        s.data[j][0] = idx;
+                    }
+                    else {
+                        s.data[j][1] = idx;
                     }
                 }
             }
