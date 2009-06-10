@@ -15,7 +15,7 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
-
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.dateAxisRenderer.js"></script>
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
     .jqplot-axis {
@@ -26,24 +26,24 @@
   
   $(document).ready(function(){
 
-    var l1 = [2, 3, 1, 4, 3];
-    var l2 = [1, 4, 3, 2, 5];
-
-
-    plot1 = $.jqplot('chart', [l1, l2], {
-      title:'Stacked Filled Line Plot with Transparency (transparency not supported in IE6)',
-        stackSeries: true,
-        grid:{background:'#fefbf3', borderWidth:2.5},
-        seriesDefaults: {fill: true, showMarker: false, shadow: false},
-        axes:{xaxis:{pad:1.0, numberTicks:5}, yaxis:{min:0, max:12, numberTicks:5}},
-        series:[{color:'rgba(68, 124, 147, 0.7)'}, {color:'rgba(150, 35, 90, 0.7)'}]
-    });
+line1 = [['June 6, 2009', 2], ['June 7, 2009', 33], ['June 8, 2009', 14], ['June 9, 2009', 19]];
+today = [['2009/06/08', 2], ['2009/06/08', 33]];
+plot2 = $.jqplot('chart', [line1, today], {
+    title: 'Date Data with line at today',
+    axes: {
+        xaxis: {
+            renderer: $.jqplot.DateAxisRenderer,
+            numberTicks: 5
+        }
+    },
+    series:[{},{lineWidth:1, color:'#999999', showMarker:false}]
+});
 
 
   });
   </script>
   </head>
   <body>
-    <div id="chart" style="margin-top:20px; margin-left:20px; width:360px; height:300px;"></div>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
   </body>
 </html>

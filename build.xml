@@ -138,7 +138,7 @@
   <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
        basedir=""
-       includes="${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/*"
+       includes="${DIST_DIR}/excanvas.*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/*"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tar.gz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>

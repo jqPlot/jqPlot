@@ -15,7 +15,9 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
-
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.dateAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.barRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.categoryAxisRenderer.js"></script>
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
     .jqplot-axis {
@@ -26,17 +28,15 @@
   
   $(document).ready(function(){
 
-    var l1 = [2, 3, 1, 4, 3];
-    var l2 = [1, 4, 3, 2, 5];
+line1 = [[2006, 4],            [2008, 9], [2009, 16]];
+line2 = [[2006, 3], [2007, 7], [2008, 6]];
+line3 = [[2006, 5], [2007, 1], [2008, 3], [2009, 7]];
+line4 = [           [2007, 5],            [2009, 9]];
 
-
-    plot1 = $.jqplot('chart', [l1, l2], {
-      title:'Stacked Filled Line Plot with Transparency (transparency not supported in IE6)',
-        stackSeries: true,
-        grid:{background:'#fefbf3', borderWidth:2.5},
-        seriesDefaults: {fill: true, showMarker: false, shadow: false},
-        axes:{xaxis:{pad:1.0, numberTicks:5}, yaxis:{min:0, max:12, numberTicks:5}},
-        series:[{color:'rgba(68, 124, 147, 0.7)'}, {color:'rgba(150, 35, 90, 0.7)'}]
+plot3 = $.jqplot('chart', [line1, line2, line3, line4], {
+    seriesDefaults:{renderer:$.jqplot.BarRenderer},
+    legend: {show:true, location: 'nw'},
+    axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}, yaxis:{min:0, max:20, numberTicks:6}}
     });
 
 
@@ -44,6 +44,6 @@
   </script>
   </head>
   <body>
-    <div id="chart" style="margin-top:20px; margin-left:20px; width:360px; height:300px;"></div>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
   </body>
 </html>
