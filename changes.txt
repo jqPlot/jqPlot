@@ -1,5 +1,10 @@
 jqPlot change log
 
+0.6.6
+
+* Fixed bug #5, trend line plugin failing when no trend line options specified.
+* moved css positioning spec for axis tick into tick dom element.
+
 0.6.5
 
 * Fixed bug #4, series of unequal data length not rendering correctly.
