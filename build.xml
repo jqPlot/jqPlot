@@ -76,11 +76,20 @@
           <fileset dir="" includes="README.txt" />
           <fileset dir="" includes="changes.txt" />
           <fileset dir="" includes="copyright.txt" />
+          <fileset dir="" includes="test*.html" />
           <fileset dir="${SRC_DIR}" includes="MIT-LICENSE.txt" />
           <fileset dir="${SRC_DIR}" includes="gpl-2.0.txt" />
           <fileset dir="${SRC_DIR}" includes="usage.txt" />
           <fileset dir="tests" includes="jquery*.js" />
         </copy>
+        
+        <replaceregexp match='src="\./src/' replace='src="\./' flags="g">
+          <fileset dir="${DIST_DIR}" includes="test*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='href="\./src/' replace='href="\./' flags="g">
+          <fileset dir="${DIST_DIR}" includes="test*.html" />
+        </replaceregexp>
         
         <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
@@ -138,7 +147,7 @@
   <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
        basedir=""
-       includes="${DIST_DIR}/excanvas.*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/*"
+       includes="${DIST_DIR}/excanvas.*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/test*.html"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tar.gz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>

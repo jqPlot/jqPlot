@@ -1,5 +1,14 @@
 jqPlot change log
 
+0.6.6b
+
+* Added excanvas.js and excanvas.min.js to compressed distributions.
+* Added example/test html pages I had locally into repository and to compressed distributions.
+
+0.6.6a
+
+* Duplicate of 0.6.6 with a suffix to unambiguously differentiate between previously posted 0.6.6 release.
+
 0.6.6
 
 * Fixed bug #5, trend line plugin failing when no trend line options specified.
