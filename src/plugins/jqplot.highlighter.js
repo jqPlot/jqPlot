@@ -41,7 +41,10 @@
 	    this.tooltipFadeSpeed = "fast";
 	    // prop: tooltipOffset
 	    // Pixel offset of tooltip from the grid boudaries or cursor center.
-	    this.tooltipOffset = 8;
+	    this.tooltipOffset = 2;
+	    // prop: tooltipAxes
+	    // Which axes to display in tooltip, 'x', 'y' or 'both'
+	    this.tooltipAxes = 'both'
 	    // prop: useAxesFormatters
 	    // Use the x and y axes formatters to format the text in the tooltip.
 	    this.useAxesFormatters = true;
@@ -116,15 +119,75 @@
             var yf = series._yaxis._ticks[0].formatter;
             var xfstr = series._xaxis._ticks[0].formatString;
             var yfstr = series._yaxis._ticks[0].formatString;
-            var str = xf(xfstr, neighbor.data[0]) + ', '+ yf(yfstr, neighbor.data[1]);
+            var str;
+            if (hl.tooltipAxes == 'both') {
+                str = xf(xfstr, neighbor.data[0]) + ', '+ yf(yfstr, neighbor.data[1]);
+            }
+            else if (hl.tooltipAxes == 'x') {
+                str = xf(xfstr, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'y') {
+                str = yf(yfstr, neighbor.data[1]);
+            }
+            
         }
         else {
-            var str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + ', '+ $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            var str;
+            if (hl.tooltipAxes == 'both') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + ', '+ $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            }
+            else if (hl.tooltipAxes == 'x') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'y') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            } 
         }
         elem.html(str);
-        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]}
-        var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset;
-        var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true);
+        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
+        var ms = 0;
+        var fact = 0.707;
+        if (series.markerRenderer.show == true) { 
+            ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
+        }
+        switch (hl.tooltipLocation) {
+            case 'nw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'n':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - ms;
+                break;
+            case 'ne':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'e':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 's':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + ms;
+                break;
+            case 'sw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 'w':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+        }
         elem.css('left', x);
         elem.css('top', y);
         if (hl.fadeTooltip) {

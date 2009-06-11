@@ -689,7 +689,7 @@
         // seriesDefaults - deraults applied to all series.
         // gridPadding - default padding around the grid drawing area if no axis or title
         //    is present on a given side of the grid.
-        // series - series by series defaults.  Don't know how useful this is.
+        // series - series by series defaults.  Don't know how useful this is yet.
         this.defaults = {
             axesDefaults: {},
             axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}},
