@@ -34,6 +34,9 @@
         // prop: barWidth
         // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
         this.barWidth = null;
+        this.shadowOffset = 2;
+        this.shadowDepth = 5;
+        this.shadowAlph = 0.08;
         $.extend(true, this, options);
         if (this.barPadding == null) {
             this.barPadding = 2*this.lineWidth;
@@ -169,11 +172,11 @@
                     points.push([base-this.barWidth/2, gridData[i][1]]);
                     points.push([base+this.barWidth/2, gridData[i][1]]);
                     points.push([base+this.barWidth/2, ystart]);
-                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
                     // now draw the shadows
                     if (shadow) {
                         this.renderer.shadowRenderer.draw(ctx, points, opts);
                     }
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
                 }
             }
             
@@ -194,11 +197,11 @@
                     points.push([gridData[i][0], base+this.barWidth/2]);
                     points.push([gridData[i][0], base-this.barWidth/2]);
                     points.push([xstart, base-this.barWidth/2]);
-                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
                     // now draw the shadows
                     if (shadow) {
                         this.renderer.shadowRenderer.draw(ctx, points, opts);
                     }
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
                 }  
             }
         }                
