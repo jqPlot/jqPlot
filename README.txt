@@ -27,12 +27,13 @@ installed.  There are 6 targets: clean, dist, min, tests, docs and all.  Use
 to get a description of the various build targets. 
 
 jqPlot requires jQuery (tested with 1.3.2 or better). jQuery 1.3.2 is included in 
-the distribution.  To use jqPlot include jQuery, the jqPlot jQuery plugin, and 
+the distribution.  To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and 
 optionally the excanvas script for IE support in your web page...
 
 > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
 > <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
 > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
+> <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
 
 Much of the graph styling is handled by CSS.  You should include the jqplot 
 css file in your code as well...

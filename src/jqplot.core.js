@@ -16,11 +16,13 @@
  * About: Introduction
  * 
  * jqPlot requires jQuery (tested with 1.3.2 or better). jQuery 1.3.2 is included in the distribution.  
- * To use jqPlot include jQuery, the jqPlot jQuery plugin, and optionally the excanvas script for IE support in your web page:
+ * To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally 
+ * the excanvas script for IE support in your web page:
  * 
  * > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
  * > <script language="javascript" type="text/javascript" src="jquery-1.3.2.min.js"></script>
  * > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
+ * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
  * 
  * jqPlot can be customized by overriding the defaults of any of the objects which make
  * up the plot.  The general usage of jqplot is:
