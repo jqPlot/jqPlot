@@ -216,8 +216,6 @@
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
 
-        this._plotWidth;
-        this._plotHeight;
         this._ticks=[];
     }
     
@@ -470,6 +468,9 @@
         this._prevPlotData = [];
         this._prevGridData = [];
         this._stackAxis = 'y';
+        // these will be hooked up to the plot's series colors and color generator during initializaiton.
+        this.seriesColors;
+        this.getNextSeriesColor;
         this.plugins = {};
     }
     
@@ -822,6 +823,8 @@
                 }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
+                this.series[i].seriesColors = this.seriesColors;
+                this.series[i].getNextSeriesColor = this.getNextSeriesColor;
                 this.series[i].init(i, this.grid.borderWidth);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
                     $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, options);
@@ -885,11 +888,21 @@
             //}
         };
         
-        this.getNextSeriesColor = function() {
-            var c = this.seriesColors[seriesColorsIndex];
-            seriesColorsIndex++;
-            return c;
-        };
+        // function to safely return colors from the color array and wrap around at the end.
+        this.getNextSeriesColor = (function(t) {
+            var idx = 0;
+            var sc = t.seriesColors;
+            
+            return function () { 
+                if (idx < sc.length) {
+                    return sc[idx++];
+                }
+                else {
+                    idx = 0;
+                    return sc[idx++];
+                }
+            };
+        })(this);
     
         this.parseOptions = function(options){
             for (var i=0; i<$.jqplot.preParseOptionsHooks.length; i++) {
