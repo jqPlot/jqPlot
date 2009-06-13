@@ -30,6 +30,7 @@
         this.shadowAlpha = .07;
         this.shadowDepth = 5;
         $.extend(true, this, options);
+        this._colorGenerator = new this.colorGenerator(this.seriesColors);
     };
     
     $.jqplot.PieRenderer.prototype.setGridData = function() {
@@ -57,6 +58,7 @@
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         var r = this.diameter / 2;
         var fill = this.fill;
+        var lineWidth = this.lineWidth;
         ctx.save();
 
         ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
@@ -77,6 +79,7 @@
             ctx.moveTo(0, 0);
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
             ctx.arc(0, 0, r, ang1, ang2, false);
             ctx.closePath();
             if (fill) {
@@ -108,31 +111,31 @@
             var li = options.legendInfo;
             switch (li.location) {
                 case 'nw':
-                    offx = li.width;
+                    offx = li.width + li.xoffset;
                     break;
                 case 'w':
-                    offx = li.width;
+                    offx = li.width + li.xoffset;
                     break;
                 case 'sw':
-                    offx = li.width;
+                    offx = li.width + li.xoffset;
                     break;
                 case 'ne':
-                    offx = li.width;
+                    offx = li.width + li.xoffset;
                     trans = -1;
                     break;
                 case 'e':
-                    offx = li.width;
+                    offx = li.width + li.xoffset;
                     trans = -1;
                     break;
                 case 'se':
-                    offx = li.width;
+                    offx = li.width + li.xoffset;
                     trans = -1;
                     break;
                 case 'n':
-                    offy = li.height;
+                    offy = li.height + li.yoffset;
                     break;
                 case 's':
-                    offy =li.height;
+                    offy = li.height + li.yoffset;
                     trans = -1;
                     break;
                 default:
@@ -143,15 +146,18 @@
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
-        var w = ctx.canvas.width - offx;
-        var h = ctx.canvas.height - offy;
+        var cw = ctx.canvas.width;
+        var ch = ctx.canvas.height;
+        var w = cw - offx - 2 * this.padding;
+        var h = ch - offy - 2 * this.padding;
         var d = Math.min(w,h);
-        this.diameter = this.diameter  || (d - 2 * this.padding);
+        this.diameter = this.diameter  || d;
         this.diameter -= this.sliceMargin;
+        // console.log ('tans: %s, offx: %s, offy: %s, w: %s, h: %s, d: %s, diameter: %s', trans, offx, offy, w, h, d, this.diameter);
         var r = this.diameter/2;
         ctx.save();
     
-        ctx.translate((w+offx)/2 + trans * offx, (h+offy)/2 + trans * offy);
+        ctx.translate((cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy);
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
@@ -163,7 +169,7 @@
         }
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? 0 : gd[i-1][1];
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], this.getNextSeriesColor());
+            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], this._colorGenerator.next());
         }
         // shadows
         // markers
@@ -197,7 +203,7 @@
         this.showTicks = false;
         this.ticks = [];
         this.showMark = false;
-        this.show = false;  
+        this.show = false; 
     };
     
     
@@ -210,11 +216,51 @@
     
     $.jqplot.PieLegendRenderer = function() {
         $.jqplot.TableLegendRenderer.call(this);
-        this.show = false;
     };
     
     $.jqplot.PieLegendRenderer.prototype = new $.jqplot.TableLegendRenderer();
     $.jqplot.PieLegendRenderer.prototype.constructor = $.jqplot.PieLegendRenderer;
+    
+    // called with context of legend
+    $.jqplot.PieLegendRenderer.prototype.draw = function() {
+        var legend = this;
+        if (this.show) {
+            var series = this._series;
+            // make a table.  one line label per row.
+            var ss = 'position:absolute;';
+            ss += (this.background) ? 'background:'+this.background+';' : '';
+            ss += (this.border) ? 'border:'+this.border+';' : '';
+            ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
+            ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
+            ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
+            this._elem = $('<table class="jqplot-legend" style="'+ss+'"></table>');
+        
+            var pad = false;
+            var s = series[0];
+            var colorGenerator = new s.colorGenerator(s.seriesColors);
+            if (s.show) {
+                var pd = s.data;
+                for (var i=0; i<pd.length; i++){
+                    var lt = pd[i][0].toString();
+                    if (lt) {
+                        addrow.call(this, lt, colorGenerator.next(), pad);
+                        pad = true;
+                    }  
+                }
+            }
+        }
+        
+        function addrow(label, color, pad) {
+            var rs = (pad) ? this.rowSpacing : '0';
+            var tr = $('<tr class="jqplot-legend"></tr>').appendTo(this._elem);
+            $('<td class="jqplot-legend" style="vertical-align:middle;text-align:center;padding-top:'+rs+';">'+
+                '<div style="border:1px solid #cccccc;padding:0.2em;">'+
+                '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
+                '</div></td>').appendTo(tr);
+            $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';">'+label+'</td>').appendTo(tr);
+        }
+        return this._elem;
+    };
     
     // setup default renderers for axes and legend so user doesn't have to
     // called with scope of plot
@@ -225,6 +271,8 @@
         options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
         options.legend.renderer = $.jqplot.PieLegendRenderer;
         options.legend.preDraw = true;
+        options.seriesDefaults.colorGenerator = this.colorGenerator;
+        options.seriesDefaults.seriesColors = this.seriesColors;
     }
     
     $.jqplot.preInitHooks.push(preInit);
