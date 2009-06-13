@@ -143,7 +143,13 @@
                 }
             }
             
-            labels.sort(function (a, b) { return a - b;});
+            try {
+                // if labels are numbers, sort them
+                labels.sort(function (a, b) { return a - b;}); 
+            }
+            catch (e) {
+                // don't sort
+            }
             
             // now bin the data values to the right lables.
             for (var i=0; i<this._series.length; i++) {
