@@ -76,12 +76,11 @@
         var dx = this.size/2/stretch;
         var dy = this.size/2*stretch;
         var points = [[x-dx, y], [x, y+dy], [x+dx, y], [x, y-dy]];
-        this.shapeRenderer.draw(ctx, points);
-        
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points);
         }
-        
+        this.shapeRenderer.draw(ctx, points);
+
         ctx.restore();
     };
     
@@ -90,12 +89,11 @@
         var dx = this.size/2/stretch;
         var dy = this.size/2*stretch;
         var points = [[x-dx, y-dy], [x-dx, y+dy], [x+dx, y+dy], [x+dx, y-dy]];
-        this.shapeRenderer.draw(ctx, points);
-        
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points);
         }
-        
+        this.shapeRenderer.draw(ctx, points);
+
         ctx.restore();
     };
     
@@ -103,11 +101,11 @@
         var radius = this.size/2;
         var end = 2*Math.PI;
         var points = [x, y, radius, 0, end, true];
-        this.shapeRenderer.draw(ctx, points);
-        
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points);
         }
+        this.shapeRenderer.draw(ctx, points);
+        
         ctx.restore();
     };
     

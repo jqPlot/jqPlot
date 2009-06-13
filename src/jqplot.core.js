@@ -115,6 +115,8 @@
     $.jqplot.preParseSeriesOptionsHooks = [];
     $.jqplot.postParseSeriesOptionsHooks = [];
     $.jqplot.eventListenerHooks = [];
+    $.jqplot.preDrawSeriesShadowHooks = [];
+    $.jqplot.postDrawSeriesShadowHooks = [];
 
     // A superclass holding some common properties and methods.
     $.jqplot.ElemContainer = function() {
@@ -292,6 +294,9 @@
         // prop: rendererOptions
         // renderer specific options passed to the renderer.
         this.rendererOptions = {};
+        // prop: predraw
+        // Wether to draw the legend before the series or not.
+        this.preDraw = false;
         this._series = [];
     }
     
@@ -434,7 +439,7 @@
         this.shadowDepth = 3;
         // prop: shadowAlpha
         // Alpha channel transparency of shadow.  0 = transparent.
-        this.shadowAlpha = '0.07';
+        this.shadowAlpha = '0.1';
         // prop: breakOnNull
         // wether line segments should be be broken at null value.
         // False will join point on either side of line.
@@ -543,6 +548,37 @@
         for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
         }
+    };
+    
+    Series.prototype.drawShadow = function(sctx, opts) {
+        var options = (opts == undefined) ? {} : opts;
+        // hooks get called even if series not shown
+        // we don't clear canvas here, it would wipe out all other series as well.
+        for (var j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
+            $.jqplot.preDrawSeriesShadowHooks[j].call(this, sctx, options);
+        }
+        if (this.shadow) {
+            this.renderer.setGridData.call(this);
+
+            var data = [];
+            if (options.data) {
+                data = options.data;
+            }
+            else if (!this._stack) {
+                data = this.data;
+            }
+            else {
+                data = this._plotData;
+            }
+            var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
+        
+            this.renderer.drawShadow.call(this, sctx, gridData, options);
+        }
+        
+        for (var j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
+            $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
+        }
+        
     };
     
 
@@ -1061,11 +1097,22 @@
             // bind custom event handlers to regular events.
             this.bindCustomEvents();
             
-            this.drawSeries(sctx);
-
-            // finally, draw and pack the legend
-            this.target.append(this.legend.draw());
-            this.legend.pack(this._gridPadding);
+            // draw legend before series if the series needs to know the legend dimensions.
+            if (this.legend.preDraw) {  
+                this.target.append(this.legend.draw());
+                this.legend.pack(this._gridPadding);
+                if (this.legend._elem) {
+                    this.drawSeries(sctx, {legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight()}});
+                }
+                else {
+                    this.drawSeries(sctx);
+                }
+            }
+            else {  // draw series before legend
+                this.drawSeries(sctx);
+                this.target.append(this.legend.draw());
+                this.legend.pack(this._gridPadding);                
+            }
             
             // register event listeners on the overlay canvas
             for (var i=0; i<$.jqplot.eventListenerHooks.length; i++) {
@@ -1183,6 +1230,9 @@
             sctx.clearRect(0,0,sctx.canvas.width, sctx.canvas.height);
             for (var i=0; i<this.series.length; i++) {
                 this.series[i].draw(sctx, options);
+            }
+            for (var i=0; i<this.series.length; i++) {
+                this.series[i].drawShadow(sctx, options);
             }
         };
     }

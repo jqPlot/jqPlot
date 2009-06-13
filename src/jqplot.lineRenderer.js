@@ -18,7 +18,16 @@
         var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
-        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        // scale the shadowOffset to the width of the line.
+        if (this.lineWidth > 2.5) {
+            // var shadow_offset = this.shadowOffset* (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*.4);
+            var shadow_offset = this.shadowOffset;
+        }
+        // for skinny lines, don't make such a big shadow.
+        else {
+            var shadow_offset = this.shadowOffset*Math.atan((this.lineWidth/2.5))/0.785398163;
+        }
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
     };
     
@@ -61,7 +70,7 @@
     
 
     // called within scope of series.
-    $.jqplot.LineRenderer.prototype.draw = function(ctx, gd, options, plot) {
+    $.jqplot.LineRenderer.prototype.draw = function(ctx, gd, options) {
         var i;
         var opts = (options != undefined) ? options : {};
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
@@ -87,13 +96,13 @@
                     }
                 }
             }
+            if (shadow) {
+                this.renderer.shadowRenderer.draw(ctx, gd, opts);
+            }
             
             this.renderer.shapeRenderer.draw(ctx, gd, opts);                
 
             // now draw the shadows
-            if (shadow) {
-                this.renderer.shadowRenderer.draw(ctx, gd, opts);
-            }
         }
         
         // now draw the markers
@@ -105,4 +114,9 @@
         
         ctx.restore();
     };  
+    
+    $.jqplot.LineRenderer.prototype.drawShadow = function(ctx, gd, options) {
+        // This is a no-op, shadows drawn with lines.
+    };
+    
 })(jQuery);    
