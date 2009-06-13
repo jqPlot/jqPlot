@@ -1228,11 +1228,14 @@
         this.drawSeries = function(sctx, options){
             // first clear the canvas, since we are redrawing all series.
             sctx.clearRect(0,0,sctx.canvas.width, sctx.canvas.height);
-            for (var i=0; i<this.series.length; i++) {
-                this.series[i].draw(sctx, options);
-            }
+            // if call series drawShadow method first, in case all series shadows
+            // should be drawn before any series.  This will ensure, like for 
+            // stacked bar plots, that shadows don't overlap series.
             for (var i=0; i<this.series.length; i++) {
                 this.series[i].drawShadow(sctx, options);
+            }
+            for (var i=0; i<this.series.length; i++) {
+                this.series[i].draw(sctx, options);
             }
         };
     }

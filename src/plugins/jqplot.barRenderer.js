@@ -109,18 +109,18 @@
         // so, now we have total number of axis values.
         if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
             if (this._stack) {
-                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin/2;
+                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin;
             }
             else {
-                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/2;
+                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin;
             }
         }
         else {
             if (this._stack) {
-                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin/2;
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin;
             }
             else {
-                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/2;
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin;
             }
         }
         return [nvals, nseries];
@@ -172,8 +172,9 @@
                     points.push([base-this.barWidth/2, gridData[i][1]]);
                     points.push([base+this.barWidth/2, gridData[i][1]]);
                     points.push([base+this.barWidth/2, ystart]);
-                    // now draw the shadows
-                    if (shadow) {
+                    // now draw the shadows if not stacked.
+                    // for stacked plots, they are predrawn by drawShadow
+                    if (shadow && !this._stack) {
                         this.renderer.shadowRenderer.draw(ctx, points, opts);
                     }
                     this.renderer.shapeRenderer.draw(ctx, points, opts); 
@@ -197,14 +198,95 @@
                     points.push([gridData[i][0], base+this.barWidth/2]);
                     points.push([gridData[i][0], base-this.barWidth/2]);
                     points.push([xstart, base-this.barWidth/2]);
-                    // now draw the shadows
-                    if (shadow) {
+                    // now draw the shadows if not stacked.
+                    // for stacked plots, they are predrawn by drawShadow
+                    if (shadow && !this._stack) {
                         this.renderer.shadowRenderer.draw(ctx, points, opts);
                     }
                     this.renderer.shapeRenderer.draw(ctx, points, opts); 
                 }  
             }
         }                
+
+    };
+    
+     
+    // for stacked plots, shadows will be pre drawn by drawShadow.
+    $.jqplot.BarRenderer.prototype.drawShadow = function(ctx, gridData, options) {
+        var i;
+        var opts = (options != undefined) ? options : {};
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
+        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
+        var xaxis = this.xaxis;
+        var yaxis = this.yaxis;
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
+        var pointx, pointy, nvals, nseries, pos;
+        
+        if (this._stack && this.shadow) {
+            if (this.barWidth == null) {
+                this.renderer.setBarWidth.call(this);
+            }
+        
+            var temp = this.renderer.calcSeriesNumbers.call(this);
+            nvals = temp[0];
+            nseries = temp[1];
+            pos = temp[2];
+        
+            if (this._stack) {
+                this._barNudge = 0;
+            }
+            else {
+                this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
+            }
+            if (showLine) {
+            
+                if (this.barDirection == 'vertical') {
+                    for (var i=0; i<gridData.length; i++) {
+                        points = [];
+                        var base = gridData[i][0] + this._barNudge;
+                        var ystart;
+                    
+                        if (this._stack && this._prevGridData.length) {
+                            ystart = this._prevGridData[i][1];
+                        }
+                        else {
+                            ystart = ctx.canvas.height;
+                        }
+                    
+                        points.push([base-this.barWidth/2, ystart]);
+                        points.push([base-this.barWidth/2, gridData[i][1]]);
+                        points.push([base+this.barWidth/2, gridData[i][1]]);
+                        points.push([base+this.barWidth/2, ystart]);
+                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                    }
+                }
+            
+                else if (this.barDirection == 'horizontal'){
+                    for (var i=0; i<gridData.length; i++) {
+                        points = [];
+                        var base = gridData[i][1] - this._barNudge;
+                        var xstart;
+                    
+                        if (this._stack && this._prevGridData.length) {
+                            xstart = this._prevGridData[i][0];
+                        }
+                        else {
+                            xstart = 0;
+                        }
+                    
+                        points.push([xstart, base+this.barWidth/2]);
+                        points.push([gridData[i][0], base+this.barWidth/2]);
+                        points.push([gridData[i][0], base-this.barWidth/2]);
+                        points.push([xstart, base-this.barWidth/2]);
+                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                    }  
+                }
+            }   
+            
+        }
+                     
 
     };
 })(jQuery);    
