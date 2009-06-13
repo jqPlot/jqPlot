@@ -100,17 +100,58 @@
     $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options) {
         var i;
         var opts = (options != undefined) ? options : {};
+        // offset and direction of offset due to legend placement
+        var offx = 0;
+        var offy = 0;
+        var trans = 1;
+        if (options.legendInfo) {
+            var li = options.legendInfo;
+            switch (li.location) {
+                case 'nw':
+                    offx = li.width;
+                    break;
+                case 'w':
+                    offx = li.width;
+                    break;
+                case 'sw':
+                    offx = li.width;
+                    break;
+                case 'ne':
+                    offx = li.width;
+                    trans = -1;
+                    break;
+                case 'e':
+                    offx = li.width;
+                    trans = -1;
+                    break;
+                case 'se':
+                    offx = li.width;
+                    trans = -1;
+                    break;
+                case 'n':
+                    offy = li.height;
+                    break;
+                case 's':
+                    offy =li.height;
+                    trans = -1;
+                    break;
+                default:
+                    break;
+            };
+        }
+        
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
-        var w = ctx.canvas.width;
-        var h = ctx.canvas.height;
+        var w = ctx.canvas.width - offx;
+        var h = ctx.canvas.height - offy;
         var d = Math.min(w,h);
-        this.diameter = this.diameter || (d - 2 * this.padding);
+        this.diameter = this.diameter  || (d - 2 * this.padding);
+        this.diameter -= this.sliceMargin;
         var r = this.diameter/2;
         ctx.save();
     
-        ctx.translate(w/2, h/2);
+        ctx.translate((w+offx)/2 + trans * offx, (h+offy)/2 + trans * offy);
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
@@ -183,6 +224,7 @@
         options.legend = options.legend || {};
         options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
         options.legend.renderer = $.jqplot.PieLegendRenderer;
+        options.legend.preDraw = true;
     }
     
     $.jqplot.preInitHooks.push(preInit);
