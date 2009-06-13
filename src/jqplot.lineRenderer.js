@@ -20,8 +20,8 @@
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
         if (this.lineWidth > 2.5) {
-            // var shadow_offset = this.shadowOffset* (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*.4);
-            var shadow_offset = this.shadowOffset;
+            var shadow_offset = this.shadowOffset* (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*.6);
+            // var shadow_offset = this.shadowOffset;
         }
         // for skinny lines, don't make such a big shadow.
         else {

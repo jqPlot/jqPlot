@@ -433,7 +433,7 @@
         this.shadowAngle = 45;
         // prop: shadowOffset
         // Shadow offset from line in pixels
-        this.shadowOffset = 1.5;
+        this.shadowOffset = 1.25;
         // prop: shadowDepth
         // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
         this.shadowDepth = 3;
@@ -475,9 +475,6 @@
         this._prevPlotData = [];
         this._prevGridData = [];
         this._stackAxis = 'y';
-        // these will be hooked up to the plot's series colors and color generator during initializaiton.
-        this.seriesColors;
-        this.getNextSeriesColor;
         this.plugins = {};
     }
     
@@ -792,6 +789,9 @@
         this._plotData = [];
         // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
+        
+        this.colorGenerator = ColorGenerator;
+        
             
         this.init = function(target, data, options) {
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
@@ -861,8 +861,6 @@
                 }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
-                this.series[i].seriesColors = this.seriesColors;
-                this.series[i].getNextSeriesColor = this.getNextSeriesColor;
                 this.series[i].init(i, this.grid.borderWidth);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
                     $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, options);
@@ -1102,7 +1100,7 @@
                 this.target.append(this.legend.draw());
                 this.legend.pack(this._gridPadding);
                 if (this.legend._elem) {
-                    this.drawSeries(sctx, {legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight()}});
+                    this.drawSeries(sctx, {legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
                 }
                 else {
                     this.drawSeries(sctx);
@@ -1239,6 +1237,39 @@
             }
         };
     }
+    
+        
+   ColorGenerator = function(colors) {
+        var idx = 0;
+        
+        this.next = function () { 
+            if (idx < colors.length) {
+                return colors[idx++];
+            }
+            else {
+                idx = 0;
+                return colors[idx++];
+            }
+        };
+        
+        this.previous = function () { 
+            if (idx > 0) {
+                return colors[idx--];
+            }
+            else {
+                idx = colors.length-1;
+                return colors[idx];
+            }
+        };
+        
+        this.setColors = function(c) {
+            colors = c;
+        };
+        
+        this.reset = function() {
+            idx = 0;
+        };
+    };
 
     // convert a hex color string to rgb string.
     // h - 3 or 6 character hex string, with or without leading #
