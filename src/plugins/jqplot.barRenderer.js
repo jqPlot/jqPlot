@@ -18,37 +18,31 @@
     // called with scope of series.
     $.jqplot.BarRenderer.prototype.init = function(options) {
         // Group: Properties
-        
-        // prop: fill
-        // true or false, fill the bars.
-        this.fill = true;
+        //
         // prop: barPadding
-        // Number of pixels between adjacent bars at the same axis value (auto by default). null = calculated automatically.
-        this.barPadding = null;
+        // Number of pixels between adjacent bars at the same axis value.
+        this.barPadding = 8;
         // prop: barMargin
-        // Number of pixels between groups of bars at adjacent axis values (auto by default).  null = calculated automatically.
-        this.barMargin = null;
+        // Number of pixels between groups of bars at adjacent axis values.
+        this.barMargin = 10;
         // prop: barDirection
         // 'vertical' = up and down bars, 'horizontal' = side to side bars
         this.barDirection = 'vertical';
         // prop: barWidth
         // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
         this.barWidth = null;
+        // prop: shadowOffset
+        // offset of the shadow from the slice and offset of 
+        // each succesive stroke of the shadow from the last.
         this.shadowOffset = 2;
+        // prop: shadowDepth
+        // number of strokes to apply to the shadow, 
+        // each stroke offset shadowOffset from the last.
         this.shadowDepth = 5;
+        // prop: shadowAlpha
+        // transparency of the shadow (0 = transparent, 1 = opaque)
         this.shadowAlph = 0.08;
         $.extend(true, this, options);
-        if (this.barPadding == null) {
-            this.barPadding = 2*this.lineWidth;
-        }
-        if (this.barMargin == null) {
-            if (this.lineWidth > 0) {
-                this.barMargin = 8 * this.lineWidth;
-            }
-            else {
-                this.barMargin = 10;
-            }
-        }
         if (this.barDirection == 'vertical' ) {
             this._primaryAxis = '_xaxis';
             this._stackAxis = 'x';
@@ -58,10 +52,10 @@
             this._stackAxis = 'y';
         }
         // set the shape renderer options
-        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:this.fill};
+        var opts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
-        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
     };
     
