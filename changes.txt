@@ -1,5 +1,19 @@
 jqPlot change log
 
+0.7.0
+
+* Pie chart support
+* Enabled tooltipLocation option in highlighter. 
+* Highlighter Tooltip will account for mark size and highlight size when positioning itself. 
+* Added ability to show just x, y or both axes in highlighter tooltip.
+* Modified how shadows are drawn for lines, bars and markers.  Now drawn first, so they are
+  always behind the object.
+* Adjustments to shadow parameters on lines to account for new shadow positioning.
+* Added a ColorGenerator class to robustly return next available color for a plot with wrap
+  around to first color at end.
+* Udates to docs about css file.
+* Fixed bug with String x values in series and IE error on sorting (Category Axis).
+
 0.6.6b
 
 * Added excanvas.js and excanvas.min.js to compressed distributions.
@@ -12,17 +26,17 @@ jqPlot change log
 0.6.6
 
 * Fixed bug #5, trend line plugin failing when no trend line options specified.
-* moved css positioning spec for axis tick into tick dom element.
+* Enhancement to category axes, more intuitive handling of series with missing data values.
 
 0.6.5
 
 * Fixed bug #4, series of unequal data length not rendering correctly.
-This is a bugfix release only.
+  This is a bugfix release only.
 
 0.6.4
 
 * Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
-or single value data series would crash.
+  or single value data series would crash.
 
 0.6.3
 

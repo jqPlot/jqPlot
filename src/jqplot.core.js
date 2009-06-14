@@ -495,7 +495,8 @@
             }
             else {
                 if (d[i] == null || d[i][0] == null || d[i][1] == null) {
-                    // figure out what to do with null values
+                    // TODO: figure out what to do with null values
+                    var undefined;
                 }
             }
         }
@@ -981,7 +982,7 @@
                 return temp;
             };
 
-            for (var i=0; i<this.data.length; i++) { ;
+            for (var i=0; i<this.data.length; i++) { 
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);

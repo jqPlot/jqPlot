@@ -20,7 +20,7 @@
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
         if (this.lineWidth > 2.5) {
-            var shadow_offset = this.shadowOffset* (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*.6);
+            var shadow_offset = this.shadowOffset* (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*0.6);
             // var shadow_offset = this.shadowOffset;
         }
         // for skinny lines, don't make such a big shadow.
@@ -45,7 +45,7 @@
         for (var i=0; i<this.data.length; i++) {
             this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
             if (pdata.length > i) {
-                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])])
+                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
             }
         }
     };

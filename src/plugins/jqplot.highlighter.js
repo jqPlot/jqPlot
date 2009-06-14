@@ -44,7 +44,10 @@
 	    this.tooltipOffset = 2;
 	    // prop: tooltipAxes
 	    // Which axes to display in tooltip, 'x', 'y' or 'both'
-	    this.tooltipAxes = 'both'
+	    this.tooltipAxes = 'both';
+	    // prop; tooltipSeparator
+	    // String to use to separate x and y axes in tooltip.
+	    this.tooltipSeparator = ', ';
 	    // prop: useAxesFormatters
 	    // Use the x and y axes formatters to format the text in the tooltip.
 	    this.useAxesFormatters = true;
@@ -52,7 +55,8 @@
 	    // sprintf format string for the tooltip.
 	    // Uses Ash Searle's javascript sprintf implementation
 	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
-	    // See http://perldoc.perl.org/functions/sprintf.html for reference
+	    // See http://perldoc.perl.org/functions/sprintf.html for reference.
+	    // Additional "p" and "P" format specifiers added by Chris Leonello.
 	    this.tooltipFormatString = '%.5P';
 	    this._tooltipElem;
 	    this.isHighlighting = false;
@@ -121,7 +125,7 @@
             var yfstr = series._yaxis._ticks[0].formatString;
             var str;
             if (hl.tooltipAxes == 'both') {
-                str = xf(xfstr, neighbor.data[0]) + ', '+ yf(yfstr, neighbor.data[1]);
+                str = xf(xfstr, neighbor.data[0]) + hl.tooltipSeparator + yf(yfstr, neighbor.data[1]);
             }
             else if (hl.tooltipAxes == 'x') {
                 str = xf(xfstr, neighbor.data[0]);
@@ -134,7 +138,7 @@
         else {
             var str;
             if (hl.tooltipAxes == 'both') {
-                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + ', '+ $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
             }
             else if (hl.tooltipAxes == 'x') {
                 str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);

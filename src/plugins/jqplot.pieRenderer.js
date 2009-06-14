@@ -9,8 +9,6 @@
      * Pie charts will draw only the first series.  Other series are ignored.
      * x values, if present, will be used as slice labels.
      * y values give slice size.
-     * slice labels can also be supplied through a ticks array, and will
-     * override the x values of the data series.
      */
     $.jqplot.PieRenderer = function(){
         $.jqplot.LineRenderer.call(this);
@@ -21,13 +19,30 @@
     
     // called with scope of a series
     $.jqplot.PieRenderer.prototype.init = function(options) {
-        // auto computed
+	    // Group: Properties
+	    //
+	    // prop: diameter
+	    // diameter of the pie, auto computed by default
         this.diameter;
+        // prop: padding
+        // padding between the pie and plot edges, legend, etc.
         this.padding = 20;
+        // prop: sliceMargin
+        // pixels spacing between pie slices.
         this.sliceMargin = 0;
+        // prop: fill
+        // true or false, wether to fil the slices.
         this.fill = true;
+        // prop: shadowOffset
+        // offset of the shadow from the slice and offset of 
+        // each succesive stroke of the shadow from the last.
         this.shadowOffset = 2;
-        this.shadowAlpha = .07;
+        // prop: shadowAlpha
+        // transparency of the shadow (0 = transparent, 1 = opaque)
+        this.shadowAlpha = 0.07;
+        // prop: shadowDepth
+        // number of strokes to apply to the shadow, 
+        // each stroke offset shadowOffset from the last.
         this.shadowDepth = 5;
         $.extend(true, this, options);
         this._colorGenerator = new this.colorGenerator(this.seriesColors);
@@ -97,7 +112,7 @@
         }
         
         ctx.restore();        
-    }
+    };
     
     // called with scope of series
     $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options) {
@@ -140,7 +155,7 @@
                     break;
                 default:
                     break;
-            };
+            }
         }
         
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;

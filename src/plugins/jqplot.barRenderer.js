@@ -21,7 +21,7 @@
         
         // prop: fill
         // true or false, fill the bars.
-        this.fill = true
+        this.fill = true;
         // prop: barPadding
         // Number of pixels between adjacent bars at the same axis value (auto by default). null = calculated automatically.
         this.barPadding = null;
@@ -94,7 +94,7 @@
             }
         }
         return [nvals, nseries, pos];
-    }
+    };
 
     $.jqplot.BarRenderer.prototype.setBarWidth = function() {
         // need to know how many data values we have on the approprate axis and figure it out.
@@ -106,13 +106,16 @@
         var temp = this.renderer.calcSeriesNumbers.call(this);
         nvals = temp[0];
         nseries = temp[1];
+        var nticks = paxis.numberTicks;
+        var nbins = (nticks-1)/2;
         // so, now we have total number of axis values.
         if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
             if (this._stack) {
                 this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin;
             }
             else {
-                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin;
+                this.barWidth = ((paxis._offsets.max - paxis._offsets.min)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
+                // this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/nseries;
             }
         }
         else {
@@ -120,7 +123,8 @@
                 this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin;
             }
             else {
-                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin;
+                this.barWidth = ((paxis._offsets.min - paxis._offsets.max)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
+                // this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/nseries;
             }
         }
         return [nvals, nseries];

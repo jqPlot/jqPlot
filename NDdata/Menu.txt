@@ -66,7 +66,7 @@ Group: Plugins  {
    File: Dragable  (no auto-title, plugins/jqplot.dragable.js)
    File: Highlighter  (no auto-title, plugins/jqplot.highlighter.js)
    File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
-   File: PieRenderer  (plugins/jqlot.pieRenderer.js)
+   File: PieRenderer  (plugins/jqplot.pieRenderer.js)
    File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
    }  # Group: Plugins
 

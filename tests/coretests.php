@@ -48,7 +48,7 @@
       } \
       plot1b = $.jqplot('_target_', [cosPoints], { \
           title:'Shadow Options', \
-          series:[{showMarker:false, lineWidth:5, shadowAngle:0, shadowOffset:2, shadowAlpha:.06, shadowDepth:5}]});"
+          series:[{showMarker:false, lineWidth:5, shadowAngle:0, shadowOffset:1.5, shadowAlpha:.08, shadowDepth:6}]});"
       
       genplot(o, {comment:c});
       
