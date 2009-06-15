@@ -43,6 +43,9 @@
         // transparency of the shadow (0 = transparent, 1 = opaque)
         this.shadowAlph = 0.08;
         $.extend(true, this, options);
+        // fill is still needed to properly draw the legend.
+        // bars have to be filled.
+        this.fill = true;
         if (this.barDirection == 'vertical' ) {
             this._primaryAxis = '_xaxis';
             this._stackAxis = 'x';
