@@ -16,6 +16,7 @@
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
 	    this.shapeRenderer = new $.jqplot.ShapeRenderer();
 	    this.isDragging = false;
+	    this.isOver = false;
 	    this._ctx;
 	    this._elem;
 	    this._point;
@@ -34,18 +35,14 @@
 	function DragCanvas() {
 	    $.jqplot.GenericCanvas.call(this);
 	    this.isDragging = false;
+	    this.isOver = false;
 	    this._neighbor;
-	    this._cursor;
+	    this._cursors = [];
 	}
 	
 	DragCanvas.prototype = new $.jqplot.GenericCanvas();
 	DragCanvas.prototype.constructor = DragCanvas;
 	
-    // // called with scope of plot
-    // $.jqplot.Dragable.init = function (target, data, options){
-    //     // add a dragable attribute to the plot
-    //     this.dragable = new $.jqplot.Dragable(options.dragable);
-    // };
 	
 	// called within scope of series
 	$.jqplot.Dragable.parseOptions = function (defaults, opts) {
@@ -59,7 +56,7 @@
 	// insert it before the eventCanvas, so eventCanvas will still capture events.
 	// add a new DragCanvas object to the plot plugins to handle drawing on this new canvas.
 	$.jqplot.Dragable.postPlotDraw = function() {
-	    this.plugins.dragable = {};
+	    this.plugins.dragable = {previousCursor:'auto', isOver:false};
 	    this.plugins.dragable.dragCanvas = new DragCanvas();
 	    
         this.eventCanvas._elem.before(this.plugins.dragable.dragCanvas.createElement(this._gridPadding, 'jqplot-dragable-canvas', this._plotDimensions));
@@ -127,11 +124,29 @@
 	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false, preventJqPlotSeriesDrawTrigger:true, color:drag.color});
 	        dc._elem.trigger('jqplotSeriesPointChange', [dp.seriesIndex, dp.pointIndex, [xu,yu], [x,y]]);
 	    }
+	    else if (neighbor != null) {
+    	    var series = plot.series[neighbor.seriesIndex];
+    	    if (series.isDragable) {
+        	    var dc = plot.plugins.dragable.dragCanvas;
+        	    if (!dc.isOver) {
+        	        dc._cursors.push(ev.target.style.cursor);
+        	        ev.target.style.cursor = "pointer";
+        	    }
+        	    dc.isOver = true;
+    	    }
+	    }
+	    else if (neighbor == null) {
+	        var dc = plot.plugins.dragable.dragCanvas;
+	        if (dc.isOver) {
+        	    ev.target.style.cursor = dc._cursors.pop();
+        	    dc.isOver = false;
+	        }
+	    }
 	}
 	
 	function handleDown(ev, gridpos, datapos, neighbor, plot) {
 	    var dc = plot.plugins.dragable.dragCanvas;
-	    dc._cursor = ev.target.style.cursor;
+	    dc._cursors.push(ev.target.style.cursor);
 	    if (neighbor != null) {
 	        var s = plot.series[neighbor.seriesIndex];
 	        var drag = s.plugins.dragable;
@@ -170,7 +185,7 @@
             s.data[dp.pointIndex] = [x,y];
             plot.drawSeries(plot.seriesCanvas._ctx, {preventJqPlotSeriesDrawTrigger:true});
 	        dc._neighbor = null;
-	        ev.target.style.cursor = dc._cursor;
+	        ev.target.style.cursor = dc._cursors.pop();
 	    }
 	}
 })(jQuery);
