@@ -10,6 +10,8 @@
   
     function runSuites() {
       var o, n, nid;
+      var h = 340;
+      var w = 480;
       
       
       nid = uID();
@@ -20,7 +22,7 @@
       axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o);
+      genplot(o, {height:h, width:w});
       
       o = "line1=[4, 25, 13, 22, 14, 17, 15]; \
       ticks = ['uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete']; \
@@ -29,15 +31,15 @@
       axes:{xaxis:{ticks:ticks, renderer:$.jqplot.CategoryAxisRenderer}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o);
+      genplot(o, {height:h, width:w});
       
       o = "line1=[['uno', 4], ['due', 25], ['tre', 13], ['quattro', 22], ['cinque', 14], ['sei', 17], ['sette', 15]]; \
       plot8 = $.jqplot('_target_', [line1], \
-      {title:'Customized Category X Axis by Series Data Specificaiton', \
+      {title:'Customized Category X Axis by <br />Series Data Specificaiton', \
       axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o, {var_space:false});
+      genplot(o, {var_space:false, height:h, width:w});
   
       prettyPrint();
       

@@ -6,7 +6,7 @@ describe 'Log Axis Renderer Plugin Tests'
         plot1.seriesCanvas.should.have_property '_elem'
         plot1.axes.yaxis.renderer.constructor.should.equal $.jqplot.LogAxisRenderer
         plot1.axes.yaxis.base.should.equal 10
-        plot1.legend.location.should.be 'e'
+        plot1.legend.location.should.be 'ne'
         plot1.axes.xaxis.min.should.be 0
         plot1.axes.xaxis.max.should.be 5
         plot1.axes.yaxis.tickDistribution.should.be 'power'

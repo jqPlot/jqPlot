@@ -1,4 +1,4 @@
-jqPlot change log
+Title: Change Log
 
 0.7.0
 
@@ -6,6 +6,7 @@ jqPlot change log
 * Enabled tooltipLocation option in highlighter. 
 * Highlighter Tooltip will account for mark size and highlight size when positioning itself. 
 * Added ability to show just x, y or both axes in highlighter tooltip.
+* Added customization of separator between axes values in highlighter tooltip.
 * Modified how shadows are drawn for lines, bars and markers.  Now drawn first, so they are
   always behind the object.
 * Adjustments to shadow parameters on lines to account for new shadow positioning.
@@ -21,11 +22,13 @@ jqPlot change log
 
 0.6.6a
 
+* Removed absolute positioning from dom element and put back into css file.
 * Duplicate of 0.6.6 with a suffix to unambiguously differentiate between previously posted 0.6.6 release.
 
 0.6.6
 
 * Fixed bug #5, trend line plugin failing when no trend line options specified.
+* Added absolute position css spec to axis tick dom element.
 * Enhancement to category axes, more intuitive handling of series with missing data values.
 
 0.6.5

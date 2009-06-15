@@ -32,7 +32,7 @@
       line2 = [[3, 1], [7, 2], [6.25, 3], [3.125, 4]];\
       plot2 = $.jqplot('_target_', [line1, line2], {stackSeries: true, legend: {show: true, location: 'se'},\
       title: 'Unit Sales: Acme Decoy Division',\
-      seriesDefaults: {renderer: $.jqplot.BarRenderer, \
+      seriesDefaults: {renderer: $.jqplot.BarRenderer, shadowAngle: 135, \
         rendererOptions: {\
             barDirection: 'horizontal', barWidth: 40}},\
       series: [{label: 'Noisy'}, {label: 'Quiet'}],\

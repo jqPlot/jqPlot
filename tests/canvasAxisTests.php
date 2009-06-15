@@ -14,6 +14,8 @@
           
       nid = uID();
       
+      c = 'Rotated axis text is possible through the canvasTextRenderer and canvasAxisTickRenderer plugins.  Native text rendering with the canvas tag is supported in FireFox 3.5 and Safari 4.  In these browsers, full css font specifications are supported.  For other browsers, text is drawn on canvas using the Hershey sans-serif font metrics.'
+      
       o = "line1=[['2008-09-30', 4], ['2008-10-30', 6.5], ['2008-11-30', 5.7], ['2008-12-30', 9], ['2009-01-30', 8.2]]; \
       plot1 = $.jqplot('_target_', [line1], \
       {title:'Rotated Text with Canvas Axis', \
@@ -22,7 +24,7 @@
       tickOptions:{formatString:'%b %#d, %Y', fontSize:'10pt', fontFamily:'Tahoma', angle:-40}}}, \
       series:[{lineWidth:4, markerOptions:{style:'square'}}]});";
       
-      genplot(o, {var_space:false});
+      genplot(o, {comment: c, var_space:false});
   
       prettyPrint();
       

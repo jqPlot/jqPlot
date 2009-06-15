@@ -15,9 +15,8 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.dateAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.barRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.logAxisRenderer.js"></script>
+
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
     .jqplot-axis {
@@ -28,22 +27,32 @@
   
   $(document).ready(function(){
 
-line1 = [[2006, 4],            [2008, 9], [2009, 16]];
-line2 = [[2006, 3], [2007, 7], [2008, 6]];
-line3 = [[2006, 5], [2007, 1], [2008, 3], [2009, 7]];
-line4 = [[2006, 2], [2007, 5], [2008, 4], [2009, 9]];
-
-plot3 = $.jqplot('chart', [line1, line2, line3, line4], {
-    seriesDefaults:{renderer:$.jqplot.BarRenderer, rendererOptions:{barPadding:10, barMargin:10}},
-    legend: {show:true, location: 'nw'},
-    axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}, yaxis:{min:0, max:20, numberTicks:6}}
-    });
+line2 = [25, 12.5, 6.25, 3.125];
+plot1 = $.jqplot('chart', [line2], {
+    legend: {
+        show: true,
+        location: 'ne'
+    },
+    title: 'Log Y Axis, Power Tick Distribution',
+    series: [{
+        label: 'Declining line'
+    }],
+    axes: {
+        xaxis: {
+            min: 0,
+            max: 5
+        },
+        yaxis: {
+            renderer: $.jqplot.LogAxisRenderer
+        }
+    }
+});
 
 
   });
   </script>
   </head>
   <body>
-    <div id="chart" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:360px; height:300px;"></div>
   </body>
 </html>

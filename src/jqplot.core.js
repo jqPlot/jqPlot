@@ -45,6 +45,10 @@
  * 
  * See <jqPlot Usage>
  * 
+ * About: Changes
+ * 
+ * See <Change Log>
+ * 
 **/
 
 (function($) {

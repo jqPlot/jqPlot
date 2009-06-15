@@ -1,21 +1,16 @@
 <?php
-  $pages = array('coretests.php', 'pieTests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'datasetTests.php', 'stackedTests.php', 'canvasAxisTests.php', 'highlighterTests.php');
-  $labels = array('Core', 'Log Axes', 'Date Axes', 'Category Axes', 'Bar Plots', 'Rotated Text', 'Point Highlighter');
-      
-      $len = count($pages);
-      $parts = explode("/", $_SERVER["REQUEST_URI"]);
-      $currpage = end($parts);
-      $curridx = array_search($currpage, $pages);
-      $prevpage = $pages[$curridx - 1];
-      if (!$prevpage) $prevpage = $pages[$len-1];
-      $nextpage = $pages[$curridx + 1];
-      if (!$nextpage) $nextpage = $pages[0];
-      
-      $currlabel = $labels[$curridx];
-      $prevlabel = $labels[$curridx - 1];
-      $nextlabel = $labels[$curridx + 1];
-      
-      $a = '<a href="%s">';
+  $pages = array('coretests.php', 'pieTests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'dragableTests.php', 'stackedTests.php', 'canvasAxisTests.php', 'highlighterTests.php');
+        
+  $len = count($pages);
+  $parts = explode("/", $_SERVER["REQUEST_URI"]);
+  $currpage = end($parts);
+  $curridx = array_search($currpage, $pages);
+  $prevpage = $pages[$curridx - 1];
+  if (!$prevpage) $prevpage = $pages[$len-1];
+  $nextpage = $pages[$curridx + 1];
+  if (!$nextpage) $nextpage = $pages[0];
+  
+  $a = '<a href="%s">';
 ?>
 
 </head>

@@ -1,6 +1,6 @@
 <?php
-  $title = "jqPlot Data Point and Cursor Highlighter Tests";
-  $jspec_title = "jqPlot Data Point and Cursor Highlighter Plugin Tests and Examples";
+  $title = "jqPlot Highlighter and Cursor Plugin Tests";
+  $jspec_title = "jqPlot Data Point Highlighter and Cursor Tracking Plugin Tests and Examples";
   $jqplot_js_includes = array();
   $jqplot_js_includes[] = "../src/plugins/jqplot.dateAxisRenderer.js";
   $jqplot_js_includes[] = "../src/plugins/jqplot.canvasTextRenderer.js";
@@ -41,7 +41,7 @@
       c ='The Cursor plugin changes the mouse cursor when it enters the graph area and displays an optional tooltip with the mouse position.  The tooltip can be in a fixed location, or it can follow the mouse.  The pointer style, set to "crosshair" by default, can also be customized.  Tooltip values are formatted similar to the Highlighter plugin.  By default they use the axes formatters, but can be customized with a sprintf format string.';
       
       o = "plot2 = $.jqplot('_target_', [line1], \
-      {title:'Cursor Highlighting', \
+      {title:'Mouse Cursor Tracking', \
       axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer, \
       rendererOptions:{tickRenderer:$.jqplot.CanvasAxisTickRenderer}, \
       tickOptions:{formatString:'%b %#d, %Y', fontSize:'10pt', fontFamily:'Tahoma', angle:-30}}, \
