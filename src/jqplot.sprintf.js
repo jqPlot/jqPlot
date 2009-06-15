@@ -177,7 +177,7 @@
 
                 var parts = String(Number(Math.abs(number)).toExponential()).split(/e|E/);
                 var sd = (parts[0].indexOf('.') != -1) ? parts[0].length - 1 : parts[0].length;
-                var zeros = (parts[1] < 0) ? -parts[1] - 1 : 0
+                var zeros = (parts[1] < 0) ? -parts[1] - 1 : 0;
                 
                 if (Math.abs(number) < 1) {
                     if (sd + zeros  <= precision) {
@@ -193,7 +193,7 @@
                     }
                 }
                 else {
-                    var prec = (sd <= precision) ? sd : precision
+                    var prec = (sd <= precision) ? sd : precision;
                     value = prefix + Math.abs(number).toPrecision(prec);
                 }
                 var textTransform = ['toString', 'toUpperCase']['pP'.indexOf(type) % 2];
@@ -202,7 +202,7 @@
     		default: return substring;
     	    }
     		    });
-    }
+    };
     
     $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegpEGP])/g;
 
