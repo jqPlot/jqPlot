@@ -45,6 +45,10 @@
  * 
  * See <jqPlot Usage>
  * 
+ * About: Options Usage
+ * 
+ * See <Options Tutorial>
+ * 
  * About: Changes
  * 
  * See <Change Log>

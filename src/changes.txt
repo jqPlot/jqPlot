@@ -1,6 +1,6 @@
 Title: Change Log
 
-0.7.0
+0.7.0:
 
 * Pie chart support
 * Enabled tooltipLocation option in highlighter. 
@@ -14,46 +14,47 @@ Title: Change Log
   around to first color at end.
 * Udates to docs about css file.
 * Fixed bug with String x values in series and IE error on sorting (Category Axis).
+* Added cursor changes in dragable plugin when cursor near dragable point.
 
-0.6.6b
+0.6.6b:
 
 * Added excanvas.js and excanvas.min.js to compressed distributions.
 * Added example/test html pages I had locally into repository and to compressed distributions.
 
-0.6.6a
+0.6.6a:
 
 * Removed absolute positioning from dom element and put back into css file.
 * Duplicate of 0.6.6 with a suffix to unambiguously differentiate between previously posted 0.6.6 release.
 
-0.6.6
+0.6.6:
 
 * Fixed bug #5, trend line plugin failing when no trend line options specified.
 * Added absolute position css spec to axis tick dom element.
 * Enhancement to category axes, more intuitive handling of series with missing data values.
 
-0.6.5
+0.6.5:
 
 * Fixed bug #4, series of unequal data length not rendering correctly.
   This is a bugfix release only.
 
-0.6.4
+0.6.4:
 
 * Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
   or single value data series would crash.
 
-0.6.3
+0.6.3:
 
 * Support for stacked line (a.k.a. area) and stacked bar (horizontal and vertical) charts.
 * Refactored barRenderer to use default shape and shadow renderers.
 * Added info (contacts & support information) page to web site.
 
-0.6.2
+0.6.2:
 
 * This is a minor upgrade to docs and build only.  No functionality has changed.
 * Ant build script generates entire site, examples, tests and distribution.
 * Improvements to documentation.
 
-0.6.1
+0.6.1:
 
 * New sprintf implementation from Ash Searle that implements %g.
 * Fix to sprintf e/f formats.
@@ -67,7 +68,7 @@ Title: Change Log
 * Updates to documentation.
 * Added license and copyright statement to source files.
 
-0.6.0
+0.6.0:
 
 * Added rotated text support.  Uses native canvas text functionality in
 browsers that support it or draws text on canvas with Hershey font
