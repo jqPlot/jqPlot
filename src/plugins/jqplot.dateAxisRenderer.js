@@ -161,7 +161,7 @@
                     else if (!this.showTickMarks) {
                         t.showMark = false;
                     }
-                    t.setTick(ut[0], this.name);
+                    t.setTick(t.value, this.name);
                     this._ticks.push(t);
                 }
                 
