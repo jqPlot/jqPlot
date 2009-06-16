@@ -4,6 +4,7 @@
     <property description="Source directory" name="SRC_DIR" value="src"  />
     <property description="Build, work, temporary directory" name="BUILD_DIR" value="build" />
     <property description="Directory for distributable files" name="DIST_DIR" value="dist" />
+    <property description="Directory for web site files" name="WEB_DIR" value="web" />
 
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
@@ -18,11 +19,11 @@
 
     <!-- MAIN -->
 
-    <target name="dist" description="Build uncompressed jqplot for distribution.">
+    <target name="dist" description="Build uncompressed jqplot for creating distributions and web site.">
         <echo message="Building jqPlot" />
         <mkdir dir="${BUILD_DIR}" />
-        <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
+        <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${DIST_DIR}/plugins" />
         <mkdir dir="${DIST_DIR}/images" />
         <!-- stip out top level closures, concat everything, and wrap in a closure. -->
@@ -74,12 +75,9 @@
           <fileset dir="" includes="*.php" />
           <fileset dir="" includes="style.css" />
           <fileset dir="" includes="README.txt" />
-          <fileset dir="" includes="changes.txt" />
           <fileset dir="" includes="copyright.txt" />
           <fileset dir="" includes="test*.html" />
-          <fileset dir="${SRC_DIR}" includes="MIT-LICENSE.txt" />
-          <fileset dir="${SRC_DIR}" includes="gpl-2.0.txt" />
-          <fileset dir="${SRC_DIR}" includes="usage.txt" />
+          <fileset dir="${SRC_DIR}" includes="*.txt" />
           <fileset dir="tests" includes="jquery*.js" />
         </copy>
         
@@ -144,6 +142,32 @@
         <echo message="Minified sources built." />
     </target>
     
+    <target name="web" depends="dist, min, docs, tests" description="Create jqPlot.com web site">
+        <echo message="Building web site" />
+        <mkdir dir="${WEB_DIR}" />
+        <copy todir="${WEB_DIR}">
+          <fileset dir="${DIST_DIR}">
+            <include name="jquery*.js" />
+            <include name="jquery.jqplot*.css" />
+            <include name="excanvas*.js" />
+            <include name="*.php" />
+            <include name="style.css" />
+          </fileset>
+        </copy>
+        <copy todir="${WEB_DIR}/images">
+          <fileset dir="${DIST_DIR}/images"/>
+        </copy>
+        <copy todir="${WEB_DIR}/docs">
+          <fileset dir="${DIST_DIR}/docs"/>
+        </copy>
+        <copy todir="${WEB_DIR}/tests">
+          <fileset dir="${DIST_DIR}/tests"/>
+        </copy>
+        <copy todir="${WEB_DIR}/plugins">
+          <fileset dir="${DIST_DIR}/plugins"/>
+        </copy>
+    </target>
+    
   <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
        basedir=""
@@ -177,6 +201,12 @@
             <include name="*.php" />
             <include name="*.html" />
           </fileset>
+        </replaceregexp>
+        <replaceregexp match="jqplot\.(\w+)\.js" replace="jqplot.\1.min.js" flags="g">
+          <fileset dir="${DIST_DIR}/tests" includes="*.php" />
+        </replaceregexp>
+        <replaceregexp match="jquery.jqplot.js" replace="jquery.jqplot.min.js">
+          <fileset dir="${DIST_DIR}/tests" includes="opener.php" />
         </replaceregexp>
 		<echo message="Test Suite Finished" />
 	</target>
@@ -216,9 +246,10 @@
     <target name="clean" description="Clean up, removing build and distribution directories and everything underneath.">
         <delete dir="${BUILD_DIR}" />
         <delete dir="${DIST_DIR}" />
+        <delete dir="${WEB_DIR}" />
     </target>
 
-    <target name="all" depends="clean, dist, min, compress, tests, docs" description="Clean then build everything (distribution, minify, tests and docs).">
+    <target name="all" depends="clean, dist, min, compress, tests, docs, web" description="Clean then build everything (distribution, minify, tests and docs).">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 
