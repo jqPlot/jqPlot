@@ -283,11 +283,27 @@
         options = options || {};
         options.axesDefaults = options.axesDefaults || {};
         options.legend = options.legend || {};
-        options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
-        options.legend.renderer = $.jqplot.PieLegendRenderer;
-        options.legend.preDraw = true;
-        options.seriesDefaults.colorGenerator = this.colorGenerator;
-        options.seriesDefaults.seriesColors = this.seriesColors;
+        options.seriesDefaults = options.seriesDefaults || {};
+        // only set these if there is a pie series
+        var setopts = false;
+        if (options.seriesDefaults.renderer == $.jqplot.PieRenderer) {
+            setopts = true;
+        }
+        else if (options.series) {
+            for (var i=0; i < options.series.length; i++) {
+                if (options.series[i].renderer == $.jqplot.PieRenderer) {
+                    setopts = true;
+                }
+            }
+        }
+        
+        if (setopts) {
+            options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
+            options.legend.renderer = $.jqplot.PieLegendRenderer;
+            options.legend.preDraw = true;
+            options.seriesDefaults.colorGenerator = this.colorGenerator;
+            options.seriesDefaults.seriesColors = this.seriesColors;
+        }
     }
     
     $.jqplot.preInitHooks.push(preInit);
