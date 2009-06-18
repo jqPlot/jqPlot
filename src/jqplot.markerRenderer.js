@@ -71,7 +71,7 @@
         this.shapeRenderer.init(shopt);
     };
     
-    $.jqplot.MarkerRenderer.prototype.drawDiamond = function(x, y, ctx, fill) {
+    $.jqplot.MarkerRenderer.prototype.drawDiamond = function(x, y, ctx, fill, options) {
         var stretch = 1.2;
         var dx = this.size/2/stretch;
         var dy = this.size/2*stretch;
@@ -79,12 +79,12 @@
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points);
         }
-        this.shapeRenderer.draw(ctx, points);
+        this.shapeRenderer.draw(ctx, points, options);
 
         ctx.restore();
     };
     
-    $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill) {
+    $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill, options) {
         var stretch = 1.0;
         var dx = this.size/2/stretch;
         var dy = this.size/2*stretch;
@@ -92,45 +92,46 @@
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points);
         }
-        this.shapeRenderer.draw(ctx, points);
+        this.shapeRenderer.draw(ctx, points, options);
 
         ctx.restore();
     };
     
-    $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill) {
+    $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill, options) {
         var radius = this.size/2;
         var end = 2*Math.PI;
         var points = [x, y, radius, 0, end, true];
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points);
         }
-        this.shapeRenderer.draw(ctx, points);
+        this.shapeRenderer.draw(ctx, points, options);
         
         ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
+        options = options || {};
         switch (this.style) {
             case 'diamond':
-                this.drawDiamond(x,y,ctx, false);
+                this.drawDiamond(x,y,ctx, false, options);
                 break;
             case 'filledDiamond':
-                this.drawDiamond(x,y,ctx, true);
+                this.drawDiamond(x,y,ctx, true, options);
                 break;
             case 'circle':
-                this.drawCircle(x,y,ctx, false);
+                this.drawCircle(x,y,ctx, false, options);
                 break;
             case 'filledCircle':
-                this.drawCircle(x,y,ctx, true);
+                this.drawCircle(x,y,ctx, true, options);
                 break;
             case 'square':
-                this.drawSquare(x,y,ctx, false);
+                this.drawSquare(x,y,ctx, false, options);
                 break;
             case 'filledSquare':
-                this.drawSquare(x,y,ctx, true);
+                this.drawSquare(x,y,ctx, true, options);
                 break;
             default:
-                this.drawDiamond(x,y,ctx, false);
+                this.drawDiamond(x,y,ctx, false, options);
                 break;
         }
     };

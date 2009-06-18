@@ -108,7 +108,7 @@
         // now draw the markers
         if (this.markerRenderer.show) {
             for (i=0; i<gd.length; i++) {
-                this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts);
+                this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
             }
         }
         

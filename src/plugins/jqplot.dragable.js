@@ -80,12 +80,13 @@
         mr.style = smr.style;
         mr.lineWidth = smr.lineWidth + 2.5;
         mr.size = smr.size + 5;
-        var rgba = $.jqplot.getColorComponents(smr.color);
-        var newrgb = [rgba[0], rgba[1], rgba[2]];
-        var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
-        var color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
-        drag.color = color;
-        mr.color = color;
+        if (!drag.color) {
+            var rgba = $.jqplot.getColorComponents(smr.color);
+            var newrgb = [rgba[0], rgba[1], rgba[2]];
+            var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
+            drag.color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
+        }
+        mr.color = drag.color;
         mr.init();
 
         var start = (neighbor.pointIndex > 0) ? neighbor.pointIndex - 1 : 0;
@@ -120,7 +121,7 @@
 	        else {
 	            drag._gridData[0] = [x, y];
 	        }
-	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false, preventJqPlotSeriesDrawTrigger:true, color:drag.color});
+	        plot.series[dp.seriesIndex].draw(dc._ctx, {gridData:drag._gridData, shadow:false, preventJqPlotSeriesDrawTrigger:true, color:drag.color, markerOptions:{color:drag.color, shadow:false}, trendline:{show:false}});
 	        dc._elem.trigger('jqplotSeriesPointChange', [dp.seriesIndex, dp.pointIndex, [xu,yu], [x,y]]);
 	    }
 	    else if (neighbor != null) {
