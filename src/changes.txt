@@ -1,5 +1,14 @@
 Title: Change Log
 
+0.7.1:
+
+* Bug fix release
+* Fixed bug #6, missing semi-colons messing up some javascript compressors.
+* Fixed bug #13 where 2D ticks array of [values, labels] would fail to renderer with DateAxisRenderer.
+* Fixes bug #16 where pie renderer overwriting options for all plot types and crashing non pie plots.
+* Fixes bug #17 constrainTo dragable option mispelled as "contstrainTo"
+* Fixed bug #17 again. Fixed dragable color issue when used with trend lines.
+
 0.7.0:
 
 * Pie chart support
