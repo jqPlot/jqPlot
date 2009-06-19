@@ -49,6 +49,10 @@
  * 
  * See <Options Tutorial>
  * 
+ * About: Available Options 
+ * 
+ * See <jqPlot Options> for a list of options available thorugh the options object (not complete yet!)
+ * 
  * About: Changes
  * 
  * See <Change Log>
@@ -169,15 +173,23 @@
      * by the Plot oject.  Axis properties can be set or overriden by the 
      * options passed in from the user.
      * 
-     * Parameters:
-     * name - Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
      */
     function Axis(name) {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
-        
-        // prop: name
-        // Axis name (identifier).  One of 'xaxis', 'yaxis', 'x2axis' or 'y2axis'.
+        //
+        // Axes options are specified within an axes object at the top level of the 
+        // plot options like so:
+        // > {
+        // >    axes: {
+        // >        xaxis: {min: 5},
+        // >        yaxis: {min: 2, max: 8, numberTicks:4},
+        // >        x2axis: {pad: 1.5},
+        // >        y2axis: {ticks:[22, 44, 66, 88]}
+        // >        }
+        // > }
+        // There are 4 axes, 'xaxis', 'yaxis', 'x2axis', 'y2axis'.  Any or all of 
+        // which may be specified.
         this.name = name;
         this._series = [];
         // prop: show
@@ -191,7 +203,7 @@
         this.max=null;
         // prop: pad
         // Padding to extend the range above and below the data bounds.
-        // Factor to multiply by the data range when setting the axis bounds
+        // The data range is multiplied by this factor to determine minimum and maximum axis bounds.
         this.pad = 1.2;
         // prop: ticks
         // 1D [val, val, ...] or 2D [[val, label], [val, label], ...] array of ticks for the axis.
@@ -208,7 +220,7 @@
         // scaling input data to pixel grid units and drawing the axis element.
         this.renderer = $.jqplot.LinearAxisRenderer;
         // prop: rendererOptions
-        // renderer specific options.  Not commonly used.
+        // renderer specific options.  See <$.jqplot.LinearAxisRenderer> for options.
         this.rendererOptions = {};
         // prop: tickOptions
         // Options that will be passed to the tickRenderer, see <$.jqplot.AxisTickRenderer> options.
@@ -397,16 +409,26 @@
     function Series() {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
+        // Properties will be assigned from a series array at the top level of the
+        // options.  If you had two series and wanted to change the color and line
+        // width of the first and set the second to use the secondary y axis with
+        // no shadow and supply custom labels for each:
+        // > {
+        // >    series:[
+        // >        {color: '#ff4466', lineWidth: 5, label:'good line'},
+        // >        {yaxis: 'y2axis', shadow: false, label:'bad line'}
+        // >    ]
+        // > }
         
         // prop: show
         // wether or not to draw the series.
         this.show = true;
         // prop: xaxis
-        // name of x axis to associate with this series, either 'xaxis' or 'x2axis'.
+        // which x axis to use with this series, either 'xaxis' or 'x2axis'.
         this.xaxis = 'xaxis';
         this._xaxis;
         // prop: yaxis
-        // name of y axis to associate with this series, either 'yaxis' or 'y2axis'.
+        // which y axis to use with this series, either 'yaxis' or 'y2axis'.
         this.yaxis = 'yaxis';
         this._yaxis;
         this.gridBorderWidth = 2.0;
@@ -417,12 +439,7 @@
         // prop: rendererOptions
         // Options to pass on to the renderer.
         this.rendererOptions = {};
-        // prop: data
-        // data points for the line in series units.
-        // converted to an array of (x,y) data points with x starting at 1 if a 1D array of y values is passed in.
         this.data = [];
-        // prop: gridData
-        // data points for the line in grid pixel units.
         this.gridData = [];
         // prop: label
         // Line label to use in the legend.
@@ -449,7 +466,7 @@
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.1';
         // prop: breakOnNull
-        // wether line segments should be be broken at null value.
+        // Not implemented. wether line segments should be be broken at null value.
         // False will join point on either side of line.
         this.breakOnNull = false;
         // prop: markerRenderer
@@ -473,6 +490,17 @@
         // true or false, wether to fill under lines or in bars.
         // May not be implemented in all renderers.
         this.fill = false;
+        // prop: fillColor
+        // CSS color spec to use for fill under line.  Defaults to line color.
+        this.fillColor;
+        // prop: fillAlpha
+        // Alpha transparency to apply to the fill under the line.
+        // Use this to adjust alpha separate from fill color.
+        this.fillAlpha;
+        // prop: fillAndStroke
+        // If true will stroke the line (with color this.color) as well as fill under it.
+        // Applies only when fill is true.
+        this.fillAndStroke = false;
         // _stack is set by the Plot if the plot is a stacked chart.
         // will stack lines or bars on top of one another to build a "mountain" style chart.
         // May not be implemented in all renderers.
@@ -507,6 +535,14 @@
                     var undefined;
                 }
             }
+        }
+        if (!this.fillColor) {
+            this.fillColor = this.color;
+        }
+        if (this.fillAlpha) {
+            var comp = $.jqplot.normalize2rgb(this.fillColor);
+            var comp = $.jqplot.getColorComponents(comp);
+            this.fillColor = 'rgba('+comp[0]+','+comp[1]+','+comp[2]+','+this.fillAlpha+')';
         }
         this.renderer = new this.renderer();
         this.renderer.init.call(this, this.rendererOptions);
@@ -708,42 +744,46 @@
 
     /**
      * Class: jqPlot
-     * Plot object returned to call to $.jqplot.  Handles parsing user options,
+     * Plot object returned by call to $.jqplot.  Handles parsing user options,
      * creating sub objects (Axes, legend, title, series) and rendering the plot.
      */
     function jqPlot() {
         // Group: Properties
-        
+        // These properties are specified at the top of the options object
+        // like so:
+        // > {
+        // >     axesDefaults:{min:0},
+        // >     series:[{color:'#6633dd'}],
+        // >     title: 'A Plot'
+        // > }
+        //
         // prop: data
-        // user's data.  Should be in the form of
-        // [ [[x1, y1], [x2, y2],...], [[x1, y1], [x2, y2], ...] ] or can be supplied in the series option like:
-        // [{ data:[[x1, y1], [x2, y2],...], other_options...}, { data:[[x1, y1], [x2, y2],...], other_options...} ]
+        // user's data.  Data should *NOT* be specified in the options object,
+        // but be passed in as the second argument to the $.jqplot() function.
+        // The data property is described here soley for reference. 
+        // The data should be in the form of an array of 2D or 1D arrays like
+        // > [ [[x1, y1], [x2, y2],...], [y1, y2, ...] ].
         this.data = [];
         // The id of the dom element to render the plot into
         this.targetId = null;
         // the jquery object for the dom target.
         this.target = null; 
-        // prop: defaults
-        // Default options.  Any of these can be specified individually and be applied
-        // to all objects of the type.  A quick way to override all axes or series options.   
-        // 
-        // Properties
-        //
-        // axesDefaults - defaults applied to all axes.
-        // axes - axis by axis defaults.  Include all 4 axes, even if they are empty.
-        // seriesDefaults - deraults applied to all series.
-        // gridPadding - default padding around the grid drawing area if no axis or title
-        //    is present on a given side of the grid.
-        // series - series by series defaults.  Don't know how useful this is yet.
         this.defaults = {
+            // prop: axesDefaults
+            // default options that will be applied to all axes.
+            // see <Axis> for axes options.
             axesDefaults: {},
             axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}},
+            // prop: seriesDefaults
+            // default options that will be applied to all series.
+            // see <Series> for series options.
             seriesDefaults: {},
             gridPadding: {top:10, right:10, bottom:10, left:10},
             series:[]
         };
         // prop: series
         // Array of series object options.
+        // see <Series> for series specific options.
         this.series = [];
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
@@ -762,14 +802,15 @@
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
         this._gridPadding = {top:10, right:10, bottom:10, left:10};
-        // prop: equalXTicks
-        // for dual axes, wether to space ticks the same on both sides.
+        // don't think this is implemented.
         this.equalXTicks = true;
-        // prop: equalYTicks
-        // for dual axes, wether to space ticks the same on both sides.
+        // don't think this is implemented.
         this.equalYTicks = true;
         // prop: seriesColors
-        // default colors for the series.#c29549
+        // Ann array of CSS color specifications that will be applied, in order,
+        // to the series in the plot.  Colors will wrap around so, if their
+        // are more series than colors, colors will be reused starting at the
+        // beginning.  For pie charts, this specifies the colors of the slices.
         this.seriesColors = [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
         var seriesColorsIndex = 0;
         // prop textColor
@@ -782,6 +823,9 @@
         // css spec for the font-size attribute.  Default for the entire plot.
         this.fontSize;
         // prop: title
+        // Title object.  See <Title> for specific options.  As a shortcut, you
+        // can specify the title option as just a string like: title: 'My Plot'
+        // and this will create a new title object with the specified text.
         this.title = new Title();
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};

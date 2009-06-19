@@ -15,7 +15,7 @@
     $.jqplot.LineRenderer.prototype.init = function(options) {
         $.extend(true, this.renderer, options);
         // set the shape renderer options
-        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, lineWidth:this.lineWidth, closePath:this.fill};
+        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
@@ -76,10 +76,15 @@
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
+        var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
         ctx.save();
         if (showLine) {
             // if we fill, we'll have to add points to close the curve.
             if (fill) {
+                // is stoking line as well as filling, get a copy of line data.
+                if (fillAndStroke) {
+                    var fasgd = gd.slice(0);
+                }
                 // if not stacked, fill down to axis
                 if (this.index == 0 || !this._stack) {
                     var gridymin = this._yaxis.series_u2p(this._yaxis.min) - this.gridBorderWidth / 2;
@@ -100,13 +105,26 @@
                 this.renderer.shadowRenderer.draw(ctx, gd, opts);
             }
             
-            this.renderer.shapeRenderer.draw(ctx, gd, opts);                
-
-            // now draw the shadows
+            this.renderer.shapeRenderer.draw(ctx, gd, opts); 
+            if (fillAndStroke) {
+                var fasopts = $.extend(true, {}, opts, {fill:false, closePath:false});
+                this.renderer.shapeRenderer.draw(ctx, fasgd, fasopts);
+                //////////
+                // TODO: figure out some way to do shadows nicely
+                // if (shadow) {
+                //     this.renderer.shadowRenderer.draw(ctx, fasgd, fasopts);
+                // }
+                // now draw the markers
+                if (this.markerRenderer.show) {
+                    for (i=0; i<fasgd.length; i++) {
+                        this.markerRenderer.draw(fasgd[i][0], fasgd[i][1], ctx, opts.markerOptions);
+                    }
+                }
+            }
         }
         
         // now draw the markers
-        if (this.markerRenderer.show) {
+        if (this.markerRenderer.show && !fill) {
             for (i=0; i<gd.length; i++) {
                 this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
             }

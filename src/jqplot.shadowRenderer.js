@@ -53,6 +53,9 @@
     // points - array of points or [x, y, radius, start angle (rad), end angle (rad)]
     $.jqplot.ShadowRenderer.prototype.draw = function(ctx, points, options) {
         ctx.save();
+        var opts = (options != null) ? options : {};
+        var fill = (opts.fill != null) ? opts.fill : this.fill;
+        var closePath = (opts.closePath != null) ? opts.closePath : this.closePath;
         ctx.lineWidth = this.lineWidth;
         ctx.lineJoin = this.lineJoin;
         ctx.lineCap = this.lineCap;
@@ -71,10 +74,10 @@
                 }
                 
             }
-            if (this.closePath) {
+            if (closePath) {
             	ctx.closePath();
             }
-            if (this.fill) {
+            if (fill) {
             	ctx.fill();
             }
             else {

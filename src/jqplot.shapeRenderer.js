@@ -49,6 +49,8 @@
     $.jqplot.ShapeRenderer.prototype.draw = function(ctx, points, options) {
         ctx.save();
         var opts = (options != null) ? options : {};
+        var fill = (opts.fill != null) ? opts.fill : this.fill;
+        var closePath = (opts.closePath != null) ? opts.closePath : this.closePath;
         ctx.lineWidth = opts.lineWidth || this.lineWidth;
         ctx.lineJoin = opts.lineJoing || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
@@ -65,10 +67,10 @@
             }
             
         }
-        if (this.closePath) {
+        if (closePath) {
             ctx.closePath();
         }
-        if (this.fill) {
+        if (fill) {
         	ctx.fill();
         }
         else {
