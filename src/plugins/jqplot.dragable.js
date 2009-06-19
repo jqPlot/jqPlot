@@ -10,9 +10,6 @@
      */
     $.jqplot.Dragable = function(options) {
         // Group: Properties
-        
-        // prop: markerRenderer
-        // Renderer used to draw the markers of the point being dragged.
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
 	    this.shapeRenderer = new $.jqplot.ShapeRenderer();
 	    this.isDragging = false;
