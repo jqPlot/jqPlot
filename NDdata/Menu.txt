@@ -42,6 +42,7 @@ Timestamp: Updated month day, year
 File: jqPlot  (no auto-title, jqplot.core.js)
 File: Usage  (no auto-title, usage.txt)
 File: Options Tutorial  (no auto-title, optionsTutorial.txt)
+File: jqPlot Options  (no auto-title, jqPlotOptions.txt)
 File: Change Log  (changes.txt)
 Link: Unit Tests &amp; Examples  (../../tests/)
 

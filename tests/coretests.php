@@ -64,7 +64,7 @@
             
       genplot(o, {comment:c});
       
-      c = 'Axes ticks are computed automatically from the data, but can be customized if desired.  Ticks can be specified as an array of [value, label] pairs, or as a 1-D array of values. <p>Here the y axis ticks use a custom format string ("%d") to produce integer tick labels.  The default format string is %.1f and can be customized to any sprintf style format string.';
+      c = 'Axes ticks are computed automatically from the data, but can be customized if desired.  Ticks can be specified as an array of [value, label] pairs, or as a 1-D array of values. <p>Here the y axis ticks use a custom format string ("%d") to produce integer tick labels.  The default format string is %.1f and can be customized to any sprintf style format string.  <p>Additionally, the grid background color and grid line color have been changed';
       
       o = "line1=[[1,1],[1.5, 2.25],[2,4],[2.5,6.25],[3,9],[3.5,12.25],[4,16]]; \
       line2=[25, 12.5, 6.25, 3.125]; \
@@ -72,6 +72,7 @@
       yticks = [-5, 0, 5, 10, 15, 20, 25, 30]; \
       plot5 = $.jqplot('_target_', [line1, line2], \
       {legend:{show:true}, title:'Customized Axes Ticks', \
+      grid: {background:'#f3f3f3', gridLineColor:'#accf9b'}, \
       series:[{label:'Rising line', markerOptions:{style:'square'}}, {label:'Declining line'}], \
       axes:{xaxis:{ticks:xticks}, yaxis:{ticks:yticks, tickOptions:{formatString:'%d'}}}});";
             
