@@ -176,6 +176,43 @@ directly above the point I'm highlighting:
 >     highlighter:{tooltipFadeSpeed:'slow', tooltipLocation:'n'}
 > }
 
+Other plugins, like dragable and trendlines, add their options in with
+the series.  This is because both of those plugins can have different
+options for different series in the plot.  So, if you wanted to specify the
+color of the dragable and constrain it to drag only on the x axis as well
+as specify the color of the trend line you could do:
+
+> series:[{
+>     dragable: {
+>         color: '#ff3366',
+>         constrainTo: 'x'
+>     },
+>     trendline: {
+>         color: '#cccccc'
+>     }
+> }]
+
+This would apply those options to the first series only.  If you had 2 series
+and wanted to turn off dragging and trend lines on the second series, you could do:
+
+> series:[{
+>     dragable: {
+>         color: '#ff3366',
+>         constrainTo: 'x'
+>     },
+>     trendline: {
+>         color: '#cccccc'
+>     }
+> }, {
+>    isDragable: false,
+>    trendline:{
+>        show: false
+>    }
+> }]
+
+Note, series dragability is turned off with the "isDragable" option directly on 
+the series itself, not with a suboption of "dragable".  This may be improved 
+in the future.
 
 I hope this is helpful. 
 A few key points to remember:

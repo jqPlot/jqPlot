@@ -26,12 +26,10 @@
 	    // Pixels to add to the overall size of the highlight.
 	    this.sizeAdjust = 5;
 	    // prop: showTooltip
-	    // Show a cursor position tooltip near the cursor
+	    // Show a tooltip with data point values.
 	    this.showTooltip = true;
 	    // prop: tooltipLocation
-	    // Where to position tooltip.  If followMouse is true, this is
-	    // relative to the cursor, otherwise, it is relative to the grid.
-	    // One of 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+	    // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
 	    this.tooltipLocation = 'nw';
 	    // prop: tooltipFade
 	    // true = fade in/out tooltip, flase = show/hide tooltip
@@ -40,7 +38,7 @@
 	    // 'slow', 'def', 'fast', or number of milliseconds.
 	    this.tooltipFadeSpeed = "fast";
 	    // prop: tooltipOffset
-	    // Pixel offset of tooltip from the grid boudaries or cursor center.
+	    // Pixel offset of tooltip from the highlight.
 	    this.tooltipOffset = 2;
 	    // prop: tooltipAxes
 	    // Which axes to display in tooltip, 'x', 'y' or 'both'

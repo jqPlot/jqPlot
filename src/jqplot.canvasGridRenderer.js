@@ -29,7 +29,6 @@
         this._elem = $(elem);
         this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        // borrowed from flot by Ole Laursen
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
         }
@@ -59,7 +58,7 @@
             ctx.lineJoin = 'miter';
             ctx.lineCap = 'round';
             ctx.lineWidth = 1;
-            ctx.strokeStyle = '#cccccc';
+            ctx.strokeStyle = this.gridLineColor;
             for (var name in axes) {
                 var axis = axes[name];
                 var ticks = axis._ticks;
@@ -102,7 +101,7 @@
         ctx.lineJoin = 'miter';
         ctx.lineCap = 'round';
         ctx.lineWidth = 1;
-        ctx.strokeStyle = '#cccccc';
+        ctx.strokeStyle = this.gridLineColor;
         for (var name in axes) {
             var axis = axes[name];
             if (axis.show) {

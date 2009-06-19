@@ -641,6 +641,9 @@
         // prop: drawGridlines
         // wether to draw the gridlines on the plot.
         this.drawGridlines = true;
+        // prop: gridLineColor
+        // color of the grid lines.
+        this.gridLineColor = '#cccccc';
         // prop: background
         // css spec for the background color.
         this.background = '#fffdf6';
