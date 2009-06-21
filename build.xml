@@ -18,24 +18,28 @@
 	  <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
 
     <!-- MAIN -->
-
-    <target name="dist" description="Build uncompressed jqplot for creating distributions and web site.">
+    
+    <target name="build" description="create and populate build area for making distribution">
         <echo message="Building jqPlot" />
         <mkdir dir="${BUILD_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
-        <mkdir dir="${DIST_DIR}" />
-        <mkdir dir="${DIST_DIR}/plugins" />
-        <mkdir dir="${DIST_DIR}/images" />
+        <mkdir dir="${BUILD_DIR}/images" />
+        
         <!-- stip out top level closures, concat everything, and wrap in a closure. -->
         <!-- copy all needed files from src to build -->
         <copy todir="${BUILD_DIR}">
           <fileset dir="${SRC_DIR}">
             <include name="*" />
             <exclude name="jquery.jqplot.js" />
-            <exclude name="*.txt" />
             <exclude name="jsl.conf" />
           </fileset>
         </copy>
+        <copy todir="${BUILD_DIR}/images">
+          <fileset dir="${SRC_DIR}/images">
+          </fileset>
+        </copy>
+        <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="{{{" value="(code)" />
+        <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="}}}" value="(end)" />
         <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
         <copy todir="${BUILD_DIR}/plugins">
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
@@ -65,6 +69,15 @@
             </fileset>
             <fileset dir="${BUILD_DIR}" includes="jqplot.sprintf.js" />
         </concat>
+        
+    </target>
+
+    <target name="dist" depends="build" description="Build uncompressed jqplot for creating distributions and web site.">
+        <echo message="Creating jqPlot distribution" />
+        
+        <mkdir dir="${DIST_DIR}" />
+        <mkdir dir="${DIST_DIR}/plugins" />
+        <mkdir dir="${DIST_DIR}/images" />
         
         <!-- now copy files to dist dir. -->
         <copy todir="${DIST_DIR}">
@@ -213,11 +226,13 @@
 
 	<target name="docs" description="Create documentation for distribution.">
 		<echo message="Creating documentation" />
+		  <!-- don't want to process jquery itself -->
+		    <move file="${BUILD_DIR}/jquery-1.3.2.js" tofile="${BUILD_DIR}/jquery-1.3.2.js.bak" />
         <mkdir dir="${DIST_DIR}/docs" />
         <exec executable="${ND}">
           <arg value="-r" />
           <arg value="-i" />
-          <arg path="src" />
+          <arg path="${BUILD_DIR}" />
           <arg line="-o HTML " />
           <arg path="dist/docs" />
           <arg value="-p" />
@@ -240,6 +255,8 @@
           <fileset dir="${SRC_DIR}/images" includes="*.jpg" />
           <fileset dir="${SRC_DIR}/images" includes="*.png" />
     		</copy>
+    		<!-- put jquery back the way it was -->
+		    <move file="${BUILD_DIR}/jquery-1.3.2.js.bak" tofile="${BUILD_DIR}/jquery-1.3.2.js" />
         <echo message="Documentation Finished" />
 	</target>
 
@@ -249,7 +266,7 @@
         <delete dir="${WEB_DIR}" />
     </target>
 
-    <target name="all" depends="clean, dist, min, compress, tests, docs, web" description="Clean then build everything (distribution, minify, tests and docs).">
+    <target name="all" depends="clean, build, dist, min, compress, tests, docs, web" description="Clean then build everything (distribution, minify, tests and docs).">
         <echo message="Build complete distribution, docs and tests" />
     </target>
 

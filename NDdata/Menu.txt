@@ -39,39 +39,47 @@ Timestamp: Updated month day, year
 # --------------------------------------------------------------------------
 
 
-File: jqPlot  (no auto-title, jqplot.core.js)
-File: Usage  (no auto-title, usage.txt)
-File: Options Tutorial  (no auto-title, optionsTutorial.txt)
-File: jqPlot Options  (no auto-title, jqPlotOptions.txt)
-File: Change Log  (changes.txt)
-Link: Unit Tests &amp; Examples  (../../tests/)
+Group: Usage and Options  {
 
-Group: Core Renderers  {
+   File: Usage  (no auto-title, usage.txt)
+   File: jqPlot Options  (no auto-title, jqPlotOptions.txt)
+   File: Options Tutorial  (no auto-title, optionsTutorial.txt)
+   File: jqPlot CSS Customization  (jqPlotCssStyling.txt)
+   File: Change Log  (changes.txt)
+   Link: Unit Tests &amp; Examples  (../../tests/)
+   }  # Group: Usage and Options
 
-   File: AxisTickRenderer  (no auto-title, jqplot.axisTickRenderer.js)
-   File: CanvasGridRenderer  (no auto-title, jqplot.canvasGridRenderer.js)
-   File: DivTitleRenderer  (no auto-title, jqplot.divTitleRenderer.js)
-   File: LinearAxisRenderer  (no auto-title, jqplot.linearAxisRenderer.js)
-   File: MarkerRenderer  (no auto-title, jqplot.markerRenderer.js)
-   File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
-   File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
-   File: LineRenderer  (jqplot.lineRenderer.js)
-   File: jquery-1.3.2.js  (jquery-1.3.2.js)
-   }  # Group: Core Renderers
+Group: API Documentation  {
 
-Group: Plugins  {
+   Group: Core Renderers  {
 
-   File: BarRenderer  (no auto-title, plugins/jqplot.barRenderer.js)
-   File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
-   File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
-   File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
-   File: DateAxisRenderer  (no auto-title, plugins/jqplot.dateAxisRenderer.js)
-   File: Dragable  (no auto-title, plugins/jqplot.dragable.js)
-   File: Highlighter  (no auto-title, plugins/jqplot.highlighter.js)
-   File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
-   File: PieRenderer  (plugins/jqplot.pieRenderer.js)
-   File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
-   }  # Group: Plugins
+      File: jqPlot Charts  (jquery.jqplot.js)
+      File: AxisTickRenderer  (no auto-title, jqplot.axisTickRenderer.js)
+      File: CanvasGridRenderer  (no auto-title, jqplot.canvasGridRenderer.js)
+      File: DivTitleRenderer  (no auto-title, jqplot.divTitleRenderer.js)
+      File: LinearAxisRenderer  (no auto-title, jqplot.linearAxisRenderer.js)
+      File: MarkerRenderer  (no auto-title, jqplot.markerRenderer.js)
+      File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
+      File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
+      File: $.jqplot.LineRenderer  (jqplot.lineRenderer.js)
+      File: jqPlot Charts  (jqplot.core.js)
+      }  # Group: Core Renderers
+
+   Group: Plugins  {
+
+      File: BarRenderer  (no auto-title, plugins/jqplot.barRenderer.js)
+      File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
+      File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
+      File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
+      File: DateAxisRenderer  (no auto-title, plugins/jqplot.dateAxisRenderer.js)
+      File: Dragable  (no auto-title, plugins/jqplot.dragable.js)
+      File: Highlighter  (no auto-title, plugins/jqplot.highlighter.js)
+      File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
+      File: PieRenderer  (plugins/jqplot.pieRenderer.js)
+      File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
+      }  # Group: Plugins
+
+   }  # Group: API Documentation
 
 File: GPL License  (no auto-title, gpl-2.0.txt)
 File: MIT License  (no auto-title, MIT-LICENSE.txt)
@@ -82,7 +90,5 @@ Group: Index  {
    Class Index: Classes
    Property Index: Properties
    Function Index: Functions
-   File Index: Files
-   Variable Index: Variables
    }  # Group: Index
 

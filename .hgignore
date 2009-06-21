@@ -7,6 +7,7 @@ NDdata*
 *~
 build
 dist
+web
 
 # switch to regexp syntax.
 # syntax: regexp

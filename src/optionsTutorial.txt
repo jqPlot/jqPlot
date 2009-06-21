@@ -1,5 +1,10 @@
 Title: Options Tutorial
 
+This document will help you understand how jqPlot's options
+relate to the API documentation and the jqPlot object
+itself.  For a listing of options available to jqPlot,
+see <jqPlot Options> in the jqPlotOptions.txt file.
+
 The key to effectively using jqPlot is understanding jqPlot's
 options.  The online documentation is API documentation.  While
 it explains what attributes and methods various objects posses,

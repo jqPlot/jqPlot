@@ -25,19 +25,21 @@
  * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
  * 
  * jqPlot can be customized by overriding the defaults of any of the objects which make
- * up the plot.  The general usage of jqplot is:
+ * up the plot. The general usage of jqplot is:
  * 
  * > chart = $.jqplot('targetElemId', [dataArray,...], {optionsObject});
  * 
- * Which would look like this 
- * in actual code:
+ * The options available to jqplot are detailed in <jqPlot Options> in the jqPlotOptions.txt file.
  * 
- * > $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
+ * An actual call to $.jqplot() may look like the 
+ * examples below:
  * 
- * The optionsObject corresponds to an properties on a <jqPlot> instance, so customization
- * may look like this:
+ * > chart = $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
  * 
- * > chart = $.jqplot('targetElemId', [dataArray, ...], {title:'My Plot', axes:{xaxis:{min:0, max:10}}});
+ * or
+ * 
+ * > dataArray = [34,12,43,55,77];
+ * > chart = $.jqplot('targetElemId', [dataArray, ...], {title:'My Plot', axes:{yaxis:{min:20, max:100}}});
  * 
  * For more inforrmation, see <jqPlot Usage>.
  * 
@@ -45,13 +47,13 @@
  * 
  * See <jqPlot Usage>
  * 
- * About: Options Usage
- * 
- * See <Options Tutorial>
- * 
  * About: Available Options 
  * 
  * See <jqPlot Options> for a list of options available thorugh the options object (not complete yet!)
+ * 
+ * About: Options Usage
+ * 
+ * See <Options Tutorial>
  * 
  * About: Changes
  * 
