@@ -32,7 +32,7 @@ options =
         show: true,
     },
 
-    axesDefaults: {
+    axisDefaults: {
         show: false,    // wether or not to renderer the axis.  Determined automatically.
         min: null,      // minimum numerical value of the axis.  Determined automatically.
         max: null,      // maximum numverical value of the axis.  Determined automatically.
@@ -146,9 +146,9 @@ options =
     // Plugin and renderer options.
     
     // BarRenderer. 
-    // With BarRenderer, you can specify additional options directly on the series
-    // or on the seriesDefaults object.  Note, some options are respecified (like shadowDepth)
-    // to override the defaults from the lineRenderer from which BarRenderer is a sub class.
+    // With BarRenderer, you can specify additional options in the rendererOptions object
+    // on the series or on the seriesDefaults object.  Note, some options are respecified 
+    // (like shadowDepth) to override lineRenderer defaults from which BarRenderer inherits.
     
     seriesDefaults: {
         rendererOptions: {
@@ -189,7 +189,7 @@ options =
                                 // [['xaxis', 'yaxis'], ['xaxis', 'y2axis']].  By default, all axes
                                 // combinations with for the series in the plot are shown.
         
-    }
+    },
     
     // Dragable
     // Dragable options are specified with the "dragable" object at the top level
@@ -199,7 +199,7 @@ options =
         color: undefined,       // custom color to use for the dragged point and dragged line
                                 // section. default will use a transparent variant of the line color.
         constrainTo: 'none',    // Constrain dragging motion to an axis: 'x', 'y', or 'none'.
-    }
+    },
     
     // Highlighter
     // Highlighter options are specified with the "highlighter" object at the top level
@@ -221,6 +221,52 @@ options =
         tooltipFormatString: '%.5P' // sprintf format string for the tooltip.  only used if
                                     // useAxesFormatters is false.  Will use sprintf formatter with
                                     // this string, not the axes formatters.
-    } 
+    },
+    
+    // LogAxisRenderer
+    // LogAxisRenderer add 2 options to the axes object.  These options are specified directly on
+    // the axes or axesDefaults object.
+    
+    axesDefaults: {
+        base: 10,                   // the logarithmic base.
+        tickDistribution: 'even',   // 'even' or 'power'.  'even' will produce with even visiual (pixel)
+                                    // spacing on the axis.  'power' will produce ticks spaced by 
+                                    // increasing powers of the log base.
+    },
+    
+    // PieRenderer
+    // PieRenderer accepts options from the rendererOptions object of the series or seriesDefaults object.
+    
+    seriesDefaults: {
+        rendererOptions: {
+            diameter: undefined, // diameter of pie, auto computed by default.
+            padding: 20,        // padding between pie and neighboring legend or plot margin.
+            sliceMargin: 0,     // gap between slices.
+            fill: true,         // render solid (filled) slices.
+            shadowOffset: 2,    // offset of the shadow from the chart.
+            shadowDepth: 5,     // Number of strokes to make when drawing shadow.  Each stroke 
+                                // offset by shadowOffset from the last.
+            shadowAlpha: 0.07   // Opacity of the shadow
+        }
+    },
+    
+    // Trendline
+    // Trendline takes options on the trendline object of the series or seriesDefaults object.
+    
+    seriesDefaults: {
+        trendline: {
+            show: true,         // show the trend line
+            color: '#666666',   // CSS color spec for the trend line.
+            label: '',          // label for the trend line.
+            type: 'linear',     // 'linear', 'exponential' or 'exp'
+            shadow: true,       // show the trend line shadow.
+            lineWidth: 1.5,     // width of the trend line.
+            shadowAngle: 45,    // angle of the shadow.  Clockwise from x axis.
+            shadowOffset: 1.5,  // offset from the line of the shadow.
+            shadowDepth: 3,     // Number of strokes to make when drawing shadow.  
+                                // Each stroke offset by shadowOffset from the last.
+            shadowAlpha: 0.07   // Opacity of the shadow    
+        }
+    }
 }
 }}}
