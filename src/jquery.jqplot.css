@@ -55,6 +55,33 @@
     text-align: left;
 }
 
+.jqplot-y3axis-tick {
+    position: absolute;
+    left: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+    padding-left: 10px;
+    text-align: left;
+}
+
+.jqplot-y4axis-tick {
+    position: absolute;
+    left: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+    padding-left: 10px;
+    text-align: left;
+}
+
+.jqplot-y5axis-tick {
+    position: absolute;
+    left: 0px;
+    /* initial position untill tick is drawn in proper place */
+    top: 15px;
+    padding-left: 10px;
+    text-align: left;
+}
+
 table.jqplot-legend {
     background-color: rgba(255,255,255,0.6);
     border: 1px solid #cccccc;

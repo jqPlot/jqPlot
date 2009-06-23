@@ -99,7 +99,7 @@
             else if (this.name == 'yaxis') {
             	this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
             }
-            else if (this.name == 'y2axis') {
+            else {
             	this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
             }
         }  

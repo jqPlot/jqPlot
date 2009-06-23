@@ -237,6 +237,14 @@
         // Wether or not to show minor ticks.  This is renderer dependent.
         // The default <$.jqplot.LinearAxisRenderer> does not have minor ticks.
         this.showMinorTicks = true;
+        // prop: useSeriesColor
+        // Use the color of the first series associated with this axis for the
+        // tick marks and line bordering this axis.
+        this.useSeriesColor = false;
+        // prop: axisBorderWidth
+        // width of line stroked at the border of the axis.  Defaults
+        // to the width of the grid boarder.
+        this.borderWidth = null;
         // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
         // pixel position from the top left of the min value and max value on the axis.
@@ -778,7 +786,7 @@
             // default options that will be applied to all axes.
             // see <Axis> for axes options.
             axesDefaults: {},
-            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}},
+            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}},
             // prop: seriesDefaults
             // default options that will be applied to all series.
             // see <Series> for series options.
@@ -793,7 +801,7 @@
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
         // See <Axis> for axis specific options.
-        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis')};
+        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis')};
         // prop: grid
         // See <Grid> for grid specific options.
         this.grid = new Grid();
@@ -1056,16 +1064,17 @@
                     default:
                         break;
                 }
-                switch (temp.yaxis) {
-                    case 'yaxis':
-                        temp._yaxis = this.axes.yaxis;
-                        break;
-                    case 'y2axis':
-                        temp._yaxis = this.axes.y2axis;
-                        break;
-                    default:
-                        break;
-                }
+                // switch (temp.yaxis) {
+                //     case 'yaxis':
+                //         temp._yaxis = this.axes.yaxis;
+                //         break;
+                //     case 'y2axis':
+                //         temp._yaxis = this.axes.y2axis;
+                //         break;
+                //     default:
+                //         break;
+                // }
+                temp._yaxis = this.axes[temp.yaxis];
                 temp._xaxis._series.push(temp);
                 temp._yaxis._series.push(temp);
                 if (temp.show) {
@@ -1120,8 +1129,18 @@
             if (this.axes.yaxis.show) {
                 this._gridPadding.left = this.axes.yaxis.getWidth();
             }
-            if (this.axes.y2axis.show) {
-                this._gridPadding.right = this.axes.y2axis.getWidth();
+            var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis'];
+            var rapad = [0, 0, 0, 0];
+            var gpr = 0;
+            for (var n=ra.length-1; n>-1; n--) {
+                var ax = this.axes[ra[n]];
+                if (ax.show) {
+                    rapad[n] = gpr;
+                    gpr += ax.getWidth();
+                }
+            }
+            if (gpr > this._gridPadding.right) {
+                this._gridPadding.right = gpr;
             }
             if (this.title.show && this.axes.x2axis.show) {
                 this._gridPadding.top = this.title.getHeight() + this.axes.x2axis.getHeight();
@@ -1139,7 +1158,10 @@
             this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
             this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
-            this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+            for (var n in ra) {
+                this.axes[ra[n]].pack({position:'absolute', top:0, right:rapad[n]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+            }
+            // this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
             this.target.append(this.grid.createElement(this._gridPadding));
             this.grid.draw();
@@ -1194,27 +1216,36 @@
         
         function getEventPosition(ev) {
     	    var plot = ev.data.plot;
-    	    var xaxis = plot.axes.xaxis;
-    	    var x2axis = plot.axes.x2axis;
-    	    var yaxis = plot.axes.yaxis;
-    	    var y2axis = plot.axes.y2axis;
+            // var xaxis = plot.axes.xaxis;
+            // var x2axis = plot.axes.x2axis;
+            // var yaxis = plot.axes.yaxis;
+            // var y2axis = plot.axes.y2axis;
     	    var offsets = plot.eventCanvas._elem.offset();
     	    var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
             // var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
-    	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null};
+    	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null};
     	    
-    	    if (xaxis.show) {
-    	        dataPos.xaxis = xaxis.series_p2u(gridPos.x);
+    	    var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis'];
+    	    var ax = plot.axes;
+    	    for (var n in an) {
+    	        var axis = an[n];
+    	        if (ax[axis].show) {
+    	            dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
+    	        }
     	    }
-    	    if (yaxis.show) {
-    	        dataPos.yaxis = yaxis.series_p2u(gridPos.y);
-    	    }
-    	    if (x2axis.show) {
-    	        dataPos.x2axis = x2axis.series_p2u(gridPos.x);
-    	    }
-    	    if (y2axis.show) {
-    	        dataPos.y2axis = y2axis.series_p2u(gridPos.y);
-    	    }
+    	    
+            // if (xaxis.show) {
+            //     dataPos.xaxis = xaxis.series_p2u(gridPos.x);
+            // }
+            // if (yaxis.show) {
+            //     dataPos.yaxis = yaxis.series_p2u(gridPos.y);
+            // }
+            // if (x2axis.show) {
+            //     dataPos.x2axis = x2axis.series_p2u(gridPos.x);
+            // }
+            // if (y2axis.show) {
+            //     dataPos.y2axis = y2axis.series_p2u(gridPos.y);
+            // }
 
             return ({offsets:offsets, gridPos:gridPos, dataPos:dataPos});
         }

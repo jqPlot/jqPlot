@@ -59,7 +59,7 @@
             ctx.lineCap = 'round';
             ctx.lineWidth = 1;
             ctx.strokeStyle = this.gridLineColor;
-            for (var name in axes) {
+            for (var name in {xaxis:'xaxis', yaxis:'yaxis', x2axis:'x2axis', y2axis:'y2axis'}) {
                 var axis = axes[name];
                 var ticks = axis._ticks;
                 if (axis.show) {
@@ -87,15 +87,36 @@
                     }
                 }
             }
+            // Now draw grid lines for additional y axes
+            for (var name in {y3axis:'y3axis', y4axis:'y4axis', y5axis:'y5axis'}) {
+                var axis = axes[name];
+                if (axis.show) {
+                    var tn = axis._ticks[axis.numberTicks-1];
+                    var t0 = axis._ticks[0];
+                    var left = axis.getLeft();
+                    drawLine(left, tn.getTop() + tn.getHeight()/2, left, t0.getTop() + t0.getHeight()/2, width, color);
+                }
+                
+            }
+            
             ctx.restore();
         }
         
-        function drawLine(bx, by, ex, ey) {
+        function drawLine(bx, by, ex, ey, width, color) {
+            ctx.save();
+            if (color) {
+                ctx.strokeStyle = color;
+            }
+            if (width != null) {
+                ctx.lineWidth = width;
+            }
             ctx.beginPath();
             ctx.moveTo(bx, by);
             ctx.lineTo(ex, ey);
             ctx.stroke();
+            ctx.restore();
         }
+        
         // Now draw the tick marks.
         ctx.save();
         ctx.lineJoin = 'miter';
@@ -115,13 +136,13 @@
                         switch (name)     {
                             case 'xaxis':
                                 switch (m) {
-                                    case 'inside':
-                                        b = this._bottom-s;
-                                        e = this._bottom;
-                                        break;
                                     case 'outside':
                                         b = this._bottom;
                                         e = this._bottom+s;
+                                        break;
+                                    case 'inside':
+                                        b = this._bottom-s;
+                                        e = this._bottom;
                                         break;
                                     case 'cross':
                                         b = this._bottom-s;
@@ -178,13 +199,13 @@
                                 break;
                             case 'y2axis':
                                 switch (m) {
-                                    case 'inside':
-                                        b = this._right-s;
-                                        e = this._right;
-                                        break;
                                     case 'outside':
                                         b = this._right;
                                         e = this._right+s;
+                                        break;
+                                    case 'inside':
+                                        b = this._right-s;
+                                        e = this._right;
                                         break;
                                     case 'cross':
                                         b = this._right-s;
@@ -193,6 +214,34 @@
                                     default:
                                         b = this._right;
                                         e = this._right+s;
+                                        break;
+                                }
+                                drawLine(b, pos, e, pos);
+                                break;
+                            case 'y3axis':
+                            case 'y4axis':
+                            case 'y5axis':
+                            case 'y6axis':
+                            case 'y7axis':
+                            case 'y8axis':
+                            case 'y9axis':
+                                var left = axis.getLeft();
+                                switch (m) {
+                                    case 'outside':
+                                        b = left;
+                                        e = left+s;
+                                        break;
+                                    case 'inside':
+                                        b = left-s;
+                                        e = left;
+                                        break;
+                                    case 'cross':
+                                        b = left-s;
+                                        e = left+s;
+                                        break;
+                                    default:
+                                        b = left;
+                                        e = left+s;
                                         break;
                                 }
                                 drawLine(b, pos, e, pos);
