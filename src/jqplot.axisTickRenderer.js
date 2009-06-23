@@ -22,12 +22,12 @@
         this.isMinorTick = false;
         // prop: size
         // Length of the tick beyond the grid in pixels.
-        // I think this has been superceeded by markSize
+        // DEPRECATED: This has been superceeded by markSize
         this.size = 4;
         // prop:  markSize
         // Length of the tick marks in pixels.  For 'cross' style, length
         // will be stoked above and below axis, so total length will be twice this.
-        this.markSize = 4;
+        this.markSize = 6;
         // prop: show
         // wether or not to show the tick (mark and label).
         this.show = true;

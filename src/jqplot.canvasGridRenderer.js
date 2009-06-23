@@ -94,7 +94,7 @@
                     var tn = axis._ticks[axis.numberTicks-1];
                     var t0 = axis._ticks[0];
                     var left = axis.getLeft();
-                    drawLine(left, tn.getTop() + tn.getHeight()/2, left, t0.getTop() + t0.getHeight()/2, width, color);
+                    drawLine(left, tn.getTop() + tn.getHeight()/2, left, t0.getTop() + t0.getHeight()/2 + 1.0, {lineCap:'butt', strokeStyle:axis.borderColor, lineWidth:axis.borderWidth});
                 }
                 
             }
@@ -102,14 +102,10 @@
             ctx.restore();
         }
         
-        function drawLine(bx, by, ex, ey, width, color) {
+        function drawLine(bx, by, ex, ey, opts) {
             ctx.save();
-            if (color) {
-                ctx.strokeStyle = color;
-            }
-            if (width != null) {
-                ctx.lineWidth = width;
-            }
+            opts = opts || {};
+            $.extend(true, ctx, opts);
             ctx.beginPath();
             ctx.moveTo(bx, by);
             ctx.lineTo(ex, ey);
@@ -120,8 +116,8 @@
         // Now draw the tick marks.
         ctx.save();
         ctx.lineJoin = 'miter';
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 1;
+        ctx.lineCap = 'butt';
+        ctx.lineWidth = this.gridLineWidth;
         ctx.strokeStyle = this.gridLineColor;
         for (var name in axes) {
             var axis = axes[name];
@@ -174,7 +170,7 @@
                                         e = this._left;
                                         break;
                                 }
-                                drawLine(b, pos, e, pos);
+                                drawLine(b, pos, e, pos, {strokeStyle:axis.borderColor});
                                 break;
                             case 'x2axis':
                                 switch (m) {
@@ -216,7 +212,7 @@
                                         e = this._right+s;
                                         break;
                                 }
-                                drawLine(b, pos, e, pos);
+                                drawLine(b, pos, e, pos, {strokeStyle:axis.borderColor});
                                 break;
                             case 'y3axis':
                             case 'y4axis':
@@ -244,7 +240,7 @@
                                         e = left+s;
                                         break;
                                 }
-                                drawLine(b, pos, e, pos);
+                                drawLine(b, pos, e, pos, {strokeStyle:axis.borderColor});
                                 break;
                             default:
                                 break;
@@ -254,9 +250,15 @@
             }
         }
         ctx.restore();
-        ctx.lineWidth = this.borderWidth;
-        ctx.strokeStyle = this.borderColor;
-        ctx.strokeRect(this._left, this._top, this._width, this._height);
+        // Now draw border around grid.  Use axis border definitions. start at
+        // upper left and go clockwise.
+        drawLine (this._left, this._top, this._right, this._top, {lineCap:'round', strokeStyle:axes.x2axis.borderColor, lineWidth:axes.x2axis.borderWidth});
+        drawLine (this._right, this._top, this._right, this._bottom, {lineCap:'round', strokeStyle:axes.y2axis.borderColor, lineWidth:axes.y2axis.borderWidth});
+        drawLine (this._right, this._bottom, this._left, this._bottom, {lineCap:'round', strokeStyle:axes.xaxis.borderColor, lineWidth:axes.xaxis.borderWidth});
+        drawLine (this._left, this._bottom, this._left, this._top, {lineCap:'round', strokeStyle:axes.yaxis.borderColor, lineWidth:axes.yaxis.borderWidth});
+        // ctx.lineWidth = this.borderWidth;
+        // ctx.strokeStyle = this.borderColor;
+        // ctx.strokeRect(this._left, this._top, this._width, this._height);
         
         // now draw the shadow
         if (this.shadow) {

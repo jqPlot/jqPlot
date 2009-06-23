@@ -241,10 +241,13 @@
         // Use the color of the first series associated with this axis for the
         // tick marks and line bordering this axis.
         this.useSeriesColor = false;
-        // prop: axisBorderWidth
+        // prop: borderWidth
         // width of line stroked at the border of the axis.  Defaults
         // to the width of the grid boarder.
         this.borderWidth = null;
+        // prop: borderColor
+        // color of the border adjacent to the axis.  Defaults to grid border color.
+        this.borderColor = null;
         // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
         // pixel position from the top left of the min value and max value on the axis.
@@ -654,6 +657,9 @@
         // prop: gridLineColor
         // color of the grid lines.
         this.gridLineColor = '#cccccc';
+        // prop: gridLineWidth
+        // width of the grid lines.
+        this.gridLineWidth = 1.0;
         // prop: background
         // css spec for the background color.
         this.background = '#fffdf6';
@@ -1064,16 +1070,6 @@
                     default:
                         break;
                 }
-                // switch (temp.yaxis) {
-                //     case 'yaxis':
-                //         temp._yaxis = this.axes.yaxis;
-                //         break;
-                //     case 'y2axis':
-                //         temp._yaxis = this.axes.y2axis;
-                //         break;
-                //     default:
-                //         break;
-                // }
                 temp._yaxis = this.axes[temp.yaxis];
                 temp._xaxis._series.push(temp);
                 temp._yaxis._series.push(temp);
@@ -1099,6 +1095,22 @@
             
             // copy the grid and title options into this object.
             $.extend(true, this.grid, this.options.grid);
+            // if axis border properties aren't set, set default.
+            for (var n in this.axes) {
+                var axis = this.axes[n];
+                if (axis.borderWidth == null) {
+                    axis.borderWidth =this.grid.borderWidth;
+                }
+                if (axis.borderColor == null) {
+                    if (n != 'xaxis' && n != 'x2axis' && axis.useSeriesColor === true && axis.show) {
+                        axis.borderColor = axis._series[0].color;
+                    }
+                    else {
+                        axis.borderColor = this.grid.borderColor;
+                    }
+                }
+            }
+            
             if (typeof this.options.title == 'string') {
                 this.title.text = this.options.title;
             }
