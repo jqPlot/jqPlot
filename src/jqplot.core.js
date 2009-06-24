@@ -273,10 +273,10 @@
         this.tickOptions.axis = this.name;
         // set the default padMax, padMin if not specified
         if (this.padMax == null) {
-            this.padMax = (this.pad-1)/2 + 1;;
+            this.padMax = (this.pad-1)/2 + 1;
         }
         if (this.padMin == null) {
-            this.padMin = (this.pad-1)/2 + 1;;
+            this.padMin = (this.pad-1)/2 + 1;
         }
         this.renderer.init.call(this, this.rendererOptions);
         
