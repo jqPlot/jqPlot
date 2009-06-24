@@ -1,13 +1,21 @@
 Title: Change Log
 
+0.8.0:
+
+* Support for up to 9 y axes.
+* Added option to control padding at max/min bounds of axes separately.
+* Closed issue #21, added options to control grid line color and width.
+* Closed issue #20, added options to filled line charts to stoke above fill and customize fill color and transparency.
+* Improved structure of on line documentation to make usage and options docs default.
+* Added much documentation on options and css styling.
+
 0.7.1:
 
 * Bug fix release
 * Fixed bug #6, missing semi-colons messing up some javascript compressors.
 * Fixed bug #13 where 2D ticks array of [values, labels] would fail to renderer with DateAxisRenderer.
 * Fixes bug #16 where pie renderer overwriting options for all plot types and crashing non pie plots.
-* Fixes bug #17 constrainTo dragable option mispelled as "contstrainTo".  Fixed dragable color 
-  issue when used with trend lines.
+* Fixes bug #17 constrainTo dragable option mispelled as "contstrainTo".  Fixed dragable color issue when used with trend lines.
 
 0.7.0:
 
@@ -16,11 +24,9 @@ Title: Change Log
 * Highlighter Tooltip will account for mark size and highlight size when positioning itself. 
 * Added ability to show just x, y or both axes in highlighter tooltip.
 * Added customization of separator between axes values in highlighter tooltip.
-* Modified how shadows are drawn for lines, bars and markers.  Now drawn first, so they are
-  always behind the object.
+* Modified how shadows are drawn for lines, bars and markers.  Now drawn first, so they are always behind the object.
 * Adjustments to shadow parameters on lines to account for new shadow positioning.
-* Added a ColorGenerator class to robustly return next available color for a plot with wrap
-  around to first color at end.
+* Added a ColorGenerator class to robustly return next available color for a plot with wrap around to first color at end.
 * Udates to docs about css file.
 * Fixed bug with String x values in series and IE error on sorting (Category Axis).
 * Added cursor changes in dragable plugin when cursor near dragable point.
@@ -43,13 +49,11 @@ Title: Change Log
 
 0.6.5:
 
-* Fixed bug #4, series of unequal data length not rendering correctly.
-  This is a bugfix release only.
+* Fixed bug #4, series of unequal data length not rendering correctly.  This is a bugfix release only.
 
 0.6.4:
 
-* Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal)
-  or single value data series would crash.
+* Fixed bug (issue #1 in tracker) where flat line data series (all x and/or y values are euqal) or single value data series would crash.
 
 0.6.3:
 
@@ -79,8 +83,7 @@ Title: Change Log
 
 0.6.0:
 
-* Added rotated text support.  Uses native canvas text functionality in
-browsers that support it or draws text on canvas with Hershey font
+* Added rotated text support.  Uses native canvas text functionality in browsers that support it or draws text on canvas with Hershey font
 * metrics for non-supporting browsers.
 * Removed lots of lint in js code.
 * Moved tick css from js code into css file.
