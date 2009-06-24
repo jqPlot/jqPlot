@@ -207,6 +207,14 @@
         // Padding to extend the range above and below the data bounds.
         // The data range is multiplied by this factor to determine minimum and maximum axis bounds.
         this.pad = 1.2;
+        // prop: padMax
+        // Padding to extend the range above data bounds.
+        // The top of the data range is multiplied by this factor to determine maximum axis bounds.
+        this.padMax = null;
+        // prop: padMin
+        // Padding to extend the range below data bounds.
+        // The bottom of the data range is multiplied by this factor to determine minimum axis bounds.
+        this.padMin = null;
         // prop: ticks
         // 1D [val, val, ...] or 2D [[val, label], [val, label], ...] array of ticks for the axis.
         // If no label is specified, the value is formatted into an appropriate label.
@@ -261,7 +269,15 @@
     
     Axis.prototype.init = function() {
         this.renderer = new this.renderer();
+        // set the axis name
         this.tickOptions.axis = this.name;
+        // set the default padMax, padMin if not specified
+        if (this.padMax == null) {
+            this.padMax = (this.pad-1)/2 + 1;;
+        }
+        if (this.padMin == null) {
+            this.padMin = (this.pad-1)/2 + 1;;
+        }
         this.renderer.init.call(this, this.rendererOptions);
         
     };
@@ -792,7 +808,7 @@
             // default options that will be applied to all axes.
             // see <Axis> for axes options.
             axesDefaults: {},
-            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}},
+            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}, y6axis:{}, y7axis:{}, y8axis:{}, y9axis:{}},
             // prop: seriesDefaults
             // default options that will be applied to all series.
             // see <Series> for series options.
@@ -807,7 +823,7 @@
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
         // See <Axis> for axis specific options.
-        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis')};
+        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis')};
         // prop: grid
         // See <Grid> for grid specific options.
         this.grid = new Grid();
@@ -830,7 +846,7 @@
         // to the series in the plot.  Colors will wrap around so, if their
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
-        this.seriesColors = [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
+        this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
         var seriesColorsIndex = 0;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
@@ -1141,7 +1157,7 @@
             if (this.axes.yaxis.show) {
                 this._gridPadding.left = this.axes.yaxis.getWidth();
             }
-            var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis'];
+            var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
             var rapad = [0, 0, 0, 0];
             var gpr = 0;
             for (var n=ra.length-1; n>-1; n--) {
@@ -1235,9 +1251,9 @@
     	    var offsets = plot.eventCanvas._elem.offset();
     	    var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
             // var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
-    	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null};
+    	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
     	    
-    	    var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis'];
+    	    var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
     	    var ax = plot.axes;
     	    for (var n in an) {
     	        var axis = an[n];

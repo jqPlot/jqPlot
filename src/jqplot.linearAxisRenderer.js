@@ -196,8 +196,8 @@
             var range = max - min;
             var rmin, rmax;
         
-            rmin = (this.min != null) ? this.min : min - range/2*(this.pad - 1);
-            rmax = (this.max != null) ? this.max : max + range/2*(this.pad - 1);
+            rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
+            rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
             this.min = rmin;
             this.max = rmax;
             range = this.max - this.min;

@@ -56,13 +56,16 @@
         var opts = (options != null) ? options : {};
         var fill = (opts.fill != null) ? opts.fill : this.fill;
         var closePath = (opts.closePath != null) ? opts.closePath : this.closePath;
-        ctx.lineWidth = this.lineWidth;
-        ctx.lineJoin = this.lineJoin;
-        ctx.lineCap = this.lineCap;
-        ctx.strokeStyle = 'rgba(0,0,0,'+this.alpha+')';
-        ctx.fillStyle = 'rgba(0,0,0,'+this.alpha+')';
-        for (var j=0; j<this.depth; j++) {
-            ctx.translate(Math.cos(this.angle*Math.PI/180)*this.offset, Math.sin(this.angle*Math.PI/180)*this.offset);
+        var offset = (opts.offset != null) ? opts.offset : this.offset;
+        var alpha = (opts.alpha != null) ? opts.alpha : this.alpha;
+        var depth = (opts.depth != null) ? opts.depth : this.depth;
+        ctx.lineWidth = (opts.lineWidth != null) ? opts.lineWidth : this.lineWidth;
+        ctx.lineJoin = (opts.lineJoin != null) ? opts.lineJoin : this.lineJoin;
+        ctx.lineCap = (opts.lineCap != null) ? opts.lineCap : this.lineCap;
+        ctx.strokeStyle = 'rgba(0,0,0,'+alpha+')';
+        ctx.fillStyle = 'rgba(0,0,0,'+alpha+')';
+        for (var j=0; j<depth; j++) {
+            ctx.translate(Math.cos(this.angle*Math.PI/180)*offset, Math.sin(this.angle*Math.PI/180)*offset);
             ctx.beginPath();
             if (this.isarc) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                

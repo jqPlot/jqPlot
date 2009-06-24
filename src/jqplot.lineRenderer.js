@@ -96,8 +96,8 @@
                 // if stacked, fill to line below 
                 else {
                     var prev = this._prevGridData;
-                    for (var i=prev.length-1; i>-1; i--) {
-                        gd.push(prev[i]);
+                    for (var i=prev.length; i>0; i--) {
+                        gd.push(prev[i-1]);
                     }
                 }
             }

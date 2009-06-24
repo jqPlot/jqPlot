@@ -14,13 +14,12 @@
 }
 
 /*rules applied to all axis tick divs*/
-.jqplot-axis-tick {
+.jqplot-axis-tick, .jqplot-xaxis-tick, .jqplot-yaxis-tick, .jqplot-x2axis-tick, .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
     position: absolute;
 }
 
 
 .jqplot-xaxis-tick {
-    position: absolute;
     top: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
@@ -29,7 +28,6 @@
 }
 
 .jqplot-x2axis-tick {
-    position: absolute;
     bottom: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
@@ -38,7 +36,6 @@
 }
 
 .jqplot-yaxis-tick {
-    position: absolute;
     right: 0px;
     /* initial position untill tick is drawn in proper place */
     top: 15px;
@@ -46,39 +43,12 @@
     text-align: right;
 }
 
-.jqplot-y2axis-tick {
-    position: absolute;
+.jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
     left: 0px;
     /* initial position untill tick is drawn in proper place */
     top: 15px;
     padding-left: 10px;
-    text-align: left;
-}
-
-.jqplot-y3axis-tick {
-    position: absolute;
-    left: 0px;
-    /* initial position untill tick is drawn in proper place */
-    top: 15px;
-    padding-left: 10px;
-    text-align: left;
-}
-
-.jqplot-y4axis-tick {
-    position: absolute;
-    left: 0px;
-    /* initial position untill tick is drawn in proper place */
-    top: 15px;
-    padding-left: 10px;
-    text-align: left;
-}
-
-.jqplot-y5axis-tick {
-    position: absolute;
-    left: 0px;
-    /* initial position untill tick is drawn in proper place */
-    top: 15px;
-    padding-left: 10px;
+    padding-right: 15px;
     text-align: left;
 }
 
