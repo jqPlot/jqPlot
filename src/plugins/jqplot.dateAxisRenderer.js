@@ -231,8 +231,8 @@
             var range = max - min;
             var rmin, rmax;
         
-            rmin = (this.min != null) ? Date.create(this.min).getTime() : min - range/2*(this.pad - 1);
-            rmax = (this.max != null) ? Date.create(this.max).getTime() : max + range/2*(this.pad - 1);
+            rmin = (this.min != null) ? Date.create(this.min).getTime() : min - range/2*(this.padMin - 1);
+            rmax = (this.max != null) ? Date.create(this.max).getTime() : max + range/2*(this.padMax - 1);
             this.min = rmin;
             this.max = rmax;
             range = this.max - this.min;

@@ -1,5 +1,5 @@
 <?php
-  $pages = array('coretests.php', 'pieTests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'dragableTests.php', 'stackedTests.php', 'canvasAxisTests.php', 'highlighterTests.php');
+  $pages = array('coretests.php', 'pieTests.php', 'multipleYAxesTests.php', 'logAxisTests.php', 'dateAxisTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'dragableTests.php', 'stackedTests.php', 'canvasAxisTests.php', 'highlighterTests.php');
         
   $len = count($pages);
   $parts = explode("/", $_SERVER["REQUEST_URI"]);

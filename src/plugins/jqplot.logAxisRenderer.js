@@ -127,7 +127,7 @@
             else if (this.name == 'yaxis') {
                 this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
             }
-            else if (this.name == 'y2axis') {
+            else {
                 this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
             }
         } 
@@ -214,8 +214,8 @@
             var rmin, rmax;
 
             if (this.tickDistribution == 'even') {                    
-                rmin = (this.min != null) ? this.min : min - min*((this.pad-1)/2);
-                rmax = (this.max != null) ? this.max : max + max*((this.pad-1)/2);
+                rmin = (this.min != null) ? this.min : min - min*((this.padMin-1)/2);
+                rmax = (this.max != null) ? this.max : max + max*((this.padMax-1)/2);
                 this.min = rmin;
                 this.max = rmax;
                 range = this.max - this.min;            
@@ -249,8 +249,8 @@
             else if (this.tickDistribution == 'power'){
                 // for power distribution, open up range to get a nice power of axis.renderer.base.
                 // power distribution won't respect the user's min/max settings.
-                rmin = Math.pow(this.base, Math.ceil(Math.log(min*(2-this.pad))/Math.log(this.base))-1);
-                rmax = Math.pow(this.base, Math.floor(Math.log(max*this.pad)/Math.log(this.base))+1);
+                rmin = Math.pow(this.base, Math.ceil(Math.log(min*(2-this.padMin))/Math.log(this.base))-1);
+                rmax = Math.pow(this.base, Math.floor(Math.log(max*this.padMax)/Math.log(this.base))+1);
                 this.min = rmin;
                 this.max = rmax;
                 range = this.max - this.min;            
