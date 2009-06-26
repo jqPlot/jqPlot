@@ -1160,10 +1160,10 @@
             var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
             var rapad = [0, 0, 0, 0];
             var gpr = 0;
-            for (var n=ra.length-1; n>-1; n--) {
-                var ax = this.axes[ra[n]];
+            for (var n=8; n>0; n--) {
+                var ax = this.axes[ra[n-1]];
                 if (ax.show) {
-                    rapad[n] = gpr;
+                    rapad[n-1] = gpr;
                     gpr += ax.getWidth();
                 }
             }
@@ -1186,8 +1186,8 @@
             this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
             this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
-            for (var n in ra) {
-                this.axes[ra[n]].pack({position:'absolute', top:0, right:rapad[n]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+            for (var i=8; i>0; i--) {
+                this.axes[ra[i-1]].pack({position:'absolute', top:0, right:rapad[i-1]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             }
             // this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
@@ -1255,8 +1255,8 @@
     	    
     	    var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
     	    var ax = plot.axes;
-    	    for (var n in an) {
-    	        var axis = an[n];
+    	    for (var n=11; n>0; n--) {
+    	        var axis = an[n-1];
     	        if (ax[axis].show) {
     	            dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
     	        }
