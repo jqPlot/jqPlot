@@ -78,33 +78,19 @@
         // were specified, create a default set.
         if (c.showTooltipUnitPosition){
 	        if (c.tooltipAxisGroups.length === 0) {
-	            if (this.axes.xaxis.show && !this.axes.x2axis.show) {
-	                if (this.axes.yaxis.show) {
-	                    c.tooltipAxisGroups.push(['xaxis', 'yaxis']);
-	                }
-	                if (this.axes.y2axis.show) {
-	                    c.tooltipAxisGroups.push(['xaxis', 'y2axis']);
-	                }
-	            }
-	            else if (this.axes.xaxis.show && this.axes.x2axis.show) {
-	                if (this.axes.yaxis.show) {
-	                    c.tooltipAxisGroups.push(['xaxis', 'yaxis']);
-	                }
-	                if (this.axes.y2axis.show) {
-	                    c.tooltipAxisGroups.push(['x2axis', 'y2axis']);
-	                }
-	                else {
-	                    c.tooltipAxisGroups.push(['x2axis', 'yaxis']);
+	            var series = this.series;
+	            var s;
+	            var temp = [];
+	            for (var i=0; i<series.length; i++) {
+	                s = series[i];
+	                var ax = s.xaxis+','+s.yaxis;
+	                if ($.inArray(ax, temp) == -1) {
+	                    temp.push(ax);
 	                }
 	            }
-	            else if (!this.axes.xaxis.show && this.axes.x2axis.show) {
-	                if (this.axes.yaxis.show) {
-	                    c.tooltipAxisGroups.push(['x2axis', 'yaxis']);
-	                }
-	                if (this.axes.y2axis.show) {
-	                    c.tooltipAxisGroups.push(['x2axis', 'y2axis']);
-	                }
-	            }           
+	            for (var i=0; i<temp.length; i++) {
+	                c.tooltipAxisGroups.push(temp[i].split(','));
+	            }         
 	        }
         }
 	};
