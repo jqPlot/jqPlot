@@ -260,7 +260,6 @@
         this._dataBounds = {min:null, max:null};
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
-
         this._ticks=[];
     }
     
@@ -1139,6 +1138,11 @@
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
                 $.jqplot.postParseOptionsHooks[i].call(this, options);
             }
+        };
+        
+        this.redraw = function() {
+            this.target.empty();
+            this.draw();
         };
     
         this.draw = function(){

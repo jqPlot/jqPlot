@@ -68,12 +68,15 @@
                 if (axis.show) {
                     for (var j=ticks.length; j>0; j--) {
                         var t = ticks[j-1];
-                        if (t.show && t.showGridline) {
+                        if (t.show) {
                             var pos = Math.round(axis.u2p(t.value)) + 0.5;
                             switch (name) {
                                 case 'xaxis':
                                     // draw the grid line
-                                    drawLine(pos, this._top, pos, this._bottom);
+                                    if (t.showGridline) {
+                                        drawLine(pos, this._top, pos, this._bottom);
+                                    }
+                                    
                                     // draw the mark
                                     if (t.showMark && t.mark) {
                                         s = t.markSize;
@@ -107,7 +110,9 @@
                                     break;
                                 case 'yaxis':
                                     // draw the grid line
-                                    drawLine(this._right, pos, this._left, pos);
+                                    if (t.showGridline) {
+                                        drawLine(this._right, pos, this._left, pos);
+                                    }
                                     // draw the mark
                                     if (t.showMark && t.mark) {
                                         s = t.markSize;
@@ -140,7 +145,9 @@
                                     break;
                                 case 'x2axis':
                                     // draw the grid line
-                                    drawLine(pos, this._bottom, pos, this._top);
+                                    if (t.showGridline) {
+                                        drawLine(pos, this._bottom, pos, this._top);
+                                    }
                                     // draw the mark
                                     if (t.showMark && t.mark) {
                                         s = t.markSize;
@@ -173,7 +180,9 @@
                                     break;
                                 case 'y2axis':
                                     // draw the grid line
-                                    drawLine(this._left, pos, this._right, pos);
+                                    if (t.showGridline) {
+                                        drawLine(this._left, pos, this._right, pos);
+                                    }
                                     // draw the mark
                                     if (t.showMark && t.mark) {
                                         s = t.markSize;
