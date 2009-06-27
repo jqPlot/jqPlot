@@ -15,6 +15,7 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.highlighter.js"></script>
 
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
@@ -53,6 +54,16 @@
         axes:{y2axis:{padMax:2}, y3axis:{padMax:2.5}, y4axis:{padMin:2}, y5axis:{padMin:2.3}},
         grid:{gridLineWidth:1.0, borderWidth:2.5, shadow:false}
     });
+    
+    plot3 = $.jqplot('chart3', [l1, l3, l4, l5], {
+      axesDefaults:{show:false},
+      gridPadding: {top:0, bottom:0, left:0, right:44},
+    });
+    
+    plot4 = $.jqplot('chart4', [l1, l3, l4, l5], {
+      axesDefaults:{show:false},
+      axes:{xaxis:{show:false}, yaxis:{show:false}}
+    });
 
 
   });
@@ -60,6 +71,8 @@
   </head>
   <body>
     <div id="chart" style="margin-top:20px; margin-left:20px; width:700px; height:300px;"></div>
+    <div id="chart4" style="margin-top:20px; margin-left:20px; width:700px; height:300px;"></div>
+    <div id="chart3" style="margin-top:20px; margin-left:20px; width:700px; height:300px;"></div>
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:700px; height:300px;"></div>
   </body>
 </html>
