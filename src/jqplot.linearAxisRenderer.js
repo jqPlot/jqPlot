@@ -174,11 +174,11 @@
             }
             
             // if max, min, and interval specified and interval won't fit, ignore interval.
-            if (this.min != null && this.max != null && this.tickInterval != null) {
-                if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
-                    this.tickInterval = null;
-                }
-            }
+            // if (this.min != null && this.max != null && this.tickInterval != null) {
+            //     if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
+            //         this.tickInterval = null;
+            //     }
+            // }
         
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
@@ -206,10 +206,10 @@
                 // if tickInterval is specified by user, we will ignore computed maximum.
                 // max will be equal or greater to fit even # of ticks.
                 if (this.tickInterval != null) {
-                    this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval);
-                    this.max = this.min + this.tickInterval*this.numberTicks;
+                    this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
+                    this.max = this.min + this.tickInterval*(this.numberTicks-1);
                 }
-                if (dim > 100) {
+                else if (dim > 100) {
                     this.numberTicks = parseInt(3+(dim-100)/75, 10);
                 }
                 else {

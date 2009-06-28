@@ -244,7 +244,8 @@
                     var nc = Date.create(this.max).diff(this.min, this._tickInterval[1], true);
                     this.numberTicks = Math.ceil(nc/this._tickInterval[0]) +1;
                     //log(this._tickInterval, nc, this.numberTicks);
-                    this.max = Date.create(this.min).add(this.numberTicks-1, this._tickInterval[1]).getTime();
+                    // this.max = Date.create(this.min).add(this.numberTicks-1, this._tickInterval[1]).getTime();
+                    this.max = Date.create(this.min).add((this.numberTicks-1) * this._tickInterval[0], this._tickInterval[1]).getTime();
                 }
                 else if (dim > 100) {
                     this.numberTicks = parseInt(3+(dim-100)/75, 10);
