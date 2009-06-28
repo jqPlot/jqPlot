@@ -533,6 +533,9 @@
         // will stack lines or bars on top of one another to build a "mountain" style chart.
         // May not be implemented in all renderers.
         this._stack = false;
+        // prop: neighborThreshold
+        // how close or far (in pixels) the cursor must be from a point marker to detect the point.
+        this.neighborThreshold = 4;
         this._stackData = [];
         this._plotData = [];
         // data from the previous series, for stacked charts.
@@ -1239,6 +1242,7 @@
         
         this.bindCustomEvents = function() {
             this.eventCanvas._elem.bind('click', {plot:this}, this.onClick);
+            this.eventCanvas._elem.bind('dblclick', {plot:this}, this.onDblClick);
             this.eventCanvas._elem.bind('mousedown', {plot:this}, this.onMouseDown);
             this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
             this.eventCanvas._elem.bind('mousemove', {plot:this}, this.onMouseMove);
@@ -1283,14 +1287,13 @@
         }
         
         function getNeighborPoint(plot, x, y) {
-            // won't you be mine?
             var ret = null;
             var s, i, d0, d, j;
             var threshold;
             for (var i=0; i<plot.series.length; i++) {
                 s = plot.series[i];
                 if (s.show) {
-                    threshold = s.markerRenderer.size/2+4;
+                    threshold = Math.abs(s.markerRenderer.size/2+s.neighborThreshold);
                     for (var j=0; j<s.gridData.length; j++) {
                        p = s.gridData[j];
                        d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
@@ -1311,6 +1314,15 @@
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
     	    ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+        };
+        
+        this.onDblClick = function(ev) {
+            // Event passed in is unnormalized and will have data attribute.
+            // Event passed out in normalized and won't have data attribute.
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
+    	    ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseDown = function(ev) {
