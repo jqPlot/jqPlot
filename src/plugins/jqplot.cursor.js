@@ -410,7 +410,7 @@
 	function drawZoomBox() {
 	    var start = this._zoom.start;
 	    var end = this._zoom.end;
-	    var ctx = this.zoomCanvas._ctx
+	    var ctx = this.zoomCanvas._ctx;
 	    var l, t, h, w;
 	    if (end[0] > start[0]) {
 	        l = start[0];
