@@ -41,7 +41,7 @@
       line2 = [[25,1], [12.5,2], [6.25,3], [3.125,4]]; \
       plot3 = $.jqplot('_target_', [line1, line2], \
       {legend:{show:true, location:'ne'}, \
-      title:'Vertically Oriented Bar Chart', \
+      title:'Horizontally Oriented Bar Chart', \
       seriesDefaults:{renderer:$.jqplot.BarRenderer, rendererOptions:{barDirection:'horizontal', barPadding: 6, barMargin:15}, shadowAngle:135}, \
       series:[{label:'Cats'}, {label:'Dogs'}], \
       axes:{xaxis:{min:0}, yaxis:{renderer:$.jqplot.CategoryAxisRenderer, ticks:['Once', 'Twice', 'Three Times', 'More']}}});"
