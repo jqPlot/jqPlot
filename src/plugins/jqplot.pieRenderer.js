@@ -44,6 +44,7 @@
         // number of strokes to apply to the shadow, 
         // each stroke offset shadowOffset from the last.
         this.shadowDepth = 5;
+        this.tickRenderer = $.jqplot.PieTickRenderer;
         $.extend(true, this, options);
         this._colorGenerator = new this.colorGenerator(this.seriesColors);
     };
@@ -168,7 +169,6 @@
         var d = Math.min(w,h);
         this.diameter = this.diameter  || d;
         this.diameter -= this.sliceMargin;
-        // console.log ('tans: %s, offx: %s, offy: %s, w: %s, h: %s, d: %s, diameter: %s', trans, offx, offy, w, h, d, this.diameter);
         var r = this.diameter/2;
         ctx.save();
     
@@ -307,6 +307,13 @@
     }
     
     $.jqplot.preInitHooks.push(preInit);
+    
+    $.jqplot.PieTickRenderer = function() {
+        $.jqplot.AxisTickRenderer.call(this);
+    };
+    
+    $.jqplot.PieTickRenderer.prototype = new $.jqplot.AxisTickRenderer();
+    $.jqplot.PieTickRenderer.prototype.constructor = $.jqplot.PieTickRenderer;
     
 })(jQuery);
     
