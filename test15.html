@@ -15,6 +15,7 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.logAxisRenderer.js"></script>
 
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
@@ -29,13 +30,17 @@
   
   $(document).ready(function(){
 
-    var l1 = [2, 3, 1, 4, 3];
-    var l2 = [1, 4, 3, 2, 5];
+    var l1 = [[1,2], [4,5], [8,9], [15,16], [18,40]];
+    var l2 = [[2,1], [5,4], [12,7], [16,12], [19,29]];
 
 
     plot1 = $.jqplot('chart', [l1, l2], {
       title:'Plot with Grid Customization',
-        grid:{background:'#dfdfdf', gridLineColor:'#accf9b', borderWidth:2.5}
+      // axes:{xaxis:{tickInterval:2, min:0, max:19}},
+      // axes:{xaxis:{tickInterval:2}},
+      axes:{xaxis:{tickInterval:2, min:0},
+        yaxis:{renderer:$.jqplot.LogAxisRenderer}},
+      grid:{background:'#dfdfdf', gridLineColor:'#accf9b', borderWidth:2.5}
     });
 
 
