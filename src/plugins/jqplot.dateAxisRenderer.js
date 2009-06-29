@@ -247,8 +247,8 @@
                     // this.max = Date.create(this.min).add(this.numberTicks-1, this._tickInterval[1]).getTime();
                     this.max = Date.create(this.min).add((this.numberTicks-1) * this._tickInterval[0], this._tickInterval[1]).getTime();
                 }
-                else if (dim > 100) {
-                    this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                else if (dim > 200) {
+                    this.numberTicks = parseInt(3+(dim-200)/100, 10);
                 }
                 else {
                     this.numberTicks = 2;
