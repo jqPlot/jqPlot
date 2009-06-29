@@ -1,6 +1,6 @@
 <?php
   $title = "jqPlot Highlighter and Cursor Plugin Tests";
-  $jspec_title = "jqPlot Data Point Highlighter and Cursor Tracking Plugin Tests and Examples";
+  $jspec_title = "jqPlot Data Point Highlighter and Cursor Tracking Plugin";
   $jqplot_js_includes = array();
   $jqplot_js_includes[] = "../src/plugins/jqplot.dateAxisRenderer.js";
   $jqplot_js_includes[] = "../src/plugins/jqplot.canvasTextRenderer.js";

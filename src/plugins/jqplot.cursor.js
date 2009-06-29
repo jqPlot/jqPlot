@@ -3,11 +3,6 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
-	$.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleMouseEnter]);
-	$.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
 	
 	/**
 	 * Class: $.jqplot.Cursor
@@ -62,7 +57,13 @@
 	    // prop: zoom
 	    // Enable plot zooming.
 	    this.zoom = false;
-	    this._zoom = {start:[], end:[], zooming:false, axes:{start:{}, end:{}}};
+	    // prop: clickReset
+	    // Will reset plot zoom if single click on plot without drag.
+	    this.clickReset = false;
+	    // prop: dblClickReset
+	    // Will reset plot zoom if double click on plot without drag.
+	    this.dblClickReset = true;
+	    this._zoom = {start:[], end:[], started: false, zooming:false, axes:{start:{}, end:{}}};
 	    this._tooltipElem;
 	    this.zoomCanvas;
 	    $.extend(true, this, options);
@@ -73,6 +74,25 @@
 	    // add a cursor attribute to the plot
 	    var options = opts || {};
 	    this.plugins.cursor = new $.jqplot.Cursor(options.cursor);
+
+        if (this.plugins.cursor.show) {
+        	$.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleMouseEnter]);
+        	$.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
+            $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);
+            
+            if (this.plugins.cursor.zoom) {
+                $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+                $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+                
+                if (this.plugins.cursor.clickReset) {
+                    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+                }
+                
+                if (this.plugins.cursor.dblClickReset) {
+                    $.jqplot.eventListenerHooks.push(['jqplotDblClick', handleDblClick]);
+                }
+            }
+        }
 	};
 	
 	// called with context of plot
@@ -111,11 +131,13 @@
 	    var axes = plot.axes;
 	    var cax = plot.plugins.cursor._zoom.axes;
 	    for (var ax in axes) {
-	        axes[ax]._ticks = cax[ax]._ticks;
+            axes[ax]._ticks = [];
 	        axes[ax].min = cax[ax].min;
 	        axes[ax].max = cax[ax].max;
 	        axes[ax].numberTicks = cax[ax].numberTicks; 
 	        axes[ax].tickInterval = cax[ax].tickInterval;
+	        // for date axes
+	        axes[ax]._tickInterval = cax[ax]._tickInterval;
 	    }
 	    plot.redraw();
 	};
@@ -256,6 +278,39 @@
         }
 	}
 	
+	function handleClick (ev, gridpos, datapos, neighbor, plot) {
+	    var c = plot.plugins.cursor;
+        if (c.clickReset) {
+            $.jqplot.Cursor.resetZoom(plot);
+        }
+        return true;
+	}
+	
+	function handleDblClick (ev, gridpos, datapos, neighbor, plot) {
+	    var c = plot.plugins.cursor;
+        if (c.dblClickReset) {
+            $.jqplot.Cursor.resetZoom(plot);
+        }
+        return;
+	}
+	
+	function handleMouseLeave(ev, gridpos, datapos, neighbor, plot) {
+	    var c = plot.plugins.cursor;
+	    if (c.show) {
+	        $(ev.target).css('cursor', c.previousCursor);
+            if (c.showTooltip) {
+                c._tooltipElem.hide();
+            }
+            if (c.zoom) {
+                c._zoom.started = false;
+                c._zoom.zooming = false;
+	            var ctx = c.zoomCanvas._ctx;
+                ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+                
+            }
+	    }
+	}
+	
 	function handleMouseEnter(ev, gridpos, datapos, neighbor, plot) {
 	    var c = plot.plugins.cursor;
 	    if (c.show) {
@@ -274,24 +329,17 @@
 	    }
 	}
 	
-	function handleMouseLeave(ev, gridpos, datapos, neighbor, plot) {
-	    var c = plot.plugins.cursor;
-	    if (c.show) {
-	        $(ev.target).css('cursor', c.previousCursor);
-            if (c.showTooltip) {
-                c._tooltipElem.hide();
-            }
-	    }
-	}
-	
 	function handleMouseMove(ev, gridpos, datapos, neighbor, plot) {
     	var c = plot.plugins.cursor;
-    	if (c.show && c.showTooltip) {
-            updateTooltip(gridpos, datapos, plot);
-            if (c.followMouse) {
-                moveTooltip(gridpos, plot);
-            }
-            if (c.zoom && c._zoom.zooming) {
+    	if (c.show) {
+    	    if (c.showTooltip) {
+                updateTooltip(gridpos, datapos, plot);
+                if (c.followMouse) {
+                    moveTooltip(gridpos, plot);
+                }
+    	    }
+            if (c.zoom && c._zoom.started) {
+                c._zoom.zooming = true;
                 c._zoom.end = [gridpos.x, gridpos.y];
                 drawZoomBox.call(c);
             }
@@ -300,19 +348,22 @@
 	
 	function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
 	    var c = plot.plugins.cursor;
+	    var axes = plot.axes;
 	    if (c.zoom) {
 	        c._zoom.start = [gridpos.x, gridpos.y];
-	        c._zoom.zooming = true;
+	        c._zoom.started = true;
             for (var ax in datapos) {
+                // get zoom starting position.
                 c._zoom.axes.start[ax] = datapos[ax];
                 // make a copy of the original axes to revert back.
                 if (c._zoom.axes[ax] == undefined) {
                     c._zoom.axes[ax] = {};
-                    c._zoom.axes[ax]._ticks = $.extend(true, [], plot.axes[ax]._ticks);
-                    c._zoom.axes[ax].numberTicks = plot.axes[ax].numberTicks;
-                    c._zoom.axes[ax].tickInterval = plot.axes[ax].tickInterval;
-                    c._zoom.axes[ax].min = plot.axes[ax].min;
-                    c._zoom.axes[ax].max = plot.axes[ax].max;
+                    c._zoom.axes[ax].numberTicks = axes[ax].numberTicks;
+                    c._zoom.axes[ax].tickInterval = axes[ax].tickInterval;
+                    // for date axes...
+                    c._zoom.axes[ax]._tickInterval = axes[ax]._tickInterval;
+                    c._zoom.axes[ax].min = axes[ax].min;
+                    c._zoom.axes[ax].max = axes[ax].max;
                 }
                 
             }
@@ -321,31 +372,39 @@
 	
 	function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
 	    var c = plot.plugins.cursor;
-	    if (c.zoom) {
+	    if (c.zoom && c._zoom.zooming) {
 	        var axes = plot.axes;
 	        var zaxes = c._zoom.axes;
 	        var start = zaxes.start;
 	        var end = zaxes.end;
 	        var min, max;
-	        c._zoom.zooming = false;
 	        var ctx = c.zoomCanvas._ctx;
             ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-            for (var ax in datapos) {
-                dp = datapos[ax];
-                if (dp != null) {
-                    if (dp > start[ax]) {
-                        axes[ax].min = start[ax];
-                        axes[ax].max = dp;
+            // don't zoom is zoom area is too small (in pixels)
+            if (!(Math.abs(gridpos.x - c._zoom.start[0]) < 8 || Math.abs(gridpos.y - c._zoom.start[1]) < 8)) {
+                for (var ax in datapos) {
+                    dp = datapos[ax];
+                    if (dp != null) {           
+                        if (dp > start[ax]) { 
+                            axes[ax].min = start[ax];
+                            axes[ax].max = dp;
+                        }
+                        else {
+                            span = start[ax] - dp;
+                            axes[ax].max = start[ax];
+                            axes[ax].min = dp;
+                        }
+                        axes[ax].tickInterval = null;
+                        // for date axes...
+                        axes[ax]._tickInterval = null;
+                        axes[ax]._ticks = [];
                     }
-                    else {
-                        axes[ax].max = start[ax];
-                        axes[ax].min = dp;
-                    }
-                    axes[ax]._ticks = [];
                 }
+                plot.redraw();
             }
-            plot.redraw();
         }
+        c._zoom.started = false;
+        c._zoom.zooming = false;
 	}
 	
 	function drawZoomBox() {
