@@ -4,6 +4,8 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="Author" content="Chris Leonello">
+  <meta name="keywords" content="chart, plot, graph, javascript, jquery, jqplot, charting, plotting, graphing">
   <title><?php echo $title ?></title>
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.min.js"></script><![endif]-->
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
