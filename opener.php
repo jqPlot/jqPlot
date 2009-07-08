@@ -2,10 +2,14 @@
 "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
   <head>
-    <link rel="stylesheet" type="text/css" href="style.css" >
+    <meta name="Author" content="Chris Leonello">
+    <meta name="keywords" content="chart, plot, graph, javascript, jquery, jqplot, charting, plotting, graphing">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="verify-v1" content="d+yghLcOkdO6pP3P3jp+Fcz5f8OcRlRMRCiwD2MCYUg=" >
+
+    <link rel="stylesheet" type="text/css" href="style.css" >
     <title>
-      jqPlot - Pure Javascript Plotting
+      jqPlot Charts and Graphs for jQuery
     </title>
   </head>
   <body>

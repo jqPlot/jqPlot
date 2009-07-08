@@ -5,11 +5,12 @@
       
       <div id="holder1">
           <div id="floater1">
-            <div class="paragraph">jqPlot is a plotting plugin for the jQuery Javascript framework.  jqPlot produces beautiful line and bar charts with many features including:</div>
+            <div class="paragraph">jqPlot is a plotting and charting plugin for the jQuery Javascript framework.  jqPlot produces beautiful line, bar and pie charts with many features:</div>
             
             <ul>
               <li>Numerous chart style options.</li>
               <li>Date axes with customizable formatting.</li>
+              <li>Up to 9 Y axes.</li>
               <li>Rotated axis text.</li>
               <li>Automatic trend line computation.</li>
               <li>Tooltips and data point highlighting.</li>
