@@ -186,7 +186,7 @@
             // if min and max are same, space them out a bit
             if (min == max) {
                 var adj = 0.05;
-                if (min != 0) {
+                if (min > 0) {
                     adj = Math.max(Math.log(min)/Math.LN10, 0.05);
                 }
                 min -= adj;
