@@ -111,8 +111,8 @@
     $.jqplot.debug = 1;
     
     // path to jqplot install, relative to the script that is including jqplot.
-    $.jqplot.installPath = 'jqplot';
-    $.jqplot.pluginsPath = 'jqplot/plugins';
+    // $.jqplot.installPath = 'jqplot';
+    // $.jqplot.pluginsPath = 'jqplot/plugins';
     
     $.jqplot.preInitHooks = [];
     $.jqplot.postInitHooks = [];
@@ -1144,11 +1144,14 @@
         };
         
         this.redraw = function() {
+            this.target.trigger('jqplotPreRedraw');
             this.target.empty();
             this.draw();
+            this.target.trigger('jqplotPreRedraw');
         };
     
         this.draw = function(){
+            this.target.trigger('jqplotPreDraw');
             for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
                 $.jqplot.preDrawHooks[i].call(this);
             }
@@ -1238,6 +1241,7 @@
             for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
                 $.jqplot.postDrawHooks[i].call(this);
             }
+            this.target.trigger('jqplotPostDraw', [this]);
         };
         
         this.bindCustomEvents = function() {
