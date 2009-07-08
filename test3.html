@@ -22,24 +22,14 @@
 	  
 	$(document).ready(function(){
 
-    line1 = [4, 2, 9, 16];
-    line2 = [3, 7, 6.25, 3.125];
-    plot1 = $.jqplot('chart', [line1, line2], {
-        stackSeries: true,
-        legend: {show: true, location: 'nw'},
-        title: 'Unit Sales: Acme Explosive Division',
-        seriesDefaults: {
-        renderer: $.jqplot.BarRenderer,
-        rendererOptions: {
-            // barPadding: -15,
-            barMargin: 30
-        }},    
-        series: [{label: '1st Qtr'}, {label: '2nd Qtr'}],
+    line1 = [[2,4], [1,6], [3,2], [4,9], [5,16]];
+    plot1 = $.jqplot('chart', [line1], {    
+        series: [{label: '1st Qtr'}],
         axes: {
             xaxis: {
+                ticks:['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
                 renderer: $.jqplot.CategoryAxisRenderer
             },
-            yaxis: {min: 0, max: 20, numberTicks:5}
         }
     });
 
@@ -81,7 +71,7 @@
 
 	</head>
 	<body>
-    <div id="chart" style="margin-top:20px; margin-left:20px; width:240px; height:240px;"></div>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:400px; height:240px;"></div>
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:320px; height:270px;"></div>
 
 	</body>
