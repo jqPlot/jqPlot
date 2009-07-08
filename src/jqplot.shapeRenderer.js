@@ -26,6 +26,15 @@
         // prop: isarc
         // wether the shadow is an arc or not.
         this.isarc = false;
+        // prop: fillRect
+        // true to draw shape as a filled rectangle.
+        this.fillRect = false;
+        // prop: strokeRect
+        // true to draw shape as a stroked rectangle.
+        this.strokeRect = false;
+        // prop: clearRect
+        // true to cear a rectangle.
+        this.clearRect = false;
         // prop: strokeStyle
         // css color spec for the stoke style
         this.strokeStyle = '#999999';
@@ -45,6 +54,7 @@
     //
     // ctx - canvas drawing context
     // points - array of points for shapes or 
+    // [x, y, width, height] for rectangles or
     // [x, y, radius, start angle (rad), end angle (rad)] for circles and arcs.
     $.jqplot.ShapeRenderer.prototype.draw = function(ctx, points, options) {
         ctx.save();
@@ -58,23 +68,40 @@
         ctx.fillStyle = opts.fillStyle || this.fillStyle;
         ctx.beginPath();
         if (this.isarc) {
-            ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                
+            ctx.arc(points[0], points[1], points[2], points[3], points[4], true);   
+            if (closePath) {
+                ctx.closePath();
+            }
+            if (fill) {
+            	ctx.fill();
+            }
+            else {
+                ctx.stroke();
+            }             
+        }
+        else if (this.fillRect) {
+            ctx.fillRect(points[0], points[1], points[2], points[3]);
+        }
+        else if (this.strokeRect) {
+            ctx.strokeRect(points[0], points[1], points[2], points[3]);
+        }
+        else if (this.clearRect) {
+            ctx.clearRect(points[0], points[1], points[2], points[3]);
         }
         else {
             ctx.moveTo(points[0][0], points[0][1]);
             for (var i=1; i<points.length; i++) {
                 ctx.lineTo(points[i][0], points[i][1]);
             }
-            
-        }
-        if (closePath) {
-            ctx.closePath();
-        }
-        if (fill) {
-        	ctx.fill();
-        }
-        else {
-            ctx.stroke();
+            if (closePath) {
+                ctx.closePath();
+            }
+            if (fill) {
+            	ctx.fill();
+            }
+            else {
+                ctx.stroke();
+            }
         }
         ctx.restore();
     };
