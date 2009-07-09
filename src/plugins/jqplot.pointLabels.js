@@ -49,7 +49,7 @@
 	    var p = this.plugins.pointLabels;
 	    if (p.labels.length == 0 && p.labelsFromSeries) {
     	    if (p.stackedValue) {
-    	        if (p._plotData.length && p._plotData[0].length){
+    	        if (this._plotData.length && this._plotData[0].length){
     	            var idx = p.seriesLabelIndex || this._plotData[0].length -1;
         	        for (var i=0; i<this._plotData.length; i++) {
         	            p.labels.push(this._plotData[i][idx]);
@@ -57,7 +57,7 @@
         	    }
     	    }
     	    else {
-    	        if (p.data.length && p.data[0].length) {
+    	        if (this.data.length && this.data[0].length) {
     	            var idx = p.seriesLabelIndex || this.data[0].length -1;
         	        for (var i=0; i<this.data.length; i++) {
         	            p.labels.push(this.data[i][idx]);
