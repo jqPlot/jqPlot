@@ -61,13 +61,17 @@
         var opts = (options != null) ? options : {};
         var fill = (opts.fill != null) ? opts.fill : this.fill;
         var closePath = (opts.closePath != null) ? opts.closePath : this.closePath;
+        var fillRect = (opts.fillRect != null) ? opts.fillRect : this.fillRect;
+        var strokeRect = (opts.strokeRect != null) ? opts.strokeRect : this.strokeRect;
+        var clearRect = (opts.clearRect != null) ? opts.clearRect : this.clearRect;
+        var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
         ctx.lineWidth = opts.lineWidth || this.lineWidth;
         ctx.lineJoin = opts.lineJoing || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
         ctx.strokeStyle = (opts.strokeStyle || opts.color) || this.strokeStyle;
         ctx.fillStyle = opts.fillStyle || this.fillStyle;
         ctx.beginPath();
-        if (this.isarc) {
+        if (isarc) {
             ctx.arc(points[0], points[1], points[2], points[3], points[4], true);   
             if (closePath) {
                 ctx.closePath();
@@ -79,13 +83,13 @@
                 ctx.stroke();
             }             
         }
-        else if (this.fillRect) {
+        else if (fillRect) {
             ctx.fillRect(points[0], points[1], points[2], points[3]);
         }
-        else if (this.strokeRect) {
+        else if (strokeRect) {
             ctx.strokeRect(points[0], points[1], points[2], points[3]);
         }
-        else if (this.clearRect) {
+        else if (clearRect) {
             ctx.clearRect(points[0], points[1], points[2], points[3]);
         }
         else {
