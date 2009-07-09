@@ -962,6 +962,8 @@
                 this.axes[name].init();
             }
             
+            sortData(this.series);
+            
             this.grid.init();
             this.grid._axes = this.axes;
             
@@ -971,6 +973,15 @@
                 $.jqplot.postInitHooks[i].call(this, target, data, options);
             }
         };  
+        
+        // sort the series data in increasing order.
+        function sortData(series) {
+            var d;
+            for (var i=0; i<series.length; i++) {
+                d = series[i].data;
+                d.sort(function(a,b){return a[0] - b[0]});
+            }
+        }
         
         // populate the _stackData and _plotData arrays for the plot and the series.
         this.populatePlotData = function(series, index) {
@@ -1296,12 +1307,21 @@
                                     ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
-                            else {
+                            // if an open hi low close chart
+                            else if (!r.hlc){
                                 var yp = s._yaxis.series_u2p;
                                 if (x >= p[0]-r.tickLength && x <= p[0]+r.tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
                                     ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
+                            // a hi low close chart
+                            else {
+                                var yp = s._yaxis.series_u2p;
+                                if (x >= p[0]-r.tickLength && x <= p[0]+r.tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
+                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                }
+                            }
+                            
                         }
                         else {
                             d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
