@@ -11,10 +11,17 @@
         // prop: candleStick
         // true to render chart as candleStick
         this.candleStick = false;
-        this.tickLength = 4;
+        this.tickLength = null;
+        this.bodyWidth = null;
         this.openColor = null;
         this.closeColor = null;
-        this.hiLowColor = null;
+        this.wickColor = null;
+        this.fillUpBody = false;
+        this.fillDownBody = true;
+        this.upBodyColor = null;
+        this.downBodyColor = null;
+        
+        this.candleWidth
     };
     
     $.jqplot.OHLCRenderer.prototype = new $.jqplot.LineRenderer();
@@ -44,7 +51,8 @@
         var d = this.data;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var i, prevColor;
+        var i, prevColor, ops, b, h, w, a, points;
+        var o;
         var r = this.renderer;
         var opts = (options != undefined) ? options : {};
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
@@ -52,11 +60,97 @@
         var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
         ctx.save();
         if (this.show) {
-            var x;
+            var x, open, hi, low, close;
+            if (r.candleStick && r.bodyWidth == null) {
+                r.bodyWidth = ctx.canvas.width/d.length/2;
+            }
+            else if (!r.candleStick && r.tickLength == null) {
+                r.tickLength = ctx.canvas.width/d.length/4;
+            }
             for (var i=0; i<d.length; i++) {
                 x = xp(d[i][0]);
+                open = yp(d[i][1]);
+                hi = yp(d[i][2]);
+                low = yp(d[i][3]);
+                close = yp(d[i][4]);
+                o = {};
                 if (r.candleStick) {
-                    // do it
+                    w = r.bodyWidth;
+                    a = x - w/2;
+                    // draw candle
+                    // determine if candle up or down
+                    // up, remember grid coordinates increase downward
+                    if (close < open) {
+                        // draw wick
+                        if (r.wickColor) {
+                            o.color = r.wickColor;
+                        }
+                        ops = $.extend(true, {}, opts, o);
+                        r.shapeRenderer.draw(ctx, [[x, hi], [x, close]], ops); 
+                        r.shapeRenderer.draw(ctx, [[x, open], [x, low]], ops); 
+                        o = {};
+                        b = close;
+                        h = open - close;
+                        // if color specified, use it
+                        if (r.fillUpBody) {
+                            o.fillRect = true;
+                        }
+                        else {
+                            o.strokeRect = true;
+                            w = w - this.lineWidth;
+                            a = x - w/2;
+                        }
+                        if (r.upBodyColor) {
+                            o.color = r.upBodyColor;
+                        }
+                        points = [a, b, w, h];
+                    }
+                    // down
+                    else if (close >  open) {
+                        // draw wick
+                        if (r.wickColor) {
+                            o.color = r.wickColor;
+                        }
+                        ops = $.extend(true, {}, opts, o);
+                        r.shapeRenderer.draw(ctx, [[x, hi], [x, open]], ops); 
+                        r.shapeRenderer.draw(ctx, [[x, close], [x, low]], ops); 
+                        o = {};
+                        
+                        b = open;
+                        h = close - open;
+                        // if color specified, use it
+                        if (r.fillDownBody) {
+                            o.fillRect = true;
+                        }
+                        else {
+                            o.strokeRect = true;
+                            w = w - this.lineWidth;
+                            a = x - w/2;
+                        }
+                        if (r.downBodyColor) {
+                            o.color = r.downBodyColor;
+                        }
+                        points = [a, b, w, h];
+                    }
+                    // even, open = close
+                    else  {
+                        // draw wick
+                        if (r.wickColor) {
+                            o.color = r.wickColor;
+                        }
+                        ops = $.extend(true, {}, opts, o);
+                        r.shapeRenderer.draw(ctx, [[x, hi], [x, low]], ops); 
+                        o = {};
+                        o.fillRect = false;
+                        o.strokeRect = false;
+                        a = [x - w/2, open];
+                        b = [x + w/2, close];
+                        w = null;
+                        h = null;
+                        points = [a, b];
+                    }
+                    ops = $.extend(true, {}, opts, o);
+                    r.shapeRenderer.draw(ctx, points, ops);
                 }
                 else {
                     prevColor = opts.color;
@@ -66,9 +160,9 @@
                     // draw open tick
                     r.shapeRenderer.draw(ctx, [[x-r.tickLength, yp(d[i][1])], [x, yp(d[i][1])]], opts); 
                     opts.color = prevColor;
-                    // draw hi low line
-                    if (r.hiLowColor) {
-                        opts.color = r.hiLowColor;
+                    // draw wick
+                    if (r.wickColor) {
+                        opts.color = r.wickColor;
                     }
                     r.shapeRenderer.draw(ctx, [[x, yp(d[i][2])], [x, yp(d[i][3])]], opts); 
                     opts.color  = prevColor;
