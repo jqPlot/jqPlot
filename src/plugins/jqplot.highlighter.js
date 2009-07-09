@@ -19,6 +19,9 @@
 	    // so no attributes need set on the renderer directly.
 	    // Default is to turn off shadow drawing on the highlighted point.
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+	    // prop: showMarker
+	    // true to show the marker
+	    this.showMarker  = true;
 	    // prop: lineWidthAdjust
 	    // Pixels to add to the lineWidth of the highlight.
 	    this.lineWidthAdjust = 2.5;
@@ -41,7 +44,8 @@
 	    // Pixel offset of tooltip from the highlight.
 	    this.tooltipOffset = 2;
 	    // prop: tooltipAxes
-	    // Which axes to display in tooltip, 'x', 'y' or 'both'
+	    // Which axes to display in tooltip, 'x', 'y' or 'both', 'xy' or 'yx'
+	    // 'both' and 'xy' are equivalent, 'yx' reverses order of labels.
 	    this.tooltipAxes = 'both';
 	    // prop; tooltipSeparator
 	    // String to use to separate x and y axes in tooltip.
@@ -56,6 +60,15 @@
 	    // See http://perldoc.perl.org/functions/sprintf.html for reference.
 	    // Additional "p" and "P" format specifiers added by Chris Leonello.
 	    this.tooltipFormatString = '%.5P';
+	    // prop: formatString
+	    // alternative to tooltipFormatString
+	    // will format the whole tooltip text, populating with x, y values as
+	    // indicated by tooltipAxes option.  So, you could have a tooltip like:
+	    // 'Date: %s, number of cats: %d' to format the whole tooltip at one go.
+	    // If useAxesFormatters is true, values will be formatted according to
+	    // Axes formatters and you can populate your tooltip string with 
+	    // %s placeholders.
+	    this.formatString = null;
 	    this._tooltipElem;
 	    this.isHighlighting = false;
 
@@ -122,21 +135,49 @@
             var xfstr = series._xaxis._ticks[0].formatString;
             var yfstr = series._yaxis._ticks[0].formatString;
             var str;
-            if (hl.tooltipAxes == 'both') {
-                str = xf(xfstr, neighbor.data[0]) + hl.tooltipSeparator + yf(yfstr, neighbor.data[1]);
+            var xstr = xf(xfstr, neighbor.data[0]);
+            var ystrs = [];
+            for (var i=1; i<neighbor.data.length; i++) {
+                ystrs.push(yf(yfstr, neighbor.data[i]));
             }
-            else if (hl.tooltipAxes == 'x') {
-                str = xf(xfstr, neighbor.data[0]);
+            if (hl.formatString) {
+                // do it
             }
-            else if (hl.tooltipAxes == 'y') {
-                str = yf(yfstr, neighbor.data[1]);
+            else {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    case 'yx':
+                        str = '';
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += ystrs[i] + hl.tooltipSeparator;
+                        }
+                        str += xstr;
+                        break;
+                    case 'x':
+                        str = xstr;
+                        break;
+                    case 'y':
+                        str = '';
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += ystrs[i] + hl.tooltipSeparator;
+                        }
+                        break;
+                }                
             }
-            
         }
         else {
             var str;
-            if (hl.tooltipAxes == 'both') {
+            if (hl.tooltipAxes == 'both' || hl.tooltipAxes == 'xy') {
                 str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            }
+            else if (hl.tooltipAxes == 'yx') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
             }
             else if (hl.tooltipAxes == 'x') {
                 str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
@@ -218,7 +259,9 @@
     	    }
     	    if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
     	        hl.isHighlighting = true;
-    	        draw(plot, neighbor);
+    	        if (hl.showMarker) {
+    	            draw(plot, neighbor);
+    	        }
                 if (hl.showTooltip) {
                     showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
                 }

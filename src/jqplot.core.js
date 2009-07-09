@@ -1273,38 +1273,43 @@
     	            dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
     	        }
     	    }
-    	    
-            // if (xaxis.show) {
-            //     dataPos.xaxis = xaxis.series_p2u(gridPos.x);
-            // }
-            // if (yaxis.show) {
-            //     dataPos.yaxis = yaxis.series_p2u(gridPos.y);
-            // }
-            // if (x2axis.show) {
-            //     dataPos.x2axis = x2axis.series_p2u(gridPos.x);
-            // }
-            // if (y2axis.show) {
-            //     dataPos.y2axis = y2axis.series_p2u(gridPos.y);
-            // }
 
             return ({offsets:offsets, gridPos:gridPos, dataPos:dataPos});
         }
         
         function getNeighborPoint(plot, x, y) {
             var ret = null;
-            var s, i, d0, d, j;
+            var s, i, d0, d, j, r;
             var threshold;
             for (var i=0; i<plot.series.length; i++) {
                 s = plot.series[i];
+                r = s.renderer;
                 if (s.show) {
                     threshold = Math.abs(s.markerRenderer.size/2+s.neighborThreshold);
                     for (var j=0; j<s.gridData.length; j++) {
-                       p = s.gridData[j];
-                       d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
-                       if (d <= threshold && (d <= d0 || d0 == null)) {
-                           d0 = d;
-                           ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                       }
+                        p = s.gridData[j];
+                        // neighbor looks different to OHLC chart.
+                        if (r.constructor == $.jqplot.OHLCRenderer) {
+                            if (r.candleStick) {
+                                var yp = s._yaxis.series_u2p;
+                                if (x >= p[0]-r.bodyWidth/2 && x <= p[0]+r.bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                }
+                            }
+                            else {
+                                var yp = s._yaxis.series_u2p;
+                                if (x >= p[0]-r.tickLength && x <= p[0]+r.tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                }
+                            }
+                        }
+                        else {
+                            d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
+                            if (d <= threshold && (d <= d0 || d0 == null)) {
+                               d0 = d;
+                               ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                            }
+                        }
                     } 
                 }
             }
