@@ -17,6 +17,8 @@
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.dateAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.ohlcRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.highlighter.js"></script>
+
 
   <!-- END: load jqplot -->
 <script language="javascript" type="text/javascript">
@@ -56,35 +58,64 @@ $(document).ready(function(){
     ['12/08/08', 97.28, 103.6, 92.53, 98.27],
     ['12/01/08', 91.3, 96.23, 86.5, 94],
     ['11/24/08', 85.21, 95.25, 84.84, 92.67],
-    ['11/17/08', 88.48, 91.58, 79.14, 82.58],
-    ['11/10/08', 100.17, 100.4, 86.02, 90.24],
-    ['11/03/08', 105.93, 111.79, 95.72, 98.24],
-    ['10/27/08', 95.07, 112.19, 91.86, 107.59],
-    ['10/20/08', 99.78, 101.25, 90.11, 96.38],
-    ['10/13/08', 104.55, 116.4, 85.89, 97.4],
-    ['10/06/08', 91.96, 101.5, 85, 96.8],
-    ['09/29/08', 119.62, 119.68, 94.65, 97.07],
-    ['09/22/08', 139.94, 140.25, 123, 128.24],
-    ['09/15/08', 142.03, 147.69, 120.68, 140.91],
-    ['09/08/08', 164.57, 164.89, 146, 148.94]];
-    plot = $.jqplot('chart',[line1],{
-    title: 'Chart',
-    axesDefaults:{},
-    axes: {
-        xaxis: {
-            renderer:$.jqplot.DateAxisRenderer
-        }
-    },
-    series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{openColor:'#ff0000', closeColor:'#00ff00'}}],
-    cursor:{
-        zoom:true,
-        tooltipOffset: 10,
-        tooltipLocation: 'nw'
-    },
-    highlighter: {
-        sizeAdjust: 6
-    },
-  });
+    ['11/17/08', 88.48, 91.58, 79.14, 82.58],    // 
+        // ['11/10/08', 100.17, 100.4, 86.02, 90.24],
+        // ['11/03/08', 105.93, 111.79, 95.72, 98.24],
+        // ['10/27/08', 95.07, 112.19, 91.86, 107.59],
+        // ['10/20/08', 99.78, 101.25, 90.11, 96.38],
+        // ['10/13/08', 104.55, 116.4, 85.89, 97.4],
+        // ['10/06/08', 91.96, 101.5, 85, 96.8],
+        // ['09/29/08', 119.62, 119.68, 94.65, 97.07],
+        // ['09/22/08', 139.94, 140.25, 123, 128.24],
+        // ['09/15/08', 142.03, 147.69, 120.68, 140.91],
+        // ['09/08/08', 164.57, 164.89, 146, 148.94]
+    ];
+    
+    plot1 = $.jqplot('chart1',[line1],{
+      title: 'Chart',
+      axesDefaults:{},
+      axes: {
+          xaxis: {
+              renderer:$.jqplot.DateAxisRenderer,
+              tickOptions:{formatString:'%y.%m'}
+          },
+          yaxis: {
+              tickOptions:{formatString:'$%.2f'}
+          }
+      },
+      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{}}],
+      cursor:{
+          zoom:true,
+          tooltipOffset: 10,
+          tooltipLocation: 'nw'
+      },
+      highlighter: {
+          showMarker:false
+      },
+    });
+        
+    plot2 = $.jqplot('chart2',[line1],{
+      title: 'Chart',
+      axesDefaults:{},
+      axes: {
+          xaxis: {
+              renderer:$.jqplot.DateAxisRenderer,
+              tickOptions:{formatString:'%y.%m'}
+          },
+          yaxis: {
+              tickOptions:{formatString:'$%.2f'}
+          }
+      },
+      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
+      cursor:{
+          zoom:true,
+          tooltipOffset: 10,
+          tooltipLocation: 'nw'
+      },
+      highlighter: {
+          showMarker:false
+      },
+    });
     
 });
 
@@ -93,6 +124,7 @@ $(document).ready(function(){
 
   </head>
   <body>
-<div id="chart" style="height:240px; width:640px;"></div>
+<div id="chart1" style="margin:20px;height:240px; width:640px;"></div>
+<div id="chart2" style="margin:20px;height:240px; width:640px;"></div>
   </body>
 </html>
