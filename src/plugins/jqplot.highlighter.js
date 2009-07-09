@@ -69,6 +69,11 @@
 	    // Axes formatters and you can populate your tooltip string with 
 	    // %s placeholders.
 	    this.formatString = null;
+	    // prop: yvalues
+	    // Number of y values to expect in the data point array.
+	    // Typically this is 1.  Certain plots, like OHLC, will
+	    // have more y values in each data point array.
+	    this.yvalues = 1;
 	    this._tooltipElem;
 	    this.isHighlighting = false;
 
@@ -137,11 +142,30 @@
             var str;
             var xstr = xf(xfstr, neighbor.data[0]);
             var ystrs = [];
-            for (var i=1; i<neighbor.data.length; i++) {
+            for (var i=1; i<hl.yvalues+1; i++) {
                 ystrs.push(yf(yfstr, neighbor.data[i]));
             }
             if (hl.formatString) {
-                // do it
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'yx':
+                        ystrs.push(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'x':
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, [hl.formatString, xstr]);
+                        break;
+                    case 'y':
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                } 
             }
             else {
                 switch (hl.tooltipAxes) {
