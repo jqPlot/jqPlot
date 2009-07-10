@@ -37,6 +37,10 @@
 	    // prop: horizontalPadding
 	    // horizontal padding in pixels between point and label
 	    this.xpadding = 6;
+	    // prop: escapeHTML
+	    // true to escape html entities in the labels.
+	    // If you want to include markup in the labels, set to false.
+	    this.escapeHTML = true;
 	    
 	    $.extend(true, this, options);
 	};
@@ -115,7 +119,12 @@
             for (var i=0; i<p.labels.length; i++) {
                 var elem = $('<div class="jqplot-point-label" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
-                elem.html(p.labels[i]);
+                if (p.escapeHTML) {
+                    elem.text(p.labels[i]);
+                }
+                else {
+                    elem.html(p.labels[i]);
+                }
                 var xp = this._plotData[i][0];
                 var yp = this._plotData[i][1];
                 var x = this._xaxis.u2p(this._plotData[i][0]) + xoffset(elem);
