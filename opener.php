@@ -17,6 +17,10 @@
     
       <div class="logo">
       
-        <div id="navhome" onclick="location.href='./index.php';"></div> <div id="navexamples" onclick="location.href='./tests/';"></div> <div id="navdocs" onclick="location.href='./docs/';"></div> <div id="navdownload" onclick="location.href='http://bitbucket.org/cleonello/jqplot/downloads/';"></div> <div id="navinfo" onclick="location.href='./info.php';"></div>
+        <div id="navhome" onclick="location.href='./index.php';"><a href="./index.php"></a></div> 
+        <div id="navexamples" onclick="location.href='./tests/';"><a href="./tests/"></a></div> 
+        <div id="navdocs" onclick="location.href='./docs/';"><a href="./docs/"></a></div> 
+        <div id="navdownload" onclick="location.href='http://bitbucket.org/cleonello/jqplot/downloads/';"><a href="http://bitbucket.org/cleonello/jqplot/downloads/"></a></div> 
+        <div id="navinfo" onclick="location.href='./info.php';"><a href="./info.php"></a></div>
         
       </div>

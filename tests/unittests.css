@@ -152,11 +152,11 @@ div.jqPlot {
   margin: 2em auto 3em auto;
 }
 
-div.description {
+p.description {
     font-size: 15px;
     width: 660px;
-    margin: 3em auto 1em auto;
-    padding: 15px;
+    margin: 1.5em auto;
+    padding: 0 15px;
 }
 
 pre.prettyprint {

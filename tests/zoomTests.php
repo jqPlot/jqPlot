@@ -6,7 +6,7 @@
   $jqplot_js_includes[] = "../src/plugins/jqplot.dateAxisRenderer.js";
   require("opener.php");
 ?>
-  <script language="javascript" type="text/javascript">
+<script language="javascript" type="text/javascript">
 var goog = [["6/22/2009",425.32],
 ["6/8/2009",424.84],
 ["5/26/2009",417.23],
@@ -71,63 +71,66 @@ var ERPM = [[0.0,1503.],[10.0,3006.],[20.0,3005.],[30.0,1505.],[40.0,1505.],[50.
 [1190.0,375.],[1200.0,1502.],[1210.0,373.],[1220.0,368.],[1230.0,502.],[1240.0,495.],[1250.0,1475.],[1260.0,1468.],[1270.0,732.],[1280.0,1461.],[1290.0,1458.],[1300.0,1456.],[1310.0,1456.],[1320.0,1451.],[1330.0,1453.],[1340.0,1453.],[1350.0,726.],[1360.0,1451.],[1370.0,1451.],[1380.0,1451.],[1390.0,1451.],[1400.0,1449.],[1410.0,1449.],[1420.0,1449.],[1430.0,1944.],[1440.0,1197.],[1450.0,786.],[1460.0,0.],[1470.0,0.],[1480.0,1079.],[1490.0,1070.],[1500.0,1085.],[1510.0,923.],[1520.0,1121.],[1530.0,1293.],[1540.0,1762.],[1550.0,367.],[1560.0,352.],[1570.0,186.],[1580.0,892.],[1590.0,892.],[1600.0,892.],[1610.0,892.],[1620.0,892.],[1630.0,892.],[1640.0,892.],[1650.0,892.],[1660.0,892.],[1670.0,892.],[1680.0,0.],[1690.0,0.],[1700.0,0.],[1710.0,0.],[1720.0,0.],[1730.0,0.],[1740.0,0.],[1750.0,0.],[1760.0,0.],
 [1770.0,0.],[1780.0,0.],[1790.0,0.],[1800.0,0.],[1810.0,0.],[1820.0,0.],[1830.0,0.],[1840.0,0.],[1850.0,0.],[1860.0,0.],[1870.0,0.],[1880.0,0.],[1890.0,0.],[1900.0,0.],[1910.0,0.],[1920.0,0.],[1930.0,0.],[1940.0,0.],[1950.0,0.],[1960.0,0.],[1970.0,0.],[1980.0,0.],[1990.0,0.],[2000.0,0.],[2010.0,0.],[2020.0,0.],[2030.0,0.],[2040.0,0.],[2050.0,0.],[2060.0,0.],[2070.0,0.],[2080.0,0.],[2090.0,0.],[2100.0,0.],[2110.0,0.],[2120.0,0.],[2130.0,0.],[2140.0,0.],[2150.0,0.],[2160.0,0.],[2170.0,0.],[2180.0,0.],[2190.0,0.],[2200.0,0.],[2210.0,0.],[2220.0,0.],[2230.0,0.],[2240.0,0.],[2250.0,0.],[2260.0,0.],[2270.0,0.],[2280.0,0.],[2290.0,0.],[2300.0,0.],[2310.0,0.],[2320.0,0.],[2330.0,0.],[2340.0,0.],[2350.0,0.],[2360.0,0.],[2370.0,0.],[2380.0,0.],[2390.0,0.],[2400.0,0.],[2410.0,0.],[2420.0,0.],[2430.0,0.],[2440.0,0.],
 [2450.0,0.],[2460.0,0.],[2470.0,0.],[2480.0,0.],[2490.0,0.],[2500.0,0.],[2510.0,0.],[2520.0,0.],[2530.0,0.],[2540.0,0.],[2550.0,0.],[2560.0,0.],[2570.0,0.],[2580.0,0.],[2590.0,0.],[2600.0,0.],[2610.0,0.],[2620.0,0.],[2630.0,0.],[2640.0,0.],[2650.0,0.],[2660.0,0.],[2670.0,0.],[2680.0,0.],[2690.0,0.],[2700.0,0.],[2710.0,0.],[2720.0,0.],[2730.0,0.],[2740.0,0.],[2750.0,0.],[2760.0,0.],[2770.0,0.],[2780.0,0.],[2790.0,0.],[2800.0,0.]];
-  
-    function runSuites() {
-      var o, n, nid;
+</script>
       
-      nid = uID();
-      
-      c = "The jqplot.cursor.js plugin also enables plot zooming functionality.  Click and drag on the plot to zoom.  Double click to reset.  <p>You can also enaable single click zoom reset, or disable the double click zoom reset.  The cursor plugin also exposes the $.jqplot.Cursor.resetZoom() function which can be called from user code or other html element (a button for example) to reset the plot zoom."
-      
-      o = "plot = $.jqplot('_target_', [goog], { \
-        title: 'Google, Inc.', \
-        series: [{ \
-            label: 'Google, Inc.', \
-            neighborThreshold: -1 \
-        }], \
-        axes: { \
-            xaxis: { \
-              renderer:$.jqplot.DateAxisRenderer, \
-              min:'August 1, 2007', \
-              tickInterval: '4 months', \
-              tickOptions:{formatString:'%Y/%#m/%#d'} \
-            }, \
-            yaxis: { \
-                renderer: $.jqplot.LogAxisRenderer, \
-                tickOptions:{formatString:'$%.2f'} \
-            } \
-        }, \
-        cursor:{zoom:true, showTooltip:false} \
-    });";
-      
-        genplot(o, {comment:c, height:320, width:480});
-        
-        c = "Plot zooming also works will multiple axes.  The following plot uses 3 large datasets.  Single Click will reset the zoom on this plot.";
-        
-        o = "plot1 = $.jqplot('_target_', [InPr, OutPr, ERPM], \
-        { \
-          Title:'Plot with Zooming and 3 Y Axes', \
-          seriesDefaults: {showMarker:false}, \
-          series:[{},{yaxis:'y2axis'}, {yaxis:'y3axis'}], \
-          cursor: {tooltipLocation:'sw', zoom:true, clickReset:true}, \
-          axesDefaults:{useSeriesColor: true}, \
-          axes:{xaxis:{min:0, max:1600}, yaxis:{min:0, max:600},  \
-          y2axis:{min:1000, max:2000, numberTicks:9, tickOptions:{showGridline:false}}, \
-          y3axis:{}} \
-        });"
-        
-        genplot(o, {comment:c, height:320, width:600});
-  
-      prettyPrint();
-      
-      JSpec.options.profile = false;
-      JSpec
-      .exec('zoomTests.js')
-      .run()
-      .report()
-    }
-  </script>
+<p class="description">The jqplot.cursor.js plugin also enables plot zooming functionality.  Click and drag on the plot to zoom.  Double click to reset.</p>
 
+<p class="description">You can also enaable single click zoom reset, or disable the double click zoom reset.  The cursor plugin also exposes the $.jqplot.Cursor.resetZoom() function which can be called from user code or other html element (a button for example) to reset the plot zoom.</p>
+
+<div class="jqPlot" id="chart1" style="height:380px; width:480px;"></div>
+
+<pre class="prettyprint plot">
+plot = $.jqplot('chart1', [goog], { 
+    title: 'Google, Inc.', 
+    series: [{ 
+        label: 'Google, Inc.', 
+        neighborThreshold: -1 
+    }], 
+    axes: { 
+        xaxis: { 
+            renderer:$.jqplot.DateAxisRenderer, 
+            min:'August 1, 2007', 
+            tickInterval: '4 months', 
+            tickOptions:{formatString:'%Y/%#m/%#d'} 
+        }, 
+        yaxis: { 
+            renderer: $.jqplot.LogAxisRenderer, 
+            tickOptions:{formatString:'$%.2f'} 
+        } 
+    }, 
+    cursor:{zoom:true, showTooltip:false} 
+});
+</pre>
+      
+<p class="description">Plot zooming also works will multiple axes.  The following plot uses 3 large datasets.  Single Click will reset the zoom on this plot.</p>
+
+<div class="jqPlot" id="chart2" style="height:380px; width:600px;"></div>
+
+<pre class="prettyprint plot">
+plot1 = $.jqplot('chart2', [InPr, OutPr, ERPM], { 
+    title:'Plot with Zooming and 3 Y Axes', 
+    seriesDefaults: {showMarker:false}, 
+    series:[
+        {},
+        {yaxis:'y2axis'}, 
+        {yaxis:'y3axis'}
+    ], 
+    cursor: {tooltipLocation:'sw', zoom:true, clickReset:true}, 
+    axesDefaults:{useSeriesColor: true}, 
+    axes:{
+        xaxis:{min:0, max:1600}, 
+        yaxis:{min:0, max:600},  
+        y2axis:{
+            min:1000, 
+            max:2000, 
+            numberTicks:9, 
+            tickOptions:{showGridline:false}
+        }, 
+        y3axis:{}
+    } 
+});
+</pre>
+        
 <?php
   require('closer.php');
 ?>

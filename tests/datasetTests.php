@@ -55,11 +55,11 @@
   
       prettyPrint();
       
-      JSpec.options.profile = false;
-      JSpec
-      .exec('datasetTests.js')
-      .run()
-      .report()
+      // JSpec.options.profile = false;
+      // JSpec
+      // .exec('datasetTests.js')
+      // .run()
+      // .report()
     }
   </script>
 
