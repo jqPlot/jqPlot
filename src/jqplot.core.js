@@ -979,7 +979,13 @@
             var d;
             for (var i=0; i<series.length; i++) {
                 d = series[i].data;
-                d.sort(function(a,b){return a[0] - b[0]});
+                d.sort(function(a,b){
+                    var ret = a[0] - b[0];
+                    if (ret) {
+                        return ret;
+                    }
+                    return 0;
+                });
             }
         }
         
