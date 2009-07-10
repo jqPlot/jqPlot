@@ -15,10 +15,9 @@
   <!-- END: load jquery -->
   
   <!-- BEGIN: load extras -->
-<!--  <script language="javascript" type="text/javascript" src="jspec/lib/jspec.min.js"></script> -->
   <script language="javascript" type="text/javascript" src="beautify.min.js" ></script>
   <script language="javascript" type="text/javascript" src="prettify.min.js"></script>
-  <link rel="stylesheet" href="jspec/lib/jspec.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="jspec.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
   <link rel="stylesheet" href="prettify.min.css" type="text/css" rel="stylesheet" />
   <!-- END: load extras -->
   
