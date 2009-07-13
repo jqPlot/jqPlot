@@ -3,8 +3,41 @@
 * This software is licensed under the GPL version 2.0 and MIT licenses.
 */
 (function($) {
-    // Class: $.jqplot.OHLCRenderer
-    // 
+    /**
+     * Class: $.jqplot.OHLCRenderer
+     * jqPlot Plugin to draw Open Hi Low Close, Candlestick and Hi Low Close charts.
+     * 
+     * To use this plugin, include the renderer js file in 
+     * your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.ohlcRenderer.js" />
+     * 
+     * You will most likely want to use a date axis renderer
+     * for the x axis also, so include the date axis render js file also:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.dateAxisRenderer.js" />
+     * 
+     * Then you set the renderer in the series options on your plot:
+     * 
+     * > series: [{renderer:$.jqplot.OHLCRenderer}]
+     * 
+     * For OHLC and candlestick charts, data should be specified
+     * like so:
+     * 
+     * > dat = [['07/06/2009',138.7,139.68,135.18,135.4], ['06/29/2009',143.46,144.66,139.79,140.02], ...]
+     * 
+     * If the data array has only 4 values per point instead of 5,
+     * the renderer will create a Hi Low Close chart instead.  In that case,
+     * data should be supplied like:
+     * 
+     * > dat = [['07/06/2009',139.68,135.18,135.4], ['06/29/2009',144.66,139.79,140.02], ...]
+     * 
+     * To generate a candlestick chart instead of an OHLC chart,
+     * set the "candlestick" option to true:
+     * 
+     * > series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
+     * 
+     */
     $.jqplot.OHLCRenderer = function(){
         // subclass line renderer to make use of some of it's methods.
         $.jqplot.LineRenderer.call(this);
@@ -12,19 +45,43 @@
         // true to render chart as candleStick.
         // Must have an open price, cannot be a hlc chart.
         this.candleStick = false;
+        // prop: tickLength
+        // length of the line indicating open and close price.
+        // Default will auto calculate based on plot width and 
+        // number of points displayed.
         this.tickLength = null;
+        // prop: bodyWidth
+        // width of the candlestick body.  Default will auto calculate
+        // based on plot width and number of candlesticks displayed.
         this.bodyWidth = null;
+        // prop: openColor
+        // color of the open price tick mark.  Default is series color.
         this.openColor = null;
+        // prop: closeColor
+        // color of the close price tick mark.  Default is series color.
         this.closeColor = null;
+        // prop: wickColor
+        // color of the hi-lo line thorugh the candlestick body.
+        // Default is the series color.
         this.wickColor = null;
+        // prop: fillUpBody
+        // true to render an "up" day (close price greater than open price)
+        // with a filled candlestick body.
         this.fillUpBody = false;
+        // prop: fillDownBody
+        // true to render a "down" day (close price lower than open price)
+        // with a filled candlestick body.
         this.fillDownBody = true;
+        // prop: upBodyColor
+        // Color of candlestick body of an "up" day.  Default is series color.
         this.upBodyColor = null;
+        // prop: downBodyColor
+        // Color of candlestick body on a "down" day.  Default is series color.
         this.downBodyColor = null;
         // prop: hlc
         // true if is a hi-low-close chart (no open price).
+        // This is determined automatically from the series data.
         this.hlc = false;
-        this.candleWidth
     };
     
     $.jqplot.OHLCRenderer.prototype = new $.jqplot.LineRenderer();
@@ -32,6 +89,8 @@
     
     // called with scope of series.
     $.jqplot.OHLCRenderer.prototype.init = function(options) {
+        // prop: lineWidth
+        // Width of the hi-low line and open/close ticks.
         this.lineWidth = 1.5;
         $.jqplot.LineRenderer.prototype.init.call(this, options);
         // set the yaxis data bounds here to account for hi and low values
@@ -81,8 +140,8 @@
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
-        var bodyWidth = (opts.bodyWidth != undefined) ? opts.bodyWidth : this.bodyWidth;
-        var tickLength = (opts.tickLength != undefined) ? opts.tickLength : this.tickLength;
+        r.bodyWidth = (opts.bodyWidth != undefined) ? opts.bodyWidth : r.bodyWidth;
+        r.tickLength = (opts.tickLength != undefined) ? opts.tickLength : r.tickLength;
         ctx.save();
         if (this.show) {
             var x, open, hi, low, close;
@@ -97,11 +156,11 @@
                     xmaxidx = i+1;
                 }
             }
-            if (r.candleStick && bodyWidth == null) {
-                bodyWidth = Math.min(20, ctx.canvas.width/(xmaxidx - xminidx)/2);
+            if (r.candleStick && r.bodyWidth == null) {
+                r.bodyWidth = Math.min(20, ctx.canvas.width/(xmaxidx - xminidx)/2);
             }
-            else if (!r.candleStick && tickLength == null) {
-                tickLength = Math.min(10, ctx.canvas.width/(xmaxidx - xminidx)/4);
+            else if (!r.candleStick && r.tickLength == null) {
+                r.tickLength = Math.min(10, ctx.canvas.width/(xmaxidx - xminidx)/4);
             }
             for (var i=xminidx; i<xmaxidx; i++) {
                 x = xp(d[i][0]);
@@ -119,7 +178,7 @@
                 }
                 o = {};
                 if (r.candleStick && !r.hlc) {
-                    w = bodyWidth;
+                    w = r.bodyWidth;
                     a = x - w/2;
                     // draw candle
                     // determine if candle up or down
@@ -203,7 +262,7 @@
                     }
                     // draw open tick
                     if (!r.hlc) {
-                        r.shapeRenderer.draw(ctx, [[x-tickLength, open], [x, open]], opts);    
+                        r.shapeRenderer.draw(ctx, [[x-r.tickLength, open], [x, open]], opts);    
                     }
                     opts.color = prevColor;
                     // draw wick
@@ -216,7 +275,7 @@
                     if (r.closeColor) {
                         opts.color = r.closeColor;
                     }
-                    r.shapeRenderer.draw(ctx, [[x, close], [x+tickLength, close]], opts); 
+                    r.shapeRenderer.draw(ctx, [[x, close], [x+r.tickLength, close]], opts); 
                     opts.color = prevColor;
                 }
             }
