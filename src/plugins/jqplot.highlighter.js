@@ -8,10 +8,49 @@
 	/**
 	 * Class: $.jqplot.Highlighter
 	 * Plugin which will highlight data points when they are moused over.
+	 * 
+	 * To use this plugin, include the js
+	 * file in your source:
+	 * 
+	 * > <script type="text/javascript" src="plugins/jqplot.highlighter.js" />
+	 * 
+	 * A tooltip providing information about the data point is enabled by default.
+	 * To disable the tooltip, set "showTooltip" to false.
+	 * 
+	 * You can control what data is displayed in the tooltip with various
+	 * options.  The "tooltipAxes" option controls wether the x, y or both
+	 * data values are displayed.
+	 * 
+	 * Some chart types (e.g. hi-low-close) have more than one y value per
+	 * data point. To display the additional values in the tooltip, set the
+	 * "yvalues" option to the desired number of y values present (3 for a hlc chart).
+	 * 
+	 * By default, data values will be formatted with the same formatting
+	 * specifiers as used to format the axis ticks.  A custom format code
+	 * can be supplied with the tooltipFormatString option.  This will apply 
+	 * to all values in the tooltip.  
+	 * 
+	 * For more complete control, the "formatString" option can be set.  This
+	 * Allows conplete control over tooltip formatting.  Values are passed to
+	 * the format string in an order determined by the "tooltipAxes" and "yvalues"
+	 * options.  So, if you have a hi-low-close chart and you just want to display 
+	 * the hi-low-close values in the tooltip, you could set a formatString like:
+	 * 
+	 * > highlighter: {
+     * >     tooltipAxes: 'y',
+     * >     yvalues: 3,
+     * >     formatString:'<table class="jqplot-highlighter">
+     * >         <tr><td>hi:</td><td>%s</td></tr>
+     * >         <tr><td>low:</td><td>%s</td></tr>
+     * >         <tr><td>close:</td><td>%s</td></tr></table>'
+     * > }
+	 * 
 	 */
 	$.jqplot.Highlighter = function(options) {
 	    // Group: Properties
-	    
+	    //
+	    //prop: show
+	    // true to enable the tooltip.
 	    this.show = true;
 	    // prop: markerRenderer
 	    // Renderer used to draw the marker of the highlighted point.
