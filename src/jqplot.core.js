@@ -947,13 +947,13 @@
             this.legend.init();
             for (var i=0; i<this.series.length; i++) {
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
-                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, options);
+                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
                 }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
-                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, options);
+                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
                 }
             }
 
@@ -968,7 +968,7 @@
             this.grid._axes = this.axes;
             
             this.legend._series = this.series;
-            
+
             for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
                 $.jqplot.postInitHooks[i].call(this, target, data, options);
             }

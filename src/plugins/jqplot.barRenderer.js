@@ -63,7 +63,7 @@
     };
     
     // called with scope of series
-    function barPreInit(target, data, options) {
+    function barPreInit(target, data, seriesDefaults, options) {
         if (this.rendererOptions.barDirection == 'horizontal') {
             this._stackAxis = 'x';
         }
