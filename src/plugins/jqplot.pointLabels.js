@@ -6,10 +6,52 @@
 	
 	/**
 	 * Class: $.jqplot.PointLabels
-	 * Plugin for putting a labels at the data points.
+	 * Plugin for putting labels at the data points.
+	 * 
+	 * To use this plugin, include the js
+	 * file in your source:
+	 * 
+	 * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js" />
+	 * 
+	 * By default, the last value in the data ponit array in the data series is used
+	 * for the label.  For most series renderers, extra data can be added to the 
+	 * data point arrays and the last value will be used as the label.
+	 * 
+	 * For instance, 
+	 * this series:
+	 * 
+	 * > [[1,4], [3,5], [7,2]]
+	 * 
+	 * Would, by default, use the y values in the labels.
+	 * Extra data can be added to the series like so:
+	 * 
+	 * > [[1,4,'mid'], [3 5,'hi'], [7,2,'low']]
+	 * 
+	 * And now the point labels would be 'mid', 'low', and 'hi'.
+	 * 
+	 * Options to the point labels and a custom labels array can be passed into the
+	 * "pointLabels" option on the series option like so:
+	 * 
+	 * > series:[{pointLabels:{
+	 * >    labels:['mid', 'hi', 'low'],
+	 * >    location:'se',
+	 * >    ypadding: 12
+	 * >    }
+	 * > }]
+	 * 
+	 * A custom labels array in the options takes precendence over any labels
+	 * in the series data.  If you have a custom labels array in the options,
+	 * but still want to use values from the series array as labels, set the
+	 * "labelsFromSeries" option to true.
+	 * 
+	 * By default, html entities (<, >, etc.) are escaped in point labels.  
+	 * If you want to include actual html markup in the labels, 
+	 * set the "escapeHTML" option to false.
+	 * 
 	 */
 	$.jqplot.PointLabels = function(options) {
 	    // Group: Properties
+	    //
 	    // prop: show
 	    // show the labels or not.
 	    this.show = true;
@@ -18,8 +60,8 @@
 	    // 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
 	    this.location = 'n';
 	    // prop: labelsFromSeries
-	    // true if labels are contained within data point arrays.
-	    this.labelsFromSeries = true;
+	    // true to use labels within data point arrays.
+	    this.labelsFromSeries = false;
 	    // prop: seriesLabelIndex
 	    // array index for location of labels within data point arrays.
 	    // if null, will use the last element of teh data point array.
@@ -46,12 +88,12 @@
 	};
 	
 	// called with scope of a series
-	$.jqplot.PointLabels.init = function (seriesDefaults, opts){
+	$.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
 	    var options = $.extend(true, {}, seriesDefaults, opts);
 	    // add a pointLabels attribute to the series plugins
 	    this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
 	    var p = this.plugins.pointLabels;
-	    if (p.labels.length == 0 && p.labelsFromSeries) {
+	    if (p.labels.length == 0 || p.labelsFromSeries) {
     	    if (p.stackedValue) {
     	        if (this._plotData.length && this._plotData[0].length){
     	            var idx = p.seriesLabelIndex || this._plotData[0].length -1;
@@ -136,6 +178,6 @@
         }
     };
 	
-    $.jqplot.postParseSeriesOptionsHooks.push($.jqplot.PointLabels.init);
+    $.jqplot.postSeriesInitHooks.push($.jqplot.PointLabels.init);
     $.jqplot.postDrawSeriesHooks.push($.jqplot.PointLabels.draw);
 })(jQuery);
