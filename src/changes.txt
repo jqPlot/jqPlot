@@ -1,5 +1,13 @@
 Title: Change Log
 
+0.9.0:
+
+* Added Open Hi Low Close charts, Candlestick charts and Hi Low Close charts.
+* Added support for arbitrary labels on the data points.
+* Fixed bug #38 where series with a single point with a negative value would fail.
+* Improvements to examples to show what plugins to include.
+* Expanded documentation for some of the plugins.
+
 0.8.5:
 
 * Added zooming ability with double click or single click options to reset zoom.
