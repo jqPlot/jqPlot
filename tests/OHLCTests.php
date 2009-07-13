@@ -103,7 +103,7 @@
     
 </script>
 
-<p class="description">jqPlot supports Open Hi Low Close charts through the "jqplot.OHLCRenderer.js" plugin.  For best display, the x axis should use a "DateAxisRenderer".  Data series should be supplied with all the necessary data in the data point arrays such as: [['07/06/2009', 138.7, 139.68, 135.18, 135.4], ['06/29/2009', 143.46, 144.66, 139.79, 140.02], ...].</p>
+<p class="description">jqPlot supports Open Hi Low Close charts through the OHLCRenderer plugin.  For best display, the x axis should use a "DateAxisRenderer".  Data series should be supplied with all the necessary data in the data point arrays such as: [['07/06/2009', 138.7, 139.68, 135.18, 135.4], ['06/29/2009', 143.46, 144.66, 139.79, 140.02], ...].</p>
 
 <p class="description">The jqPlot highlighter plugin's tooltip works with the extra data in the OHLC series also.  You can specify the number of y data values to display in the tooltip with the "yvalues" option of the highlighter plugin.  The default is to display 1 y value (for simple [x,y] data).  Set this to 4 to display the open, hi, low and close value.</p>
       

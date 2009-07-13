@@ -166,6 +166,9 @@
             <include name="*.php" />
             <include name="style.css" />
           </fileset>
+          <fileset dir=".">
+            <include name="config.xml" />
+          </fileset>
         </copy>
         <copy todir="${WEB_DIR}/images">
           <fileset dir="${DIST_DIR}/images"/>
@@ -200,12 +203,6 @@
         <copy todir="${DIST_DIR}/tests">
           <fileset dir="tests" includes="*" />
         </copy>
-        <copy todir="${DIST_DIR}/tests/jspec/lib">
-          <fileset dir="tests/jspec/lib" includes="jspec.min.*" />
-        </copy>
-        <copy todir="${DIST_DIR}/tests/jspec/lib/images">
-          <fileset dir="tests/jspec/lib/images" includes="*" />
-        </copy>
         <copy todir="${DIST_DIR}/tests/images">
           <fileset dir="tests/images" includes="*" />
         </copy>
@@ -229,6 +226,8 @@
 		  <!-- don't want to process jquery itself -->
 		    <move file="${BUILD_DIR}/jquery-1.3.2.js" tofile="${BUILD_DIR}/jquery-1.3.2.js.bak" />
         <mkdir dir="${DIST_DIR}/docs" />
+        <!-- rename files we don't used for docs -->
+        <move file="${BUILD_DIR}/jquery.jqplot.js" tofile="${BUILD_DIR}/jquery.jqplot.js.bak"/>
         <exec executable="${ND}">
           <arg value="-r" />
           <arg value="-i" />
@@ -239,6 +238,8 @@
           <arg path="NDdata/" />
           <arg line="-s Default docstyles" />
         </exec>
+        <!-- put files back -->
+        <move file="${BUILD_DIR}/jquery.jqplot.js.bak" tofile="${BUILD_DIR}/jquery.jqplot.js"/>
         <replaceregexp match="@VERSION" replace="${version}" flags="g">
           <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
           <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />

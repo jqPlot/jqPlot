@@ -73,7 +73,7 @@ var ERPM = [[0.0,1503.],[10.0,3006.],[20.0,3005.],[30.0,1505.],[40.0,1505.],[50.
 [2450.0,0.],[2460.0,0.],[2470.0,0.],[2480.0,0.],[2490.0,0.],[2500.0,0.],[2510.0,0.],[2520.0,0.],[2530.0,0.],[2540.0,0.],[2550.0,0.],[2560.0,0.],[2570.0,0.],[2580.0,0.],[2590.0,0.],[2600.0,0.],[2610.0,0.],[2620.0,0.],[2630.0,0.],[2640.0,0.],[2650.0,0.],[2660.0,0.],[2670.0,0.],[2680.0,0.],[2690.0,0.],[2700.0,0.],[2710.0,0.],[2720.0,0.],[2730.0,0.],[2740.0,0.],[2750.0,0.],[2760.0,0.],[2770.0,0.],[2780.0,0.],[2790.0,0.],[2800.0,0.]];
 </script>
       
-<p class="description">The jqplot.cursor.js plugin also enables plot zooming functionality.  Click and drag on the plot to zoom.  Double click to reset.</p>
+<p class="description">The cursor plugin also enables plot zooming functionality.  Click and drag on the plot to zoom.  Double click to reset.</p>
 
 <p class="description">You can also enaable single click zoom reset, or disable the double click zoom reset.  The cursor plugin also exposes the $.jqplot.Cursor.resetZoom() function which can be called from user code or other html element (a button for example) to reset the plot zoom.</p>
 

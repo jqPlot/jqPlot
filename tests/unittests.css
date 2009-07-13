@@ -163,7 +163,7 @@ pre.prettyprint {
   font-family: "Andale Mono", monospace;
   font-size: 9pt;
   text-align: left;
-  margin: auto;
+  margin: 1em auto;
   padding: 15px;
   width: 690px;
   background: #fffdf6;

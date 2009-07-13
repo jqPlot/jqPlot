@@ -7,7 +7,7 @@
   require("opener.php");
 ?>
 
-<p class="description">Bar charts are rendered with the "jqplot.barRenderer.js" plugin.  Bar charts work best when displayed on a category axis.</p> 
+<p class="description">Bar charts are rendered with the barRenderer plugin.  Bar charts work best when displayed on a category axis.</p> 
 
 <div class="jqPlot" id="chart1" style="height:320px; width:480px;"></div>
 

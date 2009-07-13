@@ -53,7 +53,7 @@ Group: API Documentation  {
 
    Group: Core Renderers  {
 
-      File: jqPlot Charts  (jquery.jqplot.js)
+      File: jqPlot Charts  (no auto-title, jqplot.core.js)
       File: AxisTickRenderer  (no auto-title, jqplot.axisTickRenderer.js)
       File: CanvasGridRenderer  (no auto-title, jqplot.canvasGridRenderer.js)
       File: DivTitleRenderer  (no auto-title, jqplot.divTitleRenderer.js)
@@ -61,8 +61,7 @@ Group: API Documentation  {
       File: MarkerRenderer  (no auto-title, jqplot.markerRenderer.js)
       File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
       File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
-      File: $.jqplot.LineRenderer  (jqplot.lineRenderer.js)
-      File: jqPlot Charts  (jqplot.core.js)
+      File: Line Renderer  (no auto-title, jqplot.lineRenderer.js)
       }  # Group: Core Renderers
 
    Group: Plugins  {

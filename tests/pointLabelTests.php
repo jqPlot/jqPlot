@@ -8,7 +8,7 @@
   require("opener.php");
 ?>  
 
-<p class="description">The "jqplot.pointLabels.js" plugin places labels on the plot at the data point locations.  Labeles can use the series data array or a separate labels array.  If using the series data, the last value in the data point array is used as the label by default.</p>
+<p class="description">The pointLabels plugin places labels on the plot at the data point locations.  Labeles can use the series data array or a separate labels array.  If using the series data, the last value in the data point array is used as the label by default.</p>
       
 <div class="jqPlot" id="chart1" style="height:320px; width:540px;"></div>
 
