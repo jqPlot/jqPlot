@@ -1160,11 +1160,17 @@
             }
         };
         
+        
+        // method: redraw
+        // Empties the plot target div and redraws the plot.
+        // This enables plot data and properties to be changed
+        // and then to comletely clear the plot and redraw.
+        // Use redraw() particularly if the axes need to be 
         this.redraw = function() {
             this.target.trigger('jqplotPreRedraw');
             this.target.empty();
             this.draw();
-            this.target.trigger('jqplotPreRedraw');
+            this.target.trigger('jqplotPostRedraw');
         };
     
         this.draw = function(){
