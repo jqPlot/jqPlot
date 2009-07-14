@@ -1169,6 +1169,9 @@
         this.redraw = function() {
             this.target.trigger('jqplotPreRedraw');
             this.target.empty();
+             for (var ax in this.axes) {
+                this.axes[ax]._ticks = [];
+    	    }
             this.draw();
             this.target.trigger('jqplotPostRedraw');
         };
