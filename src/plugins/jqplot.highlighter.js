@@ -204,6 +204,11 @@
                         ystrs.unshift(hl.formatString);
                         str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
                         break;
+                    default: // same as xy
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
                 } 
             }
             else {
@@ -231,6 +236,13 @@
                             str += ystrs[i] + hl.tooltipSeparator;
                         }
                         break;
+                    default: // same as 'xy'
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    
                 }                
             }
         }

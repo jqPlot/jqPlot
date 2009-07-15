@@ -300,7 +300,7 @@
                 formatString:'<table class="jqplot-highlighter"><tr><td>date:</td><td>%s</td></tr><tr><td>open:</td><td>%s</td></tr><tr><td>hi:</td><td>%s</td></tr><tr><td>low:</td><td>%s</td></tr><tr><td>close:</td><td>%s</td></tr></table>'
             };
         }
-    }
+    };
     
 	//$.jqplot.preInitHooks.push($.jqplot.OHLCRenderer.checkOptions);
     

@@ -121,40 +121,40 @@
         
             switch (p.location) {
                 case 'nw':
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; }
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; }
+                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
                     break;
                 case 'n':
-                    xoffset = function(elem) { return -elem.outerWidth(true)/2; }
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; }
+                    xoffset = function(elem) { return -elem.outerWidth(true)/2; };
+                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
                     break;
                 case 'ne':
-                    xoffset = function(elem) { return p.xpadding; }
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; }
+                    xoffset = function(elem) { return p.xpadding; };
+                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
                     break;
                 case 'e':
-                    xoffset = function(elem) { return p.xpadding; }
-                    yoffset = function(elem) { return -elem.outerHeight(true)/2; }
+                    xoffset = function(elem) { return p.xpadding; };
+                    yoffset = function(elem) { return -elem.outerHeight(true)/2; };
                     break;
                 case 'se':
-                    xoffset = function(elem) { return p.xpadding; }
-                    yoffset = function(elem) { return p.ypadding; }
+                    xoffset = function(elem) { return p.xpadding; };
+                    yoffset = function(elem) { return p.ypadding; };
                     break;
                 case 's':
-                    xoffset = function(elem) { return -elem.outerWidth(true)/2; }
-                    yoffset = function(elem) { return p.ypadding; }
+                    xoffset = function(elem) { return -elem.outerWidth(true)/2; };
+                    yoffset = function(elem) { return p.ypadding; };
                     break;
                 case 'sw':
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; }
-                    yoffset = function(elem) { return p.ypadding; }
+                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+                    yoffset = function(elem) { return p.ypadding; };
                     break;
                 case 'w':
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; }
-                    yoffset = function(elem) { return -elem.outerHeight(true)/2; }
+                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+                    yoffset = function(elem) { return -elem.outerHeight(true)/2; };
                     break;
                 default: // same as 'nw'
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; }
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; }
+                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
                     break;
             }
         
