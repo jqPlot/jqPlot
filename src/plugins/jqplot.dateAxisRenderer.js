@@ -107,10 +107,14 @@
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
             var d = s.data;
+            var pd = s._plotData;
+            var sd = s._stackData;
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
                     d[j][0] = Date.create(d[j][0]).getTime();
+                    pd[j][0] = Date.create(d[j][0]).getTime();
+                    sd[j][0] = Date.create(d[j][0]).getTime();
                     if (d[j][0] < db.min || db.min == null) {
                     	db.min = d[j][0];
                     }
@@ -120,6 +124,8 @@
                 }              
                 else {
                     d[j][1] = Date.create(d[j][1]).getTime();
+                    pd[j][1] = Date.create(d[j][1]).getTime();
+                    sd[j][1] = Date.create(d[j][1]).getTime();
                     if (d[j][1] < db.min || db.min == null) {
                     	db.min = d[j][1];
                     }
