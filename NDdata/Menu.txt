@@ -51,9 +51,10 @@ Group: Usage and Options  {
 
 Group: API Documentation  {
 
+   File: jqPlot Charts  (no auto-title, jqplot.core.js)
+
    Group: Core Renderers  {
 
-      File: jqPlot Charts  (no auto-title, jqplot.core.js)
       File: AxisTickRenderer  (no auto-title, jqplot.axisTickRenderer.js)
       File: CanvasGridRenderer  (no auto-title, jqplot.canvasGridRenderer.js)
       File: DivTitleRenderer  (no auto-title, jqplot.divTitleRenderer.js)

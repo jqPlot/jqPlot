@@ -1,9 +1,19 @@
 Title: Change Log
 
+0.9.1:
+
+* Fixed bug #41 where pie and bar charts not rendered correctly on redraw().
+* Fixed bug #11, filled stacked line plots not rendering correctly in IE.
+* Fixed bug #42 where stacked charts not rendering with string date axis ticks.
+* Fixed bug in redraw() method where axes ticks were not reset.
+* Fixed "jqplotPreRedrawEvent" that should have been named "jqplotPostRedraw" event.
+
 0.9.0:
 
 * Added Open Hi Low Close charts, Candlestick charts and Hi Low Close charts.
 * Added support for arbitrary labels on the data points.
+* Enhanced highlighter plugin to allow custom formatting control of entire tooltip.
+* Enhanced highlighter to support multiple y values in a data point.
 * Fixed bug #38 where series with a single point with a negative value would fail.
 * Improvements to examples to show what plugins to include.
 * Expanded documentation for some of the plugins.
