@@ -109,10 +109,33 @@
     // declare some commonly used iteration variables.
     
     $.jqplot.debug = 1;
-    
-    // path to jqplot install, relative to the script that is including jqplot.
-    // $.jqplot.installPath = 'jqplot';
-    // $.jqplot.pluginsPath = 'jqplot/plugins';
+    /**
+     * 
+     * Hooks: jqPlot Pugin Hooks
+     * 
+     * $.jqplot.preInitHooks - called before initialization.
+     * $.jqplot.postInitHooks - called after initialization.
+     * $.jqplot.preParseOptionsHooks - called before user options are parsed.
+     * $.jqplot.postParseOptionsHooks - called after user options are parsed.
+     * $.jqplot.preDrawHooks - called before plot draw.
+     * $.jqplot.postDrawHooks - called after plot draw.
+     * $.jqplot.preDrawSeriesHooks - called before each series is drawn.
+     * $.jqplot.postDrawSeriesHooks - called after each series is drawn.
+     * $.jqplot.preDrawLegendHooks - called before the legend is drawn.
+     * $.jqplot.addLegendRowHooks - called at the end of legend draw, so plugins
+     *     can add rows to the legend table.
+     * $.jqplot.preSeriesInitHooks - called before series is initialized.
+     * $.jqplot.postSeriesInitHooks - called after series is initialized.
+     * $.jqplot.preParseSeriesOptionsHooks - called before series related options
+     *     are parsed.
+     * $.jqplot.postParseSeriesOptionsHooks - called after series related options
+     *     are parsed.
+     * $.jqplot.eventListenerHooks - called at the end of plot drawing, binds
+     *     listeners to the event canvas which lays on top of the grid area.
+     * $.jqplot.preDrawSeriesShadowHooks - called before series shadows are drawn.
+     * $.jqplot.postDrawSeriesShadowHooks - called after series shadows are drawn.
+     * 
+     */
     
     $.jqplot.preInitHooks = [];
     $.jqplot.postInitHooks = [];
@@ -271,6 +294,17 @@
         // set the axis name
         this.tickOptions.axis = this.name;
         // set the default padMax, padMin if not specified
+        // special check, if no padding desired, padding
+        // should be set to 1.0
+        if (this.pad == 0) {
+            this.pad = 1.0;
+        }
+        if (this.padMax == 0) {
+            this.padMax = 1.0;
+        }
+        if (this.padMin == 0) {
+            this.padMin = 1.0;
+        }
         if (this.padMax == null) {
             this.padMax = (this.pad-1)/2 + 1;
         }
@@ -886,7 +920,11 @@
         
         this.colorGenerator = ColorGenerator;
         
-            
+        // Group: methods
+        //
+        // method: init
+        // sets teh plot target, checks data and applies user
+        // options to plot.
         this.init = function(target, data, options) {
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
@@ -1197,7 +1235,10 @@
             this.draw();
             this.target.trigger('jqplotPostRedraw');
         };
-    
+        
+        // method: draw
+        // Draws all elements of the plot into the container.
+        // Does not clear the container before drawing.
         this.draw = function(){
             this.target.trigger('jqplotPreDraw');
             for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
