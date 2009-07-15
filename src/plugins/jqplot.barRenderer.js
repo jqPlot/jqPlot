@@ -48,11 +48,11 @@
         this.fill = true;
         if (this.barDirection == 'vertical' ) {
             this._primaryAxis = '_xaxis';
-            this._stackAxis = 'x';
+            this._stackAxis = 'y';
         }
         else {
             this._primaryAxis = '_yaxis';
-            this._stackAxis = 'y';
+            this._stackAxis = 'x';
         }
         // set the shape renderer options
         var opts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
@@ -66,6 +66,7 @@
     function barPreInit(target, data, seriesDefaults, options) {
         if (this.rendererOptions.barDirection == 'horizontal') {
             this._stackAxis = 'x';
+            this._primaryAxis = '_yaxis';
         }
     }
     
@@ -147,6 +148,7 @@
         nvals = temp[0];
         nseries = temp[1];
         pos = temp[2];
+        // console.log(temp);
         
         if (this._stack) {
             this._barNudge = 0;
@@ -168,6 +170,7 @@
                     else {
                         ystart = ctx.canvas.height;
                     }
+                    // console.log('%s, %s, %s', this._barNudge, base, ystart);
                     
                     points.push([base-this.barWidth/2, ystart]);
                     points.push([base-this.barWidth/2, gridData[i][1]]);

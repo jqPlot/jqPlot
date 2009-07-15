@@ -542,6 +542,7 @@
         this._prevPlotData = [];
         this._prevGridData = [];
         this._stackAxis = 'y';
+        this._primaryAxis = '_xaxis';
         this.plugins = {};
     }
     
@@ -613,8 +614,11 @@
             else {
                 data = this._plotData;
             }
+            // console.log('plotdata before: %s', this._plotData);
             var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
-        
+            // console.log('plotdata after: %s', this._plotData);
+            // console.log('data:%s | gridData: %s', data, gridData);
+            
             this.renderer.draw.call(this, sctx, gridData, options);
         }
         
@@ -979,56 +983,69 @@
             var d;
             for (var i=0; i<series.length; i++) {
                 d = series[i].data;
-                d.sort(function(a,b){
-                    var ret = a[0] - b[0];
-                    if (ret) {
-                        return ret;
-                    }
-                    return 0;
-                });
+                if (series[i]._stackAxis == 'x') {
+                    // console.log('STACK AXIS: %s', series[i]._stackAxis);
+                    d.sort(function(a,b){
+                        var ret = a[1] - b[1];
+                        if (ret) {
+                            return ret;
+                        }
+                        return 0;
+                    });
+                }
+                else {
+                    // console.log('STACK AXIS: %s', series[i]._stackAxis);
+                    d.sort(function(a,b){
+                        var ret = a[0] - b[0];
+                        if (ret) {
+                            return ret;
+                        }
+                        return 0;
+                    });
+                }
             }
         }
         
         // populate the _stackData and _plotData arrays for the plot and the series.
         this.populatePlotData = function(series, index) {
-            /////////////////
-            ///// shouldn't loop through all the series.  it's already being called for each series.
-            //for (var i=0; i<this.series.length; i++) {
-                // if a stacked chart, compute the stacked data
-                if (this.stackSeries) {
-                    series._stack = true;
-                    var sidx = series._stackAxis == 'x' ? 0 : 1;
-                    var idx = sidx ? 0 : 1;
-                    // push the current data into stackData
-                    //this._stackData.push(this.series[i].data);
-                    var temp = $.extend(true, [], series.data);
-                    // create the data that will be plotted for this series
-                    var plotdata = $.extend(true, [], series.data);
-                    // for first series, nothing to add to stackData.
-                    for (var j=0; j<index; j++) {
-                        var cd = this.series[j].data;
-                        for (var k=0; k<cd.length; k++) {
-                            temp[k][0] += cd[k][0];
-                            temp[k][1] += cd[k][1];
-                            // only need to sum up the stack axis column of data
-                            plotdata[k][sidx] += cd[k][sidx];
-                        }
+            // if a stacked chart, compute the stacked data
+            this._plotData = [];
+            this._stackData = [];
+            series._stackData = [];
+            series._plotData = [];
+            if (this.stackSeries) {
+                series._stack = true;
+                var sidx = series._stackAxis == 'x' ? 0 : 1;
+                var idx = sidx ? 0 : 1;
+                // push the current data into stackData
+                //this._stackData.push(this.series[i].data);
+                var temp = $.extend(true, [], series.data);
+                // create the data that will be plotted for this series
+                var plotdata = $.extend(true, [], series.data);
+                // for first series, nothing to add to stackData.
+                for (var j=0; j<index; j++) {
+                    var cd = this.series[j].data;
+                    for (var k=0; k<cd.length; k++) {
+                        temp[k][0] += cd[k][0];
+                        temp[k][1] += cd[k][1];
+                        // only need to sum up the stack axis column of data
+                        plotdata[k][sidx] += cd[k][sidx];
                     }
-                    this._plotData.push(plotdata);
-                    this._stackData.push(temp);
-                    series._stackData = temp;
-                    series._plotData = plotdata;
                 }
-                else {
-                    this._stackData.push(series.data);
-                    this.series[index]._stackData = series.data;
-                    this._plotData.push(series.data);
-                    series._plotData = series.data;
-                }
-                if (index>0) {
-                    series._prevPlotData = this.series[index-1]._plotData;
-                }
-            //}
+                this._plotData.push(plotdata);
+                this._stackData.push(temp);
+                series._stackData = temp;
+                series._plotData = plotdata;
+            }
+            else {
+                this._stackData.push(series.data);
+                this.series[index]._stackData = series.data;
+                this._plotData.push(series.data);
+                series._plotData = series.data;
+            }
+            if (index>0) {
+                series._prevPlotData = this.series[index-1]._plotData;
+            }
         };
         
         // function to safely return colors from the color array and wrap around at the end.
@@ -1165,13 +1182,18 @@
         // Empties the plot target div and redraws the plot.
         // This enables plot data and properties to be changed
         // and then to comletely clear the plot and redraw.
-        // Use redraw() particularly if the axes need to be 
+        // redraw *will not* reinitialize any plot elements.
+        // That is, axes will not be autoscaled and defaults
+        // will not be reapplied to any plot elements. 
         this.redraw = function() {
             this.target.trigger('jqplotPreRedraw');
             this.target.empty();
              for (var ax in this.axes) {
                 this.axes[ax]._ticks = [];
     	    }
+            for (var i=0; i<this.series.length; i++) {
+                this.populatePlotData(this.series[i], i);
+            }
             this.draw();
             this.target.trigger('jqplotPostRedraw');
         };
@@ -1407,10 +1429,12 @@
             // should be drawn before any series.  This will ensure, like for 
             // stacked bar plots, that shadows don't overlap series.
             for (var i=0; i<this.series.length; i++) {
+                // console.log('series %s data: %s', i, this.series[i].data);
                 this.series[i].drawShadow(sctx, options);
             }
             for (var i=0; i<this.series.length; i++) {
                 this.series[i].draw(sctx, options);
+                // console.log('series %s data: %s', i, this.series[i].data);
             }
         };
     }

@@ -23,7 +23,7 @@
 	    //
 	    // prop: diameter
 	    // diameter of the pie, auto computed by default
-        this.diameter;
+        this.diameter = null;
         // prop: padding
         // padding between the pie and plot edges, legend, etc.
         this.padding = 20;
@@ -46,7 +46,9 @@
         this.shadowDepth = 5;
         this.tickRenderer = $.jqplot.PieTickRenderer;
         $.extend(true, this, options);
-        this._colorGenerator = new this.colorGenerator(this.seriesColors);
+        if (this.diameter != null) {
+            this.diameter = this.diameter - this.sliceMargin;
+        }
     };
     
     $.jqplot.PieRenderer.prototype.setGridData = function() {
@@ -123,6 +125,7 @@
         var offx = 0;
         var offy = 0;
         var trans = 1;
+        var colorGenerator = new this.colorGenerator(this.seriesColors);
         if (options.legendInfo) {
             var li = options.legendInfo;
             switch (li.location) {
@@ -167,8 +170,8 @@
         var w = cw - offx - 2 * this.padding;
         var h = ch - offy - 2 * this.padding;
         var d = Math.min(w,h);
-        this.diameter = this.diameter  || d;
-        this.diameter -= this.sliceMargin;
+        this.diameter = this.diameter  || d - this.sliceMargin;
+        // this.diameter -= this.sliceMargin;
         var r = this.diameter/2;
         ctx.save();
     
@@ -184,7 +187,7 @@
         }
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? 0 : gd[i-1][1];
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], this._colorGenerator.next());
+            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], colorGenerator.next());
         }
         // shadows
         // markers
