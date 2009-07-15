@@ -92,5 +92,6 @@ Group: Index  {
    Class Index: Classes
    Property Index: Properties
    Function Index: Functions
+   Hook Index: Hooks
    }  # Group: Index
 
