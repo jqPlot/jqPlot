@@ -169,7 +169,7 @@
             }
             
             // if min, max and number of ticks specified, user can't specify interval.
-            if (this.min != null && this.max != null && this.numberTicks != null) {
+            if (!this.autoscale && this.min != null && this.max != null && this.numberTicks != null) {
                 this.tickInterval = null;
             }
             
@@ -195,31 +195,78 @@
 
             var range = max - min;
             var rmin, rmax;
-        
-            rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
-            rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
-            this.min = rmin;
-            this.max = rmax;
-            range = this.max - this.min;
+            var temp;
+            
+            // autoscale.  Can't autoscale if min or max is supplied.
+            // Will use numberTicks and tickInterval if supplied.
+            if (this.autoscale && this.min == null && this.max == null) {
+                var rrange, ti, margin;
     
-            if (this.numberTicks == null){
-                // if tickInterval is specified by user, we will ignore computed maximum.
-                // max will be equal or greater to fit even # of ticks.
-                if (this.tickInterval != null) {
-                    this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
-                    this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                if (this.numberTicks == null){
+                    if (dim > 100) {
+                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                    }
+                    else {
+                        this.numberTicks = 2;
+                    }
                 }
-                else if (dim > 100) {
-                    this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                
+                if (this.tickInterval == null) {
+                    // get a tick interval
+                    ti = range/(this.numberTicks - 1);
+                
+                    if (ti < 1) {
+                        temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                    }
+                    else {
+                        temp = 1;
+                    }
+                    this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
                 }
-                else {
-                    this.numberTicks = 2;
+                
+                // try to compute a nicer, more even tick interval
+                // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
+                // this.tickInterval = Math.ceil(ti/temp) * temp;
+                rrange = this.tickInterval * (this.numberTicks - 1);
+                margin = (rrange - range)/2;
+                
+                if (this.min == null) {
+                    this.min = Math.floor(temp*(min-margin))/temp;
                 }
+                if (this.max == null) {
+                    this.max = this.min + rrange;
+                }
+                    
+                console.log('min: %s, max: %s, newmin: %s, newmax: %s, interval: %s, newinterval: %s, margin: %s, number: %s', min, max, this.min, this.max, ti, this.tickInterval, margin, this.numberTicks);
             }
             
-            if (this.tickInterval == null) {
-            	this.tickInterval = range / (this.numberTicks-1);
+            else {
+                rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
+                rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
+                this.min = rmin;
+                this.max = rmax;
+                range = this.max - this.min;
+    
+                if (this.numberTicks == null){
+                    // if tickInterval is specified by user, we will ignore computed maximum.
+                    // max will be equal or greater to fit even # of ticks.
+                    if (this.tickInterval != null) {
+                        this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
+                        this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                    }
+                    else if (dim > 100) {
+                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                    }
+                    else {
+                        this.numberTicks = 2;
+                    }
+                }
+            
+                if (this.tickInterval == null) {
+                	this.tickInterval = range / (this.numberTicks-1);
+                }
             }
+
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);

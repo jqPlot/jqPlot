@@ -226,17 +226,26 @@
         // prop: max
         // maximum value of the axis (in data units, not pixels).
         this.max=null;
+        // prop: autoscale
+        // Autoscale the axis min and max values to provide sensible tick spacing.
+        // Overrides the pad, padMin and padMax values.  Set to false
+        // to use the pad, padMin and padMax options.  If both min and max
+        // are specified, will not autoscale.
+        this.autoscale = true;
         // prop: pad
         // Padding to extend the range above and below the data bounds.
         // The data range is multiplied by this factor to determine minimum and maximum axis bounds.
+        // A value of 0 will be interpreted to mean no padding, and pad will be set to 1.0.
         this.pad = 1.2;
         // prop: padMax
         // Padding to extend the range above data bounds.
         // The top of the data range is multiplied by this factor to determine maximum axis bounds.
+        // A value of 0 will be interpreted to mean no padding, and padMax will be set to 1.0.
         this.padMax = null;
         // prop: padMin
         // Padding to extend the range below data bounds.
         // The bottom of the data range is multiplied by this factor to determine minimum axis bounds.
+        // A value of 0 will be interpreted to mean no padding, and padMin will be set to 1.0.
         this.padMin = null;
         // prop: ticks
         // 1D [val, val, ...] or 2D [[val, label], [val, label], ...] array of ticks for the axis.
@@ -310,6 +319,9 @@
         }
         if (this.padMin == null) {
             this.padMin = (this.pad-1)/2 + 1;
+        }
+        if (this.min != null || this.max != null) {
+            this.autoscale = false;
         }
         this.renderer.init.call(this, this.rendererOptions);
         
@@ -887,6 +899,11 @@
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
         this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
+        // prop: sortData
+        // false to not sort the data passed in by the user.
+        // Many bar, stakced and other graphs as well as many plugins depend on
+        // having sorted data.
+        this.sortData = true;
         var seriesColorsIndex = 0;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
@@ -1004,8 +1021,9 @@
                 this.axes[name].init();
             }
             
-            sortData(this.series);
-            
+            if (this.sortData) {
+                sortData(this.series);
+            }
             this.grid.init();
             this.grid._axes = this.axes;
             
@@ -1022,7 +1040,6 @@
             for (var i=0; i<series.length; i++) {
                 d = series[i].data;
                 if (series[i]._stackAxis == 'x') {
-                    // console.log('STACK AXIS: %s', series[i]._stackAxis);
                     d.sort(function(a,b){
                         var ret = a[1] - b[1];
                         if (ret) {
@@ -1032,7 +1049,6 @@
                     });
                 }
                 else {
-                    // console.log('STACK AXIS: %s', series[i]._stackAxis);
                     d.sort(function(a,b){
                         var ret = a[0] - b[0];
                         if (ret) {
@@ -1109,6 +1125,7 @@
             this.options = $.extend(true, {}, this.defaults, options);
             this.stackSeries = this.options.stackSeries;
             this._gridPadding = this.options.gridPadding;
+            this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
             for (var n in this.axes) {
                 var axis = this.axes[n];
                 $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
