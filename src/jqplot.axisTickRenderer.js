@@ -76,10 +76,11 @@
         if (!this.label) {
         	this.label = this.formatter(this.formatString, this.value);
         }
-        style='';
+        style ='style="position:absolute;';
         if (Number(this.label)) {
-            style='style="white-space:nowrap;" ';
+            style +='white-space:nowrap;';
         }
+        style += '"';
         this._elem = $('<div '+style+'class="jqplot-'+this.axis+'-tick">'+this.label+'</div>');
         for (var s in this._styles) {
             this._elem.css(s, this._styles[s]);
