@@ -236,8 +236,6 @@
                 if (this.max == null) {
                     this.max = this.min + rrange;
                 }
-                    
-                console.log('min: %s, max: %s, newmin: %s, newmax: %s, interval: %s, newinterval: %s, margin: %s, number: %s', min, max, this.min, this.max, ti, this.tickInterval, margin, this.numberTicks);
             }
             
             else {

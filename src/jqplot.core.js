@@ -231,7 +231,7 @@
         // Overrides the pad, padMin and padMax values.  Set to false
         // to use the pad, padMin and padMax options.  If both min and max
         // are specified, will not autoscale.
-        this.autoscale = true;
+        this.autoscale = false;
         // prop: pad
         // Padding to extend the range above and below the data bounds.
         // The data range is multiplied by this factor to determine minimum and maximum axis bounds.

@@ -45,7 +45,7 @@
         this._prevGridData = [];
         for (var i=0; i<this.data.length; i++) {
             this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
-            if (pdata.length) {
+            if (pdata.length > i) {
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
             }
         }
