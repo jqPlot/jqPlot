@@ -11,12 +11,12 @@
 
 <pre class="prettyprint plot">
 var l1 = [2, 3, 1, 4, 3];
-var l2 = [1, 4, 3, 2, 2.5];
-var l3 = [14, 24, 18, 8, 22];
-var l4 = [102, 104, 153, 122, 138];
+var l2 = [1, 4, 3, 2, 2.5, 2];
+var l3 = [14, 24, 18, 22];
+var l4 = [102, 104, 153, 122, 138, 115];
 var l5 = [843, 777, 754, 724, 722];
 plot1 = $.jqplot('chart1', [l1, l3, l4, l5], {
-    title:'Default Multiply y axes',
+    title:'Default Multiple y axes',
     series:[
         {}, 
         {yaxis:'y2axis'}, 
@@ -33,13 +33,8 @@ plot1 = $.jqplot('chart1', [l1, l3, l4, l5], {
 <div class="jqPlot" id="chart2" style="height:380px; width:680px;"></div>
 
 <pre class="prettyprint plot">
-var l1 = [2, 3, 1, 4, 3];
-var l2 = [1, 4, 3, 2, 2.5];
-var l3 = [14, 24, 18, 8, 22];
-var l4 = [102, 104, 153, 122, 138];
-var l5 = [843, 777, 754, 724, 722];
 plot2 = $.jqplot('chart2', [l1, l2, l3, l4, l5], {
-    title:'Customized Multiply y axes',
+    title:'Customized Multiple y axes',
     series:[
         {}, 
         {yaxis:'y2axis'}, 

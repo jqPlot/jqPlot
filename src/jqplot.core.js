@@ -228,9 +228,10 @@
         this.max=null;
         // prop: autoscale
         // Autoscale the axis min and max values to provide sensible tick spacing.
-        // Overrides the pad, padMin and padMax values.  Set to false
-        // to use the pad, padMin and padMax options.  If both min and max
-        // are specified, will not autoscale.
+        // If axis min or max are set, autoscale will be turned off.
+        // The numberTicks, tickInterval and pad options do work with 
+        // autoscale, although tickInterval has not been tested yet.
+        // padMin and padMax do nothing when autoscale is on.
         this.autoscale = false;
         // prop: pad
         // Padding to extend the range above and below the data bounds.

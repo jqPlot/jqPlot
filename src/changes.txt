@@ -1,7 +1,14 @@
 Title: Change Log
 
+0.9.2:
+
+* Fixed bug #45 where a plot could crash if series had different numbers of points.
+* Fixed issue #50, added option to turn off sorting of series data. 
+* Fixed issue #31, implemented a better axis autoscaling algorithm and added an autoscale option.
+
 0.9.1:
 
+* Fixed bug #40, when axis pad, padMax, padMin set to 0, graph would fail to render.
 * Fixed bug #41 where pie and bar charts not rendered correctly on redraw().
 * Fixed bug #11, filled stacked line plots not rendering correctly in IE.
 * Fixed bug #42 where stacked charts not rendering with string date axis ticks.
