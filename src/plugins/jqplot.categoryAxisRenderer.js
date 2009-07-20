@@ -151,6 +151,9 @@
                 // don't sort
             }
             
+            // keep a reference to these tick labels to use for redrawing plot (see bug #57)
+            this.ticks = labels;
+            
             // now bin the data values to the right lables.
             for (var i=0; i<this._series.length; i++) {
                 var s = this._series[i];
