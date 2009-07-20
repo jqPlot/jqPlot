@@ -11,6 +11,8 @@
         // prop: mark
         // tick mark on the axis.  One of 'inside', 'outside', 'cross', '' or null.
         this.mark = 'outside';
+        // name of the axis associated with this tick
+        this.axis;
         // prop: showMark
         // wether or not to show the mark on the axis.
         this.showMark = true;
@@ -66,6 +68,7 @@
     
     $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
         this.value = value;
+        this.axis = axisName;
         if (isMinor) {
         	this.isMinorTick = true;
         }
