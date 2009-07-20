@@ -49,13 +49,21 @@
         if (this.show) {
             // populate the axis label and value properties.
             this.renderer.createTicks.call(this);
+            if (this.showLabel && this.label) {
+                this.renderer.createLabel.call(this);
+            }
             // fill a div with axes labels in the right direction.
             // Need to pregenerate each axis to get it's bounds and
             // position it and the labels correctly on the plot.
             var dim=0;
             var temp;
             
+            
             this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
+            // this._labelHolder = $('<div class="jqplot'+this.name+'LabelHolder">'+this.label+'</div>');
+            // this._labelHolder.css('position', 'absolute');
+            // 
+            // this._labelHolder.appendTo(this._elem);
     
             if (this.showTicks) {
                 var t = this._ticks;
@@ -67,13 +75,18 @@
                     }
                 }
             }
+            
+            if (this._label) {
+                var elem = this._label.draw();
+                elem.appendTo(this._elem);
+            }
         }
         return this._elem;
     };
     
     $.jqplot.LinearAxisRenderer.prototype.set = function() { 
         var dim = 0;
-        var temp; 
+        var w, h;
         if (this.show && this.showTicks) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
@@ -90,6 +103,16 @@
                     }
                 }
             }
+            
+            // w = this._labelHolder.outerWidth(true);
+            // h = this._labelHolder.outerHeight(true);
+            // console.log('name: %s, label width: %s, label height: %s', this.name, w, h);
+            // console.log(this._labelHolder.html());
+            if (this.showLabel && this._label) {
+                w = this._label._elem.outerWidth();
+                h = this._label._elem.outerHeight();
+                console.log('name: %s, label width: %s, label height: %s', this.name, w, h);
+            }
             if (this.name == 'xaxis') {
             	this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
             }
@@ -104,6 +127,16 @@
             }
         }  
     };
+    
+    // called with scope of axis
+    $.jqplot.LinearAxisRenderer.prototype.createLabel = function() {
+        var l = new this.tickRenderer(this.labelOptions);
+        l.label = this.label;
+        l.value = this.label;
+        l.setTick(this.label, this.name);
+        this._label = l;
+    };
+    
     
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.createTicks = function() {
@@ -288,6 +321,7 @@
         var min = this.min;
         var offmax = offsets.max;
         var offmin = offsets.min;
+        var w, h, labelw, labelh;
         
         for (var p in pos) {
             this._elem.css(p, pos[p]);
@@ -326,7 +360,14 @@
         }
         
         if (this.show) {
+            // labelw = this._labelHolder.outerWidth(true);
+            // labelh = this._labelHolder.outerHeight(true);
+            // w = this._elem.outerWidth(true);
+            // h = this._elem.outerHeight(true);
+            // console.log('name: %s, width: %s, height: %s, label width: %s, label height: %s', this.name, w, h, labelw, labelh);
+            // console.log(this._labelHolder.html());
             if (this.name == 'xaxis' || this.name == 'x2axis') {
+                // this._elem.height(h + labelh);
                 for (i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
@@ -336,8 +377,19 @@
                         t.pack();
                     }
                 }
+                // this._labelHolder.css('left', '0px');
+                // this._labelHolder.css('text-align', 'center');
+                // if (this.name == 'xaxis') {
+                //     this._labelHolder.css('bottom', '0px');
+                // }
+                // else {
+                //     this._labelHolder.css('top', '0px');
+                // }
             }
             else {
+                // this._elem.width(w + labelw);
+                // this._labelHolder.css('top', '0px');
+                // this._labelHolder.css('vertical-align', 'middle');
                 for (i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
@@ -347,6 +399,12 @@
                         t.pack();
                     }
                 }
+                // if (this.name == 'yaxis') {
+                //     this._labelHolder.css('left', '0px');
+                // }
+                // else {
+                //     this._labelHolder.css('right', '0px');
+                // }
             }
         }
     };
