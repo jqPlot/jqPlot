@@ -220,6 +220,15 @@
         // prop: show
         // Wether to display the axis on the graph.
         this.show = false;
+        // prop: label
+        // Label for the axis
+        this.label = null;
+        // prop: labelOptions
+        // Options passed to the label renderer.
+        this.labelOptions = {};
+        // prop: showLabel
+        // true to show the axis label.
+        this.showLabel = true;
         // prop: min
         // minimum value of the axis (in data units, not pixels).
         this.min=null;
@@ -294,6 +303,7 @@
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
         this._ticks=[];
+        this._label = null;
     }
     
     Axis.prototype = new $.jqplot.ElemContainer();
@@ -303,6 +313,15 @@
         this.renderer = new this.renderer();
         // set the axis name
         this.tickOptions.axis = this.name;
+        if (this.label == null || this.label == '') {
+            this.showLabel = false;
+        }
+        else {
+            this.labelOptions.label = this.label;
+        }
+        if (this.showLabel == false) {
+            this.labelOptions.show = false;
+        }
         // set the default padMax, padMin if not specified
         // special check, if no padding desired, padding
         // should be set to 1.0

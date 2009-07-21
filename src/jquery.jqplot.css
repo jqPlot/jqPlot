@@ -52,6 +52,19 @@
     text-align: left;
 }
 
+.jqplot-xaxis-label, .jqplot-x2axis-label {
+    padding-top: 10px;
+}
+
+.jqplot-yaxis-label {
+    padding-right: 10px;
+    text-align: center;
+}
+
+.jqplot-y2axis-label, .jqplot-y3axis-label, .jqplot-y4axis-label, .jqplot-y5axis-label, .jqplot-y6axis-label, .jqplot-y7axis-label, .jqplot-y8axis-label, .jqplot-y9axis-label {
+    text-align: center;
+}
+
 table.jqplot-legend {
     background-color: rgba(255,255,255,0.6);
     border: 1px solid #cccccc;
