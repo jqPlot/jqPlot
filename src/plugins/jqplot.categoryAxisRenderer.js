@@ -178,13 +178,17 @@
             }
         
             max = numcats + 0.5;
-            this.numberTicks = 2*numcats + 1;
+            if (this.numberTicks == null) {
+                this.numberTicks = 2*numcats + 1;
+            }
 
             var range = max - min;
             this.min = min;
             this.max = max;
             var track = 0;
-            var maxVisibleTicks = parseInt(3+dim/45, 10);
+            
+            // todo: adjust this so more ticks displayed.
+            var maxVisibleTicks = parseInt(3+dim/20, 10);
             var skip = parseInt(numcats/maxVisibleTicks, 10);
 
             if (this.tickInterval == null) {
