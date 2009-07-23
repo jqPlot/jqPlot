@@ -34,7 +34,8 @@ line1 = [['frogs', 3], ['buzzards', 7], ['deer', 2.5], ['turkeys', 6], ['moles',
 line2 = [3, 7, 2.5, 6, 5, 4];
 
 plot1 = $.jqplot('chart1', [line1], {
-  title: 'Default Pie Chart',
+  seriesColors:['#dd3333', '#d465f1', '#aa2211', '#3377aa', '#6699bb', '#9933aa'],
+  title: 'Default Pie Chart with Custom Colors',
   seriesDefaults:{renderer:$.jqplot.PieRenderer}
 });
 
@@ -49,9 +50,10 @@ plot3 = $.jqplot('chart3', [line1], {
   series:[{renderer:$.jqplot.PieRenderer, rendererOptions:{sliceMargin:8, fill:false, shadow:false, lineWidth:5}}], 
   legend:{show:true, location: 'w'}
 });
-
+ 
 plot3 = $.jqplot('chart4', [line2], {
   title: 'Not a Pie Chart that should render O.K. alongside a Pie Chart', 
+  seriesColors:['#dd3333', '#33dd33'],
   legend:{show:true, location: 'n'}
 });
 

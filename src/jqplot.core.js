@@ -960,7 +960,7 @@
         // Group: methods
         //
         // method: init
-        // sets teh plot target, checks data and applies user
+        // sets the plot target, checks data and applies user
         // options to plot.
         this.init = function(target, data, options) {
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
@@ -1144,6 +1144,10 @@
             }
             this.options = $.extend(true, {}, this.defaults, options);
             this.stackSeries = this.options.stackSeries;
+            if (this.options.seriesColors) {
+                this.seriesColors = this.options.seriesColors;
+            }
+            var cg = new this.colorGenerator(this.seriesColors);
             this._gridPadding = this.options.gridPadding;
             this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
             for (var n in this.axes) {
@@ -1207,7 +1211,7 @@
 
                 // parse the renderer options and apply default colors if not provided
                 if (!temp.color && temp.show != false) {
-                    temp.color = this.getNextSeriesColor();
+                    temp.color = cg.next();
                 }
                 if (!temp.label) {
                     temp.label = 'Series '+ (i+1).toString();

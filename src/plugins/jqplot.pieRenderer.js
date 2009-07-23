@@ -304,12 +304,21 @@
             options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
             options.legend.renderer = $.jqplot.PieLegendRenderer;
             options.legend.preDraw = true;
-            options.seriesDefaults.colorGenerator = this.colorGenerator;
-            options.seriesDefaults.seriesColors = this.seriesColors;
+            // options.seriesDefaults.colorGenerator = this.colorGenerator;
+            // options.seriesDefaults.seriesColors = this.seriesColors;
+        }
+    }
+    
+    // called with scope of plot
+    function postParseOptions(options) {
+        for (var i=0; i<this.series.length; i++) {
+            this.series[i].seriesColors = this.seriesColors;
+            this.series[i].colorGenerator = this.colorGenerator;
         }
     }
     
     $.jqplot.preInitHooks.push(preInit);
+    $.jqplot.postParseOptionsHooks.push(postParseOptions);
     
     $.jqplot.PieTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);
