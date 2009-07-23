@@ -41,10 +41,10 @@ plot2 = $.jqplot('chart2', [line1], {
 
 <pre class="prettyprint plot">
 plot3 = $.jqplot('chart3', [line1], {
-  axes:{yaxis:{autoscale:true}},
+  axes:{yaxis:{autoscale:true}}
 });
 plot4 = $.jqplot('chart4', [line1], {
-  axes:{yaxis:{autoscale:true, tickOptions:{formatString:'%.3f'}}},
+  axes:{yaxis:{autoscale:true, tickOptions:{formatString:'%.3f'}}}
 });
 </pre>
     

@@ -98,6 +98,7 @@
         // A class of a rendering engine for creating the ticks labels displayed on the plot, 
         // See <$.jqplot.AxisTickRenderer>.
         this.tickRenderer = $.jqplot.AxisTickRenderer;
+        this.labelRenderer = $.jqplot.AxisLabelRenderer;
         this.tickOptions.formatter = $.jqplot.DateTickFormatter;
         this._tickInterval = null;
         $.extend(true, this, options);
