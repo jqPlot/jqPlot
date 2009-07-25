@@ -63,6 +63,7 @@ Group: API Documentation  {
       File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
       File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
       File: Line Renderer  (no auto-title, jqplot.lineRenderer.js)
+      File: AxisLabelRenderer  (jqplot.axisLabelRenderer.js)
       }  # Group: Core Renderers
 
    Group: Plugins  {
