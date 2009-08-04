@@ -328,7 +328,7 @@
      };
      
     $.jqplot.CanvasFontRenderer = function(options) {
-        options == options || {};
+        options = options || {};
         if (!options.pt2px) {
             options.pt2px = 1.5;
         }

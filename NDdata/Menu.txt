@@ -69,6 +69,7 @@ Group: API Documentation  {
    Group: Plugins  {
 
       File: BarRenderer  (no auto-title, plugins/jqplot.barRenderer.js)
+      File: CanvasAxisLabelRenderer  (plugins/jqplot.canvasAxisLabelRenderer.js)
       File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
       File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
       File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
