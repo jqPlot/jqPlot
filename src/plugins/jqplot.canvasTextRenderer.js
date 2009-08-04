@@ -9,8 +9,8 @@
     // He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/
     //
     $.jqplot.CanvasTextRenderer = function(options){
-        this.fontStyle = 'normal';  // normal, italic, oblique
-        this.fontVariant = 'normal';    // normal, small caps
+        this.fontStyle = 'normal';  // normal, italic, oblique [not implemented]
+        this.fontVariant = 'normal';    // normal, small caps [not implemented]
         this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
         this.fontSize = '10px'; 
         this.fontFamily = 'sans-serif';
@@ -328,6 +328,10 @@
      };
      
     $.jqplot.CanvasFontRenderer = function(options) {
+        options == options || {};
+        if (!options.pt2px) {
+            options.pt2px = 1.5;
+        }
         $.jqplot.CanvasTextRenderer.call(this, options);
     };
     
@@ -375,27 +379,15 @@
              tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
              ty = -Math.cos(this.angle) * this.height;
          }
+         ctx.strokeStyle = this.fillStyle;
          ctx.fillStyle = this.fillStyle;
         // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
         var fstyle = this.fontSize+' '+this.fontFamily;
          ctx.font = fstyle;
-         // ctx.font = 'bold 12px Arial';
          ctx.translate(tx, ty);
          ctx.rotate(this.angle);
          ctx.fillText(str, x, y);
-         // ctx.textAlign = 'center';
-         // ctx.textBaseline = 'middle';
-         // ctx.strokeStyle = '#992244';
-         //ctx.fillStyle = '#992244';
-         //  var g = ctx.createLinearGradient(0, 0, 0, 25);
-         //  g.addColorStop(0, '#d4f4f5');
-         //  g.addColorStop(0.4, '#d4f4f5');
-         //  g.addColorStop(0.6, '#c2d7c4');
-         //  g.addColorStop(1, '#c2d7c4');
-         //  ctx.fillStyle = g;
-         // ctx.strokeText('H3', 15,15);
-         // ctx.fillText('H3', 15,15);
-         //ctx.fillRect(5,5,5,5);
+         // ctx.strokeText(str, x, y);
 
          ctx.restore();
     };

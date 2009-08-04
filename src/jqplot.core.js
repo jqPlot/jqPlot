@@ -220,12 +220,22 @@
         // prop: show
         // Wether to display the axis on the graph.
         this.show = false;
-        // prop: label
-        // Label for the axis
-        this.label = null;
+        // prop: tickRenderer
+        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
+        // See <$.jqplot.AxisTickRenderer>.
+        this.tickRenderer = $.jqplot.AxisTickRenderer;
+        // prop: tickOptions
+        // Options that will be passed to the tickRenderer, see <$.jqplot.AxisTickRenderer> options.
+        this.tickOptions = {};
+        // prop: labelRenderer
+        // A class of a rendering engine for creating an axis label.
+        this.labelRenderer = $.jqplot.AxisLabelRenderer;
         // prop: labelOptions
         // Options passed to the label renderer.
         this.labelOptions = {};
+        // prop: label
+        // Label for the axis
+        this.label = null;
         // prop: showLabel
         // true to show the axis label.
         this.showLabel = true;
@@ -274,9 +284,6 @@
         // prop: rendererOptions
         // renderer specific options.  See <$.jqplot.LinearAxisRenderer> for options.
         this.rendererOptions = {};
-        // prop: tickOptions
-        // Options that will be passed to the tickRenderer, see <$.jqplot.AxisTickRenderer> options.
-        this.tickOptions = {};
         // prop: showTicks
         // wether to show the ticks (both marks and labels) or not.
         this.showTicks = true;

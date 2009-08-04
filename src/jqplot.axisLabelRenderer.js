@@ -16,7 +16,6 @@
         // prop: label
         // The text or html for the label.
         this.label = '';
-        this._styles = {};
         this._elem;
         // prop: escapeHTML
         // true to escape HTML entities in the label.
@@ -33,7 +32,7 @@
     };
     
     $.jqplot.AxisLabelRenderer.prototype.draw = function() {
-        this._elem = $('<div style="position:absolute;" class="jqplot-'+this.axis+'-tick"></div>');
+        this._elem = $('<div style="position:absolute;" class="jqplot-'+this.axis+'-label"></div>');
         
         if (Number(this.label)) {
             this._elem.css('white-space', 'nowrap');

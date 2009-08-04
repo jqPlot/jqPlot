@@ -149,7 +149,7 @@ div.logo a:visited {
 
 div.jqPlot {
   font-size: 16px;
-  margin: 2em auto 3em auto;
+  margin: 2em auto 2em auto;
 }
 
 p.description {
@@ -163,7 +163,7 @@ pre.prettyprint {
   font-family: "Andale Mono", monospace;
   font-size: 9pt;
   text-align: left;
-  margin: 1em auto;
+  margin: 1em auto 3.5em auto;
   padding: 15px;
   width: 690px;
   background: #fffdf6;

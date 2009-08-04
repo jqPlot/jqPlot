@@ -11,11 +11,6 @@
     
     // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
-        // prop: tickRenderer
-        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
-        // See <$.jqplot.AxisTickRenderer>.
-        this.tickRenderer = $.jqplot.AxisTickRenderer;
-        this.labelRenderer = $.jqplot.AxisLabelRenderer;
         $.extend(true, this, options);
         var db = this._dataBounds;
         // Go through all the series attached to this axis and find
@@ -68,9 +63,10 @@
             }
             
             // create a _label object.
+            this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
             if (this._label.show) {
-                var elem = this._label.draw();
+                var elem = this._label.draw(ctx);
                 elem.appendTo(this._elem);
             }
     
@@ -79,7 +75,7 @@
                 for (var i=0; i<t.length; i++) {
                     var tick = t[i];
                     if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw();
+                        var elem = tick.draw(ctx);
                         elem.appendTo(this._elem);
                     }
                 }
@@ -127,14 +123,14 @@
             else if (this.name == 'yaxis') {
                 dim = dim + w;
             	this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
-            	if (lshow) {
+            	if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
                     this._label._elem.css('width', w+'px');
                 }
             }
             else {
                 dim = dim + w;
             	this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
-            	if (lshow) {
+            	if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
                     this._label._elem.css('width', w+'px');
                 }
             }
@@ -368,8 +364,40 @@
                 for (i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
-                        var shim = t.getWidth()/2;
-                        var val = this.u2p(t.value) - shim + 'px';
+                        var shim;
+                        
+                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            // will need to adjust auto positioning based on which axis this is.
+                            var temp = (this.name == 'xaxis') ? 1 : -1;
+                            switch (t.labelPosition) {
+                                case 'auto':
+                                    // position at end
+                                    if (temp * t.angle < 0) {
+                                        shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    }
+                                    // position at start
+                                    else {
+                                        shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'end':
+                                    shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                                case 'start':
+                                    shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    break;
+                                case 'middle':
+                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                                default:
+                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                            }
+                        }
+                        else {
+                            shim = -t.getWidth()/2;
+                        }
+                        var val = this.u2p(t.value) + shim + 'px';
                         t._elem.css('left', val);
                         t.pack();
                     }
@@ -383,14 +411,55 @@
                     else {
                         this._label._elem.css('top', '0px');
                     }
+                    this._label.pack();
                 }
             }
             else {
                 for (i=0; i<ticks.length; i++) {
                     var t = ticks[i];
-                    if (t.show && t.showLabel) {
-                        var shim = t.getHeight()/2;
-                        var val = this.u2p(t.value) - shim + 'px';
+                    if (t.show && t.showLabel) {                        
+                        var shim;
+                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            // will need to adjust auto positioning based on which axis this is.
+                            var temp = (this.name == 'yaxis') ? 1 : -1;
+                            switch (t.labelPosition) {
+                                case 'auto':
+                                    // position at end
+                                case 'end':
+                                    if (temp * t.angle < 0) {
+                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                    }
+                                    else {
+                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'start':
+                                    if (t.angle > 0) {
+                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                    }
+                                    else {
+                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'middle':
+                                    // if (t.angle > 0) {
+                                    //     shim = -t.getHeight()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    // }
+                                    // else {
+                                    //     shim = -t.getHeight()/2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    // }
+                                    shim = -t.getHeight()/2;
+                                    break;
+                                default:
+                                    shim = -t.getHeight()/2;
+                                    break;
+                            }
+                        }
+                        else {
+                            shim = -t.getHeight()/2;
+                        }
+                        
+                        var val = this.u2p(t.value) + shim + 'px';
                         t._elem.css('top', val);
                         t.pack();
                     }
@@ -404,6 +473,7 @@
                     else {
                         this._label._elem.css('right', '0px');
                     }   
+                    this._label.pack();
                 }
             }
         }

@@ -13,6 +13,23 @@
     font-size: 0.75em;
 }
 
+.jqplot-xaxis {
+    margin-top: 10px;
+}
+
+.jqplot-x2axis {
+    margin-bottom: 10px;
+}
+
+.jqplot-yaxis {
+    margin-right: 10px;
+}
+
+.jqplot-y2axis, .jqplot-y3axis, .jqplot-y4axis, .jqplot-y5axis, .jqplot-y6axis, .jqplot-y7axis, .jqplot-y8axis, .jqplot-y9axis {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 /*rules applied to all axis tick divs*/
 .jqplot-axis-tick, .jqplot-xaxis-tick, .jqplot-yaxis-tick, .jqplot-x2axis-tick, .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
     position: absolute;
@@ -23,7 +40,7 @@
     top: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
-    padding-top: 10px;
+/*    padding-top: 10px;*/
     vertical-align: top;
 }
 
@@ -31,7 +48,7 @@
     bottom: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
-    padding-bottom: 10px;
+/*    padding-bottom: 10px;*/
     vertical-align: bottom;
 }
 
@@ -39,7 +56,7 @@
     right: 0px;
     /* initial position untill tick is drawn in proper place */
     top: 15px;
-    padding-right: 10px;
+/*    padding-right: 10px;*/
     text-align: right;
 }
 
@@ -47,22 +64,34 @@
     left: 0px;
     /* initial position untill tick is drawn in proper place */
     top: 15px;
-    padding-left: 10px;
-    padding-right: 15px;
+/*    padding-left: 10px;*/
+/*    padding-right: 15px;*/
     text-align: left;
 }
 
-.jqplot-xaxis-label, .jqplot-x2axis-label {
-    padding-top: 10px;
+.jqplot-xaxis-label {
+    margin-top: 10px;
+    font-size: 11pt;
+    position: absolute;
+}
+
+.jqplot-x2axis-label {
+    margin-bottom: 10px;
+    font-size: 11pt;
+    position: absolute;
 }
 
 .jqplot-yaxis-label {
-    padding-right: 10px;
-    text-align: center;
+    margin-right: 10px;
+/*    text-align: center;*/
+    font-size: 11pt;
+    position: absolute;
 }
 
 .jqplot-y2axis-label, .jqplot-y3axis-label, .jqplot-y4axis-label, .jqplot-y5axis-label, .jqplot-y6axis-label, .jqplot-y7axis-label, .jqplot-y8axis-label, .jqplot-y9axis-label {
-    text-align: center;
+/*    text-align: center;*/
+    font-size: 11pt;
+    position: absolute;
 }
 
 table.jqplot-legend {
