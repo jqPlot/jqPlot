@@ -9,7 +9,7 @@
 	*  This renderer has no options beyond those supplied by the <Axis> class. 
 	*  
 	*  To use this renderer, include the plugin in your source
-	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js" />
+	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
 	*  
 	*  and supply the appropriate options to your plot
 	*  

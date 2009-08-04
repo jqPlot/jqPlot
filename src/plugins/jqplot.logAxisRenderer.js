@@ -8,7 +8,7 @@
 	*  A plugin for a jqPlot to render a logarithmic axis.
 	* 
 	*  To use this renderer, include the plugin in your source
-	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.logAxisRenderer.js" />
+	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.logAxisRenderer.js"></script>
 	*  
 	*  and supply the appropriate options to your plot
 	*  

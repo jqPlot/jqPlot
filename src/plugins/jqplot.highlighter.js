@@ -12,7 +12,7 @@
 	 * To use this plugin, include the js
 	 * file in your source:
 	 * 
-	 * > <script type="text/javascript" src="plugins/jqplot.highlighter.js" />
+	 * > <script type="text/javascript" src="plugins/jqplot.highlighter.js"></script>
 	 * 
 	 * A tooltip providing information about the data point is enabled by default.
 	 * To disable the tooltip, set "showTooltip" to false.
@@ -143,7 +143,7 @@
         var hctx = this.plugins.highlighter.highlightCanvas.setContext();
         
     	var p = this.plugins.highlighter;
-        p._tooltipElem = $('<div id="jqplotHighlighterTooltip" class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
+        p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
 	    this.target.append(p._tooltipElem);
 	};
 	

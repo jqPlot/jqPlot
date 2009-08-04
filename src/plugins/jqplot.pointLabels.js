@@ -11,7 +11,7 @@
 	 * To use this plugin, include the js
 	 * file in your source:
 	 * 
-	 * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js" />
+	 * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js"></script>
 	 * 
 	 * By default, the last value in the data ponit array in the data series is used
 	 * for the label.  For most series renderers, extra data can be added to the 

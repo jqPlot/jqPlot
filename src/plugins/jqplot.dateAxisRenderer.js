@@ -14,7 +14,7 @@
      * included with this code <http://kendsnyder.com/sandbox/date/>.
      * 
      * To use this renderer, include the plugin in your source
-     * > <script type="text/javascript" language="javascript" src="plugins/jqplot.dateAxisRenderer.js" />
+     * > <script type="text/javascript" language="javascript" src="plugins/jqplot.dateAxisRenderer.js"></script>
      * 
      * and supply the appropriate options to your plot
      * 

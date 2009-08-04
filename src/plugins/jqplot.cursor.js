@@ -98,7 +98,7 @@
 	// called with context of plot
 	$.jqplot.Cursor.postDraw = function() {
     	var c = this.plugins.cursor;
-        c._tooltipElem = $('<div id="jqplotCursorTooltip" class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
+        c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
 	    this.target.append(c._tooltipElem);
 	    if (c.zoom) {
 	        c.zoomCanvas = new $.jqplot.GenericCanvas();
