@@ -42,7 +42,7 @@ plot1 = $.jqplot('chart1', [line1], {
 });
 </pre>
 
-<p class="description">For comparison, here is the same graph as above but with "enableFontSupport" turned on and the "fontFamily" set.  If you have a supported browser, you should see a difference in label fonts.</p>
+<p class="description">For comparison, here is the same graph as above but with "enableFontSupport" turned on and the "fontFamily" set.  If you have a supported browser, you should see a difference in label fonts.  Native font support in the canvas element is somewhat inconsistent among supported browsers and platforms and depends on fonts installed on the system.  Therefore, it should be used cautiously.</p>
       
 <div class="jqPlot" id="chart1b" style="height:320px; width:480px;"></div>
 

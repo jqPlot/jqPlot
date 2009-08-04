@@ -189,12 +189,6 @@
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.
         var domelem = document.createElement('canvas');
-        if ($.browser.msie) {
-            window.G_vmlCanvasManager.init_(document);
-        }
-        if ($.browser.msie) {
-            domelem = window.G_vmlCanvasManager.initElement(domelem);
-        }
         this._textRenderer.setText(this.label, ctx);
         var w = this.getWidth(ctx);
         var h = this.getHeight(ctx);
@@ -213,6 +207,10 @@
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
+        if ($.browser.msie) {
+            window.G_vmlCanvasManager.init_(document);
+            this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
+        }
     	var ctx = this._elem.get(0).getContext("2d");
     	this._textRenderer.draw(ctx, this.label);
     };

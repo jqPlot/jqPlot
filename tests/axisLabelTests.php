@@ -60,7 +60,7 @@ plot2 = $.jqplot('chart2', [cosPoints], {
       
 <p class="description">Native canvas text rendering is supported in FireFox 3.5+ and Safari 4+.  You can enable native font support in those browsers by setting the "enableFontSupport" option to true.  This allows you to also specify the font family of text rendered on the canvas labels.  If a visitors is using a supported browser, they will see the labels rendered as the specified fonts.  If they are on an unsupported browser, they will see the default Hershey font.</p>
 
-<p class="description">The chart below will have labels rendered in 12pt Georgia if you are on a supported browser.  Otherwise, They will be in 12pt Hershey.</p>
+<p class="description">The chart below will have labels rendered in 12pt Georgia if you are on a supported browser.  Otherwise, They will be in 12pt Hershey.  Native font support in the canvas element is somewhat inconsistent among supported browsers and platforms and depends on fonts installed on the system.  Therefore, it should be used cautiously.</p>
 
 <div class="jqPlot" id="chart3" style="height:300px; width:500px;"></div>
      
@@ -78,7 +78,7 @@ plot3 = $.jqplot('chart3', [cosPoints], {
         labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
         labelOptions: {
           enableFontSupport: true,
-          fontFamily: 'Courier',
+          fontFamily: 'Georgia',
           fontSize: '12pt'
         }
       },
@@ -88,7 +88,7 @@ plot3 = $.jqplot('chart3', [cosPoints], {
         labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
         labelOptions: {
           enableFontSupport: true,
-          fontFamily: 'Courier',
+          fontFamily: 'Georgia',
           fontSize: '12pt'
         }
       }
