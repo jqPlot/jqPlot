@@ -275,7 +275,14 @@
                 '<div style="border:1px solid #cccccc;padding:0.2em;">'+
                 '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
                 '</div></td>').appendTo(tr);
-            $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';">'+label+'</td>').appendTo(tr);
+            var elem = $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';"></td>');
+            elem.appendTo(tr);
+            if (this.escapeHtml) {
+                elem.text(label);
+            }
+            else {
+                elem.html(label);
+            }
         }
         return this._elem;
     };

@@ -418,6 +418,7 @@
         // prop: predraw
         // Wether to draw the legend before the series or not.
         this.preDraw = false;
+        this.escapeHtml = false;
         this._series = [];
     }
     

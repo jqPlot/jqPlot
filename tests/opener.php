@@ -57,7 +57,7 @@
   </script>
   
 <?php
-  $pages = array('coretests.php', 'axisAutoscaleTests.php', 'pieTests.php', 'multipleYAxesTests.php', 'logAxisTests.php', 'dateAxisTests.php', 'highlighterTests.php', 'OHLCTests.php', 'zoomTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'dragableTests.php', 'stackedTests.php', 'pointLabelTests.php', 'canvasAxisTests.php');
+  $pages = array('coretests.php', 'axisAutoscaleTests.php', 'axisLabelTests.php', 'pieTests.php', 'multipleYAxesTests.php', 'logAxisTests.php', 'dateAxisTests.php', 'highlighterTests.php', 'OHLCTests.php', 'zoomTests.php', 'categoryAxisTests.php', 'barRendererTests.php', 'dragableTests.php', 'stackedTests.php', 'pointLabelTests.php', 'canvasAxisTests.php');
         
   $len = count($pages);
   $parts = explode("/", $_SERVER["REQUEST_URI"]);
@@ -99,12 +99,12 @@
   <?php
     if (count($jqplot_js_includes)==1) {
       echo '<p class="description">The plot(s) on this page use the following plugin:</p>';
-      echo '<pre class="prettyprint">&lt;script type="text/javascript" src="'.$jqplot_js_includes[0].'" /&gt;</pre>';
+      echo '<pre class="prettyprint">&lt;script type="text/javascript" src="'.$jqplot_js_includes[0].'"&gt;&lt;/script&gt;</pre>';
     }
     else if (count($jqplot_js_includes)>1) {
       echo '<p class="description">The plot(s) on this page use the following plugins:</p><pre class="prettyprint">';
       foreach ($jqplot_js_includes as $ji) {
-        echo '&lt;script type="text/javascript" src="'.$ji.'" /&gt;';
+        echo '&lt;script type="text/javascript" src="'.$ji.'"&gt;&lt;/script&gt;';
         echo '<br />';
       }
       echo '</pre>';
