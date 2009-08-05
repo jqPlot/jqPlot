@@ -16,7 +16,8 @@
 line1 = [14, 32, 41, 44, 40, 47, 53, 67];
 plot1 = $.jqplot('chart1', [line1], {
     title: 'Chart with Point Labels', 
-    seriesDefaults: {showMarker:false}
+    seriesDefaults: {showMarker:false},
+    axesDefaults:{pad:1.3}
 });
 </pre>     
 
@@ -93,5 +94,24 @@ plot4 = $.jqplot('chart4', [line1, line2], {
     }
 });
 </pre>
+
+<p class="description">Data point labels have an "edgeTolerance" option.  This options controls how close the data point label can be to an axis edge and still be drawn.  The default of 0 allows labels to touch the axis.  Positive values will increase the required distance between the axis and label, negative values will allow labels to overlap axes.</p>
+      
+<div class="jqPlot" id="chart5" style="height:320px; width:540px;"></div>
+
+<pre class="prettyprint plot">
+line1 = [14, 32, 41, 44, 40, 47, 53, 67];
+plot5 = $.jqplot('chart5', [line1], {
+    title: 'Chart with Point Labels', 
+    seriesDefaults: {
+      showMarker:false,
+      pointLabels: {
+        edgeTolerance: 5
+      }},
+    axes:{
+      xaxis:{min:3}
+    }
+});
+</pre>  
  
 <?php require('closer.php') ?>
