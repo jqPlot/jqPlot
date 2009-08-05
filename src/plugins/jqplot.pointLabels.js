@@ -84,8 +84,9 @@
 	    // If you want to include markup in the labels, set to false.
 	    this.escapeHTML = true;
 	    // prop: edgeTolerance
-	    // number of pixels that the label must be away from an axis
-	    // boundary in order to be drawn.
+	    // Number of pixels that the label must be away from an axis
+	    // boundary in order to be drawn.  Negative values will allow overlap
+	    // with the grid boundaries.
 	    this.edgeTolerance = 0;
 	    
 	    $.extend(true, this, options);

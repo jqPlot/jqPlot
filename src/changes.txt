@@ -1,5 +1,20 @@
 Title: Change Log
 
+0.9.4:
+* Implemented axis labels.  Labels can be rendered in div tags or as canvas 
+  elements supporting rotated text.
+* Improved rotated axis label positioning so labels will start or end at a
+  tick position.
+* Fixed bug where an empty data series would hang plot rendering.
+* completed issue #66 for misc. improvements to documentation.
+* Fixed issue #64 where the same ID's were assigned to cursor and highlighter
+  elements.
+* Added option to legend to encode special HTML characters.
+* Fixed undesirable behavior where point labels for points off the plot
+  were being rendered.
+* Added edgeTolerance option to point label renderer to control rendering of 
+  labels near plot edges.
+
 0.9.3:
 
 * Preliminary support for axis labels.  Currently rendered into DIV tags,
