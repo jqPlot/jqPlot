@@ -603,6 +603,15 @@
         // If true will stroke the line (with color this.color) as well as fill under it.
         // Applies only when fill is true.
         this.fillAndStroke = false;
+        // prop: disableStack
+        // true to not stack this series with other series in the plot.
+        // To render properly, non-stacked series must come after any stacked series
+        // in the plot's data series array.  So, the plot's data series array would look like:
+        // > [stackedSeries1, stackedSeries2, ..., nonStackedSeries1, nonStackedSeries2, ...]
+        // disableStack will put a gap in the stacking order of series, and subsequent
+        // stacked series will not fill down through the non-stacked series and will
+        // most likely not stack properly on top of the non-stacked series.
+        this.disableStack = false;
         // _stack is set by the Plot if the plot is a stacked chart.
         // will stack lines or bars on top of one another to build a "mountain" style chart.
         // May not be implemented in all renderers.
@@ -1095,7 +1104,7 @@
             this._stackData = [];
             series._stackData = [];
             series._plotData = [];
-            if (this.stackSeries) {
+            if (this.stackSeries && !series.disableStack) {
                 series._stack = true;
                 var sidx = series._stackAxis == 'x' ? 0 : 1;
                 var idx = sidx ? 0 : 1;
