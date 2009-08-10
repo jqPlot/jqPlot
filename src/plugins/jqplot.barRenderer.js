@@ -148,7 +148,6 @@
         nvals = temp[0];
         nseries = temp[1];
         pos = temp[2];
-        // console.log(temp);
         
         if (this._stack) {
             this._barNudge = 0;
@@ -157,6 +156,10 @@
             this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
         }
         if (showLine) {
+            var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
+            var negativeColor = negativeColors.get(this.index);
+            var isnegative = false;
+            var tempfs;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -164,11 +167,27 @@
                     var base = gridData[i][0] + this._barNudge;
                     var ystart;
                     
+                    // stacked
                     if (this._stack && this._prevGridData.length) {
                         ystart = this._prevGridData[i][1];
                     }
+                    // not stacked and first series in stack
                     else {
-                        ystart = ctx.canvas.height;
+                        if (this.fillToZero) {
+                            ystart = this._yaxis.series_u2p(0);
+                        }
+                        else {
+                            ystart = ctx.canvas.height;
+                        }
+                    }
+                    if (this.fillToZero && this._plotData[i][1] < 0) {
+                        isnegative = true;
+                        tempfs = opts.fillStyle;
+                        opts.fillStyle = negativeColor;
+                    }
+                    else if (isnegative) {
+                        opts.fillStyle = tempfs;
+                        isnegative = false;
                     }
                     // console.log('%s, %s, %s', this._barNudge, base, ystart);
                     
@@ -256,7 +275,12 @@
                             ystart = this._prevGridData[i][1];
                         }
                         else {
-                            ystart = ctx.canvas.height;
+                            if (this.fillToZero) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else {
+                                ystart = ctx.canvas.height;
+                            }
                         }
                     
                         points.push([base-this.barWidth/2, ystart]);
