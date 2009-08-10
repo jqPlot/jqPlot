@@ -87,31 +87,66 @@
             if (showLine) {
                 // if we fill, we'll have to add points to close the curve.
                 if (fill) {
-                    // is stoking line as well as filling, get a copy of line data.
-                    if (fillAndStroke) {
-                        var fasgd = gd.slice(0);
-                    }
-                    // if not stacked, fill down to axis
-                    if (this.index == 0 || !this._stack) {
-                        var gridymin = this._yaxis.series_u2p(this._yaxis.min) - this.gridBorderWidth / 2;
-                        // IE doesn't return new length on unshift
-                        gd.unshift([gd[0][0], gridymin]);
-                        len = gd.length;
-                        gd.push([gd[len - 1][0], gridymin]);                    
-                    }
-                    // if stacked, fill to line below 
-                    else {
-                        var prev = this._prevGridData;
-                        for (var i=prev.length; i>0; i--) {
-                            gd.push(prev[i-1]);
+                    if (this.fillToZero) {
+                        // have to break line up into shapes at axis crossings
+                        var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
+                        var negativeColor = negativeColors.get(this.index);
+                        var isnegative = false;
+                        var tempfs;
+                    
+                        // if stoking line as well as filling, get a copy of line data.
+                        if (fillAndStroke) {
+                            var fasgd = gd.slice(0);
                         }
+                        // if not stacked, fill down to axis
+                        if (this.index == 0 || !this._stack) {
+                            var gridymin = this._yaxis.series_u2p(0);
+                            // IE doesn't return new length on unshift
+                            gd.unshift([gd[0][0], gridymin]);
+                            len = gd.length;
+                            gd.push([gd[len - 1][0], gridymin]);                   
+                        }
+                        // if stacked, fill to line below 
+                        else {
+                            var prev = this._prevGridData;
+                            for (var i=prev.length; i>0; i--) {
+                                gd.push(prev[i-1]);
+                            }
+                        }
+                        if (shadow) {
+                            this.renderer.shadowRenderer.draw(ctx, gd, opts);
+                        }
+            
+                        this.renderer.shapeRenderer.draw(ctx, gd, opts);
+                    }
+                    else {                    
+                        // if stoking line as well as filling, get a copy of line data.
+                        if (fillAndStroke) {
+                            var fasgd = gd.slice(0);
+                        }
+                        // if not stacked, fill down to axis
+                        if (this.index == 0 || !this._stack) {
+                            // var gridymin = this._yaxis.series_u2p(this._yaxis.min) - this.gridBorderWidth / 2;
+                            var gridymin = ctx.canvas.height;
+                            // IE doesn't return new length on unshift
+                            gd.unshift([gd[0][0], gridymin]);
+                            len = gd.length;
+                            gd.push([gd[len - 1][0], gridymin]);                   
+                        }
+                        // if stacked, fill to line below 
+                        else {
+                            var prev = this._prevGridData;
+                            for (var i=prev.length; i>0; i--) {
+                                gd.push(prev[i-1]);
+                            }
+                        }
+                        if (shadow) {
+                            this.renderer.shadowRenderer.draw(ctx, gd, opts);
+                        }
+            
+                        this.renderer.shapeRenderer.draw(ctx, gd, opts);                        
                     }
                 }
-                if (shadow) {
-                    this.renderer.shadowRenderer.draw(ctx, gd, opts);
-                }
-            
-                this.renderer.shapeRenderer.draw(ctx, gd, opts); 
                 if (fillAndStroke) {
                     var fasopts = $.extend(true, {}, opts, {fill:false, closePath:false});
                     this.renderer.shapeRenderer.draw(ctx, fasgd, fasopts);
