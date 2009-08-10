@@ -619,7 +619,15 @@
         // prop: neighborThreshold
         // how close or far (in pixels) the cursor must be from a point marker to detect the point.
         this.neighborThreshold = 4;
+        // prop: zeroBaseline
+        // true will force bar and filled series to fill toward zero.
+        this.fillToZero = false;
+        // prop: fillAxis
+        // For filled lines, which axis to fill the line toward if fillToZero is true.
+        this.fillAxis = 'xaxis';
         this._stackData = [];
+        // _plotData accounts for stacking.  If plots not stacked, _plotData and data are same.  If
+        // stacked, _plotData is accumulation of stacking data.
         this._plotData = [];
         // data from the previous series, for stacked charts.
         this._prevPlotData = [];
@@ -936,6 +944,7 @@
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
         this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
+        this.negativeSeriesColors = [ "#9653C4", "#1CE540", "#7BC28F", "#525A94", "#529386", "#00914A", "#967C33", "#E650A8", "#37D46A", "#1BF800", "#AD25CC"];
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on
@@ -972,7 +981,7 @@
         // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
         
-        this.colorGenerator = ColorGenerator;
+        this.colorGenerator = $.jqplot.ColorGenerator;
         
         // Group: methods
         //
@@ -1206,7 +1215,7 @@
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
-                $.extend(true, temp, this.options.seriesDefaults, this.options.series[i]);
+                $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i]);
                 temp.data = normalizeData(this.data[i]);
                 switch (temp.xaxis) {
                     case 'xaxis':
@@ -1539,7 +1548,7 @@
     }
     
         
-   ColorGenerator = function(colors) {
+   $.jqplot.ColorGenerator = function(colors) {
         var idx = 0;
         
         this.next = function () { 
@@ -1560,6 +1569,11 @@
                 idx = colors.length-1;
                 return colors[idx];
             }
+        };
+        
+        // get a color by index without advancing pointer.
+        this.get = function(i) {
+            return colors[i];
         };
         
         this.setColors = function(c) {
