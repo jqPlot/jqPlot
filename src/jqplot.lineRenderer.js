@@ -146,21 +146,28 @@
             
                         this.renderer.shapeRenderer.draw(ctx, gd, opts);                        
                     }
-                }
-                if (fillAndStroke) {
-                    var fasopts = $.extend(true, {}, opts, {fill:false, closePath:false});
-                    this.renderer.shapeRenderer.draw(ctx, fasgd, fasopts);
-                    //////////
-                    // TODO: figure out some way to do shadows nicely
-                    // if (shadow) {
-                    //     this.renderer.shadowRenderer.draw(ctx, fasgd, fasopts);
-                    // }
-                    // now draw the markers
-                    if (this.markerRenderer.show) {
-                        for (i=0; i<fasgd.length; i++) {
-                            this.markerRenderer.draw(fasgd[i][0], fasgd[i][1], ctx, opts.markerOptions);
+                    if (fillAndStroke) {
+                        var fasopts = $.extend(true, {}, opts, {fill:false, closePath:false});
+                        this.renderer.shapeRenderer.draw(ctx, fasgd, fasopts);
+                        //////////
+                        // TODO: figure out some way to do shadows nicely
+                        // if (shadow) {
+                        //     this.renderer.shadowRenderer.draw(ctx, fasgd, fasopts);
+                        // }
+                        // now draw the markers
+                        if (this.markerRenderer.show) {
+                            for (i=0; i<fasgd.length; i++) {
+                                this.markerRenderer.draw(fasgd[i][0], fasgd[i][1], ctx, opts.markerOptions);
+                            }
                         }
                     }
+                }
+                else {
+                    if (shadow) {
+                        this.renderer.shadowRenderer.draw(ctx, gd, opts);
+                    }
+    
+                    this.renderer.shapeRenderer.draw(ctx, gd, opts);
                 }
             }
         
