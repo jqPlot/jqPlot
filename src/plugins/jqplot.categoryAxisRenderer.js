@@ -82,7 +82,6 @@
                 var t = new this.tickRenderer(this.tickOptions);
                 t.showLabel = false;
                 t.showMark = true;
-                t.showGridline = true;
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
                 var t = new this.tickRenderer(this.tickOptions);
@@ -97,7 +96,6 @@
             var t = new this.tickRenderer(this.tickOptions);
             t.showLabel = false;
             t.showMark = true;
-            t.showGridline = true;
             t.setTick(tt+1, this.name);
             this._ticks.push(t);
         }
