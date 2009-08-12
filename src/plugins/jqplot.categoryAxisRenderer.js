@@ -202,7 +202,6 @@
                 if (i/2 == parseInt(i/2, 10)) {
                     t.showLabel = false;
                     t.showMark = true;
-                    t.showGridline = true;
                 }
                 else {
                     if (skip>0 && track<skip) {
