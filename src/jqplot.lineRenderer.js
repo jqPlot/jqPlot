@@ -92,7 +92,7 @@
                         var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
                         var negativeColor = negativeColors.get(this.index);
                         var isnegative = false;
-                        var tempfs;
+                        var posfs = opts.fillStyle;
                     
                         // if stoking line as well as filling, get a copy of line data.
                         if (fillAndStroke) {
@@ -100,11 +100,61 @@
                         }
                         // if not stacked, fill down to axis
                         if (this.index == 0 || !this._stack) {
-                            var gridymin = this._yaxis.series_u2p(0);
-                            // IE doesn't return new length on unshift
-                            gd.unshift([gd[0][0], gridymin]);
-                            len = gd.length;
-                            gd.push([gd[len - 1][0], gridymin]);                   
+                        
+                            var tempgd = [];
+                            var pyzero = this._yaxis.series_u2p(0);
+                            var pxzero = this._xaxis.series_u2p(0);
+                            
+                            if (this.fillAxis == 'xaxis') {
+                                tempgd.push([gd[0][0], pyzero]);
+                                
+                                for (var i=0; i<gd.length-1; i++) {
+                                    tempgd.push(gd[i]);
+                                    // do we have an axis crossing?
+                                    if (this._plotData[i][1] * this._plotData[i+1][1] < 0) {
+                                        if (this._plotData[i][1] < 0) {
+                                            isnegative = true;
+                                            opts.fillStyle = negativeColor;
+                                        }
+                                        else {
+                                            isnegative = false;
+                                            opts.fillStyle = posfs;
+                                        }
+                                        
+                                        var xintercept = gd[i][0] + (gd[i+1][0] - gd[i][0]) * (pyzero-gd[i][1])/(gd[i+1][1] - gd[i][1]);
+                                        tempgd.push([xintercept, pyzero]);
+                                        // now draw this shape and shadow.
+                                        if (shadow) {
+                                            this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
+                                        }
+                                        this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
+                                        // now empty temp array and continue
+                                        tempgd = [[xintercept, pyzero]];
+                                    }   
+                                }
+                                if (this._plotData[gd.length-1][1] < 0) {
+                                    isnegative = true;
+                                    opts.fillStyle = negativeColor;
+                                }
+                                else {
+                                    isnegative = false;
+                                    opts.fillStyle = posfs;
+                                }
+                                tempgd.push(gd[gd.length-1]);
+                                tempgd.push([gd[gd.length-1][0], pyzero]); 
+                            }
+                            // now draw this shape and shadow.
+                            if (shadow) {
+                                this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
+                            }
+                            this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
+                            
+                            
+                            // var gridymin = this._yaxis.series_u2p(0);
+                            // // IE doesn't return new length on unshift
+                            // gd.unshift([gd[0][0], gridymin]);
+                            // len = gd.length;
+                            // gd.push([gd[len - 1][0], gridymin]);                   
                         }
                         // if stacked, fill to line below 
                         else {
@@ -112,12 +162,12 @@
                             for (var i=prev.length; i>0; i--) {
                                 gd.push(prev[i-1]);
                             }
-                        }
-                        if (shadow) {
-                            this.renderer.shadowRenderer.draw(ctx, gd, opts);
-                        }
+                            if (shadow) {
+                                this.renderer.shadowRenderer.draw(ctx, gd, opts);
+                            }
             
-                        this.renderer.shapeRenderer.draw(ctx, gd, opts);
+                            this.renderer.shapeRenderer.draw(ctx, gd, opts);
+                        }
                     }
                     else {                    
                         // if stoking line as well as filling, get a copy of line data.

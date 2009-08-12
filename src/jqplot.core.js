@@ -944,7 +944,8 @@
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
         this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
-        this.negativeSeriesColors = [ "#9653C4", "#1CE540", "#7BC28F", "#525A94", "#529386", "#00914A", "#967C33", "#E650A8", "#37D46A", "#1BF800", "#AD25CC"];
+        // this.negativeSeriesColors = [ "#9653C4", "#1CE540", "#7BC28F", "#525A94", "#529386", "#00914A", "#967C33", "#E650A8", "#37D46A", "#1BF800", "#AD25CC"];
+        this.negativeSeriesColors = [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399"];
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on

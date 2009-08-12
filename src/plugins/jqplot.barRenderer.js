@@ -159,6 +159,7 @@
             var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
             var negativeColor = negativeColors.get(this.index);
             var isnegative = false;
+            var posfs = opts.fillStyle;
             var tempfs;
             
             if (this.barDirection == 'vertical') {
@@ -182,11 +183,10 @@
                     }
                     if (this.fillToZero && this._plotData[i][1] < 0) {
                         isnegative = true;
-                        tempfs = opts.fillStyle;
                         opts.fillStyle = negativeColor;
                     }
-                    else if (isnegative) {
-                        opts.fillStyle = tempfs;
+                    else {
+                        opts.fillStyle = posfs;
                         isnegative = false;
                     }
                     // console.log('%s, %s, %s', this._barNudge, base, ystart);
