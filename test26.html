@@ -16,6 +16,7 @@
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="./src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.dateAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.categoryAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.ohlcRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.highlighter.js"></script>
 <!--  <script language="javascript" type="text/javascript" src="./src/plugins/jqplot.cursor.js"></script>
@@ -184,6 +185,30 @@ $(document).ready(function(){
       }
     });
     
+    var catOHLC = [[1, 138.7, 139.68, 135.18, 135.4],
+    [2, 143.46, 144.66, 139.79, 140.02],
+    [3, 140.67, 143.56, 132.88, 142.44],
+    [4, 136.01, 139.5, 134.53, 139.48],
+    [5, 143.82, 144.56, 136.04, 136.97],
+    [6, 136.47, 146.4, 136, 144.67],
+    [7, 124.76, 135.9, 124.55, 135.81],
+    [8, 123.73, 129.31, 121.57, 122.5]];
+    
+    var ticks = ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'];
+        
+    plot4 = $.jqplot('chart4',[catOHLC],{
+      axes: {
+          xaxis: {
+              renderer:$.jqplot.CategoryAxisRenderer,
+              ticks:ticks
+          },
+          yaxis: {
+              tickOptions:{formatString:'$%.2f'}
+          }
+      },
+      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}]
+    });
+    
 });
 
 
@@ -194,5 +219,6 @@ $(document).ready(function(){
 <div id="chart1" style="margin:20px;height:240px; width:640px;"></div>
 <div id="chart2" style="margin:20px;height:240px; width:640px;"></div>
 <div id="chart3" style="margin:20px;height:240px; width:640px;"></div>
+<div id="chart4" style="margin:20px;height:320px; width:500px;"></div>
   </body>
 </html>

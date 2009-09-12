@@ -142,14 +142,6 @@
                 }
             }
             
-            try {
-                // if labels are numbers, sort them
-                labels.sort(function (a, b) { return a - b;}); 
-            }
-            catch (e) {
-                // don't sort
-            }
-            
             // keep a reference to these tick labels to use for redrawing plot (see bug #57)
             this.ticks = labels;
             

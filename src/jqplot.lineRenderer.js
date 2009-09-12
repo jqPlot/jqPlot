@@ -105,7 +105,7 @@
                             var pyzero = this._yaxis.series_u2p(0);
                             var pxzero = this._xaxis.series_u2p(0);
                             
-                            if (this.fillAxis == 'xaxis') {
+                            if (this.fillAxis == 'y') {
                                 tempgd.push([gd[0][0], pyzero]);
                                 
                                 for (var i=0; i<gd.length-1; i++) {

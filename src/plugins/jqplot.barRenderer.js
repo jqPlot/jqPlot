@@ -49,10 +49,12 @@
         if (this.barDirection == 'vertical' ) {
             this._primaryAxis = '_xaxis';
             this._stackAxis = 'y';
+            this.fillAxis = 'y';
         }
         else {
             this._primaryAxis = '_yaxis';
             this._stackAxis = 'x';
+            this.fillAxis = 'x';
         }
         // set the shape renderer options
         var opts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};

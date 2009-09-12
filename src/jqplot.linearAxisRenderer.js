@@ -230,46 +230,327 @@
             var temp;
             
             // autoscale.  Can't autoscale if min or max is supplied.
-            // Will use numberTicks and tickInterval if supplied.
+            // Will use numberTicks and tickInterval if supplied.  Ticks
+            // across multiple axes may not line up depending on how
+            // bars are to be plotted.
             if (this.autoscale && this.min == null && this.max == null) {
                 var rrange, ti, margin;
-    
-                if (this.numberTicks == null){
-                    if (dim > 100) {
-                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                var forceMinZero = false;
+                var forceZeroLine = false;
+                var intervals = {min:null, max:null, average:null, stddev:null}
+                // if any series are bars, or if any are fill to zero, and if this
+                // is the axis to fill toward, check to see if we can start axis at zero.
+                for (var i=0; i<this._series.length; i++) {
+                    var s = this._series[i];
+                    var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
+                    // check to see if this is the fill axis
+                    if (this.name == faname) {
+                        var vals = s._plotValues[s.fillAxis];
+                        var vmin = vals[0];
+                        var vmax = vals[0];
+                        for (var j=1; j<vals.length; j++) {
+                            if (vals[j] < vmin) {
+                                vmin = vals[j];
+                            }
+                            else if (vals[j] > vmax) {
+                                vmax = vals[j];
+                            }
+                        }
+                        var dp = (vmax - vmin) / vmax;
+                        // is this sries a bar?
+                        if (s.renderer.constructor == $.jqplot.BarRenderer) {
+                            // if no negative values and could also check range.
+                            if (vmin >= 0 && (s.fillToZero || dp > .1)) {
+                                forceMinZero = true;
+                            }
+                            else {
+                                forceMinZero = false;
+                                if (s.fill && s.fillToZero && vmin < 0 && vmax > 0) {
+                                    forceZeroLine = true;
+                                }
+                                else {
+                                    forceZeroLine = false;
+                                }
+                            }
+                        }
+                        
+                        // if not a bar and filling, use appropriate method.
+                        else if (s.fill) {
+                            if (vmin >= 0 && (s.fillToZero || dp > .1)) {
+                                forceMinZero = true;
+                            }
+                            else if (vmin < 0 && vmax > 0 && s.fillToZero) {
+                                forceMinZero = false;
+                                forceZeroLine = true;
+                            }
+                            else {
+                                forceMinZero = false;
+                                forceZeroLine = false;
+                            }
+                        }
+                        
+                        // if not a bar and not filling, only change existing state
+                        // if it doesn't make sense
+                        else if (vmin < 0) {
+                            forceMinZero = false;
+                        }
                     }
+                }
+                
+                // check if we need make axis min at 0.
+                if (forceMinZero) {
+                    // compute number of ticks
+                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                    this.min = 0;
+                    // what order is this range?
+                    // what tick interval does that give us?
+                    ti = max/(this.numberTicks-1);
+                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                    if (ti/temp == parseInt(ti/temp)) {
+                        ti += temp;
+                    }
+                    this.tickInterval = Math.ceil(ti/temp) * temp;
+                    this.max = this.tickInterval * (this.numberTicks - 1);
+                }
+                
+                // check if we need to make sure there is a tick at 0.
+                else if (forceZeroLine) {
+                    // compute number of ticks
+                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                    var ntmin = Math.ceil(Math.abs(min)/range*(this.numberTicks-1));
+                    var ntmax = this.numberTicks - 1  - ntmin;
+                    ti = Math.max(Math.abs(min/ntmin), Math.abs(max/ntmax));
+                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                    this.tickInterval = Math.ceil(ti/temp) * temp;
+                    this.max = this.tickInterval * ntmax;
+                    this.min = -this.tickInterval * ntmin;                  
+                }
+                
+                // if nothing else, do autoscaling which will try to line up ticks across axes.
+                else {
+                    // if want to try and sync ticks across axes...
+                    var paddedRange = range * this.pad;
+                    if (this.syncTicks) {
+                        // this is one way of trying to do this.  
+                        console.log('syncing');
+                        if (this.numberTicks == null){
+                            this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        }
+                
+                        if (this.tickInterval == null) {
+                            // get a tick interval
+                            ti = paddedRange/(this.numberTicks - 1);
+                            if (ti > 1) {
+                                tipow = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
+                                var temp = ti/tipow;
+                                if (temp == 1) {
+                                    this.tickInterval = 1 * tipow;
+                                }
+                                else if (temp > 1 && temp <= 2) {
+                                    this.tickInterval = 2 * tipow;
+                                }
+                                else if (temp > 2 && temp <= 5) {
+                                    this.tickInterval = 5 * tipow;
+                                }
+                                else {
+                                    this.tickInterval = 10 * tipow;
+                                }
+                            }
+                            else {
+                                tipow = Math.pow(10, Math.ceil(Math.log(ti)/Math.LN10));
+                                var temp = ti/tipow;
+                                if (temp == .1) {
+                                    this.tickInterval = .1 * tipow;
+                                }
+                                else if (temp > .1 && temp <= .2) {
+                                    this.tickInterval = .2 * tipow;
+                                }
+                                else if (temp > .2 && temp <= .5) {
+                                    this.tickInterval = .5 * tipow;
+                                }
+                                else {
+                                    this.tickInterval = 1 * tipow;
+                                }
+                            }
+                            // if (ti/tipow == parseInt(ti/tipow)) {
+                            //     ti += tipow;
+                            // }
+                            // this.tickInterval = Math.ceil(ti/tipow) * tipow;
+                        }
+                        console.log('ti: %s, ti power: %s, temp: %s, this.ti: %s', ti, tipow, temp, this.tickInterval);
+                
+                        // try to compute a nicer, more even tick interval
+                        // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
+                        // this.tickInterval = Math.ceil(ti/temp) * temp;
+                        rrange = this.tickInterval * (this.numberTicks - 1);
+                        margin = (rrange - range)/2;
+                        // margin = (paddedRange - range) / 2;
+                        console.log('this.nt: %s, range: %s, this.pad: %s, paddedRange: %s, rrange: %s, margin: %s', this.numberTicks, range, this.pad, paddedRange, rrange, margin);
+                
+                        if (this.min == null) {
+                            this.min = min - margin;
+                            // this.min = Math.floor(temp*(min-margin))/temp;
+                            // this.min = Math.floor((min-margin)/tipow) * tipow;
+                            // if (tipow > 1) {
+                            //     this.min = Math.floor((min-margin)/tipow) * tipow;
+                            // }
+                            // else {
+                            //     this.min = Math.floor((min - margin)/tipow*10) * tipow/10;
+                            // }
+                            // if ((min-margin) < 0) {
+                            //     this.min = Math.ceil(Math.abs((min-margin)/this.tickInterval)) * this.tickInterval * (min-margin) / Math.abs(min-margin);
+                            // }
+                            // else {
+                            //     this.min = Math.floor(Math.abs((min-margin)/this.tickInterval)) * this.tickInterval * (min-margin) / Math.abs(min-margin);
+                            // }
+                            
+                        }
+                        if (this.max == null) {
+                            this.max = this.min + rrange;
+                            // if ((max+margin) > 0) {
+                            //     this.max = Math.ceil(Math.abs((max+margin)/this.tickInterval)) * this.tickInterval * (max+margin) / Math.abs(max+margin);
+                            // }
+                            // else {
+                            //     this.max = Math.floor(Math.abs((max+margin)/this.tickInterval)) * this.tickInterval * (max+margin) / Math.abs(max+margin);
+                            // }
+                            
+                        }
+                        console.log('min: %s, max: %s, this.min: %s, this.max: %s', min, max, this.min, this.max)
+                    }
+                    // else we'll look at data stats to make ticks
                     else {
-                        this.numberTicks = 2;
+                        console.log('here');
+                        // target number of ticks.
+                        this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        var titarget = range / (this.numberTicks - 1) * 1.1;
+                        console.log('titarget: %s', titarget);
+                        if (titarget >= 1) {
+                            var tipow = Math.floor(Math.log(titarget)/Math.LN10);
+                        }
+                        else {
+                            var tipow = Math.ceil(Math.log(titarget)/Math.LN10);
+                        }
+                        var timult = Math.pow(10, tipow);
+                        console.log('tipow: %s, timult: %s', tipow, timult);
+                        
+                        this.tickInterval = Math.ceil(titarget/timult) * timult;
+                        rrange = this.tickInterval * (this.numberTicks - 1);
+                        var rdiff = rrange - range;
+                        
+                        if (rdiff == 0) {
+                            // need to widen range
+                        }
+                        margin = (rrange - range)/2;
+                        var ends = [min, max];
+                        // for (e in ends) {
+                        //     // pass
+                        // }
+                        // if (min == 0) {
+                        //     // pass
+                        // }
+                        // else if (min < 0) {
+                        //     this.min = Math.ceil((min-margin)/timult)*timult);
+                        // }
+                        // else {
+                        //     // pass
+                        // }
+                        this.min = Math.floor(min - margin);
+                        this.max = this.min + rrange;
+                        console.log('nt: %s, ti: %s, range: %s, rrange: %s, margin: %s, min: %s, max: %s', this.numberTicks, this.tickInterval, range, rrange, margin, this.min, this.max);
+                        
+                        
+                        
+                        
+                        // // max number of ticks, min number of ticks.  If won't work between these
+                        // // change axes bounds to new range and try again.
+                        // // var ntmax = Math.ceil(nttarget*1.5);
+                        // // var ntmin = Math.floor(nttarget*0.5);
+                        // temp = Math.pow(10, Math.abs(Math.floor(Math.log(range)/Math.LN10)));
+                        // var minpow = Math.pow(10, Math.abs(Math.floor(Math.log(Math.abs(min))/Math.LN10)));
+                        // var maxpow = Math.pow(10, Math.abs(Math.floor(Math.log(Math.abs(max))/Math.LN10)));
+                        // var axispow = Math.ceil((minpow + maxpow)/2);
+                        // var tempmax = Math.ceil((max+axispow)/axispow) * axispow;
+                        // var tempmin = Math.floor((min-axispow)/axispow) * axispow;
+                        // console.log('nttarget: %s, min: %s, minpow: %s, tempmin: %s, max: %s, maxpow: %s, tempmax: %s', nttarget, min, minpow, tempmin, max, maxpow, tempmax);
+                        // rrange = tempmax - tempmin;
+                        // var titarget = rrange/nttarget;
+                        // temp = Math.pow(10, Math.abs(Math.floor(Math.log(titarget)/Math.LN10)));
+                        // ti = Math.floor(titarget/temp) * temp;
+                        // console.log('rrange: %s, ti: %s', rrange, ti);
+                        // var nt = Math.ceil(rrange/ti);
+                        // var nrrange = nt * ti;
+                        // var mid = Math.floor((tempmax + tempmin)/2/axispow) * axispow;
+                        // var minrange = Math.floor(nrrange/2/axispow) * axispow;
+                        // var maxrange = Math.ceil(nrrange/2/axispow) * axispow;
+                        // tempmin = mid - minrange;
+                        // tempmax = mid + maxrange;
+                        // console.log("nrrange: %s, mid: %s, tempmin: %s, tempmax: %s", nrrange, mid, tempmin, tempmax);
+                        
+                        
+                        // var mid = rrange/2;
+                        // temp = Math.pow(10, Math.abs(Math.floor(Math.log(mid)/Math.LN10)));
+                        // mid = Math.round(mid/temp) * temp;
+                        // this.min = mid - rrange/2;
+                        // this.max = mid + rrange/2;
+                        
+                        // var nt = nttarget;
+                        // var c1 = 1;
+                        // while (rrange % nt) {
+                        //     // set nt again since we will be changing it
+                        //     nt = nttarget;
+                        //     var count = 1;
+                        //     while (rrange % nt && nt > ntmin && nt < ntmax) {
+                        //         // console.log('count: %s', count);
+                        //         var mult = -Math.cos(Math.PI*count);
+                        //         // console.log('mult: %s', mult);
+                        //         var n = mult * Math.ceil(count/2);
+                        //         // console.log('n: %s', n);
+                        //         nt = nttarget + n;
+                        //         count ++;                            
+                        //     }
+                        //     if (c1 % 2) {
+                        //         tempmax += axisincrement;
+                        //     }
+                        //     else {
+                        //         tempmin -= axisincrement;
+                        //     }
+                        //     c1 ++;
+                        //     
+                        // }
+                        // var count = 1;
+                        // while (rrange % nt && count < nttarget*10) {
+                        //     // console.log('count: %s', count);
+                        //     var mult = -Math.cos(Math.PI*count);
+                        //     // console.log('mult: %s', mult);
+                        //     var n = mult * Math.ceil(count/2);
+                        //     // console.log('n: %s', n);
+                        //     nt = nttarget + n;
+                        //     console.log('count: %s, mult: %s, n: %s, nt: %s', count, mult, n, nt);
+                        //     if (nt < 2) {
+                        //         nt = 2;
+                        //         count++;
+                        //         continue;
+                        //     }
+                        //     count++;
+                        // }
+                        // console.log('n: %s, nt: %s, count: %s', n, nt, count);
+                        // this.numberTicks = nt+1;
+                        // this.tickInterval = ti;
+                        // // this.tickInterval = rrange/nt;
+                        // console.log('numticks: %s, tickinterval: %s', this.numberTicks, this.tickInterval);
+                        // // var mid = range/2;
+                        // // temp = Math.pow(10, Math.abs(Math.floor(Math.log(mid)/Math.LN10)));
+                        // // mid = Math.round(mid/temp) * temp;
+                        // // this.min = mid - rrange/2;
+                        // // this.max = mid + rrange/2;
+                        // this.min = tempmin;
+                        // this.max = tempmax;
                     }
-                }
-                
-                if (this.tickInterval == null) {
-                    // get a tick interval
-                    ti = range/(this.numberTicks - 1);
-                
-                    if (ti < 1) {
-                        temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    }
-                    else {
-                        temp = 1;
-                    }
-                    this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
-                }
-                
-                // try to compute a nicer, more even tick interval
-                // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
-                // this.tickInterval = Math.ceil(ti/temp) * temp;
-                rrange = this.tickInterval * (this.numberTicks - 1);
-                margin = (rrange - range)/2;
-                
-                if (this.min == null) {
-                    this.min = Math.floor(temp*(min-margin))/temp;
-                }
-                if (this.max == null) {
-                    this.max = this.min + rrange;
                 }
             }
             
+            // use the quicker, easier scaling option.  It will keep ticks of multiple axes
+            // lined up on the grid.
             else {
                 rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
                 rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);

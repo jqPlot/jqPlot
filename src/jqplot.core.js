@@ -311,6 +311,16 @@
         this._offsets = {min:null, max:null};
         this._ticks=[];
         this._label = null;
+        // prop: syncTicks
+        // true to try and synchronize tick spacing across multiple axes so that ticks and
+        // grid lines line up.  This has an impact on autoscaling algorithm, however.
+        // In general, autoscaling an individual axis will work better if it does not
+        // have to sync ticks.
+        this.syncTicks = null;
+        // prop: tickSpacing
+        // Approximate pixel spacing between ticks on graph.  Used during autoscaling.
+        // This number will be an upper bound, actual spacing will be less.
+        this.tickSpacing = 75;
     }
     
     Axis.prototype = new $.jqplot.ElemContainer();
@@ -347,8 +357,18 @@
         if (this.padMin == null) {
             this.padMin = (this.pad-1)/2 + 1;
         }
+        // now that padMin and padMax are correctly set, reset pad in case user has supplied 
+        // padMin and/or padMax
+        this.pad = this.padMax + this.padMin - 1;
         if (this.min != null || this.max != null) {
             this.autoscale = false;
+        }
+        // if not set, sync ticks for y axes but not x by default.
+        if (this.syncTicks == null && this.name.indexOf('y') > -1) {
+            this.syncTicks = true;
+        }
+        else if (this.syncTicks == null){
+            this.syncTicks = false;
         }
         this.renderer.init.call(this, this.rendererOptions);
         
@@ -619,16 +639,21 @@
         // prop: neighborThreshold
         // how close or far (in pixels) the cursor must be from a point marker to detect the point.
         this.neighborThreshold = 4;
-        // prop: zeroBaseline
-        // true will force bar and filled series to fill toward zero.
+        // prop: fillToZero
+        // true will force bar and filled series to fill toward zero on the fill Axis.
         this.fillToZero = false;
         // prop: fillAxis
-        // For filled lines, which axis to fill the line toward if fillToZero is true.
-        this.fillAxis = 'xaxis';
+        // Either 'x' or 'y'.  Which axis to fill the line toward if fillToZero is true.
+        // 'y' means fill up/down to 0 on the y axis for this series.
+        this.fillAxis = 'y';
         this._stackData = [];
         // _plotData accounts for stacking.  If plots not stacked, _plotData and data are same.  If
         // stacked, _plotData is accumulation of stacking data.
         this._plotData = [];
+        // _plotValues hold the individual x and y values that will be plotted for this series.
+        this._plotValues = {x:[], y:[]};
+        // statistics about the intervals between data points.  Used for auto scaling.
+        this._intervals = {x:{}, y:{}};
         // data from the previous series, for stacked charts.
         this._prevPlotData = [];
         this._prevGridData = [];
@@ -934,10 +959,10 @@
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
         this._gridPadding = {top:10, right:10, bottom:10, left:10};
-        // don't think this is implemented.
-        this.equalXTicks = true;
-        // don't think this is implemented.
-        this.equalYTicks = true;
+        // a shortcut for axis syncTicks options.  Not implemented yet.
+        this.syncXTicks = true;
+        // a shortcut for axis syncTicks options.  Not implemented yet.
+        this.syncYTicks = true;
         // prop: seriesColors
         // Ann array of CSS color specifications that will be applied, in order,
         // to the series in the plot.  Colors will wrap around so, if their
@@ -1083,26 +1108,31 @@
         
         // sort the series data in increasing order.
         function sortData(series) {
-            var d;
+            var d, ret;
             for (var i=0; i<series.length; i++) {
                 d = series[i].data;
+                var check = true;
                 if (series[i]._stackAxis == 'x') {
-                    d.sort(function(a,b){
-                        var ret = a[1] - b[1];
-                        if (ret) {
-                            return ret;
+                    for (var i = 0; i < d.length; i++) {
+                        if (typeof(d[i][1]) != "number") {
+                            check = false;
+                            break;
                         }
-                        return 0;
-                    });
+                    }
+                    if (check) {
+                        d.sort(function(a,b) { return a[1] - b[1]; });
+                    }
                 }
                 else {
-                    d.sort(function(a,b){
-                        var ret = a[0] - b[0];
-                        if (ret) {
-                            return ret;
+                    for (var i = 0; i < d.length; i++) {
+                        if (typeof(d[i][0]) != "number") {
+                            check = false;
+                            break;
                         }
-                        return 0;
-                    });
+                    }
+                    if (check) {
+                        d.sort(function(a,b) { return a[0] - b[0]; });
+                    }
                 }
             }
         }
@@ -1114,6 +1144,7 @@
             this._stackData = [];
             series._stackData = [];
             series._plotData = [];
+            var plotValues = {x:[], y:[]};
             if (this.stackSeries && !series.disableStack) {
                 series._stack = true;
                 var sidx = series._stackAxis == 'x' ? 0 : 1;
@@ -1133,21 +1164,62 @@
                         plotdata[k][sidx] += cd[k][sidx];
                     }
                 }
+                for (var i=0; i<plotdata.length; i++) {
+                    plotValues.x.push(plotdata[i][0]);
+                    plotValues.y.push(plotdata[i][1]);
+                }
                 this._plotData.push(plotdata);
                 this._stackData.push(temp);
                 series._stackData = temp;
                 series._plotData = plotdata;
+                series._plotValues = plotValues;
+                series._intervals.x = calcIntervalStats(plotValues.x);
+                series._intervals.y = calcIntervalStats(plotValues.y);
             }
             else {
+                for (var i=0; i<series.data.length; i++) {
+                    plotValues.x.push(series.data[i][0]);
+                    plotValues.y.push(series.data[i][1]);
+                }
                 this._stackData.push(series.data);
                 this.series[index]._stackData = series.data;
                 this._plotData.push(series.data);
                 series._plotData = series.data;
+                series._plotValues = plotValues;
+                series._intervals.x = calcIntervalStats(plotValues.x);
+                series._intervals.y = calcIntervalStats(plotValues.y);
             }
             if (index>0) {
                 series._prevPlotData = this.series[index-1]._plotData;
             }
         };
+        
+        function calcIntervalStats (arr) {
+            var intervals = [];
+            var l = arr.length;
+            var temp;
+            var s = 0, s2 = 0, min = arr[0], max = arr[0];
+            var ret = {average:null, stddev:null, min:null, max:null};
+            for (var i=1; i<l; i++) {
+                temp = arr[i] - arr[i-1];
+                intervals.unshift(temp);
+                if (temp < min) {
+                    min = temp;
+                }
+                else if (temp > max) {
+                    max = temp;
+                }
+                s += temp;
+            }
+            ret.average = s/(l-1);
+            ret.min = min;
+            ret.max = max;
+            for (var i=0; i<l-1; i++) {
+                s2 += Math.pow(intervals[i]-ret.average, 2);
+            }
+            ret.stddev = Math.sqrt(s2/(l-1));
+            return ret;
+        }
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -1175,7 +1247,8 @@
                 this.seriesColors = this.options.seriesColors;
             }
             var cg = new this.colorGenerator(this.seriesColors);
-            this._gridPadding = this.options.gridPadding;
+            // this._gridPadding = this.options.gridPadding;
+            $.extend(true, this._gridPadding, this.options.gridPadding);
             this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
             for (var n in this.axes) {
                 var axis = this.axes[n];
