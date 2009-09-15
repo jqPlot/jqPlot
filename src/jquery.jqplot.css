@@ -133,3 +133,13 @@ table.jqplot-cursor-tooltip {
 .jqplot-point-label {
     font-size: 0.75em;
 }
+	  
+td.jqplot-cursor-legend-swatch {
+vertical-align:middle;
+text-align:center;
+}
+
+div.jqplot-cursor-legend-swatch {
+width:1.2em;
+height:0.7em;
+}

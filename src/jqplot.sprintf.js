@@ -55,11 +55,13 @@
 
         }
 
-        function justify(value, prefix, leftJustify, minWidth, zeroPad) {
+        function justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace) {
     	    var diff = minWidth - value.length;
         	if (diff > 0) {
+        	    var spchar = ' ';
+        	    if (htmlSpace) { spchar = '&nbsp;'; }
         	    if (leftJustify || !zeroPad) {
-        		    value = pad(value, minWidth, ' ', leftJustify);
+        		    value = pad(value, minWidth, spchar, leftJustify);
         	    } else {
         		    value = value.slice(0, prefix.length) + pad('', diff, '0', true) + value.slice(prefix.length);
         	    }
@@ -67,19 +69,19 @@
         	return value;
         }
 
-        function formatBaseX(value, base, prefix, leftJustify, minWidth, precision, zeroPad) {
+        function formatBaseX(value, base, prefix, leftJustify, minWidth, precision, zeroPad, htmlSpace) {
         	// Note: casts negative numbers to positive ones
         	var number = value >>> 0;
         	prefix = prefix && number && {'2': '0b', '8': '0', '16': '0x'}[base] || '';
         	value = prefix + pad(number.toString(base), precision || 0, '0', false);
-        	return justify(value, prefix, leftJustify, minWidth, zeroPad);
+        	return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
         }
 
-        function formatString(value, leftJustify, minWidth, precision, zeroPad) {
+        function formatString(value, leftJustify, minWidth, precision, zeroPad, htmlSpace) {
         	if (precision != null) {
         	    value = value.slice(0, precision);
         	}
-        	return justify(value, '', leftJustify, minWidth, zeroPad);
+        	return justify(value, '', leftJustify, minWidth, zeroPad, htmlSpace);
         }
 
         var a = arguments, i = 0, format = a[i++];
@@ -88,13 +90,14 @@
     	    if (substring == '%%') return '%';
 
     	    // parse flags
-    	    var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false;
+    	    var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false;
         	    for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
         		case ' ': positivePrefix = ' '; break;
         		case '+': positivePrefix = '+'; break;
         		case '-': leftJustify = true; break;
         		case '0': zeroPad = true; break;
         		case '#': prefixBaseX = true; break;
+        		case '&': htmlSpace = true; break;
     	    }
 
     	    // parameters may be null, undefined, empty-string or real valued
@@ -140,19 +143,22 @@
     	    var value = valueIndex ? a[valueIndex.slice(0, -1)] : a[i++];
 
     	    switch (type) {
-    		case 's': return formatString(String(value), leftJustify, minWidth, precision, zeroPad);
-    		case 'c': return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad);
-    		case 'b': return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    		case 'o': return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    		case 'x': return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    		case 'X': return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad).toUpperCase();
-    		case 'u': return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+    		case 's': return formatString(String(value), leftJustify, minWidth, precision, zeroPad, htmlSpace);
+    		case 'c': return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad, htmlSpace);
+    		case 'b': return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad,htmlSpace);
+    		case 'o': return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
+    		case 'x': return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
+    		case 'X': return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace).toUpperCase();
+    		case 'u': return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
     		case 'i':
     		case 'd': {
               var number = parseInt(+value);
+              if (isNaN(number)) {
+                return '';
+              }
               var prefix = number < 0 ? '-' : positivePrefix;
               value = prefix + pad(String(Math.abs(number)), precision, '0', false);
-              return justify(value, prefix, leftJustify, minWidth, zeroPad);
+              return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
     			  }
     		case 'e':
     		case 'E':
@@ -162,17 +168,23 @@
     		case 'G':
     		          {
     			      var number = +value;
+                      if (isNaN(number)) {
+                          return '';
+                      }
     			      var prefix = number < 0 ? '-' : positivePrefix;
     			      var method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
     			      var textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
     			      value = prefix + Math.abs(number)[method](precision);
-    			      return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
+    			      return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
     			  }
     		case 'p':
     		case 'P':
     		{
     		    // make sure number is a number
                 var number = +value;
+                if (isNaN(number)) {
+                    return '';
+                }
                 var prefix = number < 0 ? '-' : positivePrefix;
 
                 var parts = String(Number(Math.abs(number)).toExponential()).split(/e|E/);
@@ -197,13 +209,14 @@
                     value = prefix + Math.abs(number).toPrecision(prec);
                 }
                 var textTransform = ['toString', 'toUpperCase']['pP'.indexOf(type) % 2];
-                return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
+                return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
             }
+            case 'n': return '';
     		default: return substring;
     	    }
-    		    });
+    	});
     };
     
-    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegpEGP])/g;
+    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0& ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegpEGP])/g;
 
 })(jQuery);  

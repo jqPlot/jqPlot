@@ -394,7 +394,7 @@
      * by the Plot oject.  Legend properties can be set or overriden by the 
      * options passed in from the user.
      */
-    function Legend() {
+    function Legend(options) {
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
         
@@ -440,6 +440,8 @@
         this.preDraw = false;
         this.escapeHtml = false;
         this._series = [];
+        
+        $.extend(true, this, options);
     }
     
     Legend.prototype = new $.jqplot.ElemContainer();
@@ -1173,8 +1175,6 @@
                 series._stackData = temp;
                 series._plotData = plotdata;
                 series._plotValues = plotValues;
-                series._intervals.x = calcIntervalStats(plotValues.x);
-                series._intervals.y = calcIntervalStats(plotValues.y);
             }
             else {
                 for (var i=0; i<series.data.length; i++) {
@@ -1186,40 +1186,11 @@
                 this._plotData.push(series.data);
                 series._plotData = series.data;
                 series._plotValues = plotValues;
-                series._intervals.x = calcIntervalStats(plotValues.x);
-                series._intervals.y = calcIntervalStats(plotValues.y);
             }
             if (index>0) {
                 series._prevPlotData = this.series[index-1]._plotData;
             }
         };
-        
-        function calcIntervalStats (arr) {
-            var intervals = [];
-            var l = arr.length;
-            var temp;
-            var s = 0, s2 = 0, min = arr[0], max = arr[0];
-            var ret = {average:null, stddev:null, min:null, max:null};
-            for (var i=1; i<l; i++) {
-                temp = arr[i] - arr[i-1];
-                intervals.unshift(temp);
-                if (temp < min) {
-                    min = temp;
-                }
-                else if (temp > max) {
-                    max = temp;
-                }
-                s += temp;
-            }
-            ret.average = s/(l-1);
-            ret.min = min;
-            ret.max = max;
-            for (var i=0; i<l-1; i++) {
-                s2 += Math.pow(intervals[i]-ret.average, 2);
-            }
-            ret.stddev = Math.sqrt(s2/(l-1));
-            return ret;
-        }
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -1456,7 +1427,8 @@
             }
             else {  // draw series before legend
                 this.drawSeries(sctx);
-                this.target.append(this.legend.draw());
+                $(this.seriesCanvas._elem).after(this.legend.draw());
+                // this.target.append(this.legend.draw());
                 this.legend.pack(this._gridPadding);                
             }
             
