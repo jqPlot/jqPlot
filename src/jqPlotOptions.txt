@@ -48,7 +48,7 @@ options =
             mark: 'outside',    // Where to put the tick mark on the axis
                                 // 'outside', 'inside' or 'cross',
             showMark: true,
-            showGridLine: true, // wether to draw a gridline (across the whole grid) at this tick,
+            showGridline: true, // wether to draw a gridline (across the whole grid) at this tick,
             markSize: 4,        // length the tick will extend beyond the grid in pixels.  For
                                 // 'cross', length will be added above and below the grid boundary,
             show: true,         // wether to show the tick (mark and label),
