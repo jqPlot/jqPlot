@@ -86,7 +86,7 @@
 	    // prop: showCursorLegend
 	    // Replace the plot legend with an enhanced legend displaying intersection information.
 	    this.showCursorLegend = false;
-	    this.cursorLegendFormatString = '%s x:%.4P, y:%.4P';
+	    this.cursorLegendFormatString = '%s x:%s, y:%s';
 	    $.extend(true, this, options);
 	};
 	
