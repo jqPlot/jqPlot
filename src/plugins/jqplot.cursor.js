@@ -205,8 +205,6 @@
 	$.jqplot.Cursor.prototype.doZoom = function (gridpos, datapos, plot, cursor) {
 	    var c = cursor;
         var axes = plot.axes;
-        console.log(plot);
-        console.log(axes.yaxis.numberTicks);
         var zaxes = c._zoom.axes;
         var start = zaxes.start;
         var end = zaxes.end;
