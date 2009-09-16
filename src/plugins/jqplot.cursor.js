@@ -296,7 +296,7 @@
 	    }
 	    var ret = getIntersectingPoints(plot, gridpos.x, gridpos.y);
 	    if (c.showCursorLegend) {
-	        var cells = $('td.jqplot-cursor-legend-label');
+	        var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
 	        for (var i=0; i<cells.length; i++) {
 	            var idx = $(cells[i]).data('seriesIndex');
 	            var series = plot.series[idx];
@@ -499,7 +499,7 @@
 	            var ctx = c.cursorCanvas._ctx;
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
             } if (c.showCursorLegend) {
-	        var cells = $('td.jqplot-cursor-legend-label');
+	        var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
 	        for (var i=0; i<cells.length; i++) {
 	            var idx = $(cells[i]).data('seriesIndex');
 	            var series = plot.series[idx];

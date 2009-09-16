@@ -1020,7 +1020,7 @@
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
             }
-            this.targetId = target;
+            this.targetId = '#'+target;
             this.target = $('#'+target);
             if (!this.target.get(0)) {
                 throw "No plot target specified";

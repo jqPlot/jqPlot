@@ -173,7 +173,6 @@
     		case 'G':
     		          {
     			      var number = +value;
-    			      console.log(number);
                       if (isNaN(number)) {
                           return '';
                       }
