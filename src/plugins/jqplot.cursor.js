@@ -57,10 +57,8 @@
 	    // prop: zoom
 	    // Enable plot zooming.
 	    this.zoom = false;
-	    // prop: zoomProxy
-	    // true to not perform the actual zoom action.  Useful if
-	    // this plot is a zoom proxy to handle zooming on another plot.
 	    this.zoomProxy = false;
+	    this.zoomTarget = false;
 	    // prop: clickReset
 	    // Will reset plot zoom if single click on plot without drag.
 	    this.clickReset = false;
@@ -157,8 +155,28 @@
 	            }
 	            for (var i=0; i<temp.length; i++) {
 	                c.tooltipAxisGroups.push(temp[i].split(','));
-	            }         
+	            }
 	        }
+        }
+	};
+	
+	$.jqplot.Cursor.proxyZoom = function(targetPlot, controllerPlot) {
+	    var tc = targetPlot.plugins.cursor;
+	    tc.zoomTarget = true;
+	    tc.zoom = true;
+	    tc.dblClickReset = false;
+	    controllerPlot.zoom = true;
+	    controllerPlot.zoomProxy = true;
+	          
+        controllerPlot.target.bind('jqplotZoom', plotZoom);
+        controllerPlot.target.bind('jqplotResetZoom', plotReset);
+
+        function plotZoom(ev, gridpos, datapos, plot, cursor) {
+            tc.doZoom(gridpos, datapos, targetPlot, cursor);
+        } 
+
+        function plotReset(ev, plot, cursor) {
+            tc.resetZoom(targetPlot, cursor);
         }
 	};
 	
@@ -531,7 +549,7 @@
                     moveTooltip(gridpos, plot);
                 }
     	    }
-            if (c.zoom && c._zoom.started) {
+            if (c.zoom && c._zoom.started && !c.zoomTarget) {
                 c._zoom.zooming = true;
     	        if (c.constrainZoomTo == 'x') {
     	            c._zoom.end = [gridpos.x, ctx.canvas.height];
@@ -577,7 +595,7 @@
 	
 	function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
 	    var c = plot.plugins.cursor;
-	    if (c.zoom && c._zoom.zooming) {
+	    if (c.zoom && c._zoom.zooming && !c.zoomTarget) {
 	        c.doZoom(gridpos, datapos, plot, c);
         }
         c._zoom.started = false;
