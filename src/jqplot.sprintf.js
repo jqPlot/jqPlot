@@ -143,7 +143,12 @@
     	    var value = valueIndex ? a[valueIndex.slice(0, -1)] : a[i++];
 
     	    switch (type) {
-    		case 's': return formatString(String(value), leftJustify, minWidth, precision, zeroPad, htmlSpace);
+    		case 's': {
+    		    if (value == null) {
+    		        return '';
+    		    }
+    		    return formatString(String(value), leftJustify, minWidth, precision, zeroPad, htmlSpace);
+		    }
     		case 'c': return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad, htmlSpace);
     		case 'b': return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad,htmlSpace);
     		case 'o': return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
@@ -168,6 +173,7 @@
     		case 'G':
     		          {
     			      var number = +value;
+    			      console.log(number);
                       if (isNaN(number)) {
                           return '';
                       }
