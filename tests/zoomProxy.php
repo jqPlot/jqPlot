@@ -99,6 +99,7 @@ targetPlot2 = $.jqplot('chart3', [aapl], {
   ],
   legend:{show:true, location:'nw'},
   cursor:{
+    zoom: true,
     showTooltip:false
   },
   axes:{
@@ -119,6 +120,7 @@ controllerPlot2 = $.jqplot('chart4', [aapl], {
     {label:'Apple, Inc.'},
   ],
   cursor:{
+    zoom: true,
     showTooltip: false,
     constrainZoomTo:'x'
   },
