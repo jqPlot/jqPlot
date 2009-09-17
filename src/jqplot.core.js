@@ -164,15 +164,30 @@
     };
     
     $.jqplot.ElemContainer.prototype.getWidth = function() {
-        return this._elem.outerWidth(true);
+        if (this._elem) {
+            return this._elem.outerWidth(true);
+        }
+        else {
+            return null;
+        }
     };
     
     $.jqplot.ElemContainer.prototype.getHeight = function() {
-        return this._elem.outerHeight(true);
+        if (this._elem) {
+            return this._elem.outerHeight(true);
+        }
+        else {
+            return null;
+        }
     };
     
     $.jqplot.ElemContainer.prototype.getPosition = function() {
-        return this._elem.position();
+        if (this._elem) {
+            return this._elem.position();
+        }
+        else {
+            return {top:null, left:null, bottom:null, right:null};
+        }
     };
     
     $.jqplot.ElemContainer.prototype.getTop = function() {
@@ -321,6 +336,13 @@
         // Approximate pixel spacing between ticks on graph.  Used during autoscaling.
         // This number will be an upper bound, actual spacing will be less.
         this.tickSpacing = 75;
+        // Properties to hold the original values for min, max, ticks, tickInterval and numberTicks
+        // so they can be restored if altered by plugins.
+        this._min = null;
+        this._max = null;
+        this._tickInterval = null;
+        this._numberTicks = null;
+        this.__ticks = null;
     }
     
     Axis.prototype = new $.jqplot.ElemContainer();
@@ -376,6 +398,7 @@
     
     Axis.prototype.draw = function(ctx) {
         return this.renderer.draw.call(this, ctx);
+        
     };
     
     Axis.prototype.set = function() {
@@ -386,7 +409,20 @@
         if (this.show) {
             this.renderer.pack.call(this, pos, offsets);
         }
+        // these properties should all be available now.
+        if (this._min == null) {
+            this._min = this.min;
+            this._max = this.max;
+            this._tickInterval = this.tickInterval;
+            this._numberTicks = this.numberTicks;
+            this.__ticks = this._ticks;
+        }
     };
+    
+    // reset the axis back to original values if it has been scaled, zoomed, etc.
+    Axis.prototype.reset = function() {
+        this.renderer.reset.call(this);
+    }
 
     /**
      * Class: Legend
