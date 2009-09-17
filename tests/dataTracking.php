@@ -110,7 +110,7 @@ plot = $.jqplot('chart1', [goog], {
       showHorizontalLine:false,
       showCursorLegend:true,
       showTooltip: false,
-      zoom:true,
+      zoom:true
     } 
 });
 </pre>
@@ -122,7 +122,6 @@ plot = $.jqplot('chart1', [goog], {
 
 <pre class="prettyprint plot">
 plot1 = $.jqplot('chart2', [InPr, OutPr, ERPM], { 
-    title:'Plot with Zooming and 3 Y Axes', 
     seriesDefaults: {showMarker:false}, 
     series:[
         {label:'InPr'},

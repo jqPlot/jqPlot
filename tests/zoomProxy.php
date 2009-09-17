@@ -35,9 +35,7 @@ var aapl = [["9/16/2009", 177.99, 182.75, 177.88, 181.87],["9/15/2009", 174.04, 
 </style>      
 <p class="description">ZoomProxy is a jqPlot feature that enable "remote control" zooming.  One chart acts as an overview chart while another displays the zoomed in data.</p>
 
-<p class="description">A zoomProxy is set up by creating two charts with the same data and initial axis ranges.  After both charts are set up, call the $.jqplot.zoomProxy function to set up one plot as a "zoom controller" for the other.  The syntax is: </p>
-
-<pre class="prettyprint">$.jqplot.Cursor.zoomProxy(targetPlot, controllerPlot);</pre>
+<p class="description">A zoomProxy is set up by creating two charts with the same data and initial axis ranges.  Make sure the "zoom" cursor option is set to true for both charts.  After both charts are set up, call the $.jqplot.zoomProxy function to set up one plot as a "zoom controller" for the other.  The syntax is: $.jqplot.Cursor.zoomProxy(targetPlot, controllerPlot).</p>
 
 <table style="margin-left:auto; margin-right:auto; border:0px;">
   <tr><td>
@@ -55,7 +53,7 @@ targetPlot1 = $.jqplot('chart1', [InPr, OutPr, ERPM], {
   series:[
     {},
     {yaxis:'y2axis'},
-    {yaxis:'y3axis'},
+    {yaxis:'y3axis'}
   ],
   cursor:{
     zoom: true,
@@ -70,7 +68,7 @@ controllerPlot1 = $.jqplot('chart2', [InPr, OutPr, ERPM], {
   series:[
     {label:'P In'},
     {label:'P Out', yaxis:'y2axis'},
-    {label:'RPM', yaxis:'y3axis'},
+    {label:'RPM', yaxis:'y3axis'}
   ],
   cursor:{
     zoom:true,
@@ -79,7 +77,7 @@ controllerPlot1 = $.jqplot('chart2', [InPr, OutPr, ERPM], {
   axesDefaults:{
     tickOptions:{
       showLabel:false, 
-      showMark:false, 
+      showMark:false
     }
   }
 });
@@ -95,8 +93,9 @@ $.jqplot.Cursor.zoomProxy(targetPlot1, controllerPlot1);
 <pre class="prettyprint plot">
 targetPlot2 = $.jqplot('chart3', [aapl], {
   series:[
-    {label:'Apple, Inc.', renderer:$.jqplot.OHLCRenderer},
+    {label:'Apple, Inc.', renderer:$.jqplot.OHLCRenderer}
   ],
+  title:'Apple, Inc.',
   legend:{show:true, location:'nw'},
   cursor:{
     zoom: true,
@@ -116,9 +115,6 @@ targetPlot2 = $.jqplot('chart3', [aapl], {
 
 controllerPlot2 = $.jqplot('chart4', [aapl], {
   seriesDefaults:{neighborThreshold:0, showMarker: false},
-  series:[
-    {label:'Apple, Inc.'},
-  ],
   cursor:{
     zoom: true,
     showTooltip: false,
