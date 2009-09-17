@@ -15,6 +15,20 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+    /**
+    *  Class: $.jqplot.CanvasAxisTickRenderer
+    * Renderer to draw axis ticks with a canvas element to support advanced
+    * featrues such as rotated text.  This renderer uses a separate rendering engine
+    * to draw the text on the canvas.  Two modes of rendering the text are available.
+    * If the browser has native font support for canvas fonts (currently Mozila 3.5
+    * and Safari 4), you can enable text rendering with the canvas fillText method.
+    * You do so by setting the "enableFontSupport" option to true. 
+    * 
+    * Browsers lacking native font support will have the text drawn on the canvas
+    * using the Hershey font metrics.  Even if the "enableFontSupport" option is true
+    * non-supporting browsers will still render with the Hershey font.
+    */
     $.jqplot.CanvasAxisTickRenderer = function(options) {
         // Group: Properties
         

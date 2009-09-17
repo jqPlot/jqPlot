@@ -15,6 +15,12 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+	
+	/**
+	 * Class: $.jqplot.Cursor
+	 * Plugin class representing the cursor as displayed on the plot.
+	 */
 	$.jqplot.Cursor = function(options) {
 	    // Group: Properties
 	    //

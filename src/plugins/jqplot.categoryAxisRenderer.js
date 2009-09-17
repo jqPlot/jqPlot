@@ -15,6 +15,19 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {   
+    /**
+	*  class: $.jqplot.CategoryAxisRenderer
+	*  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
+	*  This renderer has no options beyond those supplied by the <Axis> class. 
+	*  
+	*  To use this renderer, include the plugin in your source
+	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
+	*  
+	*  and supply the appropriate options to your plot
+	*  
+	*  > {axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}}
+	**/
     $.jqplot.CategoryAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
     };

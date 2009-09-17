@@ -15,6 +15,12 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+    
+    /**
+     * Class: $.jqplot.Dragable
+     * Plugin to make plotted points dragable by the user.
+     */
     $.jqplot.Dragable = function(options) {
         // Group: Properties
 	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});

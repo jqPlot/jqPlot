@@ -15,6 +15,42 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+    /**
+     * Class: $.jqplot.OHLCRenderer
+     * jqPlot Plugin to draw Open Hi Low Close, Candlestick and Hi Low Close charts.
+     * 
+     * To use this plugin, include the renderer js file in 
+     * your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.ohlcRenderer.js"></script>
+     * 
+     * You will most likely want to use a date axis renderer
+     * for the x axis also, so include the date axis render js file also:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.dateAxisRenderer.js"></script>
+     * 
+     * Then you set the renderer in the series options on your plot:
+     * 
+     * > series: [{renderer:$.jqplot.OHLCRenderer}]
+     * 
+     * For OHLC and candlestick charts, data should be specified
+     * like so:
+     * 
+     * > dat = [['07/06/2009',138.7,139.68,135.18,135.4], ['06/29/2009',143.46,144.66,139.79,140.02], ...]
+     * 
+     * If the data array has only 4 values per point instead of 5,
+     * the renderer will create a Hi Low Close chart instead.  In that case,
+     * data should be supplied like:
+     * 
+     * > dat = [['07/06/2009',139.68,135.18,135.4], ['06/29/2009',144.66,139.79,140.02], ...]
+     * 
+     * To generate a candlestick chart instead of an OHLC chart,
+     * set the "candlestick" option to true:
+     * 
+     * > series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
+     * 
+     */
     $.jqplot.OHLCRenderer = function(){
         // subclass line renderer to make use of some of it's methods.
         $.jqplot.LineRenderer.call(this);

@@ -15,6 +15,53 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+	
+	/**
+	 * Class: $.jqplot.PointLabels
+	 * Plugin for putting labels at the data points.
+	 * 
+	 * To use this plugin, include the js
+	 * file in your source:
+	 * 
+	 * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js"></script>
+	 * 
+	 * By default, the last value in the data ponit array in the data series is used
+	 * for the label.  For most series renderers, extra data can be added to the 
+	 * data point arrays and the last value will be used as the label.
+	 * 
+	 * For instance, 
+	 * this series:
+	 * 
+	 * > [[1,4], [3,5], [7,2]]
+	 * 
+	 * Would, by default, use the y values in the labels.
+	 * Extra data can be added to the series like so:
+	 * 
+	 * > [[1,4,'mid'], [3 5,'hi'], [7,2,'low']]
+	 * 
+	 * And now the point labels would be 'mid', 'low', and 'hi'.
+	 * 
+	 * Options to the point labels and a custom labels array can be passed into the
+	 * "pointLabels" option on the series option like so:
+	 * 
+	 * > series:[{pointLabels:{
+	 * >    labels:['mid', 'hi', 'low'],
+	 * >    location:'se',
+	 * >    ypadding: 12
+	 * >    }
+	 * > }]
+	 * 
+	 * A custom labels array in the options takes precendence over any labels
+	 * in the series data.  If you have a custom labels array in the options,
+	 * but still want to use values from the series array as labels, set the
+	 * "labelsFromSeries" option to true.
+	 * 
+	 * By default, html entities (<, >, etc.) are escaped in point labels.  
+	 * If you want to include actual html markup in the labels, 
+	 * set the "escapeHTML" option to false.
+	 * 
+	 */
 	$.jqplot.PointLabels = function(options) {
 	    // Group: Properties
 	    //

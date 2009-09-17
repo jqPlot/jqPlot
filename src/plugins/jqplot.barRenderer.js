@@ -15,6 +15,12 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+    
+    // Class: $.jqplot.BarRenderer
+    // A plugin renderer for jqPlot to draw a bar plot.
+    // Draws series as a line.
+    
     $.jqplot.BarRenderer = function(){
         $.jqplot.LineRenderer.call(this);
     };

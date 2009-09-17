@@ -15,6 +15,12 @@
  * Thanks for using jqPlot!
  * 
  */
+(function($) {
+    
+    /**
+     * Class: $.jqplot.Trendline
+     * Plugin which will automatically compute and draw trendlines for plotted data.
+     */
     $.jqplot.Trendline = function() {
         // Group: Properties
         

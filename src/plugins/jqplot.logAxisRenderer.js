@@ -15,6 +15,18 @@
  * Thanks for using jqPlot!
  * 
  */	
+(function($) {
+    /**
+	*  class: $.jqplot.LogAxisRenderer
+	*  A plugin for a jqPlot to render a logarithmic axis.
+	* 
+	*  To use this renderer, include the plugin in your source
+	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.logAxisRenderer.js"></script>
+	*  
+	*  and supply the appropriate options to your plot
+	*  
+	*  > {axes:{xaxis:{renderer:$.jqplot.LogAxisRenderer}}}
+	**/	
     $.jqplot.LogAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
         // prop: axisDefaults
