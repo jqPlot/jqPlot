@@ -84,6 +84,15 @@
         return this._elem;
     };
     
+    // called with scope of an axis
+    $.jqplot.LinearAxisRenderer.prototype.reset = function() {
+        this.min = this._min;
+        this.max = this._max;
+        this.tickInterval = this._tickInterval;
+        this.numberTicks = this._numberTicks;
+        // this._ticks = this.__ticks;
+    };
+    
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.set = function() { 
         var dim = 0;
