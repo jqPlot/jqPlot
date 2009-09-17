@@ -246,7 +246,7 @@
                 var rrange, ti, margin;
                 var forceMinZero = false;
                 var forceZeroLine = false;
-                var intervals = {min:null, max:null, average:null, stddev:null}
+                var intervals = {min:null, max:null, average:null, stddev:null};
                 // if any series are bars, or if any are fill to zero, and if this
                 // is the axis to fill toward, check to see if we can start axis at zero.
                 for (var i=0; i<this._series.length; i++) {
@@ -269,7 +269,7 @@
                         // is this sries a bar?
                         if (s.renderer.constructor == $.jqplot.BarRenderer) {
                             // if no negative values and could also check range.
-                            if (vmin >= 0 && (s.fillToZero || dp > .1)) {
+                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
                                 forceMinZero = true;
                             }
                             else {
@@ -285,7 +285,7 @@
                         
                         // if not a bar and filling, use appropriate method.
                         else if (s.fill) {
-                            if (vmin >= 0 && (s.fillToZero || dp > .1)) {
+                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
                                 forceMinZero = true;
                             }
                             else if (vmin < 0 && vmax > 0 && s.fillToZero) {

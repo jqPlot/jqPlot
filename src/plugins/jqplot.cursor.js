@@ -683,7 +683,7 @@
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
                 if (s.show) {
-                    var lt = $.jqplot.sprintf(this.formatString, s.label.toString())
+                    var lt = $.jqplot.sprintf(this.formatString, s.label.toString());
                     if (lt) {
                         var color = s.color;
                         if (s._stack && !s.fill) {

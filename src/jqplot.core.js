@@ -422,7 +422,7 @@
     // reset the axis back to original values if it has been scaled, zoomed, etc.
     Axis.prototype.reset = function() {
         this.renderer.reset.call(this);
-    }
+    };
 
     /**
      * Class: Legend
