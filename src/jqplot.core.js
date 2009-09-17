@@ -9,9 +9,20 @@
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009 Chris Leonello.  This software is licensed under the GPL version 2.0 and MIT licenses.
- * See <GPL Version 2> and <MIT License> contained within this
- * distribution for further information.
+ * Copyright (c) 2009 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly.
+ * 
+ * See <GPL Version 2> and <MIT License> contained within this distribution for further information. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php.  This is, of course, not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/support.
+ *
  * 
  * About: Introduction
  * 
@@ -59,7 +70,7 @@
  * 
  * See <Change Log>
  * 
-**/
+ */
 
 (function($) {
     // make sure undefined is undefined

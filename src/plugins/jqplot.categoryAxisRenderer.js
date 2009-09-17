@@ -1,20 +1,20 @@
 /**
-* Copyright (c) 2009 Chris Leonello
-* This software is licensed under the GPL version 2.0 and MIT licenses.
-*/
-(function($) {   
-    /**
-	*  class: $.jqplot.CategoryAxisRenderer
-	*  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
-	*  This renderer has no options beyond those supplied by the <Axis> class. 
-	*  
-	*  To use this renderer, include the plugin in your source
-	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
-	*  
-	*  and supply the appropriate options to your plot
-	*  
-	*  > {axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}}
-	**/
+ * Copyright (c) 2009 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/support .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
     $.jqplot.CategoryAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
     };

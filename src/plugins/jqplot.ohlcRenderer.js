@@ -1,43 +1,20 @@
 /**
-* Copyright (c) 2009 Chris Leonello
-* This software is licensed under the GPL version 2.0 and MIT licenses.
-*/
-(function($) {
-    /**
-     * Class: $.jqplot.OHLCRenderer
-     * jqPlot Plugin to draw Open Hi Low Close, Candlestick and Hi Low Close charts.
-     * 
-     * To use this plugin, include the renderer js file in 
-     * your source:
-     * 
-     * > <script type="text/javascript" src="plugins/jqplot.ohlcRenderer.js"></script>
-     * 
-     * You will most likely want to use a date axis renderer
-     * for the x axis also, so include the date axis render js file also:
-     * 
-     * > <script type="text/javascript" src="plugins/jqplot.dateAxisRenderer.js"></script>
-     * 
-     * Then you set the renderer in the series options on your plot:
-     * 
-     * > series: [{renderer:$.jqplot.OHLCRenderer}]
-     * 
-     * For OHLC and candlestick charts, data should be specified
-     * like so:
-     * 
-     * > dat = [['07/06/2009',138.7,139.68,135.18,135.4], ['06/29/2009',143.46,144.66,139.79,140.02], ...]
-     * 
-     * If the data array has only 4 values per point instead of 5,
-     * the renderer will create a Hi Low Close chart instead.  In that case,
-     * data should be supplied like:
-     * 
-     * > dat = [['07/06/2009',139.68,135.18,135.4], ['06/29/2009',144.66,139.79,140.02], ...]
-     * 
-     * To generate a candlestick chart instead of an OHLC chart,
-     * set the "candlestick" option to true:
-     * 
-     * > series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
-     * 
-     */
+ * Copyright (c) 2009 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/support .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
     $.jqplot.OHLCRenderer = function(){
         // subclass line renderer to make use of some of it's methods.
         $.jqplot.LineRenderer.call(this);

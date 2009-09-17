@@ -1,54 +1,20 @@
 /**
-* Copyright (c) 2009 Chris Leonello
-* This software is licensed under the GPL version 2.0 and MIT licenses.
-*/
-(function($) {
-	
-	/**
-	 * Class: $.jqplot.PointLabels
-	 * Plugin for putting labels at the data points.
-	 * 
-	 * To use this plugin, include the js
-	 * file in your source:
-	 * 
-	 * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js"></script>
-	 * 
-	 * By default, the last value in the data ponit array in the data series is used
-	 * for the label.  For most series renderers, extra data can be added to the 
-	 * data point arrays and the last value will be used as the label.
-	 * 
-	 * For instance, 
-	 * this series:
-	 * 
-	 * > [[1,4], [3,5], [7,2]]
-	 * 
-	 * Would, by default, use the y values in the labels.
-	 * Extra data can be added to the series like so:
-	 * 
-	 * > [[1,4,'mid'], [3 5,'hi'], [7,2,'low']]
-	 * 
-	 * And now the point labels would be 'mid', 'low', and 'hi'.
-	 * 
-	 * Options to the point labels and a custom labels array can be passed into the
-	 * "pointLabels" option on the series option like so:
-	 * 
-	 * > series:[{pointLabels:{
-	 * >    labels:['mid', 'hi', 'low'],
-	 * >    location:'se',
-	 * >    ypadding: 12
-	 * >    }
-	 * > }]
-	 * 
-	 * A custom labels array in the options takes precendence over any labels
-	 * in the series data.  If you have a custom labels array in the options,
-	 * but still want to use values from the series array as labels, set the
-	 * "labelsFromSeries" option to true.
-	 * 
-	 * By default, html entities (<, >, etc.) are escaped in point labels.  
-	 * If you want to include actual html markup in the labels, 
-	 * set the "escapeHTML" option to false.
-	 * 
-	 */
+ * Copyright (c) 2009 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/support .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
 	$.jqplot.PointLabels = function(options) {
 	    // Group: Properties
 	    //

@@ -19,6 +19,21 @@
 
     <!-- MAIN -->
     
+    <target name="updateCopyright" description="replaces and updates copyright text in source files.">
+      <echo message="Updating copyright in sources" />
+      <replaceregexp flags="s" match="\/\*\*\n\* Copyright .*\*/" replace="${copyright}">
+        <fileset dir="${SRC_DIR}">
+          <include name="jquery.jqplot.js" />
+          <include name="jqplot.*.js" />
+          <exclude name="jqplot.core.js" />
+        </fileset>
+        <fileset dir="${SRC_DIR}/plugins">
+          <include name="jqplot.*.js" />
+        </fileset>
+      </replaceregexp>
+    </target>
+      
+    
     <target name="build" description="create and populate build area for making distribution">
         <echo message="Building jqPlot" />
         <mkdir dir="${BUILD_DIR}" />
