@@ -32,6 +32,8 @@
         this.markSize = 6;
         // prop: show
         // wether or not to show the tick (mark and label).
+        // Setting this to false requires more testing.  It is recommended
+        // to set showLabel and showMark to false instead.
         this.show = true;
         // prop: showLabel
         // wether or not to show the label.
