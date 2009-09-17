@@ -242,7 +242,7 @@
                         s = t.markSize;
                         m = t.mark;
                         var pos = Math.round(axis.u2p(t.value)) + 0.5;
-                        if (t.show && t.showGridline) {
+                        if (t.showMark && t.mark) {
                             switch (m) {
                                 case 'outside':
                                     b = left;
