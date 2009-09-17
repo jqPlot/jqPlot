@@ -1162,8 +1162,8 @@
                 d = series[i].data;
                 var check = true;
                 if (series[i]._stackAxis == 'x') {
-                    for (var i = 0; i < d.length; i++) {
-                        if (typeof(d[i][1]) != "number") {
+                    for (var j = 0; j < d.length; i++) {
+                        if (typeof(d[j][1]) != "number") {
                             check = false;
                             break;
                         }
@@ -1173,8 +1173,8 @@
                     }
                 }
                 else {
-                    for (var i = 0; i < d.length; i++) {
-                        if (typeof(d[i][0]) != "number") {
+                    for (var j = 0; j < d.length; i++) {
+                        if (typeof(d[j][0]) != "number") {
                             check = false;
                             break;
                         }
