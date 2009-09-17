@@ -71,6 +71,10 @@
 	    // prop: constrainZoomTo
 	    // 'none', 'x' or 'y'
 	    this.constrainZoomTo = 'none';
+        // // prop: autoscaleConstraint
+        // // when a constrained axis is specified, true will
+        // // auatoscale the adjacent axis.
+        // this.autoscaleConstraint = true;
 	    // prop: showHorizontalLine
 	    // draw a horizontal line across the plot which follows the cursor.
 	    this.showHorizontalLine = false;
@@ -120,6 +124,21 @@
                     $.jqplot.eventListenerHooks.push(['jqplotDblClick', handleDblClick]);
                 }
             }
+	
+        	this.resetZoom = function() {
+        	    var axes = this.axes;
+        	    if (!this.plugins.cursor.zoomProxy) {
+            	    for (var ax in axes) {
+                        axes[ax].reset();
+            	    }
+            	    this.redraw();
+        	    }
+        	    else {
+                    var ctx = this.plugins.cursor.zoomCanvas._ctx;
+                    ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+        	    }
+                this.target.trigger('jqplotResetZoom', [this, this.plugins.cursor]);
+        	};
         }
 	};
 	
@@ -128,11 +147,11 @@
     	var c = this.plugins.cursor;
         c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
 	    this.target.append(c._tooltipElem);
-	    if (c.zoom) {
-	        c.zoomCanvas = new $.jqplot.GenericCanvas();
-            this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions));
-            var zctx = c.zoomCanvas.setContext();
-	    }
+        // if (c.zoom) {
+        c.zoomCanvas = new $.jqplot.GenericCanvas();
+        this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions));
+        var zctx = c.zoomCanvas.setContext();
+        // }
 	    if (c.showVerticalLine || c.showHorizontalLine) {
 	        c.cursorCanvas = new $.jqplot.GenericCanvas();
             this.eventCanvas._elem.before(c.cursorCanvas.createElement(this._gridPadding, 'jqplot-cursor-canvas', this._plotDimensions));
@@ -160,13 +179,15 @@
         }
 	};
 	
-	$.jqplot.Cursor.proxyZoom = function(targetPlot, controllerPlot) {
+	$.jqplot.Cursor.zoomProxy = function(targetPlot, controllerPlot) {
 	    var tc = targetPlot.plugins.cursor;
+	    var cc = controllerPlot.plugins.cursor;
 	    tc.zoomTarget = true;
 	    tc.zoom = true;
+	    tc.style = 'auto';
 	    tc.dblClickReset = false;
-	    controllerPlot.zoom = true;
-	    controllerPlot.zoomProxy = true;
+	    cc.zoom = true;
+	    cc.zoomProxy = true;
 	          
         controllerPlot.target.bind('jqplotZoom', plotZoom);
         controllerPlot.target.bind('jqplotResetZoom', plotReset);
@@ -176,7 +197,7 @@
         } 
 
         function plotReset(ev, plot, cursor) {
-            tc.resetZoom(targetPlot, cursor);
+            targetPlot.resetZoom();
         }
 	};
 	
@@ -191,7 +212,7 @@
     	        axes[ax].numberTicks = cax[ax].numberTicks; 
     	        axes[ax].tickInterval = cax[ax].tickInterval;
     	        // for date axes
-    	        axes[ax]._tickInterval = cax[ax]._tickInterval;
+    	        axes[ax].daTickInterval = cax[ax].daTickInterval;
     	    }
     	    plot.redraw();
 	    }
@@ -200,6 +221,10 @@
             ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 	    }
         plot.target.trigger('jqplotResetZoom', [plot, cursor]);
+	};
+	
+	$.jqplot.Cursor.resetZoom = function(plot) {
+	    plot.resetZoom();
 	};
 	
 	$.jqplot.Cursor.prototype.doZoom = function (gridpos, datapos, plot, cursor) {
@@ -211,7 +236,7 @@
         var min, max;
         var ctx = plot.plugins.cursor.zoomCanvas._ctx;
         // don't zoom is zoom area is too small (in pixels)
-        if ((c.constrainZoomTo == 'none' && Math.abs(gridpos.x - c._zoom.start[0]) > 8 && Math.abs(gridpos.y - c._zoom.start[1]) > 8) || (c.constrainZoomTo == 'x' && Math.abs(gridpos.x - c._zoom.start[0]) > 8) ||  (c.constrainZoomTo == 'y' && Math.abs(gridpos.y - c._zoom.start[1]) > 8)) {
+        if ((c.constrainZoomTo == 'none' && Math.abs(gridpos.x - c._zoom.start[0]) > 6 && Math.abs(gridpos.y - c._zoom.start[1]) > 6) || (c.constrainZoomTo == 'x' && Math.abs(gridpos.x - c._zoom.start[0]) > 6) ||  (c.constrainZoomTo == 'y' && Math.abs(gridpos.y - c._zoom.start[1]) > 6)) {
             if (!plot.plugins.cursor.zoomProxy) {
                 for (var ax in datapos) {
                     // make a copy of the original axes to revert back.
@@ -220,7 +245,7 @@
                         c._zoom.axes[ax].numberTicks = axes[ax].numberTicks;
                         c._zoom.axes[ax].tickInterval = axes[ax].tickInterval;
                         // for date axes...
-                        c._zoom.axes[ax]._tickInterval = axes[ax]._tickInterval;
+                        c._zoom.axes[ax].daTickInterval = axes[ax].daTickInterval;
                         c._zoom.axes[ax].min = axes[ax].min;
                         c._zoom.axes[ax].max = axes[ax].max;
                     }
@@ -238,10 +263,18 @@
                             }
                             axes[ax].tickInterval = null;
                             // for date axes...
-                            axes[ax]._tickInterval = null;
+                            axes[ax].daTickInterval = null;
                             axes[ax]._ticks = [];
                         }
                     }
+                            
+                    // if ((c.constrainZoomTo == 'x' && ax.charAt(0) == 'y' && c.autoscaleConstraint) || (c.constrainZoomTo == 'y' && ax.charAt(0) == 'x' && c.autoscaleConstraint)) {
+                    //     dp = datapos[ax];
+                    //     if (dp != null) {
+                    //         axes[ax].max == null;
+                    //         axes[ax].min = null;
+                    //     }
+                    // }
                 }
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
                 plot.redraw();
