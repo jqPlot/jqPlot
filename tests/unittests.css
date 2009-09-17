@@ -239,3 +239,8 @@ div.nav img {
   padding-left: 36px;
   top: 18px;
 }
+
+.button-reset {
+    position:relative;
+    left: 550px;
+}

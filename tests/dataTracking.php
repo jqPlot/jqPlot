@@ -1,6 +1,6 @@
 <?php
-  $title = "jqPlot Zooming";
-  $jspec_title = "jqPlot Zooming Tests and Examples";
+  $title = "jqPlot Cursor Lines and Data Tracking";
+  $jspec_title = "jqPlot Cursor Lines and Data Tracking Examples";
   $jqplot_js_includes = array();
   $jqplot_js_includes[] = "../src/plugins/jqplot.cursor.js";
   $jqplot_js_includes[] = "../src/plugins/jqplot.dateAxisRenderer.js";
@@ -73,12 +73,17 @@ var ERPM = [[0.0,1503.],[10.0,3006.],[20.0,3005.],[30.0,1505.],[40.0,1505.],[50.
 [2450.0,0.],[2460.0,0.],[2470.0,0.],[2480.0,0.],[2490.0,0.],[2500.0,0.],[2510.0,0.],[2520.0,0.],[2530.0,0.],[2540.0,0.],[2550.0,0.],[2560.0,0.],[2570.0,0.],[2580.0,0.],[2590.0,0.],[2600.0,0.],[2610.0,0.],[2620.0,0.],[2630.0,0.],[2640.0,0.],[2650.0,0.],[2660.0,0.],[2670.0,0.],[2680.0,0.],[2690.0,0.],[2700.0,0.],[2710.0,0.],[2720.0,0.],[2730.0,0.],[2740.0,0.],[2750.0,0.],[2760.0,0.],[2770.0,0.],[2780.0,0.],[2790.0,0.],[2800.0,0.]];
 </script>
       
-<p class="description">The cursor plugin also enables plot zooming functionality.  Click and drag on the plot to zoom.  Double click to reset.</p>
+<p class="description">The cursor plugin can also draw horizontal and vertical tracking lines across the plot to the cursor location.  These are enabled with the "showHorizontalLine" and "showVerticalLine" options to the cursor plugin.</p>
 
-<p class="description">You can also enaable single click zoom reset, or disable the double click zoom reset.  The cursor plugin also extends the plot object with a resetZoom() method which can be called from user code or other html element (a button for example) to reset the plot zoom.</p>
+<p class="description">The vertical tracking line can interactively detect intersecting data points and display these data values in the legend.  This functionality is enabled with the "showCursorLegend" option.  The tracking lines and data display work seamlessly with plot zooming as well.</p>
+
+<p class="description">The data displayed by the vertical line represent the actual x,y data of the intersecting data point.  When the line is not near a data point, no data will be displayed.  You can control how close the line must be to a point to display a data value with the "intersectionThreshold" option.</p>
+
+<p class="description">If markers are visible at the data points (as with the first example on this page), the intersectionThreshold is added to the size of the marker and the "neighborThreshold" of the series to determine how close to the actual point the line must be to trigger an interseciton.  All values are in pixels.</p>
+
+<p class="description">If no markers are shown, the marker size and neighborThreshold do not apply.  The line must be within the intersectionThreshold of the data point to be detected.  In general, if no markers are present, the intersectionThreshold should be >= 1 or else points may not be detected.</p>
 
 <div class="jqPlot" id="chart1" style="height:380px; width:480px;"></div>
-
 <button class="button-reset" onclick="plot.resetZoom()">Reset Zoom</button>
 
 <pre class="prettyprint plot">
@@ -100,14 +105,19 @@ plot = $.jqplot('chart1', [goog], {
             tickOptions:{formatString:'$%.2f'} 
         } 
     }, 
-    cursor:{zoom:true, showTooltip:false} 
+    cursor: {  
+      showVerticalLine:true,
+      showHorizontalLine:false,
+      showCursorLegend:true,
+      showTooltip: false,
+      zoom:true,
+    } 
 });
 </pre>
       
-<p class="description">Plot zooming also works will multiple axes.  The following plot uses 3 large datasets.  Single Click will reset the zoom on this plot.</p>
+<p class="description">Data detection also works with multiple lines and multiple axes.  By default the cursor legend shows data in the same format as the axes display their values.  The format string can be customized with the "cursorLegendFormatString" option.  The plot below has the horizontal tracking line displayed and has the default double click zoom reset disabled so you have to click the "Reset Zoom" button to reset the chart.</p>
 
 <div class="jqPlot" id="chart2" style="height:380px; width:600px;"></div>
-
 <button class="button-reset" onclick="plot1.resetZoom()">Reset Zoom</button>
 
 <pre class="prettyprint plot">
@@ -115,18 +125,27 @@ plot1 = $.jqplot('chart2', [InPr, OutPr, ERPM], {
     title:'Plot with Zooming and 3 Y Axes', 
     seriesDefaults: {showMarker:false}, 
     series:[
-        {},
-        {yaxis:'y2axis'}, 
-        {yaxis:'y3axis'}
+        {label:'InPr'},
+        {label:'OutPr', yaxis:'y2axis'}, 
+        {label:'ERPM', yaxis:'y3axis'}
     ], 
-    cursor: {tooltipLocation:'sw', zoom:true, clickReset:true}, 
-    axesDefaults:{useSeriesColor: true}, 
+    cursor: {
+      showVerticalLine: true,
+      showHorizontalLine: true,
+      showCursorLegend: true,
+      showTooltip: false,
+      zoom: true,
+      dblClickReset: false,
+      intersectionThreshold: 6
+    }, 
+    legend: {location:'n'},
+    axesDefaults:{useSeriesColor: true, tickOptions:{formatString:'%d'}}, 
     axes:{
         xaxis:{min:0, max:1600}, 
         yaxis:{min:0, max:600},  
         y2axis:{
             min:1000, 
-            max:2000, 
+            max:2200, 
             numberTicks:9, 
             tickOptions:{showGridline:false}
         }, 
