@@ -98,15 +98,8 @@
     // called within scope of series object
     function drawTrendline(sctx, options) {
         // if we have options, merge trendline options in with precedence
-        if (options) {
-            $.extend(true, options, options.trendline);
-        }
-        else {
-            options = {};
-        }
-        if (options.show == null) {
-            options.show = this.trendline.show;
-        }
+        options = $.extend(true, {}, this.trendline, options);
+
         if (options.show) {
             var fit;
             // this.renderer.setGridData.call(this);

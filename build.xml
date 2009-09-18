@@ -24,6 +24,7 @@
         <mkdir dir="${BUILD_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
         <mkdir dir="${BUILD_DIR}/images" />
+        <mkdir dir="${BUILD_DIR}/examples" />
         
         <!-- stip out top level closures, concat everything, and wrap in a closure. -->
         <!-- copy all needed files from src to build -->
@@ -34,13 +35,31 @@
             <exclude name="jsl.conf" />
           </fileset>
         </copy>
+        
         <copy todir="${BUILD_DIR}/images">
           <fileset dir="${SRC_DIR}/images">
           </fileset>
         </copy>
+        
+        <copy todir="${BUILD_DIR}/examples">
+          <fileset dir="examples">
+          </fileset>
+        </copy>
+        
+        <replaceregexp match='src="../src/' replace='src="../' flags="g">
+          <fileset dir="${BUILD_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='href="../src/' replace='href="../' flags="g">
+          <fileset dir="${BUILD_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        
         <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="{{{" value="(code)" />
         <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="}}}" value="(end)" />
+        
         <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
+        
         <copy todir="${BUILD_DIR}/plugins">
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
         </copy>
@@ -52,6 +71,7 @@
             <exclude name="jqplot.core.js" />
           </fileset>
         </replaceregexp>
+        
         <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
@@ -95,8 +115,7 @@
         </copy>
         
         <copy todir="${DIST_DIR}/examples">
-          <fileset dir="" includes="test*.html" />
-          <fileset dir="${SRC_DIR}" includes="*.html" excludes="eval*.html temp*.html" />
+          <fileset dir="${BUILD_DIR}/examples" />
         </copy>
         
         <replaceregexp match='src="\./src/' replace='src="\.\./' flags="g">
@@ -105,7 +124,7 @@
           </fileset>
         </replaceregexp>
         
-        <replaceregexp match='src="\./' replace='src="\.\./' flags="g">
+        <!-- <replaceregexp match='src="\./' replace='src="\.\./' flags="g">
           <fileset dir="${DIST_DIR}/examples">
             <include name="*.html" />
           </fileset>
@@ -125,7 +144,7 @@
         
         <replaceregexp match='href="\./src/' replace='href="\./' flags="g">
           <fileset dir="${DIST_DIR}" includes="test*.html" />
-        </replaceregexp>
+        </replaceregexp> -->
         
         <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
