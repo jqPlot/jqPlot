@@ -118,13 +118,14 @@
         if (this.enableFontSupport) {
             if ($.browser.safari) {
                 var p = $.browser.version.split('.');
-                if (p[0] >= 528 && p[1] >= 16) {
+                for (var i=0; i<p.length; i++) { p[i] = Number(p[i]) };
+                if (p[0] > 528 || (p[0] == 528 && p[1] >= 16)) {
                     this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts); 
                 }
             }
             else if ($.browser.mozilla) {
                 var p = $.browser.version.split(".");
-                if (p[0] > 1 || p[0] == 1 &&  p[1] >= 9 && p[2] > 0 ) {
+                if (p[0] > 1 || (p[0] == 1 &&  p[1] >= 9 && p[2] > 0) ) {
                     this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
                 }
                 else {
