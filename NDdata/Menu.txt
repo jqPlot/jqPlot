@@ -73,7 +73,7 @@ Group: API Documentation  {
       File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
       File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
       File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
-      File: DateAxisRenderer  (no auto-title, plugins/jqplot.dateAxisRenderer.js)
+      File: DateAxisRenderer  (plugins/jqplot.dateAxisRenderer.js)
       File: Dragable  (no auto-title, plugins/jqplot.dragable.js)
       File: Highlighter  (no auto-title, plugins/jqplot.highlighter.js)
       File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
