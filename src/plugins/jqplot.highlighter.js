@@ -63,8 +63,8 @@
 	    // Group: Properties
 	    //
 	    //prop: show
-	    // true to enable the tooltip.
-	    this.show = true;
+	    // true to show the highlight.
+	    this.show = $.jqplot.enablePlugins;
 	    // prop: markerRenderer
 	    // Renderer used to draw the marker of the highlighted point.
 	    // Renderer will assimilate attributes from the data point being highlighted,

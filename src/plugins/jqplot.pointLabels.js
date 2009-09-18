@@ -67,7 +67,7 @@
 	    //
 	    // prop: show
 	    // show the labels or not.
-	    this.show = true;
+	    this.show = $.jqplot.enablePlugins;
 	    // prop: location
 	    // compass location where to position the label around the point.
 	    // 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'

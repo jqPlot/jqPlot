@@ -30,7 +30,7 @@
 	    this.previousCursor = 'auto';
 	    // prop: show
 	    // wether to show the cursor or not.
-	    this.show = true;
+	    this.show = $.jqplot.enablePlugins;
 	    // prop: showTooltip
 	    // show a cursor position tooltip near the cursor
 	    this.showTooltip = true;

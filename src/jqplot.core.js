@@ -84,6 +84,13 @@
      * target - ID of target element to render the plot into.
      * data - an array of data series.
      * options - user defined options object.  See the individual classes for available options.
+     * 
+     * Properties:
+     * enablePlugins - True to enable plugins by default.  Plugins must be explicitly disabled.
+     *   False to disable plugins by default.  Plugins must be explicitly enabled.
+     *   This property sets the "show" property of certain plugins to true or false.
+     *   Only plugins that can be immediately active upon loading are affected.  This includes
+     *   non-renderer plugins like cursor, dragable, highlighter, and trendline.
      */
 
     $.jqplot = function(target, data, options) {
@@ -116,10 +123,10 @@
         plot.draw();
         return plot;
     };
-    
-    // declare some commonly used iteration variables.
-    
+        
     $.jqplot.debug = 1;
+    $.jqplot.enablePlugins = true;
+    
     /**
      * 
      * Hooks: jqPlot Pugin Hooks
