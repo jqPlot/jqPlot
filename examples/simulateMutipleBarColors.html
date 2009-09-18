@@ -1,0 +1,48 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
+
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+	
+	<style type="text/css">
+	  .jqplot-point-label {white-space: nowrap;}
+	</style>
+	
+	
+		<script type="text/javascript" language="javascript"><!--
+  $(document).ready(function(){
+         line1 = [[4,'Nissan'],[null,'Porche'],[2,'Acura'],[5,'Aston Martin'],[6,'Rolls Royce']];
+         line2 = [[null,'Nissan'], [6,'Porche'],[null,'Acura'], [null,'Aston Martin'], [null,'Rolls Royce']];
+
+         plot3 = $.jqplot('recent12', [line1, line2], {
+             seriesDefaults:{renderer:$.jqplot.BarRenderer, rendererOptions:{barWidth:25, barPadding:-25, barMargin:25, barDirection: 'horizontal'}, shadow:false},
+             series:[{},{color:'#dd3333'}],
+             legend: {show:false},
+             axes:{
+                 xaxis:{min:0, tickOptions: {formatString: '%.0f',showGridLine: false}},
+                 yaxis:{show: true, renderer: $.jqplot.CategoryAxisRenderer,
+                            tickOptions: {show: true, showLabel: true},
+                            showTicks: true}
+                 }
+         });
+  });
+			-->
+		</script>
+		
+</head>
+<body>
+		<div id="recent12" class="graph"></div>
+ 
+</body>
+
+
+</html>

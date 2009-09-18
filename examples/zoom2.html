@@ -67,6 +67,6 @@ plot = $.jqplot('chart', [goog], {
   </head>
   <body>
     <div id="chart" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
-    <div style="padding-top:20px"><button value="reset" type="button" onclick="$.jqplot.Cursor.resetZoom(plot)">Zoom Out</button></div>
+    <div style="padding-top:20px"><button value="reset" type="button" onclick="plot.resetZoom();">Zoom Out</button></div>
   </body>
 </html>

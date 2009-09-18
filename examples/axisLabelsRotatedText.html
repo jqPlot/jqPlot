@@ -1,0 +1,128 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
+
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+	<script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+	
+	<style type="text/css">
+	  .jqplot-point-label {white-space: nowrap;}
+/*    .jqplot-yaxis-label {font-size: 14pt;}*/
+/*    .jqplot-yaxis-tick {font-size: 7pt;}*/
+    .jqplot { margin: 70px;}
+	</style>
+	
+	
+		<script type="text/javascript" language="javascript"><!--
+$(document).ready(function(){
+	line1 = [6.5, 9.2, 14, 19.65, 26.4, 35, 51];
+	line2 = [['1/1/2008', 42], ['2/14/2008', 56], ['3/7/2008', 39], ['4/22/2008', 81]];
+
+	plot1 = $.jqplot('chart1', [line1], {
+	    legend: {show:false},
+	    axes:{
+	      xaxis:{
+	        autoscale: true,
+          tickOptions:{
+            // formatString:'%.4f', 
+            angle: -30
+          },
+          // tickRenderer:$.jqplot.CanvasAxisTickRenderer,
+	        label:'Core Motor Amperage', 
+          labelOptions:{
+            // fontFamily:'Helvetica',
+            fontSize: '13pt'
+          },
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+	      }, 
+	      yaxis:{
+          autoscale: true,
+          renderer:$.jqplot.LogAxisRenderer,
+          tickOptions:{
+            formatString:'%.2f', 
+            labelPosition: 'middle', 
+            angle:-30
+          },
+          tickRenderer:$.jqplot.CanvasAxisTickRenderer,
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+          labelOptions:{
+            // fontFamily:'Helvetica',
+            fontSize: '13pt'
+          },
+	        label:'Core Motor Voltage'
+	      }
+	    }
+	});
+	
+	plot2 = $.jqplot('chart2', [line2], {
+	  axes: {
+	    xaxis: {
+	      autoscale: true,
+	      renderer: $.jqplot.DateAxisRenderer,
+	      label: 'Incliment Occurrance',
+	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+	      tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+	      tickOptions: {
+          // labelPosition: 'middle',
+          angle: 15
+	      }
+	      
+	    },
+	    yaxis: {
+	      label: 'Incliment Factor',
+	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+	    }
+	  }
+	});
+
+line3 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp Marketing Gimmick', 9], ['HDTV Receiver', 15], ['8 Track Control Module', 12], ['SSPFM (Sealed Sludge Pump Fourier Modulator)', 3], ['Transcender/Spice Rack', 6], ['Hair Spray Rear View Mirror Danger Indicator', 18]];
+
+	plot3 = $.jqplot('chart3', [line3], {
+	  series:[{renderer:$.jqplot.BarRenderer}],
+	  axes: {
+	    xaxis: {
+	      renderer: $.jqplot.CategoryAxisRenderer,
+	      label: 'Warranty Concern',
+	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+	      tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+	      tickOptions: {
+          angle: -30
+	      }
+	      
+	    },
+	    yaxis: {
+	      autoscale:true,
+	      label: 'Occurance',
+	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+	    }
+	  }
+	});
+	
+	
+});
+			-->
+		</script>
+		
+</head>
+<body>
+		<div class="jqplot" id="chart1"></div>
+		<div class="jqplot" id="chart2"></div>
+		<div class="jqplot" id="chart3"></div>
+ 
+</body>
+
+
+</html>
