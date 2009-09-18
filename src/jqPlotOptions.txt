@@ -32,7 +32,7 @@ options =
         show: true,
     },
 
-    axisDefaults: {
+    axesDefaults: {
         show: false,    // wether or not to renderer the axis.  Determined automatically.
         min: null,      // minimum numerical value of the axis.  Determined automatically.
         max: null,      // maximum numverical value of the axis.  Determined automatically.
