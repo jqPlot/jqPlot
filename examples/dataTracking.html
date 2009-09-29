@@ -60,10 +60,14 @@ var ERPM = [[0.0,1503.],[10.0,3006.],[20.0,3005.],[30.0,1505.],[40.0,1505.],[50.
         cursor:{
           showVerticalLine:true,
           showHorizontalLine:true,
-          showCursorLegend:true,
-          showTooltip: false,
+          showCursorLegend:false,
+          showTooltip: true,
+          followMouse: true,
+          showTooltipDataPosition:true,
           zoom:true,
           intersectionThreshold:6,
+          cursorLegendFormatString:'%s x:%s, y:%s',
+          tooltipFormatString: '%s x:%s, y:%s'
         },
         legend:{
           location:'nw',
