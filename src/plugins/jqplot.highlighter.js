@@ -64,7 +64,7 @@
 	    //
 	    //prop: show
 	    // true to show the highlight.
-	    this.show = $.jqplot.enablePlugins;
+	    this.show = $.jqplot.config.enablePlugins;
 	    // prop: markerRenderer
 	    // Renderer used to draw the marker of the highlighted point.
 	    // Renderer will assimilate attributes from the data point being highlighted,

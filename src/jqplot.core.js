@@ -86,6 +86,7 @@
      * options - user defined options object.  See the individual classes for available options.
      * 
      * Properties:
+     * config - object to hold configuration information for jqPlot plot object.
      * enablePlugins - True to enable plugins by default.  Plugins must be explicitly disabled.
      *   False to disable plugins by default.  Plugins must be explicitly enabled.
      *   This property sets the "show" property of certain plugins to true or false.
@@ -125,7 +126,12 @@
     };
         
     $.jqplot.debug = 1;
-    $.jqplot.enablePlugins = true;
+    $.jqplot.config = {
+        debug:1,
+        enablePlugins:true
+    };
+    
+    $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
     /**
      * 

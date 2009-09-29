@@ -59,7 +59,7 @@
 	    this.plugins.dragable = new $.jqplot.Dragable(options.dragable);
 	    // since this function is called before series options are parsed,
 	    // we can set this here and it will be overridden if needed.
-	    this.isDragable = $.jqplot.enablePlugins;
+	    this.isDragable = $.jqplot.config.enablePlugins;
 	};
 	
 	// called within context of plot

@@ -26,7 +26,7 @@
         
         // prop: show
         // Wether or not to show the trend line.
-        this.show = $.jqplot.enablePlugins;
+        this.show = $.jqplot.config.enablePlugins;
         // prop: color
         // CSS color spec for the trend line.
         // By default this wil be the same color as the primary line.
