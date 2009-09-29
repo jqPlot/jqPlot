@@ -30,7 +30,7 @@
 	    this.previousCursor = 'auto';
 	    // prop: show
 	    // wether to show the cursor or not.
-	    this.show = $.jqplot.enablePlugins;
+	    this.show = $.jqplot.config.enablePlugins;
 	    // prop: showTooltip
 	    // show a cursor position tooltip near the cursor
 	    this.showTooltip = true;
@@ -46,18 +46,23 @@
 	    this.tooltipLocation = 'se';
 	    // prop: tooltipOffset
 	    // Pixel offset of tooltip from the grid boudaries or cursor center.
-	    this.tooltipOffset = 6;
+	    this.tooltipOffset = 9;
 	    // prop: showTooltipGridPosition
 	    // show the grid pixel coordinates of the mouse.
 	    this.showTooltipGridPosition = false;
 	    // prop: showTooltipUnitPosition
 	    // show the unit (data) coordinates of the mouse.
 	    this.showTooltipUnitPosition = true;
+	    // prop: showTooltipDataPosition
+	    // Used with showVerticalLine to show intersecting data points in the tooltip.
+	    this.showTooltipDataPosition = false;
 	    // prop: tooltipFormatString
 	    // sprintf format string for the tooltip.
 	    // Uses Ash Searle's javascript sprintf implementation
 	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
 	    // See http://perldoc.perl.org/functions/sprintf.html for reference
+	    // Note, if showTooltipDataPosition is true, the default tooltipFormatString
+	    // will be set to the cursorLegendFormatString, not the default given here.
 	    this.tooltipFormatString = '%.4P, %.4P';
 	    // prop: useAxesFormatters
 	    // Use the x and y axes formatters to format the text in the tooltip.
@@ -81,6 +86,9 @@
 	    // prop: showVerticalLine
 	    // draw a vertical line across the plot which follows the cursor.
 	    this.showVerticalLine = false;
+	    // prop: showHorizontalLine
+	    // draw a horizontal line across the plot which follows the cursor.
+	    this.showHorizontalLine = false;
 	    // prop: constrainZoomTo
 	    // 'none', 'x' or 'y'
 	    this.constrainZoomTo = 'none';
@@ -88,9 +96,6 @@
         // // when a constrained axis is specified, true will
         // // auatoscale the adjacent axis.
         // this.autoscaleConstraint = true;
-	    // prop: showHorizontalLine
-	    // draw a horizontal line across the plot which follows the cursor.
-	    this.showHorizontalLine = false;
 	    this.shapeRenderer = new $.jqplot.ShapeRenderer();
 	    this._zoom = {start:[], end:[], started: false, zooming:false, axes:{start:{}, end:{}}};
 	    this._tooltipElem;
@@ -103,44 +108,50 @@
 	    // prop: showCursorLegend
 	    // Replace the plot legend with an enhanced legend displaying intersection information.
 	    this.showCursorLegend = false;
-	    this.cursorLegendFormatString = '%s x:%s, y:%s';
+	    // prop: cursorLegendFormatString
+	    // Format string used in the cursor legend.  If showTooltipDataPosition is true,
+	    // this will also be the default format string used by tooltipFormatString.
+	    this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
 	    $.extend(true, this, options);
 	};
+	
+	$.jqplot.Cursor.cursorLegendFormatString = '%s x:%s, y:%s';
 	
 	// called with scope of plot
 	$.jqplot.Cursor.init = function (target, data, opts){
 	    // add a cursor attribute to the plot
 	    var options = opts || {};
 	    this.plugins.cursor = new $.jqplot.Cursor(options.cursor);
+	    var c = this.plugins.cursor;
 
-        if (this.plugins.cursor.show) {
+        if (c.show) {
         	$.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleMouseEnter]);
         	$.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
             $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);
             
-            if (this.plugins.cursor.showCursorLegend) {              
+            if (c.showCursorLegend) {              
                 opts.legend = opts.legend || {};
                 opts.legend.renderer =  $.jqplot.CursorLegendRenderer;
                 opts.legend.formatString = this.plugins.cursor.cursorLegendFormatString;
                 opts.legend.show = true;
             }
             
-            if (this.plugins.cursor.zoom) {
+            if (c.zoom) {
                 $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
                 $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
                 
-                if (this.plugins.cursor.clickReset) {
+                if (c.clickReset) {
                     $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
                 }
                 
-                if (this.plugins.cursor.dblClickReset) {
+                if (c.dblClickReset) {
                     $.jqplot.eventListenerHooks.push(['jqplotDblClick', handleDblClick]);
                 }
             }
 	
         	this.resetZoom = function() {
         	    var axes = this.axes;
-        	    if (!this.plugins.cursor.zoomProxy) {
+        	    if (!c.zoomProxy) {
             	    for (var ax in axes) {
                         axes[ax].reset();
             	    }
@@ -152,6 +163,15 @@
         	    }
                 this.target.trigger('jqplotResetZoom', [this, this.plugins.cursor]);
         	};
+        	
+
+        	if (c.showTooltipDataPosition) {
+        	    c.showTooltipUnitPosition = false;
+        	    c.showTooltipGridPosition = false;
+        	    if (options.cursor.tooltipFormatString == undefined) {
+        	        c.tooltipFormatString = $.jqplot.Cursor.cursorLegendFormatString;
+        	    }
+        	}
         }
 	};
 	
@@ -327,6 +347,43 @@
                 addbr = true;
             }
         }
+        
+        if (c.showTooltipDataPosition) {
+            var series = plot.series; 
+	        var ret = getIntersectingPoints(plot, gridpos.x, gridpos.y);
+	        var addbr = false;
+        
+            for (var i = 0; i< series.length; i++) {
+                if (series[i].show) {
+    	            var idx = series[i].index;
+    	            var label = series[i].label.toString();
+    	            var cellid = $.inArray(idx, ret.indices);
+    	            var sx = undefined;
+    	            var sy = undefined;
+    	            if (cellid != -1) {
+    	                var data = ret.data[cellid].data;
+                        if (c.useAxesFormatters) {
+                            var xf = series[i]._xaxis._ticks[0].formatter;
+                            var yf = series[i]._yaxis._ticks[0].formatter;
+                            var xfstr = series[i]._xaxis._ticks[0].formatString;
+                            var yfstr = series[i]._yaxis._ticks[0].formatString;
+                            sx = xf(xfstr, data[0]);
+                            sy = yf(yfstr, data[1]);
+                        }
+                        else {
+                            sx = data[0];
+                            sy = data[1];
+                        }
+                        if (addbr) {
+                            s += '<br />';
+                        }
+                        s += $.jqplot.sprintf(c.tooltipFormatString, label, sx, sy);
+                        addbr = true;
+    	            }
+                }
+            }
+            
+        }
         c._tooltipElem.html(s);
 	}
 	
@@ -371,7 +428,6 @@
 	            else {
 	                $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, sx, sy));
 	            }
-                
 	        }        
 	    }
 	}
