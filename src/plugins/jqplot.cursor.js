@@ -46,7 +46,7 @@
 	    this.tooltipLocation = 'se';
 	    // prop: tooltipOffset
 	    // Pixel offset of tooltip from the grid boudaries or cursor center.
-	    this.tooltipOffset = 9;
+	    this.tooltipOffset = 6;
 	    // prop: showTooltipGridPosition
 	    // show the grid pixel coordinates of the mouse.
 	    this.showTooltipGridPosition = false;
@@ -178,13 +178,13 @@
 	// called with context of plot
 	$.jqplot.Cursor.postDraw = function() {
     	var c = this.plugins.cursor;
-        c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
-	    this.target.append(c._tooltipElem);
         // if (c.zoom) {
         c.zoomCanvas = new $.jqplot.GenericCanvas();
         this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions));
         var zctx = c.zoomCanvas.setContext();
         // }
+        c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
+	    c.zoomCanvas._elem.before(c._tooltipElem);
 	    if (c.showVerticalLine || c.showHorizontalLine) {
 	        c.cursorCanvas = new $.jqplot.GenericCanvas();
             this.eventCanvas._elem.before(c.cursorCanvas.createElement(this._gridPadding, 'jqplot-cursor-canvas', this._plotDimensions));
