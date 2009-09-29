@@ -633,6 +633,7 @@
         // @return object Date
         //
         create: function(date) {
+            console.log('in create');
             // If the passed value is already a date object, return it
             if (date instanceof Date) {
             	return date;
@@ -654,6 +655,7 @@
                 if (typeof pattern == 'function') {
                     obj = pattern(current);
                     if (obj instanceof Date) {
+                        console.log('got obj');
                     	return obj;
                     }
                 } else {
@@ -781,6 +783,7 @@
         [/(3[01]|[0-2]\d)\s*\.\s*(1[0-2]|0\d)\s*\.\s*([1-9]\d{3})/, '$2/$1/$3'], // World time => Parsable US-style time
         [/([1-9]\d{3})\s*-\s*(1[0-2]|0\d)\s*-\s*(3[01]|[0-2]\d)/, '$2/$3/$1'], // ISO-style time => Parsable US-style time
         function(str) { // 12-hour or 24 hour time with milliseconds
+            console.log('pattern 1');
             // var match = str.match(/^(?:(.+)\s+)?([1-9]|1[012])(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d))?\s*(am|pm)\s*$/i);
             var match = str.match(/^(?:(.+)\s+)?([012]?\d)(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d(\.\d*)?))?\s*(am|pm)?\s*$/i);
             //                   opt. date      hour       opt. minute     opt. second       opt. msec   opt. am or pm
@@ -806,6 +809,7 @@
             }
         },
         function(str) { // ISO timestamp with time zone.
+            console.log('pattern 2');
             var match = str.match(/^(?:(.+))[T|\s+]([012]\d)(?:\:(\d\d))(?:\:(\d\d))(?:\.\d+)([\+\-]\d\d\:\d\d)$/i);
             if (match) {
                 if (match[1]) {
@@ -828,6 +832,7 @@
         function(str) {
             var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
             if (match) {
+                console.log('pattern 3');
                 var d = new Date();
                 var y = parseFloat(String(d.getFullYear()).slice(2,4));
                 var cent = parseInt(String(d.getFullYear())/100)*100;
@@ -861,8 +866,8 @@
                     nm = $.inArray(match[2], Date.MONTHNAMES);
                 }
             
-                d.setUTCFullYear(ny, nm, nd);
-                d.setUTCHours(0,0,0,0);
+                d.setFullYear(ny, nm, nd);
+                d.setHours(0,0,0,0);
                 return d;
             }
             
@@ -872,7 +877,7 @@
         }        
     ];
     
-    if ($.jqplot.debug) {
+    if ($.jqplot.config.debug) {
     	$.date = Date.create;
     }
    
