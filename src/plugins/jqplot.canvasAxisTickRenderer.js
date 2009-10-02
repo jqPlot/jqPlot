@@ -118,7 +118,7 @@
         if (this.enableFontSupport) {
             if ($.browser.safari) {
                 var p = $.browser.version.split('.');
-                for (var i=0; i<p.length; i++) { p[i] = Number(p[i]) };
+                for (var i=0; i<p.length; i++) { p[i] = Number(p[i]); }
                 if (p[0] > 528 || (p[0] == 528 && p[1] >= 16)) {
                     this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts); 
                 }
