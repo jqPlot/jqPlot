@@ -27,7 +27,10 @@
 		  line1 = [4, -7, 9, 16];
       line2 = [3, -3, 6.25, 3.125];
       line3 = [8, -5, 6, 22];
-      line4 = [12, 5, 8, 15];
+      line4 = [12, 5, 8, 15];		  
+      line5 = [4, 3, 9, 16];
+      line6 = [3, 7, 6.25, 3.125];
+      line7 = [8, 5, 6, 22];
       
       plot1 = $.jqplot('chart1', [line0], {
         legend: {show: false, location: 'nw'},
@@ -83,9 +86,9 @@
         }
       });
       
-      plot3 = $.jqplot('chart3', [line4], {
+      plot3 = $.jqplot('chart3', [line5, line6, line7], {
         stackSeries: true,
-        legend: {show: false, location: 'nw'},
+        legend: {show: true, location: 'nw'},
         seriesDefaults: {fill:true, 
           // fillToZero:true, 
           showMarker: false, renderer:$.jqplot.BarRenderer, rendererOptions:{barMargin:30}},
