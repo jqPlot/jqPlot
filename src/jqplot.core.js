@@ -128,7 +128,9 @@
     $.jqplot.debug = 1;
     $.jqplot.config = {
         debug:1,
-        enablePlugins:true
+        enablePlugins:true,
+        defaultHeight:300,
+        defaultWidth:400
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
@@ -1096,15 +1098,35 @@
             
             // if no height or width specified, use a default.
             if (!this.target.height()) {
-                this._height = 300;
-                this.target.css('height', '300px');
+                var h;
+                if (options && options.height) {
+                    h = parseInt(options.height);
+                }
+                else if (this.target.attr('data-height')) {
+                    h = parseInt(this.target.attr('data-height'));
+                }
+                else {
+                    h = parseInt($.jqplot.config.defaultHeight);
+                }
+                this._height = h;
+                this.target.css('height', h+'px');
             }
             else {
                 this._height = this.target.height();
             }
             if (!this.target.width()) {
-                this._width = 400;
-                this.target.css('width', '400px');
+                var w;
+                if (options && options.width) {
+                    w = parseInt(options.width);
+                }
+                else if (this.target.attr('data-width')) {
+                    w = parseInt(this.target.attr('data-width'));
+                }
+                else {
+                    w = parseInt($.jqplot.config.defaultWidth);
+                }
+                this._width = w;
+                this.target.css('width', w+'px');
             }
             else {
                 this._width = this.target.width();

@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Multiple lines Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+
+  <!-- END: load jqplot -->
+  <script type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
+
+    l1 = [18, 36, 14, 11];
+    l2 = [[2, 14], [7, 2], [8,5]];
+    l3 = [4, 7, 9, 2, 11, 5, 9, 13, 8, 7];
+
+    // plot will size to the "data-width" and "data-height" attributes
+    var plot1 = $.jqplot('chart1', [l1]);
+    
+    // plot will size to the options passed in 
+    var plot2 = $.jqplot('chart2', [l1], {width:200, height:'300px'});
+    
+    // plot will size to the config default.
+    // the default sizes are 300 px high by 400 px wide, but can be overridden
+    // as shown here with the $.jqplot.config.defaultWidth and 
+    // $.jqplot.config.defaultHeight setings.
+    
+    $.jqplot.config.defaultHeight = 200;
+    $.jqplot.config.defaultWidth = "600px";
+    var plot3 = $.jqplot('chart3', [l1]);
+
+  });
+  
+  </script>
+  </head>
+  <body>
+    
+    <p>There are 3 Hidden plots on the page.  Toggle the visibility of each one with the buttons below.</p>
+    
+    <p>Each plot has it's height and width set by a different mechanism.  The first plot uses the custom html attributes "data-width" and "data-height".  The second passes in a "width" and "height" option to the plot constructor.  The third uses the jqplot wide config default settings, but overrides them to 200px high by 600px wide.</p> 
+    
+    <p>The default config settings (if not overridden) are 300px wide by 400px high.  The config default settings will apply to all plots on a page.  The config setting has the lowest order of precedence, however.  jqPlot will first look for a setting in the options object passed to the plot constructor.  It will then look for the custom html attributes.  If these are not found, it will use the config defaults.</p>
+    
+    <p>Note, if the plot target generates a containing box (display property is not "none") and has a height/width css specification, jqPlot will use those values.  These additional mechanisms for sizing the plot are effective only if the plot target or one of it's parent containers is initially set to "none" or no css height/width values are provided for the plot target.</p>
+    
+    <button type="button" name="toggle_plot1" value="" onclick="$('#hider1').toggle();" id="toggle_plot">Custom Attributes</button>
+    <button type="button" name="toggle_plot2" value="" onclick="$('#hider2').toggle();" id="toggle_plot">Plot Option</button>
+    <button type="button" name="toggle_plot3" value="" onclick="$('#hider3').toggle();" id="toggle_plot">Config Default</button>
+    
+    <div id="hider1" style="display:none;">
+      <div id="chart1" data-height="400px" data-width="600px" style="width:100px; height:100px; margin-top:20px; margin-left:20px;"></div>
+    </div>
+    <div id="hider2" style="display:none;">
+      <div id="chart2" data-height="400px" data-width="600px" style="width:100px; height:100px; margin-top:20px; margin-left:20px;"></div>
+    </div>
+    <div id="hider3" style="display:none;">
+      <div id="chart3" style="width:100px; height:100px; margin-top:20px; margin-left:20px;"></div>
+    </div>
+  </body>
+</html>
