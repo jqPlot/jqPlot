@@ -9,5 +9,5 @@
  * chris dot leonello at gmail dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate .
+ * making a donation at: http://www.jqplot.com/donate.php .
  */
