@@ -75,6 +75,7 @@
 	    // prop: zoom
 	    // Enable plot zooming.
 	    this.zoom = false;
+	    // Not directly set by user.  Will be set through call to zoomProxy method.
 	    this.zoomProxy = false;
 	    this.zoomTarget = false;
 	    // prop: clickReset
@@ -85,6 +86,8 @@
 	    this.dblClickReset = true;
 	    // prop: showVerticalLine
 	    // draw a vertical line across the plot which follows the cursor.
+	    // When the line is near a data point, a special legend and/or tooltip can
+	    // be updated with the data values.
 	    this.showVerticalLine = false;
 	    // prop: showHorizontalLine
 	    // draw a horizontal line across the plot which follows the cursor.
@@ -212,6 +215,13 @@
         }
 	};
 	
+    // Group: methods
+    //
+	// method: $.jqplot.Cursor.zoomProxy
+    // links targetPlot to controllerPlot so that plot zooming of
+    // targetPlot will be controlled by zooming on the controllerPlot.
+    // controllerPlot will not actually zoom, but acts as an
+    // overview plot.
 	$.jqplot.Cursor.zoomProxy = function(targetPlot, controllerPlot) {
 	    var tc = targetPlot.plugins.cursor;
 	    var cc = controllerPlot.plugins.cursor;
