@@ -65,7 +65,7 @@
             var tr = $('<tr class="jqplot-legend"></tr>').appendTo(this._elem);
             $('<td class="jqplot-legend" style="vertical-align:middle;text-align:center;padding-top:'+rs+';">'+
                 '<div style="border:1px solid #cccccc;padding:0.2em;">'+
-                '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
+                '<div style="width:0px;height:0px;border-top:0.35em solid '+color+';border-bottom:0.35em solid '+color+';border-left:0.6em solid '+color+';border-right:0.6em solid '+color+';"></div>'+
                 '</div></td>').appendTo(tr);
             var elem = $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';"></td>');
             elem.appendTo(tr);
