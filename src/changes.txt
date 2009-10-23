@@ -1,5 +1,29 @@
 Title: Change Log
 
+0.9.5:
+* Implemented "zoomProxy".  zoomProxy allows zooming one plot from another 
+  such as an overview plot.
+* Zooming can now be constrained to just x or y axis.
+* Enhanced cursor plugin with vertical "dataTracking" line.  This is a line
+  at the cursor location with a readout of data points at the line location
+  which are displayed in the chart legend.
+* Changed cursor tooltip format string.  Now one format string is used for
+  entire tooptip.
+* Added mechanisms to specify plot size when plot target is hidden or plot
+  height/width otherwise cannot be determined from markup.
+* Added $.jqplot.config object to specify jqplot wide configuraiton options.
+  These include enablePlugins to globally set the default plugin state on/off
+  and defaultHeight/defaultWidth to specify default plot height/width.
+* Added fillToZero option which forces filled charts to fill to zero as opposed
+  to axis minimum.  Thus negative filled bar/line values will fill upwards to
+  zero axis value.
+* Added option to disable stacking on individual lines.
+* Changed targetId property of the plot object so it now includes a "#" before
+  the id string.
+* Improved tick and body sizing of Open Hi Low Close and candlestick charts.
+* Many various bug fixes and other minor enhancements.
+
+
 0.9.4:
 * Implemented axis labels.  Labels can be rendered in div tags or as canvas 
   elements supporting rotated text.
