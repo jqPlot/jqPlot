@@ -75,7 +75,8 @@
 	    // prop: zoom
 	    // Enable plot zooming.
 	    this.zoom = false;
-	    // Not directly set by user.  Will be set through call to zoomProxy method.
+	    // zoomProxy and zoomTarget properties are not directly set by user.  
+	    // They Will be set through call to zoomProxy method.
 	    this.zoomProxy = false;
 	    this.zoomTarget = false;
 	    // prop: clickReset
@@ -221,7 +222,8 @@
     // links targetPlot to controllerPlot so that plot zooming of
     // targetPlot will be controlled by zooming on the controllerPlot.
     // controllerPlot will not actually zoom, but acts as an
-    // overview plot.
+    // overview plot.  Note, the zoom options must be set to true for
+    // zoomProxy to work.
 	$.jqplot.Cursor.zoomProxy = function(targetPlot, controllerPlot) {
 	    var tc = targetPlot.plugins.cursor;
 	    var cc = controllerPlot.plugins.cursor;
