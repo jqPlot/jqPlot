@@ -94,11 +94,33 @@
     position: absolute;
 }
 
-table.jqplot-legend {
+table.jqplot-table-legend {
     background-color: rgba(255,255,255,0.6);
     border: 1px solid #cccccc;
     position: absolute;
     font-size: 0.75em;
+}
+
+td.jqplot-table-legend {
+    vertical-align:middle;
+}
+
+td.jqplot-table-legend > div {
+    border:1px solid #cccccc;
+    padding:0.2em;
+}
+
+div.jqplot-table-legend-swatch {
+    width:0px;
+    height:0px;
+    border-top-width: 0.35em;
+    border-bottom-width: 0.35em;
+    border-left-width: 0.6em;
+    border-right-width: 0.6em;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-right-style: solid;
 }
 
 .jqplot-title {
