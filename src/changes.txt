@@ -21,6 +21,12 @@ Title: Change Log
 * Changed targetId property of the plot object so it now includes a "#" before
   the id string.
 * Improved tick and body sizing of Open Hi Low Close and candlestick charts.
+* Removed lots of web site related files from the repository.  This means that,
+  if working from the sources, user's won't be able to build the jqplot web
+  site and the docs/tests that are hosted on that site.  The minified and
+  compressed  distribution packages will build fine.
+* Lots of examples were added to a separate examples directory to better show
+  functionality of jqPlot for local testing with the distribution.
 * Many various bug fixes and other minor enhancements.
 
 

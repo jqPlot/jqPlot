@@ -5,9 +5,17 @@ NDdata*
 .DS_Store*
 *.pyc
 *~
+*.php
+config.xml
+myconfig.xml
 build
 dist
 web
+extras
+images
+style.css
+tests
+
 
 # switch to regexp syntax.
 # syntax: regexp
