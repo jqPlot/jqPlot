@@ -1,6 +1,13 @@
 Title: Change Log
 
+0.9.5.1:
+
+* Fixed bug where tooltip not working with OHLC and candlestick charts.
+* Added additional marker styles: plus, X and dash.
+
+
 0.9.5:
+
 * Implemented "zoomProxy".  zoomProxy allows zooming one plot from another 
   such as an overview plot.
 * Zooming can now be constrained to just x or y axis.
@@ -31,6 +38,7 @@ Title: Change Log
 
 
 0.9.4:
+
 * Implemented axis labels.  Labels can be rendered in div tags or as canvas 
   elements supporting rotated text.
 * Improved rotated axis label positioning so labels will start or end at a
@@ -44,6 +52,7 @@ Title: Change Log
   were being rendered.
 * Added edgeTolerance option to point label renderer to control rendering of 
   labels near plot edges.
+
 
 0.9.3:
 
