@@ -1576,21 +1576,21 @@
                         if (r.constructor == $.jqplot.OHLCRenderer) {
                             if (r.candleStick) {
                                 var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r.bodyWidth/2 && x <= p[0]+r.bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
                                     ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
                             // if an open hi low close chart
                             else if (!r.hlc){
                                 var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r.tickLength && x <= p[0]+r.tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
                                     ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
                             // a hi low close chart
                             else {
                                 var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r.tickLength && x <= p[0]+r.tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
+                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
                                     ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }

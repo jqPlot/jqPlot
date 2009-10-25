@@ -15,6 +15,15 @@
  * Thanks for using jqPlot!
  * 
  */
+ 
+ /**
+ * 
+ * This is a boot loader for the source version of jqplot.
+ * It will load all of the necessary core jqplot files that
+ * are concated together in the distribution.
+ * 
+ */
+ 
 (function(){
 	var getRootNode = function(){
 		// figure out the path to this loader
