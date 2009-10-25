@@ -10,7 +10,7 @@
  * not required.
  *
  * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/support .
+ * making a donation at: http://www.jqplot.com/donate.php .
  *
  * Thanks for using jqPlot!
  * 

@@ -129,7 +129,7 @@
         </copy>
         
         <copy todir="${DIST_DIR}/images">
-          <fileset dir="./images" includes="*.jpg *.png" />
+          <fileset dir="./images" includes="*.jpg *.png *.gif" />
         </copy>
         
         <echo message="jqPlot built." />

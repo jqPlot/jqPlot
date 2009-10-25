@@ -10,7 +10,7 @@
  * not required.
  *
  * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/support .
+ * making a donation at: http://www.jqplot.com/donate.php .
  *
  * Thanks for using jqPlot!
  * 
@@ -97,6 +97,47 @@
         ctx.restore();
     };
     
+    $.jqplot.MarkerRenderer.prototype.drawPlus = function(x, y, ctx, fill, options) {
+        var stretch = 1.0;
+        var dx = this.size/2*stretch;
+        var dy = this.size/2*stretch;
+        var points = [[x, y-dy], [x, y+dy], [x+dx, y], [x-dx, y]];
+        var opts = $.extend(true, {}, this.options, {closePath:false});
+        if (this.shadow) {
+            this.shadowRenderer.draw(ctx, points, {closePath:false});
+        }
+        this.shapeRenderer.draw(ctx, points, opts);
+
+        ctx.restore();
+    };
+    
+    $.jqplot.MarkerRenderer.prototype.drawX = function(x, y, ctx, fill, options) {
+        var stretch = 1.0;
+        var dx = this.size/2*stretch;
+        var dy = this.size/2*stretch;
+        var points = [[x-dx, y-dy], [x+dx, y+dy], [x-dx, y+dy], [x+dx, y-dy]];
+        var opts = $.extend(true, {}, this.options, {closePath:false});
+        if (this.shadow) {
+            this.shadowRenderer.draw(ctx, points, {closePath:false});
+        }
+        this.shapeRenderer.draw(ctx, points, opts);
+
+        ctx.restore();
+    };
+    
+    $.jqplot.MarkerRenderer.prototype.drawDash = function(x, y, ctx, fill, options) {
+        var stretch = 1.0;
+        var dx = this.size/2*stretch;
+        var dy = this.size/2*stretch;
+        var points = [[x-dx, y], [x+dx, y]];
+        if (this.shadow) {
+            this.shadowRenderer.draw(ctx, points);
+        }
+        this.shapeRenderer.draw(ctx, points, options);
+
+        ctx.restore();
+    };
+    
     $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill, options) {
         var stretch = 1.0;
         var dx = this.size/2/stretch;
@@ -142,6 +183,15 @@
                 break;
             case 'filledSquare':
                 this.drawSquare(x,y,ctx, true, options);
+                break;
+            case 'x':
+                this.drawX(x,y,ctx, true, options);
+                break;
+            case 'plus':
+                this.drawPlus(x,y,ctx, true, options);
+                break;
+            case 'dash':
+                this.drawDash(x,y,ctx, true, options);
                 break;
             default:
                 this.drawDiamond(x,y,ctx, false, options);
