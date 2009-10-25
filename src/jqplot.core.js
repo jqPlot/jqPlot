@@ -1100,13 +1100,13 @@
             if (!this.target.height()) {
                 var h;
                 if (options && options.height) {
-                    h = parseInt(options.height);
+                    h = parseInt(options.height, 10);
                 }
                 else if (this.target.attr('data-height')) {
-                    h = parseInt(this.target.attr('data-height'));
+                    h = parseInt(this.target.attr('data-height'), 10);
                 }
                 else {
-                    h = parseInt($.jqplot.config.defaultHeight);
+                    h = parseInt($.jqplot.config.defaultHeight, 10);
                 }
                 this._height = h;
                 this.target.css('height', h+'px');
@@ -1117,13 +1117,13 @@
             if (!this.target.width()) {
                 var w;
                 if (options && options.width) {
-                    w = parseInt(options.width);
+                    w = parseInt(options.width, 10);
                 }
                 else if (this.target.attr('data-width')) {
-                    w = parseInt(this.target.attr('data-width'));
+                    w = parseInt(this.target.attr('data-width'), 10);
                 }
                 else {
-                    w = parseInt($.jqplot.config.defaultWidth);
+                    w = parseInt($.jqplot.config.defaultWidth, 10);
                 }
                 this._width = w;
                 this.target.css('width', w+'px');

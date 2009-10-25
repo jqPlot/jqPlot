@@ -328,7 +328,7 @@
                     // what tick interval does that give us?
                     ti = max/(this.numberTicks-1);
                     temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    if (ti/temp == parseInt(ti/temp)) {
+                    if (ti/temp == parseInt(ti/temp, 10)) {
                         ti += temp;
                     }
                     this.tickInterval = Math.ceil(ti/temp) * temp;

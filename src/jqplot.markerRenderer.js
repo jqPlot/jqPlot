@@ -119,7 +119,7 @@
         var dx = this.size/2*stretch;
         var dy = this.size/2*stretch;
         var opts = $.extend(true, {}, this.options, {closePath:false});
-        var points1 = [[x-dx, y-dy], [x+dx, y+dy]]
+        var points1 = [[x-dx, y-dy], [x+dx, y+dy]];
         var points2 = [[x-dx, y+dy], [x+dx, y-dy]];
         if (this.shadow) {
             this.shadowRenderer.draw(ctx, points1, {closePath:false});
