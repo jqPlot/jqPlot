@@ -204,7 +204,6 @@
                         opts.fillStyle = posfs;
                         isnegative = false;
                     }
-                    // console.log('%s, %s, %s', this._barNudge, base, ystart);
                     
                     points.push([base-this.barWidth/2, ystart]);
                     points.push([base-this.barWidth/2, gridData[i][1]]);

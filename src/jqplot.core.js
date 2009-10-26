@@ -794,10 +794,7 @@
             else {
                 data = this._plotData;
             }
-            // console.log('plotdata before: %s', this._plotData);
             var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
-            // console.log('plotdata after: %s', this._plotData);
-            // console.log('data:%s | gridData: %s', data, gridData);
             
             this.renderer.draw.call(this, sctx, gridData, options);
         }
@@ -1665,12 +1662,10 @@
             // should be drawn before any series.  This will ensure, like for 
             // stacked bar plots, that shadows don't overlap series.
             for (var i=0; i<this.series.length; i++) {
-                // console.log('series %s data: %s', i, this.series[i].data);
                 this.series[i].drawShadow(sctx, options);
             }
             for (var i=0; i<this.series.length; i++) {
                 this.series[i].draw(sctx, options);
-                // console.log('series %s data: %s', i, this.series[i].data);
             }
         };
     }
