@@ -101,7 +101,7 @@
         // // auatoscale the adjacent axis.
         // this.autoscaleConstraint = true;
 	    this.shapeRenderer = new $.jqplot.ShapeRenderer();
-	    this._zoom = {start:[], end:[], started: false, zooming:false, axes:{start:{}, end:{}}};
+	    this._zoom = {start:[], end:[], started: false, zooming:false, isZoomed:false, axes:{start:{}, end:{}}};
 	    this._tooltipElem;
 	    this.zoomCanvas;
 	    this.cursorCanvas;
@@ -165,6 +165,7 @@
                     var ctx = this.plugins.cursor.zoomCanvas._ctx;
                     ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
         	    }
+        	    this.plugins.cursor._zoom.isZoomed = false;
                 this.target.trigger('jqplotResetZoom', [this, this.plugins.cursor]);
         	};
         	
@@ -249,7 +250,7 @@
 	$.jqplot.Cursor.prototype.resetZoom = function(plot, cursor) {
 	    var axes = plot.axes;
 	    var cax = cursor._zoom.axes;
-	    if (!plot.plugins.cursor.zoomProxy) {
+	    if (!plot.plugins.cursor.zoomProxy && cursor._zoom.isZoomed) {
     	    for (var ax in axes) {
                 axes[ax]._ticks = [];
     	        axes[ax].min = cax[ax].min;
@@ -260,6 +261,7 @@
     	        axes[ax].daTickInterval = cax[ax].daTickInterval;
     	    }
     	    plot.redraw();
+    	    cursor._zoom.isZoomed = false;
 	    }
 	    else {
             var ctx = cursor.zoomCanvas._ctx;
@@ -323,6 +325,7 @@
                 }
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
                 plot.redraw();
+                c._zoom.isZoomed = true;
             }
             plot.target.trigger('jqplotZoom', [gridpos, datapos, plot, cursor]);
         }
