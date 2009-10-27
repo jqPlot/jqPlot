@@ -630,6 +630,9 @@
         // prop: label
         // Line label to use in the legend.
         this.label = '';
+        // prop: showLabel
+        // true to show label for this series in the legend.
+        this.showLabel = true;
         // prop: color
         // css color spec for the series
         this.color;

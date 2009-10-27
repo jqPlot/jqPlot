@@ -38,7 +38,7 @@
             var pad = false;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
-                if (s.show) {
+                if (s.show && s.showLabel) {
                     var lt = s.label.toString();
                     if (lt) {
                         var color = s.color;

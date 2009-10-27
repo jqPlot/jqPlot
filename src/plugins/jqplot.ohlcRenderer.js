@@ -215,6 +215,9 @@
                         if (r.wickColor) {
                             o.color = r.wickColor;
                         }
+                        else if (r.downBodyColor) {
+                            o.color = r.upBodyColor;
+                        }
                         ops = $.extend(true, {}, opts, o);
                         r.shapeRenderer.draw(ctx, [[x, hi], [x, close]], ops); 
                         r.shapeRenderer.draw(ctx, [[x, open], [x, low]], ops); 
@@ -232,6 +235,7 @@
                         }
                         if (r.upBodyColor) {
                             o.color = r.upBodyColor;
+                            o.fillStyle = r.upBodyColor;
                         }
                         points = [a, b, w, h];
                     }
@@ -241,9 +245,13 @@
                         if (r.wickColor) {
                             o.color = r.wickColor;
                         }
+                        else if (r.downBodyColor) {
+                            o.color = r.downBodyColor;
+                        }
                         ops = $.extend(true, {}, opts, o);
                         r.shapeRenderer.draw(ctx, [[x, hi], [x, open]], ops); 
-                        r.shapeRenderer.draw(ctx, [[x, close], [x, low]], ops); 
+                        r.shapeRenderer.draw(ctx, [[x, close], [x, low]], ops);
+                         
                         o = {};
                         
                         b = open;
@@ -259,6 +267,7 @@
                         }
                         if (r.downBodyColor) {
                             o.color = r.downBodyColor;
+                            o.fillStyle = r.downBodyColor;
                         }
                         points = [a, b, w, h];
                     }
