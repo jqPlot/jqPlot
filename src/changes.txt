@@ -1,5 +1,12 @@
 Title: Change Log
 
+0.9.5.2:
+
+* Fixed #102 where double clicking on plot that has zoom enabled, but
+  has not been zoomed resulted in error.
+* Fixed bug where candlestick coloring options not working.
+* Added option to turn individual series labels off in the legend.
+
 0.9.5.1:
 
 * Fixed bug where tooltip not working with OHLC and candlestick charts.
