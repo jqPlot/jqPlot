@@ -21,7 +21,24 @@
     $.jqplot.TableLegendRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
     };
+        
+    $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad) {
+        var rs = (pad) ? this.rowSpacing : '0';
+        var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+        $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
+            '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
+            '</div></td>').appendTo(tr);
+        var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+        elem.appendTo(tr);
+        if (this.escapeHtml) {
+            elem.text(label);
+        }
+        else {
+            elem.html(label);
+        }
+    };
     
+    // called with scope of legend
     $.jqplot.TableLegendRenderer.prototype.draw = function() {
         var legend = this;
         if (this.show) {
@@ -45,34 +62,18 @@
                         if (s._stack && !s.fill) {
                             color = '';
                         }
-                        addrow.call(this, lt, color, pad);
+                        this.renderer.addrow.call(this, lt, color, pad);
                         pad = true;
                     }
                     // let plugins add more rows to legend.  Used by trend line plugin.
                     for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
                         var item = $.jqplot.addLegendRowHooks[j].call(this, s);
                         if (item) {
-                            addrow.call(this, item.label, item.color, pad);
+                            this.renderer.addrow.call(this, item.label, item.color, pad);
                             pad = true;
                         } 
                     }
                 }
-            }
-        }
-        
-        function addrow(label, color, pad) {
-            var rs = (pad) ? this.rowSpacing : '0';
-            var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
-            $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
-                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
-                '</div></td>').appendTo(tr);
-            var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
-            elem.appendTo(tr);
-            if (this.escapeHtml) {
-                elem.text(label);
-            }
-            else {
-                elem.html(label);
             }
         }
         return this._elem;

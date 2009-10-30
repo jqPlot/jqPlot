@@ -264,7 +264,7 @@
             ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
             ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
-            this._elem = $('<table class="jqplot-legend" style="'+ss+'"></table>');
+            this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
             var pad = false;
             var s = series[0];
@@ -274,29 +274,12 @@
                 for (var i=0; i<pd.length; i++){
                     var lt = pd[i][0].toString();
                     if (lt) {
-                        addrow.call(this, lt, colorGenerator.next(), pad);
+                        this.renderer.addrow.call(this, lt, colorGenerator.next(), pad);
                         pad = true;
                     }  
                 }
             }
-        }
-        
-        function addrow(label, color, pad) {
-            var rs = (pad) ? this.rowSpacing : '0';
-            var tr = $('<tr class="jqplot-legend"></tr>').appendTo(this._elem);
-            $('<td class="jqplot-legend" style="vertical-align:middle;text-align:center;padding-top:'+rs+';">'+
-                '<div style="border:1px solid #cccccc;padding:0.2em;">'+
-                '<div style="width:1.2em;height:0.7em;background-color:'+color+';"></div>'+
-                '</div></td>').appendTo(tr);
-            var elem = $('<td class="jqplot-legend" style="vertical-align:middle;padding-top:'+rs+';"></td>');
-            elem.appendTo(tr);
-            if (this.escapeHtml) {
-                elem.text(label);
-            }
-            else {
-                elem.html(label);
-            }
-        }
+        }        
         return this._elem;
     };
     
