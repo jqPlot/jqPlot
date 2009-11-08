@@ -449,6 +449,13 @@
     Axis.prototype.reset = function() {
         this.renderer.reset.call(this);
     };
+    
+    Axis.prototype.resetScale = function() {
+        this.min = null;
+        this.max = null;
+        this.numberTicks = null;
+        this.tickInterval = null;
+    }
 
     /**
      * Class: Legend
@@ -999,7 +1006,7 @@
             // default options that will be applied to all series.
             // see <Series> for series options.
             seriesDefaults: {},
-            gridPadding: {top:10, right:10, bottom:10, left:10},
+            gridPadding: {top:10, right:10, bottom:23, left:10},
             series:[]
         };
         // prop: series
@@ -1070,8 +1077,15 @@
         this._plotData = [];
         // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
+        this._renderCount = 0;
         
         this.colorGenerator = $.jqplot.ColorGenerator;
+        
+        this.resetAxesScale = function() {
+            for (var name in this.axes) {
+                this.axes[name].resetScale();
+            }
+        };
         
         // Group: methods
         //
@@ -1141,7 +1155,7 @@
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
-                throw "Canvas dimensions <=0";
+                throw "Canvas dimension not set";
             }
             
             this.data = data;
@@ -1189,6 +1203,101 @@
                 $.jqplot.postInitHooks[i].call(this, target, data, options);
             }
         };  
+        
+        // method: reInitialize
+        // reinitialize plot for replotting.
+        // not called directly.
+        this.reInitialize = function () {
+            // Plot should be visible and have a height and width.
+            // If plot doesn't have height and width for some
+            // reason, set it by other means.  Plot must not have
+            // a display:none attribute, however.
+            if (!this.target.height()) {
+                var h;
+                if (options && options.height) {
+                    h = parseInt(options.height, 10);
+                }
+                else if (this.target.attr('data-height')) {
+                    h = parseInt(this.target.attr('data-height'), 10);
+                }
+                else {
+                    h = parseInt($.jqplot.config.defaultHeight, 10);
+                }
+                this._height = h;
+                this.target.css('height', h+'px');
+            }
+            else {
+                this._height = this.target.height();
+            }
+            if (!this.target.width()) {
+                var w;
+                if (options && options.width) {
+                    w = parseInt(options.width, 10);
+                }
+                else if (this.target.attr('data-width')) {
+                    w = parseInt(this.target.attr('data-width'), 10);
+                }
+                else {
+                    w = parseInt($.jqplot.config.defaultWidth, 10);
+                }
+                this._width = w;
+                this.target.css('width', w+'px');
+            }
+            else {
+                this._width = this.target.width();
+            }
+            
+            if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
+                throw "Target dimension not set";
+            }
+            
+            this._plotDimensions.height = this._height;
+            this._plotDimensions.width = this._width;
+            this.grid._plotDimensions = this._plotDimensions;
+            this.title._plotDimensions = this._plotDimensions;
+            this.baseCanvas._plotDimensions = this._plotDimensions;
+            this.seriesCanvas._plotDimensions = this._plotDimensions;
+            this.eventCanvas._plotDimensions = this._plotDimensions;
+            this.legend._plotDimensions = this._plotDimensions;
+            
+            for (var n in this.axes) {
+                var axis = this.axes[n];
+                axis._plotWidth = this._width;
+                axis._plotHeight = this._height;
+            }
+            
+            this.title._plotWidth = this._width;
+            
+            if (this.textColor) {
+                this.target.css('color', this.textColor);
+            }
+            if (this.fontFamily) {
+                this.target.css('font-family', this.fontFamily);
+            }
+            if (this.fontSize) {
+                this.target.css('font-size', this.fontSize);
+            }
+            
+            for (var i=0; i<this.series.length; i++) {
+                this.populatePlotData(this.series[i], i);
+                this.series[i]._plotDimensions = this._plotDimensions;
+                //this.series[i].init(i, this.grid.borderWidth);
+            }
+            
+            for (var name in this.axes) {
+                this.axes[name]._plotDimensions = this._plotDimensions;
+                this.axes[name]._ticks = [];
+                this.axes[name].renderer.init.call(this.axes[name], {});
+            }
+            
+            if (this.sortData) {
+                sortData(this.series);
+            }
+            
+            this.grid._axes = this.axes;
+            
+            this.legend._series = this.series;
+        };
         
         // sort the series data in increasing order.
         function sortData(series) {
@@ -1409,6 +1518,18 @@
             }
         };
         
+        // method: replot
+        // Empties (clears) the plot target then does
+        // a reinitialization of the plot followed by
+        // a redraw.  Method could be used to interactively
+        // change plot characteristics and then replot.
+        this.replot = function() {
+            this.target.trigger('jqplotPreReplot');
+            this.target.empty();
+            this.reInitialize();
+            this.draw();
+            this.target.trigger('jqplotPostRePlot');
+        };
         
         // method: redraw
         // Empties the plot target div and redraws the plot.
@@ -1416,7 +1537,8 @@
         // and then to comletely clear the plot and redraw.
         // redraw *will not* reinitialize any plot elements.
         // That is, axes will not be autoscaled and defaults
-        // will not be reapplied to any plot elements. 
+        // will not be reapplied to any plot elements.  redraw
+        // is used primarily with zooming. 
         this.redraw = function() {
             this.target.trigger('jqplotPreRedraw');
             this.target.empty();
@@ -1524,6 +1646,9 @@
 
             for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
                 $.jqplot.postDrawHooks[i].call(this);
+            }
+            if (this.target.is(':visible')) {
+                this._renderCount += 1;
             }
             this.target.trigger('jqplotPostDraw', [this]);
         };

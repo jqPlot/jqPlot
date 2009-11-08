@@ -85,14 +85,14 @@
         this.value = value;
         this.axis = axisName;
         if (isMinor) {
-        	this.isMinorTick = true;
+            this.isMinorTick = true;
         }
         return this;
     };
     
     $.jqplot.AxisTickRenderer.prototype.draw = function() {
         if (!this.label) {
-        	this.label = this.formatter(this.formatString, this.value);
+            this.label = this.formatter(this.formatString, this.value);
         }
         style ='style="position:absolute;';
         if (Number(this.label)) {
@@ -104,13 +104,13 @@
             this._elem.css(s, this._styles[s]);
         }
         if (this.fontFamily) {
-        	this._elem.css('font-family', this.fontFamily);
+            this._elem.css('font-family', this.fontFamily);
         }
         if (this.fontSize) {
-        	this._elem.css('font-size', this.fontSize);
+            this._elem.css('font-size', this.fontSize);
         }
         if (this.textColor) {
-        	this._elem.css('color', this.textColor);
+            this._elem.css('color', this.textColor);
         }
         return this._elem;
     };
@@ -118,7 +118,7 @@
     $.jqplot.DefaultTickFormatter = function (format, val) {
         if (typeof val == 'number') {
             if (!format) {
-            	format = '%.1f';
+                format = '%.1f';
             }
             return $.jqplot.sprintf(format, val);
         }

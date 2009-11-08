@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Multiple lines Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link type="text/css" href="jquery-ui/css/overcast/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />
+  
+  <style type="text/css">
+    .ui-tabs {
+      font-size: 12px;
+    }
+  </style>
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+  <script language="javascript" type="text/javascript" src="jquery-ui/js/jquery-ui-1.7.2.custom.min.js"></script>
+
+  <!-- END: load jqplot -->
+  <script type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
+
+    l1 = [18, 36, 14, 11];
+    l2 = [[2, 14], [7, 2], [8,5]];
+    l3 = [4, 7, 9, 2, 11, 5, 9, 13, 8, 7];
+
+    // plot will size to the "data-width" and "data-height" attributes
+    var options = {
+      title: "I was hidden",
+      lengend:{show:true},
+      series:[{},{yaxis:'y2axis'}, {yaxis:'y3axis'}],
+      cursor:{zoom:true}
+    }
+    
+    
+		$("#tabs").tabs();
+    plot1 = $.jqplot('chart1', [l1, l2, l3],  options);
+    $('#tabs').bind('tabsshow', function(event, ui) {
+      if (ui.index == 1) {
+        plot1.replot();
+      }
+    });
+
+  });
+  
+  </script>
+  </head>
+  <body>
+  <div id="tabs">
+  	<ul>
+  		<li><a href="#tabs-1">Nunc tincidunt</a></li>
+  		<li><a href="#tabs-2">Proin dolor</a></li>
+  		<li><a href="#tabs-3">Aenean lacinia</a></li>
+  	</ul>
+  	<div id="tabs-1">
+  		<p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.</p>
+  	</div>
+  	<div id="tabs-2">
+  		<p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis.</p>
+        <div id="chart1" data-height="400px" data-width="600px" style="height:300px;width:400px;margin-top:20px; margin-left:20px;"></div>
+  	</div>
+  	<div id="tabs-3">
+  		<p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+  		<p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+  	</div>
+  </div>    
+  </body>
+</html>
