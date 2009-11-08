@@ -351,7 +351,12 @@
                 // if nothing else, do autoscaling which will try to line up ticks across axes.
                 else {  
                     if (this.numberTicks == null){
-                        this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        if (this.tickInterval) {
+                            this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
+                        }
+                        else {
+                            this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        }
                     }
             
                     if (this.tickInterval == null) {
@@ -365,6 +370,9 @@
                             temp = 1;
                         }
                         this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
+                    }
+                    else {
+                        temp = 1 / this.tickInterval;
                     }
                     
                     // try to compute a nicer, more even tick interval
