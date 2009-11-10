@@ -531,10 +531,6 @@
     Legend.prototype.pack = function(offsets) {
         this.renderer.pack.call(this, offsets);
     };
-    
-    $.jqplot.TableLegendRenderer = function(){
-        //
-    };
 
     /**
      * Class: Title
@@ -1093,12 +1089,6 @@
         
         this.colorGenerator = $.jqplot.ColorGenerator;
         
-        this.resetAxesScale = function() {
-            for (var name in this.axes) {
-                this.axes[name].resetScale();
-            }
-        };
-        
         // Group: methods
         //
         // method: init
@@ -1216,6 +1206,29 @@
             }
         };  
         
+        // method: resetAxesScale
+        // Reset the specified axes min, max, numberTicks and tickInterval properties to null
+        // or reset these properties on all axes if no list of axes is provided.
+        //
+        // Parameters:
+        // axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
+        this.resetAxesScale = function(axes) {
+            var ax = (axes != undefined) ? axes : this.axes;
+            if (ax === true) {
+                ax = this.axes;
+            }
+            console.log(axes, ax);
+            if (ax.constructor === Array) {
+                for (var i = 0; i < ax.length; i++) {
+                    this.axes[ax[i]].resetScale();
+                }
+            }
+            else if (ax.constructor === Object) {
+                for (var name in ax) {
+                    this.axes[name].resetScale();
+                }
+            }
+        };
         // method: reInitialize
         // reinitialize plot for replotting.
         // not called directly.
@@ -1531,16 +1544,32 @@
         };
         
         // method: replot
-        // Empties (clears) the plot target then does
-        // a reinitialization of the plot followed by
+        // Does a reinitialization of the plot followed by
         // a redraw.  Method could be used to interactively
         // change plot characteristics and then replot.
-        this.replot = function() {
+        //
+        // Parameters:
+        // options - Options used for replotting.
+        //
+        // Properties:
+        // clear - false to not clear (empty) the plot container before replotting (default: true).
+        // resetAxes - true to reset all axes min, max, numberTicks and tickInterval setting so axes will rescale themselves.
+        //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
+        this.replot = function(options) {
+            var opts = (options != undefined) ? options : {};
+            var clear = (opts.clear != undefined) ? opts.clear : true;
+            var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
+            console.log(options, opts, clear, resetAxes);
             this.target.trigger('jqplotPreReplot');
-            this.target.empty();
+            if (clear) {
+                this.target.empty();
+            }
+            if (resetAxes) {
+                this.resetAxesScale(resetAxes);
+            }
             this.reInitialize();
             this.draw();
-            this.target.trigger('jqplotPostRePlot');
+            this.target.trigger('jqplotPostReplot');
         };
         
         // method: redraw
@@ -1551,9 +1580,15 @@
         // That is, axes will not be autoscaled and defaults
         // will not be reapplied to any plot elements.  redraw
         // is used primarily with zooming. 
-        this.redraw = function() {
+        //
+        // Parameters:
+        // clear - false to not clear (empty) the plot container before redrawing (default: true).
+        this.redraw = function(clear) {
+            var clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
-            this.target.empty();
+            if (clear) {
+                this.target.empty();
+            }
              for (var ax in this.axes) {
                 this.axes[ax]._ticks = [];
     	    }
