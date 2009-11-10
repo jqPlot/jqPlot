@@ -8,6 +8,36 @@
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link type="text/css" href="jquery-ui/css/overcast/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />
+  
+  <style type="text/css">
+    .ui-tabs-nav, .ui-accordion-header {
+      font-size: 12px;
+    }
+    
+    .ui-tabs-panel, .ui-accordion-content {
+      font-size: 14px;
+    }
+    
+    .jqplot-target {
+      font-size: 18px;
+    }
+    
+    body > table {
+      width: 700px;
+      margin-left:auto;
+      margin-right: auto;
+    }
+    body > table, body > table > tr, body > table > td {
+      width: 700px;
+      border none;
+    }
+    
+    td>p {
+      font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;
+      font-size: 14px;
+    }
+  </style>
   
   <!-- BEGIN: load jquery -->
   <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
@@ -15,57 +45,168 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.OHLCRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="jquery-ui/js/jquery-ui-1.7.2.custom.min.js"></script>
 
   <!-- END: load jqplot -->
   <script type="text/javascript" language="javascript">
   
   $(document).ready(function(){
+    
+    $.jqplot.config.enablePlugins = false;
 
     l1 = [18, 36, 14, 11];
     l2 = [[2, 14], [7, 2], [8,5]];
     l3 = [4, 7, 9, 2, 11, 5, 9, 13, 8, 7];
+    l4 = [['peech',3], ['cabbage', 2], ['bean', 4], ['orange', 5]];
 
     // plot will size to the "data-width" and "data-height" attributes
-    var plot1 = $.jqplot('chart1', [l1]);
+    var options = {
+      title: "I was hidden",
+      lengend:{show:true},
+      series:[{},{yaxis:'y2axis'}, {yaxis:'y3axis'}],
+      cursor:{show:true, zoom:true}
+    }
     
-    // plot will size to the options passed in 
-    var plot2 = $.jqplot('chart2', [l1], {width:200, height:'300px'});
     
-    // plot will size to the config default.
-    // the default sizes are 300 px high by 400 px wide, but can be overridden
-    // as shown here with the $.jqplot.config.defaultWidth and 
-    // $.jqplot.config.defaultHeight setings.
+		$("#tabs").tabs();
+		$("#accordion").accordion();
+		
+    plot1 = $.jqplot('chart1', [l1, l2, l3],  options);
     
-    $.jqplot.config.defaultHeight = 200;
-    $.jqplot.config.defaultWidth = "600px";
-    var plot3 = $.jqplot('chart3', [l1]);
+    plot2 = $.jqplot('chart2', [l4], {
+      height: 200,
+      width: 300,
+      series:[{renderer:$.jqplot.PieRenderer}],
+      legend:{show:true}
+    });
+    
+    var catOHLC = [[1, 138.7, 139.68, 135.18, 135.4],
+    [2, 143.46, 144.66, 139.79, 140.02],
+    [3, 140.67, 143.56, 132.88, 142.44],
+    [4, 136.01, 139.5, 134.53, 139.48],
+    [5, 143.82, 144.56, 136.04, 136.97],
+    [6, 136.47, 146.4, 136, 144.67],
+    [7, 124.76, 135.9, 124.55, 135.81],
+    [8, 123.73, 129.31, 121.57, 122.5]];
+    
+    var ticks = ['Tue', 'Wed', 'Thu', 'Fri', 'Mon', 'Tue', 'Wed', 'Thr'];
+        
+    plot3 = $.jqplot('chart3',[catOHLC],{
+      grid:{ drawGridlines:true},
+      title: 'A CandleStick Chart',
+      axes: {
+          xaxis: {
+              renderer:$.jqplot.CategoryAxisRenderer,
+              ticks:ticks
+          },
+          yaxis: {
+              tickOptions:{formatString:'$%.2f'}
+          }
+      },
+      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}]
+    });
+    
+    $('#tabs').bind('tabsshow', function(event, ui) {
+      if (ui.index == 1 && plot1._drawCount == 0) {
+        plot1.replot();
+      }
+      else if (ui.index == 2 && plot2._drawCount == 0) {
+        plot2.replot();
+      }
+    });
+    
+    $('#accordion').bind('accordionchange', function(event, ui) {
+      var index = $(this).find("h3").index ( ui.newHeader[0] );
+      if (index == 1) {
+        plot3.replot();
+      }
+    });
 
   });
   
   </script>
   </head>
   <body>
+    <table><tr><td>
+      <p>This page demonstrates using plots within containers that are initially hidden.  Examples are shown for jQuery UI tabs and Accordions</p>
+  <div id="tabs">
+  	<ul>
+  		<li><a href="#tabs-1">Tab 1</a></li>
+  		<li><a href="#tabs-2">Tab 2</a></li>
+  		<li><a href="#tabs-3">Tab 3</a></li>
+  	</ul>
+  	<div id="tabs-1">
+  	  <p>Tab 2 and tab 3 contain plots whcih are initially hidden.  Using a combination of alternate sizing specification and the plots "replot" method the plots are properly displayed when their containers are shown.</p>
+  	  <p>The alternate sizing specifications for setting plot height and width are needed because a hidden element (or child of a hidden element) has no size.  The first example in tab 2 uses custom "data-height" and "data-width" attributes on the plot target element to specify height.  The second example uses "width" and "height" properties specified on the options object passed into the $.jqplot() function.</p>
     
-    <p>There are 3 Hidden plots on the page.  Toggle the visibility of each one with the buttons below.</p>
-    
-    <p>Each plot has it's height and width set by a different mechanism.  The first plot uses the custom html attributes "data-width" and "data-height".  The second passes in a "width" and "height" option to the plot constructor.  The third uses the jqplot wide config default settings, but overrides them to 200px high by 600px wide.</p> 
-    
-    <p>The default config settings (if not overridden) are 300px wide by 400px high.  The config default settings will apply to all plots on a page.  The config setting has the lowest order of precedence, however.  jqPlot will first look for a setting in the options object passed to the plot constructor.  It will then look for the custom html attributes.  If these are not found, it will use the config defaults.</p>
-    
-    <p>Note, if the plot target generates a containing box (display property is not "none") and has a height/width css specification, jqPlot will use those values.  These additional mechanisms for sizing the plot are effective only if the plot target or one of it's parent containers is initially set to "none" or no css height/width values are provided for the plot target.</p>
-    
-    <button type="button" name="toggle_plot1" value="" onclick="$('#hider1').toggle();" id="toggle_plot">Custom Attributes</button>
-    <button type="button" name="toggle_plot2" value="" onclick="$('#hider2').toggle();" id="toggle_plot">Plot Option</button>
-    <button type="button" name="toggle_plot3" value="" onclick="$('#hider3').toggle();" id="toggle_plot">Config Default</button>
-    
-    <div id="hider1" style="display:none;">
-      <div id="chart1" data-height="400px" data-width="600px" style="width:100px; height:100px; margin-top:20px; margin-left:20px;"></div>
-    </div>
-    <div id="hider2" style="display:none;">
-      <div id="chart2" data-height="400px" data-width="600px" style="width:100px; height:100px; margin-top:20px; margin-left:20px;"></div>
-    </div>
-    <div id="hider3" style="display:none;">
-      <div id="chart3" style="width:100px; height:100px; margin-top:20px; margin-left:20px;"></div>
-    </div>
+    <p>The default size is 300px wide by 400px high. The default setting can be overriden by specifying different values to the $.jqplot.config.defaultHeight and $.jqplot.config.defaultWidth properties.  Height and width values are taken in this order of prececence:</p>
+      
+      <ol>
+        <li>The css properties if available and plot is not hidden with display:none.</li>
+        <li>Options object passed into the $.jqplot() function.</li>
+        <li>Custom data-height and data-width attributes on the plot target.</li>
+        <li>The config defaults.</li>
+      </ol>
+  	  
+  	  <p>Here is how the replot method can be used to bind to the "tabsshow" event of the UI tabs:</p>
+  	    
+<pre>
+    $('#tabs').bind('tabsshow', function(event, ui) {
+      if (ui.index == 1) {
+        plot1.replot();
+      }
+      else if (ui.index == 2) {
+        plot2.replot();
+      }
+    });
+</pre>
+
+<p>The ui.index property is the index of the tab that was shown. </p>
+  	</div>
+  	
+  	<div id="tabs-2">
+  		<p>This plot was in an initially hidden container.  It's hieght and width are set by the "data-height" and "data-width" properties of the plot container.</p>
+        <div id="chart1" data-height="260px" data-width="480px" style="margin-top:20px; margin-left:20px;"></div>
+  	</div>
+  	
+  	<div id="tabs-3">
+  		<p>This plot is in an initially hidden container.  It's height and width are set by the 'height' and 'width' properties of the options object passed into the plot constructor.</p>
+        <div id="chart2" style="margin-top:20px; margin-left:20px;"></div>
+  	</div>
+  	
+  </div> 
+  
+<div id="accordion" style="margin-top:50px">
+  
+	<h3><a href="#">Section 1</a></h3>
+	<div>
+		<p>Secion 2 contains a plot.  Sizing plots in hidden accordion sections is very similar to sizing in a tab widget.  Because of the default animation on accordions, however, the plot will not draw itself until the entire accordion panel is shown.</p>
+		
+		<p>Binidng to the accordion "accordionchange" event is also similar as with tabs:</p>
+		
+		<pre>
+    $('#accordion').bind('accordionchange', function(event, ui) {
+      var index = $(this).find("h3").index ( ui.newHeader[0] );
+      if (index == 1) {
+        plot3.replot();
+      }
+    });
+    </pre>
+	</div>
+	
+	<h3><a href="#">Section 2</a></h3>
+	<div>
+		<p>
+		This plot also has it's height and width set with the data-height and data-width attributes.  Note, if you want the accordian widget to properly size itself </em>before</em> the plot is shown, you must also specify a css height and width on the plot target.
+		</p>
+		<div id="chart3" data-height="200" data-width="400" style="width:400px; height: 200px; margin-top: 20px; margin-left: 20px"></div>
+	</div>
+	
+</div>
+</td></tr></table>
   </body>
 </html>
