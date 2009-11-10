@@ -1217,7 +1217,6 @@
             if (ax === true) {
                 ax = this.axes;
             }
-            console.log(axes, ax);
             if (ax.constructor === Array) {
                 for (var i = 0; i < ax.length; i++) {
                     this.axes[ax[i]].resetScale();
@@ -1559,7 +1558,6 @@
             var opts = (options != undefined) ? options : {};
             var clear = (opts.clear != undefined) ? opts.clear : true;
             var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
-            console.log(options, opts, clear, resetAxes);
             this.target.trigger('jqplotPreReplot');
             if (clear) {
                 this.target.empty();

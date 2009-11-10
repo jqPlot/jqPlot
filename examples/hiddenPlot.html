@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Multiple lines Test</title>
+  <title>Plots in Hidden Containers</title>
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
@@ -68,7 +68,8 @@
       title: "I was hidden",
       lengend:{show:true},
       series:[{},{yaxis:'y2axis'}, {yaxis:'y3axis'}],
-      cursor:{show:true, zoom:true}
+      cursor:{show:true, zoom:true},
+      axesDefaults:{useSeriesColor:true}
     }
     
     
