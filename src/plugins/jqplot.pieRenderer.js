@@ -62,6 +62,7 @@
         if (this.diameter != null) {
             this.diameter = this.diameter - this.sliceMargin;
         }
+        this._diameter = null;
     };
     
     $.jqplot.PieRenderer.prototype.setGridData = function() {
@@ -87,7 +88,7 @@
     };
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
-        var r = this.diameter / 2;
+        var r = this._diameter / 2;
         var fill = this.fill;
         var lineWidth = this.lineWidth;
         ctx.save();
@@ -183,9 +184,9 @@
         var w = cw - offx - 2 * this.padding;
         var h = ch - offy - 2 * this.padding;
         var d = Math.min(w,h);
-        this.diameter = this.diameter  || d - this.sliceMargin;
+        this._diameter = this.diameter  || d - this.sliceMargin;
         // this.diameter -= this.sliceMargin;
-        var r = this.diameter/2;
+        var r = this._diameter/2;
         ctx.save();
     
         ctx.translate((cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy);
