@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -11,18 +10,29 @@
   <link type="text/css" href="jquery-ui/css/overcast/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />
   
   <style type="text/css">
-  	#resizable { 
-      width: 500px; 
-      height: 400px;
+  body {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    margin: 2em;
+  }
+  
+  p, pre {
+    margin: 1.5em;
+  }
+  
+  	#resizable1, #resizable2 { 
+      width: 400px; 
+      height: 300px;
+      margin-top: 2em;
+      margin-bottom: 2em;
   	}
 	
-  	#resizable h3 { 
-  	  text-align: center; 
-  	  margin: 0; 
-  	}
     
     .jqplot-target {
-      font-size: 18px;
+      font-size: 16px;
+    }
+    
+    .ui-resizable-helper {
+      border: 2px solid gray;
     }
   </style>
   
@@ -44,35 +54,81 @@
     $.jqplot.config.enablePlugins = false;
 
     l1 = [18, 36, 41, 93, 100, 115, 133, 129, 119, 107, 91, 146, 169];
-    l2 = [[2, 66], [7, 46], [11,14]];
+    l2 = [[8, 66], [13, 46], [22,14]];
     l3 = [[3.3, 7], [9.5, 22], [12.1, 37], [18.6, 95], [24, 102]];
 
     var options = {
       title: "Lines",
-      legend:{show:true},
+      legend:{show:true, location:'se'},
       seriesDefaults:{trendline:{show:true, type:"exp"}},
       axes:{yaxis:{renderer:$.jqplot.LogAxisRenderer}}
     }
     
     
-    $("#resizable").resizable();
-		
-    plot1 = $.jqplot('chart1', [l1, l2, l3],  options);
+    $("#resizable1").resizable({delay:20});
+    $("#resizable2").resizable({delay:20, helper:'ui-resizable-helper'});
     
-    $('#resizable').bind('resize', function(event, ui) {
+
+    $('#resizable1').bind('resize', function(event, ui) {
         plot1.replot();
     });
+    
+    $('#resizable2').bind('resizestop', function(event, ui) {
+        $('#chart2').height($('#resizable2').height()*0.96);
+        $('#chart2').width($('#resizable2').width()*0.96);
+        plot2.replot();
+    });
+	
+    plot1 = $.jqplot('chart1', [l1, l3],  options);
+    plot2 = $.jqplot('chart2', [l1, l3],  options);
 
   });
   
   </script>
   </head>
   <body>
+    
+<p>Plot targets can be placed inside of resizable containers for dynamic plot sizing.  The examples here use the jQuery UI package for resizing functionality.</p>
 
-
-<div id="resizable" class="ui-widget-content">
+    <table><tr>
+      <td>
+<div id="resizable1" class="ui-widget-content">
     <div id="chart1" style="height:96%; width:96%;"></div>
 </div>
-        
+</td>
+<td>
+
+<p>The first plot has good resize performance in Firefox, Safari and other canvas enabled browsers.  The plot will resize dynamically with the container.  IE performance will be slow since IE doesn't natively support the canvas element.</p>
+
+<p>Resizing is handled by binding a handler to the 'resize' event. The handler function replots the plot during resize.  Here, the plot targets's height and width must be specified as a percentage of the container and the container must be visible.</p>
+
+<p>The event handler looks like:</p>
+<pre>
+    $('#resizable1').bind('resize', function(event, ui) {
+        plot1.replot();
+    });
+</pre>
+</td>
+</tr></table>
+<table><tr>
+  <td>
+
+<div id="resizable2" class="ui-widget-content">
+    <div id="chart2" style="height:288px; width:384px;"></div>
+</div>
+</td>
+<td>
+<p>The second plot uses an alternative sizing method that is more responsive in all browsers, especially IE.  The differnece?  First, the plot target is given a static height and width that will fit inside the resizable container.  Then, instead of resizing dynamically with the container, the plots replot() method is called at the end of the resize.  When resizing is done, the plot targets hieght and width are set to a percentage of the container's and then the replot method is called.</p>
+
+<p>This container can be resized from all sides to make it easier for experimentation.  This event handler looks like:</p>
+<pre>
+    $('#resizable2').bind('resizestop', function(event, ui) {
+        $('#chart2').height($('#resizable2').height()*0.96);
+        $('#chart2').width($('#resizable2').width()*0.96);
+        plot2.replot();
+    });
+</pre>
+</td></tr></table>
+       
   </body>
 </html>

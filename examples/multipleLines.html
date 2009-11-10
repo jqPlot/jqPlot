@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Multiple lines Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+
+  <!-- END: load jqplot -->
+  <script type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
+
+    l1 = [18, 36, 14, 11];
+    l2 = [[2, 14], [7, 2], [8,5]];
+    l3 = [4, 7, 9, 2, 11, 5, 9, 13, 8, 7];
+
+    $.jqplot('chart1', [l1, l2, l3], {
+      legend:{show:true},
+      series:[
+        {showLabel:true},
+        {showLabel:true},
+        {showLabel:false}
+      ]
+    });
+
+  });
+  
+  </script>
+  </head>
+  <body>
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+  </body>
+</html>
