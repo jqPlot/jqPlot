@@ -15,6 +15,7 @@ extras
 images
 style.css
 tests
+examples/jquery-ui*
 
 
 # switch to regexp syntax.
