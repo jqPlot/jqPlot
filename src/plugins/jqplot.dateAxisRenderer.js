@@ -829,7 +829,7 @@
             if (match) {
                 var d = new Date();
                 var y = parseFloat(String(d.getFullYear()).slice(2,4));
-                var cent = parseInt(String(d.getFullYear())/100)*100;
+                var cent = parseInt(String(d.getFullYear())/100, 10)*100;
                 var centoffset = 1;
                 var m1 = parseFloat(match[1]);
                 var m3 = parseFloat(match[3]);

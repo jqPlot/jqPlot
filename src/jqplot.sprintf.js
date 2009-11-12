@@ -87,7 +87,7 @@
         var a = arguments, i = 0, format = a[i++];
 
         return format.replace($.jqplot.sprintf.regex, function(substring, valueIndex, flags, minWidth, _, precision, type) {
-    	    if (substring == '%%') return '%';
+    	    if (substring == '%%') { return '%'; }
 
     	    // parse flags
     	    var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false;
@@ -157,7 +157,7 @@
     		case 'u': return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
     		case 'i':
     		case 'd': {
-              var number = parseInt(+value);
+              var number = parseInt(+value, 10);
               if (isNaN(number)) {
                 return '';
               }

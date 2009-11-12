@@ -455,7 +455,7 @@
         this.max = null;
         this.numberTicks = null;
         this.tickInterval = null;
-    }
+    };
 
     /**
      * Class: Legend
@@ -1582,7 +1582,7 @@
         // Parameters:
         // clear - false to not clear (empty) the plot container before redrawing (default: true).
         this.redraw = function(clear) {
-            var clear = (clear != null) ? clear : true;
+            clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
                 this.target.empty();
