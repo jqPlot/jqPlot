@@ -92,8 +92,8 @@
         var fill = this.fill;
         var lineWidth = this.lineWidth;
         ctx.save();
-
         ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
+        
         if (isShadow) {
             for (var i=0; i<this.shadowDepth; i++) {
                 ctx.save();
@@ -107,6 +107,13 @@
         }
         
         function doDraw () {
+            // Fix for IE and Chrome that can't seem to draw circles correctly.
+            if (ang2 > 6.282) {
+                ang2 = 6.282;
+                if (ang1 > ang2) {
+                    ang1 = 6.281;
+                }
+            }
             ctx.beginPath();  
             ctx.moveTo(0, 0);
             ctx.fillStyle = color;
@@ -188,7 +195,6 @@
         // this.diameter -= this.sliceMargin;
         var r = this._diameter/2;
         ctx.save();
-    
         ctx.translate((cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy);
         
         if (this.shadow) {
@@ -203,8 +209,6 @@
             var ang1 = (i == 0) ? 0 : gd[i-1][1];
             this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], colorGenerator.next());
         }
-        // shadows
-        // markers
         
         ctx.restore();        
     };

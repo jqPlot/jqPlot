@@ -1,11 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Simple Test</title>
-  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  <!--[if IE]>
+  <script language="javascript" type="text/javascript" src="../src/excanvas.js"></script>
+  <script type='text/javascript' 
+        src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+  
+  <![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   
@@ -21,11 +25,28 @@
   <script type="text/javascript" language="javascript">
   
   $(document).ready(function(){
-    $.jqplot('pie', [[['a',1],['b',2]]], {seriesDefaults:{renderer:$.jqplot.PieRenderer}})
+
+    $.jqplot('pie', [[['a',25],['b',14],['c',7]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer},
+      legend:{show:true}      
+    });
+
+    $.jqplot('pie1', [[['a',25],['b',0],['c',0]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer},
+      legend:{show:true}      
+    });
+    
+    $.jqplot('pie2', [[["a",1000],["b",.001],["c",.001]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer},
+      legend:{show:true}      
+    });
+    
   });
   </script>
   </head>
   <body>
     <div id="pie" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
+    <div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
+    <div id="pie2" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
   </body>
 </html>
