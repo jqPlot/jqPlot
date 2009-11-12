@@ -1,11 +1,26 @@
 Title: Change Log
 
+0.9.6:
+
+* New, easier to use, replot() method for placing plots in tabs, accordions,
+  resizable containers or for changing plot parameters programmatically.
+* Updated legend renderer for pie charts to draw swatches which will
+  print correctly.
+* Fixed issue #118 with patch from taum so autoscale option will
+  honor tickInterval and numberTicks options
+* Fix to plot diameter calculation for initially hidden plots.
+* Added examples for making plots in jQuery UI tabs and accordions.
+* Fixed issue #120 where pie chart with single slice not displaying
+  correctly in IE and Chrom
+
+
 0.9.5.2:
 
 * Fixed #102 where double clicking on plot that has zoom enabled, but
   has not been zoomed resulted in error.
 * Fixed bug where candlestick coloring options not working.
 * Added option to turn individual series labels off in the legend.
+
 
 0.9.5.1:
 
