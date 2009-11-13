@@ -1,5 +1,9 @@
 Title: jqPlot Options
 
+**This document is out of date.  While the options described here should still be 
+relavent and valid, it has not been updated for many new options.  Sorry for
+this inconvenience.**
+
 This document describes the options available to jqPlot.  These are set with the 
 third argument to the $.jqplot('target', data, options) function. Options are 
 using the following convention:

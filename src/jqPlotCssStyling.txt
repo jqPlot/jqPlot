@@ -26,9 +26,9 @@ to all plot elements according to css rules.
 
 .jqplot-yaxis - Styles applied to the primary y axis only.
 
-.jqplot-x2axis - Styles applied to the secondary x axis only.
+.jqplot-x2axis, .jqplot-x3axis, ... - Styles applied to the 2nd, 3rd, etc. x axis only.
 
-.jqplot-y2axis - Styles applied to the secondary y axis only.
+.jqplot-y2axis, .jqplot-y3axis, ... - Styles applied to the 2nd, 3rd, etc.y axis only.
 
 .jqplot-axis-tick - Styles applied to all axis ticks
 
@@ -40,12 +40,14 @@ to all plot elements according to css rules.
 
 .jqplot-y2axis-tick - Styles applied to secondary y axis ticks only.
 
-table.jqplot-legend - Styles applied to the legend box table.
+table.jqplot-table-legend - Styles applied to the legend box table.
 
 .jqplot-title - Styles applied to the title.
 
 .jqplot-cursor-tooltip - Styles applied to the cursor tooltip
 
-.jqplot-highlighter-tooltip - Styles applied to the highlighter tooltip. 
+.jqplot-highlighter-tooltip - Styles applied to the highlighter tooltip.
+
+div.jqplot-table-legend-swatch - the div element used for the colored swatch on the legend.
 
 Note that axes will be assigned 2 classes like: class=".jqplot-axis .jqplot-xaxis".

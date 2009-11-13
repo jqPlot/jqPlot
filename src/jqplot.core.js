@@ -87,11 +87,17 @@
      * 
      * Properties:
      * config - object to hold configuration information for jqPlot plot object.
-     * enablePlugins - True to enable plugins by default.  Plugins must be explicitly disabled.
-     *   False to disable plugins by default.  Plugins must be explicitly enabled.
+     * 
+     * attributes:
+     * enablePlugins - False to disable plugins by default.  Plugins must then be explicitly 
+     *   enabled in the individual plot options.  Default: true.
      *   This property sets the "show" property of certain plugins to true or false.
      *   Only plugins that can be immediately active upon loading are affected.  This includes
      *   non-renderer plugins like cursor, dragable, highlighter, and trendline.
+     * defaultHeight - Default height for plots where no css height specification exists.  This
+     *   is a jqplot wide default.
+     * defaultWidth - Default height for plots where no css height specification exists.  This
+     *   is a jqplot wide default.
      */
 
     $.jqplot = function(target, data, options) {
