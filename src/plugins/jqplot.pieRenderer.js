@@ -109,8 +109,11 @@
         function doDraw () {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
-            if (ang2 > 6.282) {
-                ang2 = Math.PI*2;
+             if (ang2 > 6.282) {
+                ang2 = 6.282;
+                if (ang1 > ang2) {
+                    ang1 = 6.281;
+                }
             }
             ctx.beginPath();  
             ctx.moveTo(0, 0);
