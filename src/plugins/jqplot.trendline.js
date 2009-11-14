@@ -81,7 +81,7 @@
     function addTrendlineLegend(series) {
         var lt = series.trendline.label.toString();
         var ret = null;
-        if (series.trendline.show && lt) {
+        if (this.renderer.constructor != $.jqplot.PieRenderer && series.trendline.show && lt) {
             ret = {label:lt, color:series.trendline.color};
         }
         return ret;
@@ -89,10 +89,12 @@
 
     // called within scope of a series
     function parseTrendLineOptions (seriesDefaults, options) {
-        this.trendline = new $.jqplot.Trendline();
-        options = options || {};
-        $.extend(true, this.trendline, {color:this.color}, seriesDefaults.trendline, options.trendline);
-        this.trendline.renderer.init.call(this.trendline, null);
+        if (this.renderer.constructor != $.jqplot.PieRenderer) {
+            this.trendline = new $.jqplot.Trendline();
+            options = options || {};
+            $.extend(true, this.trendline, {color:this.color}, seriesDefaults.trendline, options.trendline);
+            this.trendline.renderer.init.call(this.trendline, null);
+        }
     }
     
     // called within scope of series object
@@ -100,7 +102,7 @@
         // if we have options, merge trendline options in with precedence
         options = $.extend(true, {}, this.trendline, options);
 
-        if (options.show) {
+        if (options.show && this.renderer.constructor != $.jqplot.PieRenderer) {
             var fit;
             // this.renderer.setGridData.call(this);
             var data = options.data || this.data;

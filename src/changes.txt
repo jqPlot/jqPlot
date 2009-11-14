@@ -11,7 +11,7 @@ Title: Change Log
 * Fix to plot diameter calculation for initially hidden plots.
 * Added examples for making plots in jQuery UI tabs and accordions.
 * Fixed issue #120 where pie chart with single slice not displaying
-  correctly in IE and Chrom
+  correctly in IE and Chrome
 
 
 0.9.5.2:
