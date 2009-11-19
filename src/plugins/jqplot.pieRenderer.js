@@ -32,10 +32,10 @@
     
     // called with scope of a series
     $.jqplot.PieRenderer.prototype.init = function(options) {
-	    // Group: Properties
-	    //
-	    // prop: diameter
-	    // diameter of the pie, auto computed by default
+        // Group: Properties
+        //
+        // prop: diameter
+        // diameter of the pie, auto computed by default
         this.diameter = null;
         // prop: padding
         // padding between the pie and plot edges, legend, etc.

@@ -17,17 +17,17 @@
  */
 (function($) {   
     /**
-	*  class: $.jqplot.CategoryAxisRenderer
-	*  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
-	*  This renderer has no options beyond those supplied by the <Axis> class. 
-	*  
-	*  To use this renderer, include the plugin in your source
-	*  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
-	*  
-	*  and supply the appropriate options to your plot
-	*  
-	*  > {axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}}
-	**/
+    *  class: $.jqplot.CategoryAxisRenderer
+    *  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
+    *  This renderer has no options beyond those supplied by the <Axis> class. 
+    *  
+    *  To use this renderer, include the plugin in your source
+    *  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
+    *  
+    *  and supply the appropriate options to your plot
+    *  
+    *  > {axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}}
+    **/
     $.jqplot.CategoryAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
     };
@@ -52,18 +52,18 @@
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
                     if (d[j][0] < db.min || db.min == null) {
-                    	db.min = d[j][0];
+                        db.min = d[j][0];
                     }
                     if (d[j][0] > db.max || db.max == null) {
-                    	db.max = d[j][0];
+                        db.max = d[j][0];
                     }
                 }              
                 else {
                     if (d[j][1] < db.min || db.min == null) {
-                    	db.min = d[j][1];
+                        db.min = d[j][1];
                     }
                     if (d[j][1] > db.max || db.max == null) {
-                    	db.max = d[j][1];
+                        db.max = d[j][1];
                     }
                 }              
             }
@@ -196,7 +196,7 @@
 
             if (this.tickInterval == null) {
 
-            	this.tickInterval = range / (this.numberTicks-1);
+                this.tickInterval = range / (this.numberTicks-1);
 
             }
             // if tickInterval is specified, we will ignore any computed maximum.

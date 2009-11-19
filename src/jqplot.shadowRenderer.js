@@ -16,8 +16,8 @@
  * 
  */
 (function($) {
-	// class: $.jqplot.shadowRenderer
-	// The default jqPlot shadow renderer, rendering shadows behind shapes.
+    // class: $.jqplot.shadowRenderer
+    // The default jqPlot shadow renderer, rendering shadows behind shapes.
     $.jqplot.ShadowRenderer = function(options){ 
         // Group: Properties
         
@@ -91,10 +91,10 @@
                 
             }
             if (closePath) {
-            	ctx.closePath();
+                ctx.closePath();
             }
             if (fill) {
-            	ctx.fill();
+                ctx.fill();
             }
             else {
                 ctx.stroke();

@@ -1595,7 +1595,7 @@
             }
              for (var ax in this.axes) {
                 this.axes[ax]._ticks = [];
-    	    }
+            }
             for (var i=0; i<this.series.length; i++) {
                 this.populatePlotData(this.series[i], i);
             }
@@ -1719,24 +1719,24 @@
         };
         
         function getEventPosition(ev) {
-    	    var plot = ev.data.plot;
+            var plot = ev.data.plot;
             // var xaxis = plot.axes.xaxis;
             // var x2axis = plot.axes.x2axis;
             // var yaxis = plot.axes.yaxis;
             // var y2axis = plot.axes.y2axis;
-    	    var offsets = plot.eventCanvas._elem.offset();
-    	    var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
+            var offsets = plot.eventCanvas._elem.offset();
+            var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
             // var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
-    	    var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
-    	    
-    	    var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
-    	    var ax = plot.axes;
-    	    for (var n=11; n>0; n--) {
-    	        var axis = an[n-1];
-    	        if (ax[axis].show) {
-    	            dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
-    	        }
-    	    }
+            var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
+            
+            var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+            var ax = plot.axes;
+            for (var n=11; n>0; n--) {
+                var axis = an[n-1];
+                if (ax[axis].show) {
+                    dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
+                }
+            }
 
             return ({offsets:offsets, gridPos:gridPos, dataPos:dataPos});
         }
@@ -1795,7 +1795,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onDblClick = function(ev) {
@@ -1804,38 +1804,38 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseUp = function(ev) {
             var positions = getEventPosition(ev);
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
         };
         
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseEnter = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseEnter', [positions.gridPos, positions.dataPos, null, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseEnter', [positions.gridPos, positions.dataPos, null, p]);
         };
         
         this.onMouseLeave = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-    	    ev.data.plot.eventCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
         };
         
         this.drawSeries = function(sctx, options){
@@ -1963,17 +1963,17 @@
         return ret;
     };
         
-	// Convienence function that won't hang IE.
-	$.jqplot.log = function() {
-	    if (window.console && $.jqplot.debug) {
-	       if (arguments.length == 1) {
-	           console.log (arguments[0]);
-	        }
-	       else {
-	           console.log(arguments);
-	        }
-	    }
-	};
-	var log = $.jqplot.log;
-	
+    // Convienence function that won't hang IE.
+    $.jqplot.log = function() {
+        if (window.console && $.jqplot.debug) {
+           if (arguments.length == 1) {
+               console.log (arguments[0]);
+            }
+           else {
+               console.log(arguments);
+            }
+        }
+    };
+    var log = $.jqplot.log;
+    
 })(jQuery);

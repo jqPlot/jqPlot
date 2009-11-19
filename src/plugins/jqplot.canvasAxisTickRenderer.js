@@ -159,13 +159,13 @@
         if (this._elem) {
          return this._elem.outerWidth(true);
         }
-     	else {
-     	    var tr = this._textRenderer;
-	        var l = tr.getWidth(ctx);
-	        var h = tr.getHeight(ctx);
-	        var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
-	        return w;
-     	}
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
+            var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
+            return w;
+        }
     };
     
     // return height along the y axis.
@@ -173,10 +173,10 @@
         if (this._elem) {
          return this._elem.outerHeight(true);
         }
-     	else {
-     	    var tr = this._textRenderer;
-	        var l = tr.getWidth(ctx);
-	        var h = tr.getHeight(ctx);
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
             var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
             return w;
         }
@@ -191,14 +191,14 @@
     $.jqplot.CanvasAxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
         this.value = value;
         if (isMinor) {
-        	this.isMinorTick = true;
+            this.isMinorTick = true;
         }
         return this;
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.draw = function(ctx) {
         if (!this.label) {
-        	this.label = this.formatter(this.formatString, this.value);
+            this.label = this.formatter(this.formatString, this.value);
         }
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.
@@ -212,7 +212,7 @@
         domelem.style.height = h;
         domelem.style.textAlign = 'left';
         domelem.style.position = 'absolute';
-		this._domelem = domelem;
+        this._domelem = domelem;
         this._elem = $(domelem);
         this._elem.css(this._styles);
         this._elem.addClass('jqplot-'+this.axis+'-tick');
@@ -225,8 +225,8 @@
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-    	var ctx = this._elem.get(0).getContext("2d");
-    	this._textRenderer.draw(ctx, this.label);
+        var ctx = this._elem.get(0).getContext("2d");
+        this._textRenderer.draw(ctx, this.label);
     };
     
 })(jQuery);

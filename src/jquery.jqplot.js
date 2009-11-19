@@ -25,24 +25,24 @@
  */
  
 (function(){
-	var getRootNode = function(){
-		// figure out the path to this loader
-		if(this["document"] && this["document"]["getElementsByTagName"]){
-			var scripts = document.getElementsByTagName("script");
-			var pat = /jquery\.jqplot\.js/i;
-			for(var i = 0; i < scripts.length; i++){
-				var src = scripts[i].getAttribute("src");
-				if(!src){ continue; }
-				var m = src.match(pat);
-				if(m){
-					return { 
-						node: scripts[i], 
-						root: src.substring(0, m.index)
-					};
-				}
-			}
-		}
-	};
+    var getRootNode = function(){
+        // figure out the path to this loader
+        if(this["document"] && this["document"]["getElementsByTagName"]){
+            var scripts = document.getElementsByTagName("script");
+            var pat = /jquery\.jqplot\.js/i;
+            for(var i = 0; i < scripts.length; i++){
+                var src = scripts[i].getAttribute("src");
+                if(!src){ continue; }
+                var m = src.match(pat);
+                if(m){
+                    return { 
+                        node: scripts[i], 
+                        root: src.substring(0, m.index)
+                    };
+                }
+            }
+        }
+    };
 
 
     var files = ['jqplot.core.js', 'jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.axisLabelRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.shadowRenderer.js', 'jqplot.shapeRenderer.js', 'jqplot.sprintf.js'];

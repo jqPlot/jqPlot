@@ -117,20 +117,20 @@
 
             for (var j=0; j<d.length; j++) { 
                 if (d[j][2] < db.min || db.min == null) {
-                	db.min = d[j][2];
+                    db.min = d[j][2];
                 }
                 if (d[j][1] > db.max || db.max == null) {
-                	db.max = d[j][1];
+                    db.max = d[j][1];
                 }             
             }
         }
         else {
             for (var j=0; j<d.length; j++) { 
                 if (d[j][3] < db.min || db.min == null) {
-                	db.min = d[j][3];
+                    db.min = d[j][3];
                 }
                 if (d[j][2] > db.max || db.max == null) {
-                	db.max = d[j][2];
+                    db.max = d[j][2];
                 }             
             }
         }
@@ -338,6 +338,6 @@
         }
     };
     
-	//$.jqplot.preInitHooks.push($.jqplot.OHLCRenderer.checkOptions);
+    //$.jqplot.preInitHooks.push($.jqplot.OHLCRenderer.checkOptions);
     
 })(jQuery);    

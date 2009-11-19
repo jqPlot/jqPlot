@@ -140,13 +140,13 @@
         if (this._elem) {
          return this._elem.outerWidth(true);
         }
-     	else {
-     	    var tr = this._textRenderer;
-	        var l = tr.getWidth(ctx);
-	        var h = tr.getHeight(ctx);
-	        var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
-	        return w;
-     	}
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
+            var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
+            return w;
+        }
     };
     
     // return height along the y axis.
@@ -154,10 +154,10 @@
         if (this._elem) {
          return this._elem.outerHeight(true);
         }
-     	else {
-     	    var tr = this._textRenderer;
-	        var l = tr.getWidth(ctx);
-	        var h = tr.getHeight(ctx);
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
             var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
             return w;
         }
@@ -181,7 +181,7 @@
         domelem.style.height = h;
         // domelem.style.textAlign = 'center';
         domelem.style.position = 'absolute';
-		this._domelem = domelem;
+        this._domelem = domelem;
         this._elem = $(domelem);
         this._elem.addClass('jqplot-'+this.axis+'-label');
         
@@ -193,8 +193,8 @@
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-    	var ctx = this._elem.get(0).getContext("2d");
-    	this._textRenderer.draw(ctx, this.label);
+        var ctx = this._elem.get(0).getContext("2d");
+        this._textRenderer.draw(ctx, this.label);
     };
     
 })(jQuery);

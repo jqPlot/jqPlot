@@ -35,18 +35,18 @@
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
                     if (d[j][0] < db.min || db.min == null) {
-                    	db.min = d[j][0];
+                        db.min = d[j][0];
                     }
                     if (d[j][0] > db.max || db.max == null) {
-                    	db.max = d[j][0];
+                        db.max = d[j][0];
                     }
                 }              
                 else {
                     if (d[j][1] < db.min || db.min == null) {
-                    	db.min = d[j][1];
+                        db.min = d[j][1];
                     }
                     if (d[j][1] > db.max || db.max == null) {
-                    	db.max = d[j][1];
+                        db.max = d[j][1];
                     }
                 }              
             }
@@ -69,7 +69,7 @@
             this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
             
             if (this.name == 'xaxis' || this.name == 'x2axis') {
-            	this._elem.width(this._plotDimensions.width);
+                this._elem.width(this._plotDimensions.width);
             }
             else {
                 this._elem.height(this._plotDimensions.height);
@@ -125,7 +125,7 @@
                         temp = tick._elem.outerWidth(true);
                     }
                     if (temp > dim) {
-                    	dim = temp;
+                        dim = temp;
                     }
                 }
             }
@@ -136,23 +136,23 @@
             }
             if (this.name == 'xaxis') {
                 dim = dim + h;
-            	this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
+                this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
             }
             else if (this.name == 'x2axis') {
                 dim = dim + h;
-            	this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
+                this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
             }
             else if (this.name == 'yaxis') {
                 dim = dim + w;
-            	this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
-            	if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
                     this._label._elem.css('width', w+'px');
                 }
             }
             else {
                 dim = dim + w;
-            	this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
-            	if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
                     this._label._elem.css('width', w+'px');
                 }
             }
@@ -188,7 +188,7 @@
                         t.showMark = false;
                     }
                     else if (!this.showTickMarks) {
-                    	t.showMark = false;
+                        t.showMark = false;
                     }
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
@@ -201,7 +201,7 @@
                         t.showMark = false;
                     }
                     else if (!this.showTickMarks) {
-                    	t.showMark = false;
+                        t.showMark = false;
                     }
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
@@ -413,7 +413,7 @@
                 }
             
                 if (this.tickInterval == null) {
-                	this.tickInterval = range / (this.numberTicks-1);
+                    this.tickInterval = range / (this.numberTicks-1);
                 }
             }
 
@@ -426,7 +426,7 @@
                     t.showMark = false;
                 }
                 else if (!this.showTickMarks) {
-                	t.showMark = false;
+                    t.showMark = false;
                 }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);

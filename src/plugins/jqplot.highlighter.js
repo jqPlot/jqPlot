@@ -16,40 +16,40 @@
  * 
  */
 (function($) {
-	$.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-	
-	/**
-	 * Class: $.jqplot.Highlighter
-	 * Plugin which will highlight data points when they are moused over.
-	 * 
-	 * To use this plugin, include the js
-	 * file in your source:
-	 * 
-	 * > <script type="text/javascript" src="plugins/jqplot.highlighter.js"></script>
-	 * 
-	 * A tooltip providing information about the data point is enabled by default.
-	 * To disable the tooltip, set "showTooltip" to false.
-	 * 
-	 * You can control what data is displayed in the tooltip with various
-	 * options.  The "tooltipAxes" option controls wether the x, y or both
-	 * data values are displayed.
-	 * 
-	 * Some chart types (e.g. hi-low-close) have more than one y value per
-	 * data point. To display the additional values in the tooltip, set the
-	 * "yvalues" option to the desired number of y values present (3 for a hlc chart).
-	 * 
-	 * By default, data values will be formatted with the same formatting
-	 * specifiers as used to format the axis ticks.  A custom format code
-	 * can be supplied with the tooltipFormatString option.  This will apply 
-	 * to all values in the tooltip.  
-	 * 
-	 * For more complete control, the "formatString" option can be set.  This
-	 * Allows conplete control over tooltip formatting.  Values are passed to
-	 * the format string in an order determined by the "tooltipAxes" and "yvalues"
-	 * options.  So, if you have a hi-low-close chart and you just want to display 
-	 * the hi-low-close values in the tooltip, you could set a formatString like:
-	 * 
-	 * > highlighter: {
+    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    
+    /**
+     * Class: $.jqplot.Highlighter
+     * Plugin which will highlight data points when they are moused over.
+     * 
+     * To use this plugin, include the js
+     * file in your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.highlighter.js"></script>
+     * 
+     * A tooltip providing information about the data point is enabled by default.
+     * To disable the tooltip, set "showTooltip" to false.
+     * 
+     * You can control what data is displayed in the tooltip with various
+     * options.  The "tooltipAxes" option controls wether the x, y or both
+     * data values are displayed.
+     * 
+     * Some chart types (e.g. hi-low-close) have more than one y value per
+     * data point. To display the additional values in the tooltip, set the
+     * "yvalues" option to the desired number of y values present (3 for a hlc chart).
+     * 
+     * By default, data values will be formatted with the same formatting
+     * specifiers as used to format the axis ticks.  A custom format code
+     * can be supplied with the tooltipFormatString option.  This will apply 
+     * to all values in the tooltip.  
+     * 
+     * For more complete control, the "formatString" option can be set.  This
+     * Allows conplete control over tooltip formatting.  Values are passed to
+     * the format string in an order determined by the "tooltipAxes" and "yvalues"
+     * options.  So, if you have a hi-low-close chart and you just want to display 
+     * the hi-low-close values in the tooltip, you could set a formatString like:
+     * 
+     * > highlighter: {
      * >     tooltipAxes: 'y',
      * >     yvalues: 3,
      * >     formatString:'<table class="jqplot-highlighter">
@@ -57,113 +57,113 @@
      * >         <tr><td>low:</td><td>%s</td></tr>
      * >         <tr><td>close:</td><td>%s</td></tr></table>'
      * > }
-	 * 
-	 */
-	$.jqplot.Highlighter = function(options) {
-	    // Group: Properties
-	    //
-	    //prop: show
-	    // true to show the highlight.
-	    this.show = $.jqplot.config.enablePlugins;
-	    // prop: markerRenderer
-	    // Renderer used to draw the marker of the highlighted point.
-	    // Renderer will assimilate attributes from the data point being highlighted,
-	    // so no attributes need set on the renderer directly.
-	    // Default is to turn off shadow drawing on the highlighted point.
-	    this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
-	    // prop: showMarker
-	    // true to show the marker
-	    this.showMarker  = true;
-	    // prop: lineWidthAdjust
-	    // Pixels to add to the lineWidth of the highlight.
-	    this.lineWidthAdjust = 2.5;
-	    // prop: sizeAdjust
-	    // Pixels to add to the overall size of the highlight.
-	    this.sizeAdjust = 5;
-	    // prop: showTooltip
-	    // Show a tooltip with data point values.
-	    this.showTooltip = true;
-	    // prop: tooltipLocation
-	    // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
-	    this.tooltipLocation = 'nw';
-	    // prop: tooltipFade
-	    // true = fade in/out tooltip, flase = show/hide tooltip
-	    this.fadeTooltip = true;
-	    // prop: tooltipFadeSpeed
-	    // 'slow', 'def', 'fast', or number of milliseconds.
-	    this.tooltipFadeSpeed = "fast";
-	    // prop: tooltipOffset
-	    // Pixel offset of tooltip from the highlight.
-	    this.tooltipOffset = 2;
-	    // prop: tooltipAxes
-	    // Which axes to display in tooltip, 'x', 'y' or 'both', 'xy' or 'yx'
-	    // 'both' and 'xy' are equivalent, 'yx' reverses order of labels.
-	    this.tooltipAxes = 'both';
-	    // prop; tooltipSeparator
-	    // String to use to separate x and y axes in tooltip.
-	    this.tooltipSeparator = ', ';
-	    // prop: useAxesFormatters
-	    // Use the x and y axes formatters to format the text in the tooltip.
-	    this.useAxesFormatters = true;
-	    // prop: tooltipFormatString
-	    // sprintf format string for the tooltip.
-	    // Uses Ash Searle's javascript sprintf implementation
-	    // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
-	    // See http://perldoc.perl.org/functions/sprintf.html for reference.
-	    // Additional "p" and "P" format specifiers added by Chris Leonello.
-	    this.tooltipFormatString = '%.5P';
-	    // prop: formatString
-	    // alternative to tooltipFormatString
-	    // will format the whole tooltip text, populating with x, y values as
-	    // indicated by tooltipAxes option.  So, you could have a tooltip like:
-	    // 'Date: %s, number of cats: %d' to format the whole tooltip at one go.
-	    // If useAxesFormatters is true, values will be formatted according to
-	    // Axes formatters and you can populate your tooltip string with 
-	    // %s placeholders.
-	    this.formatString = null;
-	    // prop: yvalues
-	    // Number of y values to expect in the data point array.
-	    // Typically this is 1.  Certain plots, like OHLC, will
-	    // have more y values in each data point array.
-	    this.yvalues = 1;
-	    this._tooltipElem;
-	    this.isHighlighting = false;
+     * 
+     */
+    $.jqplot.Highlighter = function(options) {
+        // Group: Properties
+        //
+        //prop: show
+        // true to show the highlight.
+        this.show = $.jqplot.config.enablePlugins;
+        // prop: markerRenderer
+        // Renderer used to draw the marker of the highlighted point.
+        // Renderer will assimilate attributes from the data point being highlighted,
+        // so no attributes need set on the renderer directly.
+        // Default is to turn off shadow drawing on the highlighted point.
+        this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+        // prop: showMarker
+        // true to show the marker
+        this.showMarker  = true;
+        // prop: lineWidthAdjust
+        // Pixels to add to the lineWidth of the highlight.
+        this.lineWidthAdjust = 2.5;
+        // prop: sizeAdjust
+        // Pixels to add to the overall size of the highlight.
+        this.sizeAdjust = 5;
+        // prop: showTooltip
+        // Show a tooltip with data point values.
+        this.showTooltip = true;
+        // prop: tooltipLocation
+        // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+        this.tooltipLocation = 'nw';
+        // prop: tooltipFade
+        // true = fade in/out tooltip, flase = show/hide tooltip
+        this.fadeTooltip = true;
+        // prop: tooltipFadeSpeed
+        // 'slow', 'def', 'fast', or number of milliseconds.
+        this.tooltipFadeSpeed = "fast";
+        // prop: tooltipOffset
+        // Pixel offset of tooltip from the highlight.
+        this.tooltipOffset = 2;
+        // prop: tooltipAxes
+        // Which axes to display in tooltip, 'x', 'y' or 'both', 'xy' or 'yx'
+        // 'both' and 'xy' are equivalent, 'yx' reverses order of labels.
+        this.tooltipAxes = 'both';
+        // prop; tooltipSeparator
+        // String to use to separate x and y axes in tooltip.
+        this.tooltipSeparator = ', ';
+        // prop: useAxesFormatters
+        // Use the x and y axes formatters to format the text in the tooltip.
+        this.useAxesFormatters = true;
+        // prop: tooltipFormatString
+        // sprintf format string for the tooltip.
+        // Uses Ash Searle's javascript sprintf implementation
+        // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
+        // See http://perldoc.perl.org/functions/sprintf.html for reference.
+        // Additional "p" and "P" format specifiers added by Chris Leonello.
+        this.tooltipFormatString = '%.5P';
+        // prop: formatString
+        // alternative to tooltipFormatString
+        // will format the whole tooltip text, populating with x, y values as
+        // indicated by tooltipAxes option.  So, you could have a tooltip like:
+        // 'Date: %s, number of cats: %d' to format the whole tooltip at one go.
+        // If useAxesFormatters is true, values will be formatted according to
+        // Axes formatters and you can populate your tooltip string with 
+        // %s placeholders.
+        this.formatString = null;
+        // prop: yvalues
+        // Number of y values to expect in the data point array.
+        // Typically this is 1.  Certain plots, like OHLC, will
+        // have more y values in each data point array.
+        this.yvalues = 1;
+        this._tooltipElem;
+        this.isHighlighting = false;
 
-	    $.extend(true, this, options);
-	};
-	
-	// axis.renderer.tickrenderer.formatter
-	
-	// called with scope of plot
-	$.jqplot.Highlighter.init = function (target, data, opts){
-	    var options = opts || {};
-	    // add a highlighter attribute to the plot
-	    this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
-	};
-	
-	// called within scope of series
-	$.jqplot.Highlighter.parseOptions = function (defaults, options) {
-	    this.showHighlight = true;
-	};
-	
-	// called within context of plot
-	// create a canvas which we can draw on.
-	// insert it before the eventCanvas, so eventCanvas will still capture events.
-	$.jqplot.Highlighter.postPlotDraw = function() {
-	    this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
-	    
+        $.extend(true, this, options);
+    };
+    
+    // axis.renderer.tickrenderer.formatter
+    
+    // called with scope of plot
+    $.jqplot.Highlighter.init = function (target, data, opts){
+        var options = opts || {};
+        // add a highlighter attribute to the plot
+        this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
+    };
+    
+    // called within scope of series
+    $.jqplot.Highlighter.parseOptions = function (defaults, options) {
+        this.showHighlight = true;
+    };
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    $.jqplot.Highlighter.postPlotDraw = function() {
+        this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
+        
         this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
         var hctx = this.plugins.highlighter.highlightCanvas.setContext();
         
-    	var p = this.plugins.highlighter;
+        var p = this.plugins.highlighter;
         p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
-	    this.target.append(p._tooltipElem);
-	};
-	
-	$.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
-	$.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
-	$.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
-	
+        this.target.append(p._tooltipElem);
+    };
+    
+    $.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
+    $.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
+    $.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
+    
     function draw(plot, neighbor) {
         var hl = plot.plugins.highlighter;
         var s = plot.series[neighbor.seriesIndex];
@@ -329,31 +329,31 @@
         }
         
     }
-	
-	function handleMove(ev, gridpos, datapos, neighbor, plot) {
-	    var hl = plot.plugins.highlighter;
-	    if (hl.show) {
-    	    if (neighbor == null && hl.isHighlighting) {
-    	       var ctx = hl.highlightCanvas._ctx;
-    	       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        var hl = plot.plugins.highlighter;
+        if (hl.show) {
+            if (neighbor == null && hl.isHighlighting) {
+               var ctx = hl.highlightCanvas._ctx;
+               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 if (hl.fadeTooltip) {
                     hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
                 }
                 else {
                     hl._tooltipElem.hide();
                 }
-    	       hl.isHighlighting = false;
-	        
-    	    }
-    	    if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
-    	        hl.isHighlighting = true;
-    	        if (hl.showMarker) {
-    	            draw(plot, neighbor);
-    	        }
+               hl.isHighlighting = false;
+            
+            }
+            if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
+                hl.isHighlighting = true;
+                if (hl.showMarker) {
+                    draw(plot, neighbor);
+                }
                 if (hl.showTooltip) {
                     showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
                 }
-    	    }
-	    }
-	}
+            }
+        }
+    }
 })(jQuery);

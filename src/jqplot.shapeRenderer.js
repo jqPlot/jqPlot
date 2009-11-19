@@ -16,11 +16,11 @@
  * 
  */
 (function($) {
-	// class: $.jqplot.shapeRenderer
-	// The default jqPlot shape renderer.  Given a set of points will
-	// plot them and either stroke a line (fill = false) or fill them (fill = true).
-	// If a filled shape is desired, closePath = true must also be set to close
-	// the shape.
+    // class: $.jqplot.shapeRenderer
+    // The default jqPlot shape renderer.  Given a set of points will
+    // plot them and either stroke a line (fill = false) or fill them (fill = true).
+    // If a filled shape is desired, closePath = true must also be set to close
+    // the shape.
     $.jqplot.ShapeRenderer = function(options){
         
         this.lineWidth = 1.5;
@@ -90,7 +90,7 @@
                 ctx.closePath();
             }
             if (fill) {
-            	ctx.fill();
+                ctx.fill();
             }
             else {
                 ctx.stroke();
@@ -114,7 +114,7 @@
                 ctx.closePath();
             }
             if (fill) {
-            	ctx.fill();
+                ctx.fill();
             }
             else {
                 ctx.stroke();

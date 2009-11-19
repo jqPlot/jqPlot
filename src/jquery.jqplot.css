@@ -141,7 +141,7 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
     white-space: nowrap;
     background: rgba(208,208,208,0.5);
-	padding: 1px;
+    padding: 1px;
 }
 
 .jqplot-highlighter-tooltip {
@@ -149,13 +149,13 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
     white-space: nowrap;
     background: rgba(208,208,208,0.5);
-	padding: 1px;
+    padding: 1px;
 }
 
 .jqplot-point-label {
     font-size: 0.75em;
 }
-	  
+      
 td.jqplot-cursor-legend-swatch {
 vertical-align:middle;
 text-align:center;

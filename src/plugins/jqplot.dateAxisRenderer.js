@@ -101,7 +101,7 @@
     
     $.jqplot.DateTickFormatter = function(format, val) {
         if (!format) {
-        	format = '%Y/%m/%d';
+            format = '%Y/%m/%d';
         }
         return Date.create(val).strftime(format);
     };
@@ -131,10 +131,10 @@
                     pd[j][0] = Date.create(d[j][0]).getTime();
                     sd[j][0] = Date.create(d[j][0]).getTime();
                     if (d[j][0] < db.min || db.min == null) {
-                    	db.min = d[j][0];
+                        db.min = d[j][0];
                     }
                     if (d[j][0] > db.max || db.max == null) {
-                    	db.max = d[j][0];
+                        db.max = d[j][0];
                     }
                 }              
                 else {
@@ -142,10 +142,10 @@
                     pd[j][1] = Date.create(d[j][1]).getTime();
                     sd[j][1] = Date.create(d[j][1]).getTime();
                     if (d[j][1] < db.min || db.min == null) {
-                    	db.min = d[j][1];
+                        db.min = d[j][1];
                     }
                     if (d[j][1] > db.max || db.max == null) {
-                    	db.max = d[j][1];
+                        db.max = d[j][1];
                     }
                 }              
             }
@@ -286,7 +286,7 @@
             }
     
             if (this.daTickInterval == null) {
-            	this.daTickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
+                this.daTickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
             }
             for (var i=0; i<this.numberTicks; i++){
                 var min = Date.create(this.min);
@@ -412,7 +412,7 @@
                     var nbr = d['get' + getter[0]] ? d['get' + getter[0]]() : '';
                     // run toPaddedString() if specified
                     if (getter[1]) {
-                    	nbr = zeroPad(nbr, getter[1]);
+                        nbr = zeroPad(nbr, getter[1]);
                     }
                     // prepend the leading character
                     return nbr;
@@ -460,7 +460,7 @@
             // ensure we have a Date object
             dateObj = Date.create(dateObj);
             if (dateObj === null) {
-            	return null;
+                return null;
             }
             // get the multiplying factor integer or factor function
             var factor = multipliers[unit] || multipliers.day;
@@ -634,12 +634,12 @@
         create: function(date) {
             // If the passed value is already a date object, return it
             if (date instanceof Date) {
-            	return date;
+                return date;
             }
             // if (typeof date == 'number') return new Date(date * 1000);
             // If the passed value is an integer, interpret it as a javascript timestamp
             if (typeof date == 'number') {
-            	return new Date(date);
+                return new Date(date);
             }
             // If the passed value is a string, attempt to parse it using Date.parse()
             var parsable = String(date).replace(/^\s*(.+)\s*$/, '$1'), i = 0, length = Date.create.patterns.length, pattern;
@@ -647,13 +647,13 @@
             while (i < length) {
                 ms = Date.parse(current);
                 if (!isNaN(ms)) {
-                	return new Date(ms);
+                    return new Date(ms);
                 }
                 pattern = Date.create.patterns[i];
                 if (typeof pattern == 'function') {
                     obj = pattern(current);
                     if (obj instanceof Date) {
-                    	return obj;
+                        return obj;
                     }
                 } else {
                     current = parsable.replace(pattern[0], pattern[1]);
@@ -686,7 +686,7 @@
         //
         daysInMonth: function(year, month) {
             if (month == 2) {
-            	return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
+                return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
             }
             return [undefined,31,undefined,31,30,31,30,31,31,30,31,30,31][month];
         }
@@ -787,7 +787,7 @@
                 if (match[1]) {
                     var d = Date.create(match[1]);
                     if (isNaN(d)) {
-                    	return;
+                        return;
                     }
                 } else {
                     var d = new Date();
@@ -810,7 +810,7 @@
                 if (match[1]) {
                     var d = Date.create(match[1]);
                     if (isNaN(d)) {
-                    	return;
+                        return;
                     }
                 } else {
                     var d = new Date();
@@ -872,7 +872,7 @@
     ];
     
     if ($.jqplot.config.debug) {
-    	$.date = Date.create;
+        $.date = Date.create;
     }
    
 })(jQuery);

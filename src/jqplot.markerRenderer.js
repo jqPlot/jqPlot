@@ -16,8 +16,8 @@
  * 
  */
 (function($) {
-	// class: $.jqplot.MarkerRenderer
-	// The default jqPlot marker renderer, rendering the points on the line.
+    // class: $.jqplot.MarkerRenderer
+    // The default jqPlot marker renderer, rendering the points on the line.
     $.jqplot.MarkerRenderer = function(options){
         // Group: Properties
         
