@@ -291,10 +291,10 @@
         <replace dir="${DIST_DIR}/docs/index" token="${logoDivToken}" value="${logoDivValue}" />
         <replace dir="${DIST_DIR}/docs/files" token="${logoDivToken}" value="${logoDivValue}" />
         <replace dir="${DIST_DIR}/docs/search" token="${logoDivToken}" value="${logoDivValue}" />
-        <replace dir="${DIST_DIR}/docs/files" token="${h1Token}" value="${h1Value}" />
         <replace dir="${DIST_DIR}/docs/files/plugins" token="${PIh1Token}" value="${PIh1Value}" />
-        <replace dir="${DIST_DIR}/docs/files" token="${h1CloseToken}" value="${h1CloseValue}" />
         <replace dir="${DIST_DIR}/docs/files/plugins" token="${PIh1CloseToken}" value="${PIh1CloseValue}" />
+        <replace dir="${DIST_DIR}/docs/files" token="${h1Token}" value="${h1Value}" />
+        <replace dir="${DIST_DIR}/docs/files" token="${h1CloseToken}" value="${h1CloseValue}" />
 
         <copy todir="${DIST_DIR}/docs/files/images">
           <fileset dir="${SRC_DIR}/images" includes="*.jpg" />
