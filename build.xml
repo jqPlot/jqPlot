@@ -8,14 +8,14 @@
 
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
-	  <loadfile property="version" srcfile="version.txt" /> 
-	  <property file="dist.props" />
-	  
-	  <!-- misc. properties -->
+    <loadfile property="version" srcfile="version.txt" /> 
+    <property file="dist.props" />
+    
+    <!-- misc. properties -->
     <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.2.jar" />
-	  <loadfile description="Version to build" property="version" srcfile="version.txt" />
-	  <loadfile description="Copyright and license" property="copyright" srcfile="copyright.txt" />
-	  <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
+    <loadfile description="Version to build" property="version" srcfile="version.txt" />
+    <loadfile description="Copyright and license" property="copyright" srcfile="copyright.txt" />
+    <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
 
     <!-- MAIN -->
        
@@ -140,45 +140,45 @@
         <echo message="Building minified sources with YUI Compressor" />
         <mkdir dir="${DIST_DIR}/temp" />
         <mkdir dir="${DIST_DIR}/plugins/temp" />
-    		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
-    			<fileset dir="${DIST_DIR}">
-    				<include name="jquery.jqplot.js" />
-    			</fileset>
-    			<arg line="-jar" />
-    			<arg path="${YUICompressor}" />
-    			<arg value="--charset" />
-    			<arg value="ANSI" />
-    			<arg value="-o" />
-    			<targetfile />
-    			<mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
-    		</apply>
-    		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
-    			<fileset dir="${DIST_DIR}">
-    				<include name="jquery.jqplot.css" />
-    			</fileset>
-    			<arg line="-jar" />
-    			<arg path="${YUICompressor}" />
-    			<arg value="--charset" />
-    			<arg value="ANSI" />
-    			<arg value="-o" />
-    			<targetfile />
-    			<mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
-    		</apply>
-    		<apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
-    			<fileset dir="${DIST_DIR}/plugins">
-    				<include name="jqplot.*.js" />
-    				<exclude name="jqplot.*.min.js" />
-    			</fileset>
-    			<arg line="-jar" />
-    			<arg path="${YUICompressor}" />
-    			<arg value="--charset" />
-    			<arg value="ANSI" />
-    			<arg value="-o" />
-    			<targetfile />
-    			<mapper type="glob" from="jqplot.*.js" to="temp/jqplot.*.min.js" />
-    		</apply>
-    		
-    		<copy todir="${DIST_DIR}">
+        <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
+          <fileset dir="${DIST_DIR}">
+            <include name="jquery.jqplot.js" />
+          </fileset>
+          <arg line="-jar" />
+          <arg path="${YUICompressor}" />
+          <arg value="--charset" />
+          <arg value="ANSI" />
+          <arg value="-o" />
+          <targetfile />
+          <mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
+        </apply>
+        <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
+          <fileset dir="${DIST_DIR}">
+            <include name="jquery.jqplot.css" />
+          </fileset>
+          <arg line="-jar" />
+          <arg path="${YUICompressor}" />
+          <arg value="--charset" />
+          <arg value="ANSI" />
+          <arg value="-o" />
+          <targetfile />
+          <mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
+        </apply>
+        <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
+          <fileset dir="${DIST_DIR}/plugins">
+            <include name="jqplot.*.js" />
+            <exclude name="jqplot.*.min.js" />
+          </fileset>
+          <arg line="-jar" />
+          <arg path="${YUICompressor}" />
+          <arg value="--charset" />
+          <arg value="ANSI" />
+          <arg value="-o" />
+          <targetfile />
+          <mapper type="glob" from="jqplot.*.js" to="temp/jqplot.*.min.js" />
+        </apply>
+        
+        <copy todir="${DIST_DIR}">
           <fileset dir="${DIST_DIR}/temp" includes="*.min.js" />
           <filterchain>
             <concatfilter prepend="copyright.txt"/>
@@ -186,8 +186,8 @@
         </copy>
         
         <delete dir="${DIST_DIR}/temp" />
-    		
-    		<copy todir="${DIST_DIR}/plugins">
+        
+        <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins/temp" includes="*.min.js" />
           <filterchain>
             <concatfilter prepend="copyright.txt"/>
@@ -195,7 +195,7 @@
         </copy>
         
         <delete dir="${DIST_DIR}/plugins/temp" />
-    		
+        
         <echo message="Minified sources built." />
     </target>
     
@@ -241,8 +241,8 @@
       </tar>
   </target>
 
-	<target name="tests" depends="dist" description="Create test suite for distribution.">
-		<echo message="Creating test suite for distribtion" />
+  <target name="tests" depends="dist" description="Create test suite for distribution.">
+    <echo message="Creating test suite for distribtion" />
         <mkdir dir="${DIST_DIR}/tests" />
         <copy todir="${DIST_DIR}/tests">
           <fileset dir="tests" />
@@ -262,13 +262,13 @@
         <replaceregexp match="jquery.jqplot.js" replace="jquery.jqplot.min.js">
           <fileset dir="${DIST_DIR}/tests" includes="opener.php" />
         </replaceregexp>
-		<echo message="Test Suite Finished" />
-	</target>
+    <echo message="Test Suite Finished" />
+  </target>
 
-	<target name="docs" description="Create documentation for distribution.">
-		<echo message="Creating documentation" />
-		  <!-- don't want to process jquery itself -->
-		    <move file="${BUILD_DIR}/jquery-1.3.2.js" tofile="${BUILD_DIR}/jquery-1.3.2.js.bak" />
+  <target name="docs" description="Create documentation for distribution.">
+    <echo message="Creating documentation" />
+      <!-- don't want to process jquery itself -->
+        <move file="${BUILD_DIR}/jquery-1.3.2.js" tofile="${BUILD_DIR}/jquery-1.3.2.js.bak" />
         <mkdir dir="${DIST_DIR}/docs" />
         <!-- rename files we don't used for docs -->
         <move file="${BUILD_DIR}/jquery.jqplot.js" tofile="${BUILD_DIR}/jquery.jqplot.js.bak"/>
@@ -292,18 +292,18 @@
         <replace dir="${DIST_DIR}/docs/files" token="${logoDivToken}" value="${logoDivValue}" />
         <replace dir="${DIST_DIR}/docs/search" token="${logoDivToken}" value="${logoDivValue}" />
         <replace dir="${DIST_DIR}/docs/files" token="${h1Token}" value="${h1Value}" />
-        <replace dir="${DIST_DIR}/docs/files/plugins" token="${h1Token}" value="${h1Value}" />
+        <replace dir="${DIST_DIR}/docs/files/plugins" token="${PIh1Token}" value="${PIh1Value}" />
         <replace dir="${DIST_DIR}/docs/files" token="${h1CloseToken}" value="${h1CloseValue}" />
-        <replace dir="${DIST_DIR}/docs/files/plugins" token="${h1CloseToken}" value="${h1CloseValue}" />
+        <replace dir="${DIST_DIR}/docs/files/plugins" token="${PIh1CloseToken}" value="${PIh1CloseValue}" />
 
         <copy todir="${DIST_DIR}/docs/files/images">
           <fileset dir="${SRC_DIR}/images" includes="*.jpg" />
           <fileset dir="${SRC_DIR}/images" includes="*.png" />
-    		</copy>
-    		<!-- put jquery back the way it was -->
-		    <move file="${BUILD_DIR}/jquery-1.3.2.js.bak" tofile="${BUILD_DIR}/jquery-1.3.2.js" />
+        </copy>
+        <!-- put jquery back the way it was -->
+        <move file="${BUILD_DIR}/jquery-1.3.2.js.bak" tofile="${BUILD_DIR}/jquery-1.3.2.js" />
         <echo message="Documentation Finished" />
-	</target>
+  </target>
 
     <target name="clean" description="Clean up, removing build and distribution directories and everything underneath.">
         <delete dir="${BUILD_DIR}" />
