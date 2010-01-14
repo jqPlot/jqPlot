@@ -149,7 +149,6 @@
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
-          <arg value="-v" />
           <arg value="--charset" />
           <arg value="ANSI" />
           <arg value="-o" />
