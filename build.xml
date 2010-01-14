@@ -32,6 +32,9 @@
           <fileset dir="${SRC_DIR}">
             <include name="*" />
             <exclude name="jquery.jqplot.js" />
+            <exclude name="jqplot.strftime.js" />
+            <exclude name="jqplot.strtodate.js" />
+            <exclude name="jqplot.strtotime.js" />
             <exclude name="jsl.conf" />
           </fileset>
         </copy>
@@ -146,6 +149,7 @@
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
+          <arg value="-v" />
           <arg value="--charset" />
           <arg value="ANSI" />
           <arg value="-o" />

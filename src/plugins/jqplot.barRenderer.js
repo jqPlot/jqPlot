@@ -55,10 +55,22 @@
         // prop: shadowAlpha
         // transparency of the shadow (0 = transparent, 1 = opaque)
         this.shadowAlpha = 0.08;
+        // prop: waterfall
+        // true to enable waterfall plot.
+        this.waterfall = false;
+        // prop: varyBarColor
+        // true to color each bar separately.
+        this.varyBarColor = false;
         $.extend(true, this, options);
         // fill is still needed to properly draw the legend.
         // bars have to be filled.
         this.fill = true;
+        
+        if (this.waterfall) {
+            this.fillToZero = false;
+            this.disableStack = true;
+        }
+        
         if (this.barDirection == 'vertical' ) {
             this._primaryAxis = '_xaxis';
             this._stackAxis = 'y';
@@ -82,6 +94,19 @@
         if (this.rendererOptions.barDirection == 'horizontal') {
             this._stackAxis = 'x';
             this._primaryAxis = '_yaxis';
+        }
+        if (this.rendererOptions.waterfall == true) {
+            this._data = $.extend(true, [], this.data);
+            var sum = 0;
+            var pos = (!this.rendererOptions.barDirection || this.rendererOptions.barDirection == 'vertical') ? 1 : 0;
+            for(var i=0; i<this.data.length; i++) {
+                sum += this.data[i][pos];
+                if (i>0) {
+                    this.data[i][pos] += this.data[i-1][pos];
+                }
+            }
+            this.data[this.data.length] = (pos == 1) ? [this.data.length+1, sum] : [sum, this.data.length+1];
+            this._data[this._data.length] = (pos == 1) ? [this._data.length+1, sum] : [sum, this._data.length+1];
         }
     }
     
@@ -172,10 +197,12 @@
         }
         if (showLine) {
             var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
+            var positiveColors = new $.jqplot.ColorGenerator(this.seriesColors);
             var negativeColor = negativeColors.get(this.index);
-            var isnegative = false;
-            var posfs = opts.fillStyle;
-            var tempfs;
+            if (! this.useNegativeColors) {
+                negativeColor = opts.fillStyle;
+            }
+            var positiveColor = opts.fillStyle;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -192,17 +219,33 @@
                         if (this.fillToZero) {
                             ystart = this._yaxis.series_u2p(0);
                         }
+                        else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
+                            ystart = this.gridData[i-1][1];
+                        }
                         else {
                             ystart = ctx.canvas.height;
                         }
                     }
-                    if (this.fillToZero && this._plotData[i][1] < 0) {
-                        isnegative = true;
-                        opts.fillStyle = negativeColor;
+                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
+                        if (this.varyBarColor) {
+                            if (this.useNegativeColors) {
+                                opts.fillStyle = negativeColors.next();
+                            }
+                            else {
+                                opts.fillStyle = positiveColors.next();
+                            }
+                        }
+                        else {
+                            opts.fillStyle = negativeColor;
+                        }
                     }
                     else {
-                        opts.fillStyle = posfs;
-                        isnegative = false;
+                        if (this.varyBarColor) {
+                            opts.fillStyle = positiveColors.next();
+                        }
+                        else {
+                            opts.fillStyle = positiveColor;
+                        }
                     }
                     
                     points.push([base-this.barWidth/2, ystart]);
@@ -227,8 +270,35 @@
                     if (this._stack && this._prevGridData.length) {
                         xstart = this._prevGridData[i][0];
                     }
+                    // not stacked and first series in stack
                     else {
-                        xstart = 0;
+                        if (this.fillToZero) {
+                            xstart = this._xaxis.series_u2p(0);
+                        }
+                        else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
+                            xstart = this.gridData[i-1][1];
+                        }
+                        else {
+                            xstart = 0;
+                        }
+                    }
+                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
+                        if (this.varyBarColor) {
+                            if (this.useNegativeColors) {
+                                opts.fillStyle = negativeColors.next();
+                            }
+                            else {
+                                opts.fillStyle = positiveColors.next();
+                            }
+                        }
+                    }
+                    else {
+                        if (this.varyBarColor) {
+                            opts.fillStyle = positiveColors.next();
+                        }
+                        else {
+                            opts.fillStyle = positiveColor;
+                        }                    
                     }
                     
                     points.push([xstart, base+this.barWidth/2]);

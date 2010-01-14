@@ -722,6 +722,9 @@
         // Either 'x' or 'y'.  Which axis to fill the line toward if fillToZero is true.
         // 'y' means fill up/down to 0 on the y axis for this series.
         this.fillAxis = 'y';
+        // prop: useNegativeColors
+        // true to color negative values differently in filled and bar charts.
+        this.useNegativeColors = true;
         this._stackData = [];
         // _plotData accounts for stacking.  If plots not stacked, _plotData and data are same.  If
         // stacked, _plotData is accumulation of stacking data.
@@ -1041,9 +1044,8 @@
         // to the series in the plot.  Colors will wrap around so, if their
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
-        this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"];
-        // this.negativeSeriesColors = [ "#9653C4", "#1CE540", "#7BC28F", "#525A94", "#529386", "#00914A", "#967C33", "#E650A8", "#37D46A", "#1BF800", "#AD25CC"];
-        this.negativeSeriesColors = [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399"];
+        this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"];
+        this.negativeSeriesColors = [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"];
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on
@@ -1455,20 +1457,25 @@
                 }    
             }
                 
-            var normalizeData = function(data) {
+            var normalizeData = function(data, dir) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
                 var i;
+                dir = dir || 'vertical';
                 if (!(data[0] instanceof Array)) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
                     for (var i=0; i<data.length; i++) {
-                        temp.push([i+1, data[i]]);
+                        if (dir == 'vertical') {
+                            temp.push([i+1, data[i]]);   
+                        }
+                        else {
+                            temp.push([data[i], i+1]);
+                        }
                     }
-                }
-            
+                }            
                 else {
                     // we have a properly formatted data series, copy it.
                     $.extend(true, temp, data);
@@ -1482,7 +1489,11 @@
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
                 $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i]);
-                temp.data = normalizeData(this.data[i]);
+                var dir = 'vertical';
+                if (temp.renderer.constructor == $.jqplot.barRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
+                    dir = 'horizontal';
+                }
+                temp.data = normalizeData(this.data[i], dir);
                 switch (temp.xaxis) {
                     case 'xaxis':
                         temp._xaxis = this.axes.xaxis;

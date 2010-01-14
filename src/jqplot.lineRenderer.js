@@ -104,6 +104,9 @@
                         // have to break line up into shapes at axis crossings
                         var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
                         var negativeColor = negativeColors.get(this.index);
+                        if (! this.useNegativeColors) {
+                            negativeColor = opts.fillStyle;
+                        }
                         var isnegative = false;
                         var posfs = opts.fillStyle;
                     

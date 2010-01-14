@@ -86,10 +86,10 @@
         // true to display value as stacked in a stacked plot.
         // no effect if labels is specified.
         this.stackedValue = false;
-        // prop: verticalPadding
+        // prop: ypadding
         // vertical padding in pixels between point and label
         this.ypadding = 6;
-        // prop: horizontalPadding
+        // prop: xpadding
         // horizontal padding in pixels between point and label
         this.xpadding = 6;
         // prop: escapeHTML
@@ -101,9 +101,16 @@
         // boundary in order to be drawn.  Negative values will allow overlap
         // with the grid boundaries.
         this.edgeTolerance = 0;
+        // prop: hideZeros
+        // true to not show a label for a value which is 0.
+        this.hideZeros = false;
         
         $.extend(true, this, options);
     };
+    
+    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
     
     // called with scope of a series
     $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
@@ -121,76 +128,163 @@
                 }
             }
             else {
-                if (this.data.length && this.data[0].length) {
-                    var idx = p.seriesLabelIndex || this.data[0].length -1;
-                    for (var i=0; i<this.data.length; i++) {
-                        p.labels.push(this.data[i][idx]);
+                var d = this.data;
+                if (this.renderer.constructor == $.jqplot.BarRenderer && this.waterfall) {
+                    d = this._data;
+                }
+                if (d.length && d[0].length) {
+                    var idx = p.seriesLabelIndex || d[0].length -1;
+                    for (var i=0; i<d.length; i++) {
+                        p.labels.push(d[i][idx]);
                     }
                 }
             }
         }
     };
     
+    $.jqplot.PointLabels.prototype.xOffset = function(elem, location, padding) {
+        location = location || this.location;
+        padding = padding || this.xpadding;
+        var offset;
+        
+        switch (location) {
+            case 'nw':
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+            case 'n':
+                offset = -elem.outerWidth(true)/2;
+                break;
+            case 'ne':
+                offset =  this.xpadding;
+                break;
+            case 'e':
+                offset = this.xpadding;
+                break;
+            case 'se':
+                offset = this.xpadding;
+                break;
+            case 's':
+                offset = -elem.outerWidth(true)/2;
+                break;
+            case 'sw':
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+            case 'w':
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+            default: // same as 'nw'
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+        }
+        return offset; 
+    };
+    
+    $.jqplot.PointLabels.prototype.yOffset = function(elem, location, padding) {
+        location = location || this.location;
+        padding = padding || this.xpadding;
+        var offset;
+        
+        switch (location) {
+            case 'nw':
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+            case 'n':
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+            case 'ne':
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+            case 'e':
+                offset = -elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                offset = this.ypadding;
+                break;
+            case 's':
+                offset = this.ypadding;
+                break;
+            case 'sw':
+                offset = this.ypadding;
+                break;
+            case 'w':
+                offset = -elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+        }
+        return offset; 
+    };
+    
     // called with scope of series
     $.jqplot.PointLabels.draw = function (sctx, options) {
         var p = this.plugins.pointLabels;
         if (p.show) {
-            var xoffset, yoffset;
-        
-            switch (p.location) {
-                case 'nw':
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-                    break;
-                case 'n':
-                    xoffset = function(elem) { return -elem.outerWidth(true)/2; };
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-                    break;
-                case 'ne':
-                    xoffset = function(elem) { return p.xpadding; };
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-                    break;
-                case 'e':
-                    xoffset = function(elem) { return p.xpadding; };
-                    yoffset = function(elem) { return -elem.outerHeight(true)/2; };
-                    break;
-                case 'se':
-                    xoffset = function(elem) { return p.xpadding; };
-                    yoffset = function(elem) { return p.ypadding; };
-                    break;
-                case 's':
-                    xoffset = function(elem) { return -elem.outerWidth(true)/2; };
-                    yoffset = function(elem) { return p.ypadding; };
-                    break;
-                case 'sw':
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-                    yoffset = function(elem) { return p.ypadding; };
-                    break;
-                case 'w':
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-                    yoffset = function(elem) { return -elem.outerHeight(true)/2; };
-                    break;
-                default: // same as 'nw'
-                    xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-                    yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-                    break;
-            }
+            // var xoffset, yoffset;
+            //         
+            // switch (p.location) {
+            //     case 'nw':
+            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
+            //         break;
+            //     case 'n':
+            //         xoffset = function(elem) { return -elem.outerWidth(true)/2; };
+            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
+            //         break;
+            //     case 'ne':
+            //         xoffset = function(elem) { return p.xpadding; };
+            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
+            //         break;
+            //     case 'e':
+            //         xoffset = function(elem) { return p.xpadding; };
+            //         yoffset = function(elem) { return -elem.outerHeight(true)/2; };
+            //         break;
+            //     case 'se':
+            //         xoffset = function(elem) { return p.xpadding; };
+            //         yoffset = function(elem) { return p.ypadding; };
+            //         break;
+            //     case 's':
+            //         xoffset = function(elem) { return -elem.outerWidth(true)/2; };
+            //         yoffset = function(elem) { return p.ypadding; };
+            //         break;
+            //     case 'sw':
+            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+            //         yoffset = function(elem) { return p.ypadding; };
+            //         break;
+            //     case 'w':
+            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+            //         yoffset = function(elem) { return -elem.outerHeight(true)/2; };
+            //         break;
+            //     default: // same as 'nw'
+            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
+            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
+            //         break;
+            // }
         
             for (var i=0; i<p.labels.length; i++) {
                 var pd = this._plotData;
                 var xax = this._xaxis;
                 var yax = this._yaxis;
+                var label = p.labels[i];
+                
+                if (p.hideZeros && parseInt(p.labels[i], 10) == 0) {
+                    label = '';
+                }
                 
                 var elem = $('<div class="jqplot-point-label" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
                 if (p.escapeHTML) {
-                    elem.text(p.labels[i]);
+                    elem.text(label);
                 }
                 else {
-                    elem.html(p.labels[i]);
+                    elem.html(label);
                 }
-                var ell = xax.u2p(pd[i][0]) + xoffset(elem);
-                var elt = yax.u2p(pd[i][1]) + yoffset(elem);
+                var location = p.location;
+                if (this.waterfall && parseInt(label, 10) < 0) {
+                    location = oppositeLocations[locationIndicies[location]];
+                }
+                var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);
+                var elt = yax.u2p(pd[i][1]) + p.yOffset(elem, location);
                 elem.css('left', ell);
                 elem.css('top', elt);
                 var elr = ell + $(elem).width();
@@ -205,7 +299,6 @@
                     $(elem).remove();
                 }
             }
-            
         }
     };
     
