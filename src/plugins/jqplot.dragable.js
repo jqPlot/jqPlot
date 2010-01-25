@@ -195,7 +195,7 @@
             // var x = datapos[s.xaxis];
             // var y = datapos[s.yaxis];
             s.data[dp.pointIndex] = [x,y];
-            plot.drawSeries(plot.seriesCanvas._ctx, {preventJqPlotSeriesDrawTrigger:true});
+            plot.drawSeries({preventJqPlotSeriesDrawTrigger:true}, dp.seriesIndex);
             dc._neighbor = null;
             ev.target.style.cursor = dc._cursors.pop();
         }

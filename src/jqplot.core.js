@@ -738,6 +738,9 @@
         this._prevGridData = [];
         this._stackAxis = 'y';
         this._primaryAxis = '_xaxis';
+        // give each series a canvas to draw on.  This should allow for redrawing speedups.
+        this.canvas = new $.jqplot.GenericCanvas();
+        this.shadowCanvas = new $.jqplot.GenericCanvas();
         this.plugins = {};
     }
     
@@ -789,6 +792,7 @@
     // stackData - array of cumulative data for stacked plots.
     Series.prototype.draw = function(sctx, opts) {
         var options = (opts == undefined) ? {} : opts;
+        sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
         for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
@@ -821,6 +825,7 @@
     
     Series.prototype.drawShadow = function(sctx, opts) {
         var options = (opts == undefined) ? {} : opts;
+        sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
         for (var j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
@@ -1029,7 +1034,7 @@
         // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
         this.baseCanvas = new $.jqplot.GenericCanvas();
-        this.seriesCanvas = new $.jqplot.GenericCanvas();
+        // this.seriesCanvas = new $.jqplot.GenericCanvas();
         this.eventCanvas = new $.jqplot.GenericCanvas();
         this._width = null;
         this._height = null; 
@@ -1161,7 +1166,6 @@
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
             this.baseCanvas._plotDimensions = this._plotDimensions;
-            this.seriesCanvas._plotDimensions = this._plotDimensions;
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
@@ -1185,6 +1189,8 @@
             this.title.init();
             this.legend.init();
             for (var i=0; i<this.series.length; i++) {
+                this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
+                this.series[i].canvas._plotDimensions = this._plotDimensions;
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
                     $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
                 }
@@ -1288,7 +1294,7 @@
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
             this.baseCanvas._plotDimensions = this._plotDimensions;
-            this.seriesCanvas._plotDimensions = this._plotDimensions;
+            // this.seriesCanvas._plotDimensions = this._plotDimensions;
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             
@@ -1313,6 +1319,7 @@
             for (var i=0; i<this.series.length; i++) {
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
+                this.series[i].canvas._plotDimensions = this._plotDimensions;
                 //this.series[i].init(i, this.grid.borderWidth);
             }
             
@@ -1620,7 +1627,8 @@
         this.draw = function(){
             if (this.drawIfHidden || this.target.is(':visible')) {
                 this.target.trigger('jqplotPreDraw');
-                for (var i=0; i<$.jqplot.preDrawHooks.length; i++) {
+                var i;
+                for (i=0; i<$.jqplot.preDrawHooks.length; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
                 }
                 // create an underlying canvas to be used for special features.
@@ -1638,8 +1646,9 @@
                 var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
                 var rapad = [0, 0, 0, 0];
                 var gpr = 0;
-                for (var n=8; n>0; n--) {
-                    var ax = this.axes[ra[n-1]];
+                var n, ax;
+                for (n=8; n>0; n--) {
+                    ax = this.axes[ra[n-1]];
                     if (ax.show) {
                         rapad[n-1] = gpr;
                         gpr += ax.getWidth();
@@ -1664,15 +1673,26 @@
                 this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
                 this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
                 this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
-                for (var i=8; i>0; i--) {
+                for (i=8; i>0; i--) {
                     this.axes[ra[i-1]].pack({position:'absolute', top:0, right:rapad[i-1]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
                 }
                 // this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
                 this.target.append(this.grid.createElement(this._gridPadding));
                 this.grid.draw();
-                this.target.append(this.seriesCanvas.createElement(this._gridPadding, 'jqplot-series-canvas'));
-                var sctx = this.seriesCanvas.setContext();
+                
+                // put the shadow canvases behind the series canvases so shadows don't overlap on stacked bars.
+                for (i=0; i<this.series.length; i++) {
+                    this.target.append(this.series[i].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-canvas jqplot-shadow'));
+                    this.series[i].shadowCanvas.setContext();
+                }
+                
+                for (i=0; i<this.series.length; i++) {
+                    this.target.append(this.series[i].canvas.createElement(this._gridPadding, 'jqplot-series-canvas'));
+                    this.series[i].canvas.setContext();
+                }
+                
+                // var sctx = this.seriesCanvas.setContext();
                 this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas'));
                 var ectx = this.eventCanvas.setContext();
                 ectx.fillStyle = 'rgba(0,0,0,0)';
@@ -1686,15 +1706,15 @@
                     this.target.append(this.legend.draw());
                     this.legend.pack(this._gridPadding);
                     if (this.legend._elem) {
-                        this.drawSeries(sctx, {legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
+                        this.drawSeries({legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
                     }
                     else {
-                        this.drawSeries(sctx);
+                        this.drawSeries();
                     }
                 }
                 else {  // draw series before legend
-                    this.drawSeries(sctx);
-                    $(this.seriesCanvas._elem).after(this.legend.draw());
+                    this.drawSeries();
+                    $(this.series[this.series.length-1].canvas._elem).after(this.legend.draw());
                     // this.target.append(this.legend.draw());
                     this.legend.pack(this._gridPadding);                
                 }
@@ -1849,17 +1869,34 @@
             ev.data.plot.eventCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
         };
         
-        this.drawSeries = function(sctx, options){
-            // first clear the canvas, since we are redrawing all series.
-            sctx.clearRect(0,0,sctx.canvas.width, sctx.canvas.height);
-            // if call series drawShadow method first, in case all series shadows
-            // should be drawn before any series.  This will ensure, like for 
-            // stacked bar plots, that shadows don't overlap series.
-            for (var i=0; i<this.series.length; i++) {
-                this.series[i].drawShadow(sctx, options);
+        // convienece function to draw series shadows and series.
+        this.drawSeries = function(options, idx){
+            var i, series, ctx;
+            // draw specified series
+            if (idx != undefined) {
+                series = this.series[idx];
+                ctx = series.shadowCanvas._ctx;
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                series.drawShadow(ctx, options);
+                ctx = series.canvas._ctx;
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                series.draw(ctx, options);
             }
-            for (var i=0; i<this.series.length; i++) {
-                this.series[i].draw(sctx, options);
+            
+            else {
+                // if call series drawShadow method first, in case all series shadows
+                // should be drawn before any series.  This will ensure, like for 
+                // stacked bar plots, that shadows don't overlap series.
+                for (i=0; i<this.series.length; i++) {
+                    // first clear the canvas
+                    series = this.series[i];
+                    ctx = series.shadowCanvas._ctx;
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    series.drawShadow(ctx, options);
+                    ctx = series.canvas._ctx;
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    series.draw(ctx, options);
+                }
             }
         };
     }
