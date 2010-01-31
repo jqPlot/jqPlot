@@ -147,10 +147,7 @@
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
             this._elem = $('<table class="jqplot-table-legend jqplot-mekko-legend" style="'+ss+'"></table>');
         
-            var pad = false
-            var i; 
-            var labels = [];
-            var colors = [];
+            var pad = false, i, labels = [], colors = [];
             var s = series[0];
             var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
             if (s.show) {
