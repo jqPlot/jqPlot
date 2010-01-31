@@ -94,16 +94,22 @@
             }
             else {
                 ctx.stroke();
-            }             
+            }
+            ctx.restore();
+            return;
         }
-        else if (fillRect) {
+        if (clearRect) {
+            ctx.clearRect(points[0], points[1], points[2], points[3]);
+            ctx.restore();
+            return;
+        }
+        if (fillRect) {
             ctx.fillRect(points[0], points[1], points[2], points[3]);
         }
-        else if (strokeRect) {
+        if (strokeRect) {
             ctx.strokeRect(points[0], points[1], points[2], points[3]);
-        }
-        else if (clearRect) {
-            ctx.clearRect(points[0], points[1], points[2], points[3]);
+            ctx.restore();
+            return;
         }
         else {
             ctx.moveTo(points[0][0], points[0][1]);

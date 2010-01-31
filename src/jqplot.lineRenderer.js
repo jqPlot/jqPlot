@@ -48,7 +48,7 @@
     // converts the user data values to grid coordinates and stores them
     // in the gridData array.
     // Called with scope of a series.
-    $.jqplot.LineRenderer.prototype.setGridData = function() {
+    $.jqplot.LineRenderer.prototype.setGridData = function(plot) {
         // recalculate the grid data
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
@@ -72,7 +72,7 @@
     // linerenderer to generate grid data points without overwriting the
     // grid data associated with that series.
     // Called with scope of a series.
-    $.jqplot.LineRenderer.prototype.makeGridData = function(data) {
+    $.jqplot.LineRenderer.prototype.makeGridData = function(data, plot) {
         // recalculate the grid data
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;

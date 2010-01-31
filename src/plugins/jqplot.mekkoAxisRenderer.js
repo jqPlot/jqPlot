@@ -16,45 +16,62 @@
  * 
  */
 (function($) {
-    // class: $.jqplot.LinearAxisRenderer
-    // The default jqPlot axis renderer, creating a numeric axis.
-    // The renderer has no additional options beyond the <Axis> object.
-    $.jqplot.LinearAxisRenderer = function() {
+    // class: $.jqplot.MekkoAxisRenderer
+    // An axis renderer for a Mekko chart.
+    // Should be used with a Mekko chart where the mekkoRenderer is used on the series.
+    // Displays the Y axis as a range from 0 to 1 (0 to 100%) and the x axis with a tick
+    // for each series scaled to the sum of all the y values.
+    $.jqplot.MekkoAxisRenderer = function() {
     };
     
     // called with scope of axis object.
-    $.jqplot.LinearAxisRenderer.prototype.init = function(options){
+    $.jqplot.MekkoAxisRenderer.prototype.init = function(options){
+        // prop: tickMode
+        // How to space the ticks on the axis.
+        // 'bar' will place a tick at the width of each bar.  
+        // This is the default for the x axis.
+        // 'even' will place ticks at even intervals.  This is
+        // the default for x2 axis and y axis.  y axis cannot be changed.
+        this.tickMode;
+        // prop: barLabelRenderer
+        // renderer to use to draw labels under each bar.
+        this.barLabelRenderer = $.jqplot.AxisLabelRenderer;
+        // prop: barLabels
+        // array of labels to put under each bar.
+        this.barLabels = this.barLabels || [];
+        // prop: barLabelOptions
+        // options object to pass to the bar label renderer.
+        this.barLabelOptions = {};
+        this.tickOptions = $.extend(true, {showGridline:false}, this.tickOptions);
+        this._barLabels = [];
         $.extend(true, this, options);
+        if (this.name == 'yaxis') {
+            this.tickOptions.formatString = this.tickOptions.formatString || "%d\%";
+        }
         var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if (d[j][0] > db.max || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if (d[j][1] < db.min || db.min == null) {
-                        db.min = d[j][1];
-                    }
-                    if (d[j][1] > db.max || db.max == null) {
-                        db.max = d[j][1];
-                    }
-                }              
+        db.min = 0;
+        // for y axes, scale always go from 0 to 1 (0 to 100%)
+        if (this.name == 'yaxis' || this.name == 'y2axis') {
+            db.max = 100;
+            this.tickMode = 'even';
+        }
+        // For x axes, scale goes from 0 to sum of all y values.
+        else if (this.name == 'xaxis'){
+            this.tickMode = (this.tickMode == null) ? 'bar' : this.tickMode;
+            for (var i=0; i<this._series.length; i++) {
+                db.max += this._series[i]._sumy;
+            }
+        }
+        else if (this.name == 'x2axis'){
+            this.tickMode = (this.tickMode == null) ? 'even' : this.tickMode;
+            for (var i=0; i<this._series.length; i++) {
+                db.max += this._series[i]._sumy;
             }
         }
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.draw = function(ctx) {
+    $.jqplot.MekkoAxisRenderer.prototype.draw = function(ctx) {
         if (this.show) {
             // populate the axis label and value properties.
             // createTicks is a method on the renderer, but
@@ -75,6 +92,7 @@
                 this._elem.height(this._plotDimensions.height);
             }
             
+            // draw the axis label
             // create a _label object.
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
@@ -82,23 +100,42 @@
                 var elem = this._label.draw(ctx);
                 elem.appendTo(this._elem);
             }
-    
+            
+            var t, tick, elem;
             if (this.showTicks) {
-                var t = this._ticks;
+                t = this._ticks;
                 for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
+                    tick = t[i];
                     if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
+                        elem = tick.draw(ctx);
                         elem.appendTo(this._elem);
                     }
                 }
             }
+            
+            // draw the series labels
+            for (i=0; i<this.barLabels.length; i++) {
+                this.barLabelOptions.axis = this.name;
+                this.barLabelOptions.label = this.barLabels[i];
+                this._barLabels.push(new this.barLabelRenderer(this.barLabelOptions));
+                if (this.tickMode != 'bar') {
+                    this._barLabels[i].show = false;
+                }
+                if (this._barLabels[i].show) {
+                    var elem = this._barLabels[i].draw(ctx);
+                    elem.removeClass('jqplot-'+this.name+'-label');
+                    elem.addClass('jqplot-'+this.name+'-tick');
+                    elem.addClass('jqplot-mekko-barLabel');
+                    elem.appendTo(this._elem);
+                }   
+            }
+            
         }
         return this._elem;
     };
     
     // called with scope of an axis
-    $.jqplot.LinearAxisRenderer.prototype.reset = function() {
+    $.jqplot.MekkoAxisRenderer.prototype.reset = function() {
         this.min = this._min;
         this.max = this._max;
         this.tickInterval = this._tickInterval;
@@ -107,7 +144,7 @@
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.set = function() { 
+    $.jqplot.MekkoAxisRenderer.prototype.set = function() { 
         var dim = 0;
         var temp;
         var w = 0;
@@ -160,7 +197,7 @@
     };    
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.createTicks = function() {
+    $.jqplot.MekkoAxisRenderer.prototype.createTicks = function() {
         // we're are operating on an axis here
         var ticks = this._ticks;
         var userTicks = this.ticks;
@@ -170,7 +207,7 @@
         var dim, interval;
         var min, max;
         var pos1, pos2;
-        var tt, i;
+        var t, tt, i, j;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
@@ -223,21 +260,14 @@
             }
             
             // if min, max and number of ticks specified, user can't specify interval.
-            if (!this.autoscale && this.min != null && this.max != null && this.numberTicks != null) {
+            if (this.min != null && this.max != null && this.numberTicks != null) {
                 this.tickInterval = null;
             }
-            
-            // if max, min, and interval specified and interval won't fit, ignore interval.
-            // if (this.min != null && this.max != null && this.tickInterval != null) {
-            //     if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
-            //         this.tickInterval = null;
-            //     }
-            // }
         
-            min = ((this.min != null) ? this.min : db.min);
-            max = ((this.max != null) ? this.max : db.max);
+            min = (this.min != null) ? this.min : db.min;
+            max = (this.max != null) ? this.max : db.max;
             
-            // if min and max are same, space them out a bit
+            // if min and max are same, space them out a bit.+
             if (min == max) {
                 var adj = 0.05;
                 if (min > 0) {
@@ -249,180 +279,76 @@
 
             var range = max - min;
             var rmin, rmax;
-            var temp;
+            var temp, prev, curr;
+            var ynumticks = [3,5,6,11,21];
             
-            // autoscale.  Can't autoscale if min or max is supplied.
-            // Will use numberTicks and tickInterval if supplied.  Ticks
-            // across multiple axes may not line up depending on how
-            // bars are to be plotted.
-            if (this.autoscale && this.min == null && this.max == null) {
-                var rrange, ti, margin;
-                var forceMinZero = false;
-                var forceZeroLine = false;
-                var intervals = {min:null, max:null, average:null, stddev:null};
-                // if any series are bars, or if any are fill to zero, and if this
-                // is the axis to fill toward, check to see if we can start axis at zero.
-                for (var i=0; i<this._series.length; i++) {
-                    var s = this._series[i];
-                    var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
-                    // check to see if this is the fill axis
-                    if (this.name == faname) {
-                        var vals = s._plotValues[s.fillAxis];
-                        var vmin = vals[0];
-                        var vmax = vals[0];
-                        for (var j=1; j<vals.length; j++) {
-                            if (vals[j] < vmin) {
-                                vmin = vals[j];
+            // yaxis divide ticks in nice intervals from 0 to 1.
+            if (this.name == 'yaxis' || this.name == 'y2axis') { 
+                this.min = 0;
+                this.max = 100; 
+                // user didn't specify number of ticks.
+                if (!this.numberTicks){
+                    if (this.tickInterval) {
+                        this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
+                    }
+                    else {
+                        temp = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        for (i=0; i<ynumticks.length; i++) {
+                            curr = temp/ynumticks[i];
+                            if (curr == 1) {
+                                this.numberTicks = ynumticks[i];
+                                break;
                             }
-                            else if (vals[j] > vmax) {
-                                vmax = vals[j];
+                            else if (curr > 1) {
+                                prev = curr;
+                                continue;
                             }
-                        }
-                        var dp = (vmax - vmin) / vmax;
-                        // is this sries a bar?
-                        if (s.renderer.constructor == $.jqplot.BarRenderer) {
-                            // if no negative values and could also check range.
-                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
-                                forceMinZero = true;
-                            }
-                            else {
-                                forceMinZero = false;
-                                if (s.fill && s.fillToZero && vmin < 0 && vmax > 0) {
-                                    forceZeroLine = true;
+                            else if (curr < 1) {
+                                // was prev or is curr closer to one?
+                                if (Math.abs(prev - 1) < Math.abs(curr - 1)) {
+                                    this.numberTicks = ynumticks[i-1];
+                                    break;
                                 }
                                 else {
-                                    forceZeroLine = false;
+                                    this.numberTicks = ynumticks[i];
+                                    break;
                                 }
                             }
-                        }
-                        
-                        // if not a bar and filling, use appropriate method.
-                        else if (s.fill) {
-                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
-                                forceMinZero = true;
-                            }
-                            else if (vmin < 0 && vmax > 0 && s.fillToZero) {
-                                forceMinZero = false;
-                                forceZeroLine = true;
-                            }
-                            else {
-                                forceMinZero = false;
-                                forceZeroLine = false;
+                            else if (i == ynumticks.length -1) {
+                                this.numberTicks = ynumticks[i];
                             }
                         }
-                        
-                        // if not a bar and not filling, only change existing state
-                        // if it doesn't make sense
-                        else if (vmin < 0) {
-                            forceMinZero = false;
-                        }
+                        this.tickInterval = range / (this.numberTicks - 1);
                     }
                 }
                 
-                // check if we need make axis min at 0.
-                if (forceMinZero) {
-                    // compute number of ticks
-                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                    this.min = 0;
-                    // what order is this range?
-                    // what tick interval does that give us?
-                    ti = max/(this.numberTicks-1);
-                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    if (ti/temp == parseInt(ti/temp, 10)) {
-                        ti += temp;
-                    }
-                    this.tickInterval = Math.ceil(ti/temp) * temp;
-                    this.max = this.tickInterval * (this.numberTicks - 1);
+                // user did specify number of ticks.
+                else {
+                    this.tickInterval = range / (this.numberTicks - 1);
                 }
-                
-                // check if we need to make sure there is a tick at 0.
-                else if (forceZeroLine) {
-                    // compute number of ticks
-                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                    var ntmin = Math.ceil(Math.abs(min)/range*(this.numberTicks-1));
-                    var ntmax = this.numberTicks - 1  - ntmin;
-                    ti = Math.max(Math.abs(min/ntmin), Math.abs(max/ntmax));
-                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    this.tickInterval = Math.ceil(ti/temp) * temp;
-                    this.max = this.tickInterval * ntmax;
-                    this.min = -this.tickInterval * ntmin;                  
-                }
-                
-                // if nothing else, do autoscaling which will try to line up ticks across axes.
-                else {  
-                    if (this.numberTicks == null){
-                        if (this.tickInterval) {
-                            this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
-                        }
-                        else {
-                            this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                        }
-                    }
-            
-                    if (this.tickInterval == null) {
-                        // get a tick interval
-                        ti = range/(this.numberTicks - 1);
 
-                        if (ti < 1) {
-                            temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                        }
-                        else {
-                            temp = 1;
-                        }
-                        this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
+                for (var i=0; i<this.numberTicks; i++){
+                    tt = this.min + i * this.tickInterval;
+                    t = new this.tickRenderer(this.tickOptions);
+                    // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
                     }
-                    else {
-                        temp = 1 / this.tickInterval;
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
                     }
-                    
-                    // try to compute a nicer, more even tick interval
-                    // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
-                    // this.tickInterval = Math.ceil(ti/temp) * temp;
-                    rrange = this.tickInterval * (this.numberTicks - 1);
-                    margin = (rrange - range)/2;
-       
-                    if (this.min == null) {
-                        this.min = Math.floor(temp*(min-margin))/temp;
-                    }
-                    if (this.max == null) {
-                        this.max = this.min + rrange;
-                    }
+                    t.setTick(tt, this.name);
+                    this._ticks.push(t);
                 }
             }
             
-            // Use the default algorithm which pads each axis to make the chart
-            // centered nicely on the grid.
-            else {
-                rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
-                rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
-                this.min = rmin;
-                this.max = rmax;
-                range = this.max - this.min;
-    
-                if (this.numberTicks == null){
-                    // if tickInterval is specified by user, we will ignore computed maximum.
-                    // max will be equal or greater to fit even # of ticks.
-                    if (this.tickInterval != null) {
-                        this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
-                        this.max = this.min + this.tickInterval*(this.numberTicks-1);
-                    }
-                    else if (dim > 100) {
-                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
-                    }
-                    else {
-                        this.numberTicks = 2;
-                    }
-                }
-            
-                if (this.tickInterval == null) {
-                    this.tickInterval = range / (this.numberTicks-1);
-                }
-            }
-
-            for (var i=0; i<this.numberTicks; i++){
-                tt = this.min + i * this.tickInterval;
-                var t = new this.tickRenderer(this.tickOptions);
-                // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
+            // for x axes, have number ot ticks equal to number of series and ticks placed
+            // at sum of y values for each series.
+            else if (this.tickMode == 'bar') {
+                this.min = 0;
+                this.numberTicks = this._series.length + 1;
+                t = new this.tickRenderer(this.tickOptions);
                 if (!this.showTicks) {
                     t.showLabel = false;
                     t.showMark = false;
@@ -430,14 +356,72 @@
                 else if (!this.showTickMarks) {
                     t.showMark = false;
                 }
-                t.setTick(tt, this.name);
+                t.setTick(0, this.name);
                 this._ticks.push(t);
+                
+                temp = 0;
+
+                for (i=1; i<this.numberTicks; i++){
+                    temp += this._series[i-1]._sumy;
+                    t = new this.tickRenderer(this.tickOptions);
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    t.setTick(temp, this.name);
+                    this._ticks.push(t);
+                }
+                this.max = this.max || temp;
+                
+                // if user specified a max and it is greater than sum, add a tick
+                if (this.max > temp) {
+                     t = new this.tickRenderer(this.tickOptions);
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    t.setTick(this.max, this.name);
+                    this._ticks.push(t);
+                    
+                }
+            }
+            
+            else if (this.tickMode == 'even') {
+                this.min = 0;
+                this.max = this.max || db.max;
+                // get a desired number of ticks
+                var nt = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                range = this.max - this.min;
+                this.numberTicks = nt;
+                this.tickInterval = range / (this.numberTicks - 1);
+
+                for (i=0; i<this.numberTicks; i++){
+                    tt = this.min + i * this.tickInterval;
+                    t = new this.tickRenderer(this.tickOptions);
+                    // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    t.setTick(tt, this.name);
+                    this._ticks.push(t);
+                }
+                
             }
         }
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
+    $.jqplot.MekkoAxisRenderer.prototype.pack = function(pos, offsets) {
         var ticks = this._ticks;
         var max = this.max;
         var min = this.min;
@@ -524,8 +508,9 @@
                         t.pack();
                     }
                 }
+                var w;
                 if (lshow) {
-                    var w = this._label._elem.outerWidth(true);
+                    w = this._label._elem.outerWidth(true);
                     this._label._elem.css('left', offmin + pixellength/2 - w/2 + 'px');
                     if (this.name == 'xaxis') {
                         this._label._elem.css('bottom', '0px');
@@ -534,6 +519,19 @@
                         this._label._elem.css('top', '0px');
                     }
                     this._label.pack();
+                }
+                // now show the labels under the bars.
+                var b, l, r;
+                for (i=0; i<this.barLabels.length; i++) {
+                    b = this._barLabels[i];
+                    if (b.show) {
+                        w = b.getWidth();
+                        l = this._ticks[i].getLeft() + this._ticks[i].getWidth();
+                        r = this._ticks[i+1].getLeft();
+                        b._elem.css('left', (r+l-w)/2+'px');
+                        b._elem.css('top', this._ticks[i]._elem.css('top'));
+                        b.pack();
+                    }
                 }
             }
             else {
@@ -564,12 +562,6 @@
                                     }
                                     break;
                                 case 'middle':
-                                    // if (t.angle > 0) {
-                                    //     shim = -t.getHeight()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    // }
-                                    // else {
-                                    //     shim = -t.getHeight()/2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    // }
                                     shim = -t.getHeight()/2;
                                     break;
                                 default:

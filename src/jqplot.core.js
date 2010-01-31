@@ -742,12 +742,15 @@
         this.canvas = new $.jqplot.GenericCanvas();
         this.shadowCanvas = new $.jqplot.GenericCanvas();
         this.plugins = {};
+        // sum of y values in this series.
+        this._sumy = 0;
+        this._sumx = 0;
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
     Series.prototype.constructor = Series;
     
-    Series.prototype.init = function(index, gridbw) {
+    Series.prototype.init = function(index, gridbw, plot) {
         // weed out any null values in the data.
         this.index = index;
         this.gridBorderWidth = gridbw;
@@ -775,7 +778,7 @@
             this.fillColor = 'rgba('+comp[0]+','+comp[1]+','+comp[2]+','+this.fillAlpha+')';
         }
         this.renderer = new this.renderer();
-        this.renderer.init.call(this, this.rendererOptions);
+        this.renderer.init.call(this, this.rendererOptions, plot);
         this.markerRenderer = new this.markerRenderer();
         if (!this.markerOptions.color) {
             this.markerOptions.color = this.color;
@@ -790,7 +793,7 @@
     // data - optional data point array to draw using this series renderer
     // gridData - optional grid data point array to draw using this series renderer
     // stackData - array of cumulative data for stacked plots.
-    Series.prototype.draw = function(sctx, opts) {
+    Series.prototype.draw = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
         // hooks get called even if series not shown
@@ -799,7 +802,7 @@
             $.jqplot.preDrawSeriesHooks[j].call(this, sctx, options);
         }
         if (this.show) {
-            this.renderer.setGridData.call(this);
+            this.renderer.setGridData.call(this, plot);
             if (!options.preventJqPlotSeriesDrawTrigger) {
                 $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
             }
@@ -813,8 +816,7 @@
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
-            
+            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
             this.renderer.draw.call(this, sctx, gridData, options);
         }
         
@@ -823,7 +825,7 @@
         }
     };
     
-    Series.prototype.drawShadow = function(sctx, opts) {
+    Series.prototype.drawShadow = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
         // hooks get called even if series not shown
@@ -832,7 +834,7 @@
             $.jqplot.preDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         if (this.shadow) {
-            this.renderer.setGridData.call(this);
+            this.renderer.setGridData.call(this, plot);
 
             var data = [];
             if (options.data) {
@@ -844,7 +846,7 @@
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data);
+            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
             this.renderer.drawShadow.call(this, sctx, gridData, options);
         }
@@ -1099,6 +1101,10 @@
         // positioned correclty if renderered into a hidden container.  To render into
         // a hidden container, call the replot method when the container is shown.
         this.drawIfHidden = false;
+        // sum of y values for all series in plot.
+        // used in mekko chart.
+        this._sumy = 0;
+        this._sumx = 0;
         
         this.colorGenerator = $.jqplot.ColorGenerator;
         
@@ -1188,6 +1194,8 @@
             
             this.title.init();
             this.legend.init();
+            this._sumy = 0;
+            this._sumx = 0;
             for (var i=0; i<this.series.length; i++) {
                 this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
@@ -1196,10 +1204,12 @@
                 }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
-                this.series[i].init(i, this.grid.borderWidth);
+                this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
                     $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
                 }
+                this._sumy += this.series[i]._sumy;
+                this._sumx += this.series[i]._sumx;
             }
 
             for (var name in this.axes) {
@@ -1316,11 +1326,15 @@
                 this.target.css('font-size', this.fontSize);
             }
             
+            this._sumy = 0;
+            this._sumx = 0;
             for (var i=0; i<this.series.length; i++) {
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
                 //this.series[i].init(i, this.grid.borderWidth);
+                this._sumy += series[i]._sumy;
+                this._sumx += series[i]._sumx;
             }
             
             for (var name in this.axes) {
@@ -1419,6 +1433,12 @@
             }
             if (index>0) {
                 series._prevPlotData = this.series[index-1]._plotData;
+            }
+            series._sumy = 0;
+            series._sumx = 0;
+            for (i=series.data.length-1; i>-1; i--) {
+                series._sumy += series.data[i][1];
+                series._sumx += series.data[i][0];
             }
         };
         
@@ -1616,6 +1636,12 @@
             }
             for (var i=0; i<this.series.length; i++) {
                 this.populatePlotData(this.series[i], i);
+            }
+            this._sumy = 0;
+            this._sumx = 0;
+            for (i=0; i<this.series.length; i++) {
+                this._sumy += series[i]._sumy;
+                this._sumx += series[i]._sumx;
             }
             this.draw();
             this.target.trigger('jqplotPostRedraw');
@@ -1877,10 +1903,10 @@
                 series = this.series[idx];
                 ctx = series.shadowCanvas._ctx;
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                series.drawShadow(ctx, options);
+                series.drawShadow(ctx, options, this);
                 ctx = series.canvas._ctx;
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                series.draw(ctx, options);
+                series.draw(ctx, options, this);
             }
             
             else {
@@ -1892,10 +1918,10 @@
                     series = this.series[i];
                     ctx = series.shadowCanvas._ctx;
                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    series.drawShadow(ctx, options);
+                    series.drawShadow(ctx, options, this);
                     ctx = series.canvas._ctx;
                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    series.draw(ctx, options);
+                    series.draw(ctx, options, this);
                 }
             }
         };

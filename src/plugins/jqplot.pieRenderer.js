@@ -65,11 +65,11 @@
         this._diameter = null;
     };
     
-    $.jqplot.PieRenderer.prototype.setGridData = function() {
+    $.jqplot.PieRenderer.prototype.setGridData = function(plot) {
         // this is a no-op
     };
     
-    $.jqplot.PieRenderer.prototype.makeGridData = function(data) {
+    $.jqplot.PieRenderer.prototype.makeGridData = function(data, plot) {
         var stack = [];
         var td = [];
         for (var i=0; i<data.length; i++){
@@ -242,14 +242,6 @@
         this.showMark = false;
         this.show = false; 
     };
-    
-    
-    $.jqplot.PieTickRenderer = function() {
-        $.jqplot.AxisTickRenderer.call(this);
-    };
-    
-    $.jqplot.PieTickRenderer.prototype = new $.jqplot.AxisTickRenderer();
-    $.jqplot.PieTickRenderer.prototype.constructor = $.jqplot.PieTickRenderer;
     
     $.jqplot.PieLegendRenderer = function() {
         $.jqplot.TableLegendRenderer.call(this);
