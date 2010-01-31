@@ -1333,8 +1333,8 @@
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
                 //this.series[i].init(i, this.grid.borderWidth);
-                this._sumy += series[i]._sumy;
-                this._sumx += series[i]._sumx;
+                this._sumy += this.series[i]._sumy;
+                this._sumx += this.series[i]._sumx;
             }
             
             for (var name in this.axes) {
@@ -1640,8 +1640,8 @@
             this._sumy = 0;
             this._sumx = 0;
             for (i=0; i<this.series.length; i++) {
-                this._sumy += series[i]._sumy;
-                this._sumx += series[i]._sumx;
+                this._sumy += this.series[i]._sumy;
+                this._sumx += this.series[i]._sumx;
             }
             this.draw();
             this.target.trigger('jqplotPostRedraw');
