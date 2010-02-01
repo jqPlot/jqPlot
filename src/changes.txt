@@ -1,5 +1,31 @@
 Title: Change Log
 
+0.9.7:
+
+* Added Mekko chart plot type with enhanced legend and axes support.
+* Implemented vertical waterfall charts.  Can create waterfall plot as
+  option to bar chart.  See examples folder of distribution.
+* Enhanced plot labels for waterfall style.
+* Enhanced bar plots so you can now color each bar of a series 
+  independently with the "varyBarColor" option.
+* Refactored series drawing so that each series and series shadow drawn
+  on it's own canvas.  Allows series to be redrawn independently of eachother.
+* Added additional default series colors.
+* Aded useNegativeColors option to turn off negative color array and use 
+  only seriesColors array to define all bar/filled line colors.
+* Fix css for cursor legend.
+* Modified shape renderer so rectangles can be stroked and filled.
+* Refactored date methods out of dateAxisRenderer so that date formatter 
+  and methods can be accesses outside of dateAxisRenderer plugin.
+* Fixed #132, now trigger series change event on plot target instead of drag canvas.
+* Fixes issue #116 where some source files had mix of tabs and spaces 
+  for indentation.  Should have been all spaces.
+* Fixed issue #126, some links broken in docs section of web site.
+* Fixed issue #90, trendline plugin incompatibility with pie renderer.
+* Updated samples in examples folder of distribution to include navigation 
+  links if web server is set up to process .html files with php.
+
+
 0.9.6:
 
 * New, easier to use, replot() method for placing plots in tabs, accordions,
