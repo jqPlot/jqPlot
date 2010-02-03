@@ -9,7 +9,7 @@ Title: Change Log
 * Enhanced bar plots so you can now color each bar of a series 
   independently with the "varyBarColor" option.
 * Refactored series drawing so that each series and series shadow drawn
-  on it's own canvas.  Allows series to be redrawn independently of eachother.
+  on it's own canvas.  Allows series to be redrawn independently of each other.
 * Added additional default series colors.
 * Aded useNegativeColors option to turn off negative color array and use 
   only seriesColors array to define all bar/filled line colors.

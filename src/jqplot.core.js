@@ -684,6 +684,10 @@
         // prop: index
         // 0 based index of this series in the plot series array.
         this.index;
+        // prop: canvasIndex
+        // 0 based index of this series' canvas.  Used to bring
+        // series forward and back on plot.
+        this.canvasIndex
         // prop: fill
         // true or false, wether to fill under lines or in bars.
         // May not be implemented in all renderers.
@@ -1036,7 +1040,7 @@
         // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
         this.baseCanvas = new $.jqplot.GenericCanvas();
-        // this.seriesCanvas = new $.jqplot.GenericCanvas();
+        this.seriesCanvasStack = [];
         this.eventCanvas = new $.jqplot.GenericCanvas();
         this._width = null;
         this._height = null; 
@@ -1895,7 +1899,12 @@
             ev.data.plot.eventCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
         };
         
-        // convienece function to draw series shadows and series.
+        // method: drawSeries
+        // Redraws all or just one series on the plot.  No axis scaling
+        // is performed and no other elements on the plot are redrawn.
+        // options is an options object to pass on to the series renderers.
+        // It can be an empty object {}.  idx is the series index
+        // to redraw if only one series is to be redrawn.
         this.drawSeries = function(options, idx){
             var i, series, ctx;
             // draw specified series
@@ -1925,6 +1934,23 @@
                 }
             }
         };
+
+        this.moveSeriesToBack = function (item) {
+            
+        };
+        
+        this.moveSeriesToFront = function (item) { 
+            
+        };
+        
+        this.moveSeriesForward = function (item) {
+            
+        };
+        
+        this.moveSeriesBackward = function (item) {
+            
+        };
+        
     }
     
         
