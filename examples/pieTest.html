@@ -25,17 +25,22 @@
     
     $.jqplot.config.enablePlugins = true;
 
-    plot1 = $.jqplot('pie', [[['a',25],['b',14],['c',7]]], {
+    plot1 = $.jqplot('pie1', [[['a',25],['b',14],['c',7]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
       legend:{show:true}      
     });
 
-    plot2 = $.jqplot('pie1', [[['a',25],['b',0],['c',0]]], {
+    plot2 = $.jqplot('pie2', [[['a',25],['b',0],['c',0]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+      legend:{show:true}      
+    });
+
+    plot3 = $.jqplot('pie3', [[['a',5],['b',0],['c',7]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
       legend:{show:true}      
     });
     
-    plot3 = $.jqplot('pie2', [[["a",1000],["b",.001],["c",.001]]], {
+    plot4 = $.jqplot('pie4', [[["a",1000],["b",.001],["c",.001]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
       legend:{show:true}      
     });
@@ -46,8 +51,9 @@
   <body>
 <?php include "nav.inc"; ?>
     This page tests for 2 conditions.  Plotting pies with a slice that begins at 0 and ends at and near 2*pi (360 degrees) and disabling the trendline plugin on pies.
-    <div id="pie" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie2" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
+    <div id="pie3" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
+    <div id="pie4" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
   </body>
 </html>
