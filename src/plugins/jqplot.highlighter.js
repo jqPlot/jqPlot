@@ -126,6 +126,10 @@
         // Typically this is 1.  Certain plots, like OHLC, will
         // have more y values in each data point array.
         this.yvalues = 1;
+        // prop: bringSeriesToFront
+        // True to bring the series of the highlighted point to the front
+        // of other series.
+        this.bringSeriesToFront = false;
         this._tooltipElem;
         this.isHighlighting = false;
 
@@ -342,6 +346,9 @@
                 else {
                     hl._tooltipElem.hide();
                 }
+                if (hl.bringSeriesToFront) {
+                    plot.restorePreviousSeriesOrder();
+                }
                hl.isHighlighting = false;
             
             }
@@ -352,6 +359,9 @@
                 }
                 if (hl.showTooltip) {
                     showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.moveSeriesToFront(neighbor.seriesIndex);
                 }
             }
         }

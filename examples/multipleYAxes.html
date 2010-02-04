@@ -44,7 +44,8 @@
 
     plot1 = $.jqplot('chart', [l1, l3, l4, l5], {
       title:'Default Multiply y axes',
-        series:[{}, {yaxis:'y2axis'}, {yaxis:'y3axis'}, {yaxis:'y4axis'}, {yaxis:'y5axis'}, {yaxis:'y6axis'}]
+        series:[{}, {yaxis:'y2axis'}, {yaxis:'y3axis'}, {yaxis:'y4axis'}, {yaxis:'y5axis'}, {yaxis:'y6axis'}],
+      highlighter:{bringSeriesToFront:true}
     });
 
 
@@ -53,17 +54,20 @@
         series:[{}, {yaxis:'y2axis'}, {yaxis:'y3axis'}, {yaxis:'y4axis'}, {yaxis:'y5axis'}, {yaxis:'y6axis'}],
         axesDefaults:{useSeriesColor: true},
         axes:{y2axis:{padMax:2}, y3axis:{padMax:2.5}, y4axis:{padMin:2}, y5axis:{padMin:2.3}},
-        grid:{gridLineWidth:1.0, borderWidth:2.5, shadow:false}
+        grid:{gridLineWidth:1.0, borderWidth:2.5, shadow:false},
+      highlighter:{bringSeriesToFront:true}
     });
     
     plot3 = $.jqplot('chart3', [l1, l3, l4, l5], {
       axesDefaults:{show:false},
-      gridPadding: {top:0, bottom:0, left:0, right:44}
+      gridPadding: {top:0, bottom:0, left:0, right:44},
+      highlighter:{bringSeriesToFront:true}
     });
     
     plot4 = $.jqplot('chart4', [l1, l3, l4, l5], {
       axesDefaults:{show:false},
-      axes:{xaxis:{show:false}, yaxis:{show:false}}
+      axes:{xaxis:{show:false}, yaxis:{show:false}},
+      highlighter:{bringSeriesToFront:true}
     });
 
 

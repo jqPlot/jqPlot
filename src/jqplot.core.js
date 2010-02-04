@@ -684,10 +684,6 @@
         // prop: index
         // 0 based index of this series in the plot series array.
         this.index;
-        // prop: canvasIndex
-        // 0 based index of this series' canvas.  Used to bring
-        // series forward and back on plot.
-        this.canvasIndex
         // prop: fill
         // true or false, wether to fill under lines or in bars.
         // May not be implemented in all renderers.
@@ -971,7 +967,6 @@
         this._elem = $(elem);
         this._elem.addClass(klass);
         this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
-        // borrowed from flot by Ole Laursen
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
         }
@@ -1040,7 +1035,11 @@
         // see <$.jqplot.TableLegendRenderer>
         this.legend = new Legend();
         this.baseCanvas = new $.jqplot.GenericCanvas();
-        this.seriesCanvasStack = [];
+        // array of series indicies. Keep track of order
+        // which series canvases are displayed, lowest
+        // to highest, back to front.
+        this.seriesStack = [];
+        this.previousSeriesStack = [];
         this.eventCanvas = new $.jqplot.GenericCanvas();
         this._width = null;
         this._height = null; 
@@ -1201,6 +1200,9 @@
             this._sumy = 0;
             this._sumx = 0;
             for (var i=0; i<this.series.length; i++) {
+                // set default stacking order for series canvases
+                this.seriesStack.push(i);
+                this.previousSeriesStack.push(i);
                 this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
@@ -1657,7 +1659,7 @@
         this.draw = function(){
             if (this.drawIfHidden || this.target.is(':visible')) {
                 this.target.trigger('jqplotPreDraw');
-                var i;
+                var i, j;
                 for (i=0; i<$.jqplot.preDrawHooks.length; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
                 }
@@ -1713,13 +1715,21 @@
                 
                 // put the shadow canvases behind the series canvases so shadows don't overlap on stacked bars.
                 for (i=0; i<this.series.length; i++) {
-                    this.target.append(this.series[i].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-canvas jqplot-shadow'));
-                    this.series[i].shadowCanvas.setContext();
+                    // draw series in order of stacking.  This affects only
+                    // order in which canvases are added to dom.
+                    j = this.seriesStack[i];
+                    this.target.append(this.series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas jqplot-series-'+j));
+                    this.series[j].shadowCanvas.setContext();
+                    this.series[j].shadowCanvas._elem.data('seriesIndex', j);
                 }
                 
                 for (i=0; i<this.series.length; i++) {
-                    this.target.append(this.series[i].canvas.createElement(this._gridPadding, 'jqplot-series-canvas'));
-                    this.series[i].canvas.setContext();
+                    // draw series in order of stacking.  This affects only
+                    // order in which canvases are added to dom.
+                    j = this.seriesStack[i];
+                    this.target.append(this.series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas jqplot-series-'+j));
+                    this.series[j].canvas.setContext();
+                    this.series[j].canvas._elem.data('seriesIndex', j);
                 }
                 
                 // var sctx = this.seriesCanvas.setContext();
@@ -1804,9 +1814,10 @@
         
         function getNeighborPoint(plot, x, y) {
             var ret = null;
-            var s, i, d0, d, j, r;
+            var s, i, d0, d, j, r, k;
             var threshold;
-            for (var i=0; i<plot.series.length; i++) {
+            for (var k=plot.seriesStack.length-1; k>-1; k--) {
+                i = plot.seriesStack[k];
                 s = plot.series[i];
                 r = s.renderer;
                 if (s.show) {
@@ -1818,21 +1829,21 @@
                             if (r.candleStick) {
                                 var yp = s._yaxis.series_u2p;
                                 if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
                             // if an open hi low close chart
                             else if (!r.hlc){
                                 var yp = s._yaxis.series_u2p;
                                 if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
                             // a hi low close chart
                             else {
                                 var yp = s._yaxis.series_u2p;
                                 if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
-                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
                             
@@ -1841,7 +1852,7 @@
                             d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
                             if (d <= threshold && (d <= d0 || d0 == null)) {
                                d0 = d;
-                               ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                               return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                             }
                         }
                     } 
@@ -1934,24 +1945,104 @@
                 }
             }
         };
-
-        this.moveSeriesToBack = function (item) {
-            
+        
+        // method: moveSeriesToFront
+        // Moves the specified series canvas in front of all other series canvases.
+        // This effectively "draws" the specified series on top of all other series,
+        // although it is performed through DOM manipulation, no redrawing is performed.
+        //
+        // Parameters:
+        // idx - 0 based index of the series to move.  This will be the index of the series
+        // as it was first passed into the jqplot function.
+        this.moveSeriesToFront = function (idx) { 
+            idx = parseInt(idx);
+            var stackIndex = $.inArray(idx, this.seriesStack);
+            // if already in front, return
+            if (stackIndex == -1) {
+                return;
+            }
+            if (stackIndex == this.seriesStack.length -1) {
+                this.previousSeriesStack = this.seriesStack.slice(0);
+                return;
+            }
+            var opidx = this.seriesStack[this.seriesStack.length -1];
+            var serelem = this.series[idx].canvas._elem.detach();
+            var shadelem = this.series[idx].shadowCanvas._elem.detach();
+            this.series[opidx].shadowCanvas._elem.after(shadelem);
+            this.series[opidx].canvas._elem.after(serelem);
+            this.previousSeriesStack = this.seriesStack.slice(0);
+            this.seriesStack.splice(stackIndex, 1);
+            this.seriesStack.push(idx);
         };
         
-        this.moveSeriesToFront = function (item) { 
-            
+        // method: moveSeriesToBack
+        // Moves the specified series canvas behind all other series canvases.
+        //
+        // Parameters:
+        // idx - 0 based index of the series to move.  This will be the index of the series
+        // as it was first passed into the jqplot function.
+        this.moveSeriesToBack = function (idx) {
+            idx = parseInt(idx);
+            var stackIndex = $.inArray(idx, this.seriesStack);
+            // if already in back, return
+            if (stackIndex == 0 || stackIndex == -1) {
+                return;
+            }
+            var opidx = this.seriesStack[0];
+            var serelem = this.series[idx].canvas._elem.detach();
+            var shadelem = this.series[idx].shadowCanvas._elem.detach();
+            this.series[opidx].shadowCanvas._elem.before(shadelem);
+            this.series[opidx].canvas._elem.before(serelem);
+            this.previousSeriesStack = this.seriesStack.slice(0);
+            this.seriesStack.splice(stackIndex, 1);
+            this.seriesStack.unshift(idx);
         };
         
-        this.moveSeriesForward = function (item) {
-            
-        };
+        // method: restorePreviousSeriesOrder
+        // Restore the series canvas order to its previous state.
+        // Useful to put a series back where it belongs after moving
+        // it to the front.
+        this.restorePreviousSeriesOrder = function () {
+            var i, j, serelem, shadelem, temp;
+            // if no change, return.
+            if (this.seriesStack == this.previousSeriesStack) {
+                return;
+            }
+            for (i=1; i<this.previousSeriesStack.length; i++) {
+                move = this.previousSeriesStack[i];
+                keep = this.previousSeriesStack[i-1];
+                serelem = this.series[move].canvas._elem.detach();
+                shadelem = this.series[move].shadowCanvas._elem.detach();
+                this.series[keep].shadowCanvas._elem.after(shadelem);
+                this.series[keep].canvas._elem.after(serelem);
+            }
+            temp = this.seriesStack.slice(0);
+            this.seriesStack = this.previousSeriesStack.slice(0);
+            this.previousSeriesStack = temp;
+        }
         
-        this.moveSeriesBackward = function (item) {
-            
-        };
-        
+        // method: restoreOriginalSeriesOrder
+        // Restore the series canvas order to its original order
+        // when the plot was created.
+        this.restoreOriginalSeriesOrder = function () {
+            var i, j, arr=[];
+            for (i=0; i<this.series.length; i++) {
+                arr.push(i);
+            }
+            if (this.seriesStack == arr) {
+                return;
+            }
+            this.previousSeriesStack = this.seriesStack.slice(0);
+            this.seriesStack = arr;
+            for (i=1; i<this.seriesStack.length; i++) {
+                serelem = this.series[i].canvas._elem.detach();
+                shadelem = this.series[i].shadowCanvas._elem.detach();
+                this.series[i-1].shadowCanvas._elem.after(shadelem);
+                this.series[i-1].canvas._elem.after(serelem);
+            }
+        }
     }
+    
     
         
    $.jqplot.ColorGenerator = function(colors) {
