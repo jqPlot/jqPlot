@@ -116,6 +116,8 @@
         // Format string used in the cursor legend.  If showTooltipDataPosition is true,
         // this will also be the default format string used by tooltipFormatString.
         this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
+        // whether the cursor is over the grid or not.
+        this.onGrid = false;
         $.extend(true, this, options);
     };
     
@@ -577,7 +579,7 @@
         }
     }
     
-    function handleClick (ev, gridpos, datapos, neighbor, plot) {
+    function handleClick (ev, gridpos, datapos, neighbor, plot, ongrid) {
         ev.stopPropagation();
         ev.preventDefault();
         var c = plot.plugins.cursor;
@@ -587,7 +589,7 @@
         return false;
     }
     
-    function handleDblClick (ev, gridpos, datapos, neighbor, plot) {
+    function handleDblClick (ev, gridpos, datapos, neighbor, plot, ongrid) {
         ev.stopPropagation();
         ev.preventDefault();
         var c = plot.plugins.cursor;
@@ -599,6 +601,7 @@
     
     function handleMouseLeave(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
+        c.onGrid = false;
         if (c.show) {
             $(ev.target).css('cursor', c.previousCursor);
             if (c.showTooltip) {
@@ -615,53 +618,104 @@
             if (c.showVerticalLine || c.showHorizontalLine) {
                 var ctx = c.cursorCanvas._ctx;
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-            } if (c.showCursorLegend) {
-            var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
-            for (var i=0; i<cells.length; i++) {
-                var idx = $(cells[i]).data('seriesIndex');
-                var series = plot.series[idx];
-                var label = series.label.toString();
-                if (plot.legend.escapeHtml) {
-                    $(cells[i]).text($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
-                }
-                else {
-                    $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
-                }
+            }
+            if (c.showCursorLegend) {
+                var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
+                for (var i=0; i<cells.length; i++) {
+                    var idx = $(cells[i]).data('seriesIndex');
+                    var series = plot.series[idx];
+                    var label = series.label.toString();
+                    if (plot.legend.escapeHtml) {
+                        $(cells[i]).text($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
+                    }
+                    else {
+                        $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
+                    }
                 
-            }        
-        }
+                }        
+            }
         }
     }
     
     function handleMouseEnter(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
-        if (c.show) {
-            c.previousCursor = ev.target.style.cursor;
-            ev.target.style.cursor = c.style;
-            if (c.showTooltip) {
-                updateTooltip(gridpos, datapos, plot);
-                if (c.followMouse) {
-                    moveTooltip(gridpos, plot);
-                }
-                else {
-                    positionTooltip(plot);
-                }
-                c._tooltipElem.show();
-            }
-            if (c.showVerticalLine || c.showHorizontalLine) {
-                moveLine(gridpos, plot);
-            }
-        }
+        // just to be sure, set onGrid to false and let mouse move
+        // set it to true if over grid.
+        c.onGrid = false;
+        // if (c.show) {
+        //     c.previousCursor = ev.target.style.cursor;
+        //     ev.target.style.cursor = c.style;
+        //     if (c.showTooltip) {
+        //         updateTooltip(gridpos, datapos, plot);
+        //         if (c.followMouse) {
+        //             moveTooltip(gridpos, plot);
+        //         }
+        //         else {
+        //             positionTooltip(plot);
+        //         }
+        //         c._tooltipElem.show();
+        //     }
+        //     if (c.showVerticalLine || c.showHorizontalLine) {
+        //         moveLine(gridpos, plot);
+        //     }
+        // }
     }
     
-    function handleMouseMove(ev, gridpos, datapos, neighbor, plot) {
+    function handleMouseMove(ev, gridpos, datapos, neighbor, plot, ongrid) {
         var c = plot.plugins.cursor;
         var ctx = c.zoomCanvas._ctx;
         if (c.show) {
-            if (c.showTooltip) {
-                updateTooltip(gridpos, datapos, plot);
-                if (c.followMouse) {
-                    moveTooltip(gridpos, plot);
+            if (ongrid) {
+                // initialize if needed
+                if (c.onGrid == false) {
+                    c.onGrid = true;
+                    c.previousCursor = ev.target.style.cursor;
+                    ev.target.style.cursor = c.style;
+                    if (c.showTooltip) {
+                        updateTooltip(gridpos, datapos, plot);
+                        if (c.followMouse) {
+                            moveTooltip(gridpos, plot);
+                        }
+                        else {
+                            positionTooltip(plot);
+                        }
+                        c._tooltipElem.show();
+                    }
+                }
+                else if (c.showTooltip) {
+                    updateTooltip(gridpos, datapos, plot);
+                    if (c.followMouse) {
+                        moveTooltip(gridpos, plot);
+                    }
+                }
+            }
+            // off of grid
+            else {
+                c.onGrid = false;
+                if (c.show) {
+                    $(ev.target).css('cursor', c.previousCursor);
+                    if (c.showTooltip) {
+                        c._tooltipElem.hide();
+                    }
+                    if (c.showVerticalLine || c.showHorizontalLine) {
+                        var ctx = c.cursorCanvas._ctx;
+                        ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+                    }
+                    if (c.showCursorLegend) {
+                        var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
+                        for (var i=0; i<cells.length; i++) {
+                            var idx = $(cells[i]).data('seriesIndex');
+                            var series = plot.series[idx];
+                            var label = series.label.toString();
+                            if (plot.legend.escapeHtml) {
+                                $(cells[i]).text($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
+                            }
+                            else {
+                                $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
+                            }
+                
+                        }        
+                    }
                 }
             }
             if (c.zoom && c._zoom.started && !c.zoomTarget) {
@@ -683,7 +737,7 @@
         }
     }
     
-    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot, ongrid) {
         var c = plot.plugins.cursor;
         var axes = plot.axes;
         if (c.zoom) {
@@ -708,7 +762,7 @@
         }
     }
     
-    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot, ongrid) {
         var c = plot.plugins.cursor;
         if (c.zoom && c._zoom.zooming && !c.zoomTarget) {
             c.doZoom(gridpos, datapos, plot, c);

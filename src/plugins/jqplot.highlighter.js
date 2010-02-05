@@ -127,6 +127,7 @@
         // have more y values in each data point array.
         this.yvalues = 1;
         // prop: bringSeriesToFront
+        // This option requires jQuery 1.4+
         // True to bring the series of the highlighted point to the front
         // of other series.
         this.bringSeriesToFront = false;

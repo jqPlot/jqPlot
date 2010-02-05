@@ -195,6 +195,16 @@
         this._plotDimensions = {height:null, width:null};
     };
     
+    $.jqplot.ElemContainer.prototype.createElement = function(el, offsets, clss, width, height) {
+        this._offsets = offsets;
+        var klass = clss || 'jqplot';
+        var elem = document.createElement(el);
+        this._elem = $(elem);
+        this._elem.addClass(klass);
+        this._elem.css({ position: 'absolute', left: '0px', top: '0px', width: width+'px', height: height+'px' });
+        return this._elem;
+    };
+    
     $.jqplot.ElemContainer.prototype.getWidth = function() {
         if (this._elem) {
             return this._elem.outerWidth(true);
@@ -1040,7 +1050,7 @@
         // to highest, back to front.
         this.seriesStack = [];
         this.previousSeriesStack = [];
-        this.eventCanvas = new $.jqplot.GenericCanvas();
+        this.eventCanvas = new $.jqplot.ElemContainer();
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
@@ -1718,7 +1728,7 @@
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
-                    this.target.append(this.series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas jqplot-series-'+j));
+                    this.target.append(this.series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas'));
                     this.series[j].shadowCanvas.setContext();
                     this.series[j].shadowCanvas._elem.data('seriesIndex', j);
                 }
@@ -1727,16 +1737,17 @@
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
-                    this.target.append(this.series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas jqplot-series-'+j));
+                    this.target.append(this.series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas'));
                     this.series[j].canvas.setContext();
                     this.series[j].canvas._elem.data('seriesIndex', j);
                 }
                 
-                // var sctx = this.seriesCanvas.setContext();
-                this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas'));
-                var ectx = this.eventCanvas.setContext();
-                ectx.fillStyle = 'rgba(0,0,0,0)';
-                ectx.fillRect(0,0,ectx.canvas.width, ectx.canvas.height);
+                this.target.append(this.eventCanvas.createElement('div', this._gridPadding, 'jqplot-event-canvas', this._width, this._height));
+                // offsets of grid relative to document.
+                this.eventCanvas.gridOffset = {
+                    left: this.eventCanvas._elem.offset().left + this.eventCanvas._offsets.left, 
+                    top: this.eventCanvas._elem.offset().top + this.eventCanvas._offsets.top,
+                };
             
                 // bind custom event handlers to regular events.
                 this.bindCustomEvents();
@@ -1791,25 +1802,21 @@
         
         function getEventPosition(ev) {
             var plot = ev.data.plot;
-            // var xaxis = plot.axes.xaxis;
-            // var x2axis = plot.axes.x2axis;
-            // var yaxis = plot.axes.yaxis;
-            // var y2axis = plot.axes.y2axis;
-            var offsets = plot.eventCanvas._elem.offset();
-            var gridPos = {x:ev.pageX - offsets.left, y:ev.pageY - offsets.top};
-            // var dataPos = {x1y1:{x:null, y:null}, x1y2:{x:null, y:null}, x2y1:{x:null, y:null}, x2y2:{x:null, y:null}};
+            var go = plot.eventCanvas.gridOffset;
+            var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
+            var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
             var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
-            
             var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
             var ax = plot.axes;
-            for (var n=11; n>0; n--) {
-                var axis = an[n-1];
+            var n, axis;
+            for (n=11; n>0; n--) {
+                axis = an[n-1];
                 if (ax[axis].show) {
                     dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
                 }
             }
 
-            return ({offsets:offsets, gridPos:gridPos, dataPos:dataPos});
+            return {offsets:plot.eventCanvas.gridOffset, gridPos:gridPos, dataPos:dataPos, onGrid: onGrid};
         }
         
         function getNeighborPoint(plot, x, y) {
@@ -1867,7 +1874,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
         };
         
         this.onDblClick = function(ev) {
@@ -1876,26 +1883,26 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
         };
         
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
         };
         
         this.onMouseUp = function(ev) {
             var positions = getEventPosition(ev);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot, positions.onGrid]);
         };
         
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
         };
         
         this.onMouseEnter = function(ev) {
@@ -1947,6 +1954,7 @@
         };
         
         // method: moveSeriesToFront
+        // This method requires jQuery 1.4+
         // Moves the specified series canvas in front of all other series canvases.
         // This effectively "draws" the specified series on top of all other series,
         // although it is performed through DOM manipulation, no redrawing is performed.
@@ -1976,6 +1984,7 @@
         };
         
         // method: moveSeriesToBack
+        // This method requires jQuery 1.4+
         // Moves the specified series canvas behind all other series canvases.
         //
         // Parameters:
@@ -1999,6 +2008,7 @@
         };
         
         // method: restorePreviousSeriesOrder
+        // This method requires jQuery 1.4+
         // Restore the series canvas order to its previous state.
         // Useful to put a series back where it belongs after moving
         // it to the front.
@@ -2022,6 +2032,7 @@
         }
         
         // method: restoreOriginalSeriesOrder
+        // This method requires jQuery 1.4+
         // Restore the series canvas order to its original order
         // when the plot was created.
         this.restoreOriginalSeriesOrder = function () {
