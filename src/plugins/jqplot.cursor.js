@@ -118,6 +118,7 @@
         this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
         // whether the cursor is over the grid or not.
         this.onGrid = false;
+        this._oldHandlers = {};
         $.extend(true, this, options);
     };
     
@@ -642,23 +643,7 @@
         // just to be sure, set onGrid to false and let mouse move
         // set it to true if over grid.
         c.onGrid = false;
-        // if (c.show) {
-        //     c.previousCursor = ev.target.style.cursor;
-        //     ev.target.style.cursor = c.style;
-        //     if (c.showTooltip) {
-        //         updateTooltip(gridpos, datapos, plot);
-        //         if (c.followMouse) {
-        //             moveTooltip(gridpos, plot);
-        //         }
-        //         else {
-        //             positionTooltip(plot);
-        //         }
-        //         c._tooltipElem.show();
-        //     }
-        //     if (c.showVerticalLine || c.showHorizontalLine) {
-        //         moveLine(gridpos, plot);
-        //     }
-        // }
+
     }
     
     function handleMouseMove(ev, gridpos, datapos, neighbor, plot, ongrid) {
@@ -740,6 +725,14 @@
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot, ongrid) {
         var c = plot.plugins.cursor;
         var axes = plot.axes;
+        if (document.onselectstart !== undefined) {
+            c._oldHandlers.onselectstart = document.onselectstart;
+            document.onselectstart = function () { return false; };
+        }
+        if (document.ondrag !== undefined) {
+            c._oldHandlers.ondrag = document.ondrag;
+            document.ondrag = function () { return false; };
+        }
         if (c.zoom) {
             if (!c.zoomProxy) {
                 var ctx = c.zoomCanvas._ctx;
@@ -767,6 +760,13 @@
         if (c.zoom && c._zoom.zooming && !c.zoomTarget) {
             c.doZoom(gridpos, datapos, plot, c);
         }
+        if (document.onselectstart !== undefined){
+            document.onselectstart = c._oldHandlers.onselectstart;
+        }
+        if (document.ondrag !== undefined){
+            document.ondrag = c._oldHandlers.ondrag;
+        }
+
         c._zoom.started = false;
         c._zoom.zooming = false;
     }

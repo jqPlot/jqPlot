@@ -1746,7 +1746,7 @@
                 // offsets of grid relative to document.
                 this.eventCanvas.gridOffset = {
                     left: this.eventCanvas._elem.offset().left + this.eventCanvas._offsets.left, 
-                    top: this.eventCanvas._elem.offset().top + this.eventCanvas._offsets.top,
+                    top: this.eventCanvas._elem.offset().top + this.eventCanvas._offsets.top
                 };
             
                 // bind custom event handlers to regular events.
@@ -1822,13 +1822,14 @@
         function getNeighborPoint(plot, x, y) {
             var ret = null;
             var s, i, d0, d, j, r, k;
-            var threshold;
+            var threshold, t;
             for (var k=plot.seriesStack.length-1; k>-1; k--) {
                 i = plot.seriesStack[k];
                 s = plot.series[i];
                 r = s.renderer;
                 if (s.show) {
-                    threshold = Math.abs(s.markerRenderer.size/2+s.neighborThreshold);
+                    t = s.markerRenderer.size/2+s.neighborThreshold;
+                    threshold = (t > 0) ? t : 0;
                     for (var j=0; j<s.gridData.length; j++) {
                         p = s.gridData[j];
                         // neighbor looks different to OHLC chart.
@@ -2029,7 +2030,7 @@
             temp = this.seriesStack.slice(0);
             this.seriesStack = this.previousSeriesStack.slice(0);
             this.previousSeriesStack = temp;
-        }
+        };
         
         // method: restoreOriginalSeriesOrder
         // This method requires jQuery 1.4+
@@ -2052,7 +2053,7 @@
                 this.series[i-1].canvas._elem.after(serelem);
             }
         }
-    }
+    };
     
     
         

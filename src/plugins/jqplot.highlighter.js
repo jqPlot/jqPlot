@@ -162,7 +162,7 @@
         
         var p = this.plugins.highlighter;
         p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
-        this.target.append(p._tooltipElem);
+        this.eventCanvas._elem.before(p._tooltipElem);
     };
     
     $.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
