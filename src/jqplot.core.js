@@ -1370,9 +1370,12 @@
         
         // sort the series data in increasing order.
         function sortData(series) {
-            var d, ret;
+            var d, sd, pd, ppd, ret;
             for (var i=0; i<series.length; i++) {
                 d = series[i].data;
+                sd = series[i]._stackData;
+                pd = series[i]._plotData;
+                ppd = series[i]._prevPlotData;
                 var check = true;
                 if (series[i]._stackAxis == 'x') {
                     for (var j = 0; j < d.length; j++) {
@@ -1383,6 +1386,9 @@
                     }
                     if (check) {
                         d.sort(function(a,b) { return a[1] - b[1]; });
+                        sd.sort(function(a,b) { return a[1] - b[1]; });
+                        pd.sort(function(a,b) { return a[1] - b[1]; });
+                        ppd.sort(function(a,b) { return a[1] - b[1]; });
                     }
                 }
                 else {
@@ -1394,6 +1400,9 @@
                     }
                     if (check) {
                         d.sort(function(a,b) { return a[0] - b[0]; });
+                        sd.sort(function(a,b) { return a[0] - b[0]; });
+                        pd.sort(function(a,b) { return a[0] - b[0]; });
+                        ppd.sort(function(a,b) { return a[0] - b[0]; });
                     }
                 }
             }
