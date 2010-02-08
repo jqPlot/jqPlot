@@ -16,6 +16,11 @@
     <loadfile description="Version to build" property="version" srcfile="version.txt" />
     <loadfile description="Copyright and license" property="copyright" srcfile="copyright.txt" />
     <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
+    
+    <exec executable="hg" outputproperty="HG_ID">
+      <arg value="id"/>
+      <arg value="-n"/>
+    </exec>
 
     <!-- MAIN -->
        
@@ -62,7 +67,7 @@
         <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="}}}" value="(end)" />
         <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="**" value="*" />
         
-        <replaceregexp match="@VERSION" replace="${version}" file="${BUILD_DIR}/jqplot.core.js" />
+        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}" file="${BUILD_DIR}/jqplot.core.js" />
         
         <copy todir="${BUILD_DIR}/plugins">
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
@@ -232,15 +237,15 @@
     </target>
     
   <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
-      <zip destfile="${DIST_DIR}/jquery.jqplot.${version}.zip"
+      <zip destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"
        basedir=""
        includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/overcast/* ${DIST_DIR}/examples/jquery-ui/css/overcast/images/* ${DIST_DIR}/examples/jquery-ui/js/*"
       />
-      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tar.gz" compression="gzip">
-          <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
+      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.tar.gz" compression="gzip">
+          <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"/>
       </tar>
-      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}.tar.bz2" compression="bzip2">
-          <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}.zip"/>
+      <tar destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.tar.bz2" compression="bzip2">
+          <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"/>
       </tar>
   </target>
 
@@ -287,7 +292,7 @@
         </exec>
         <!-- put files back -->
         <move file="${BUILD_DIR}/jquery.jqplot.js.bak" tofile="${BUILD_DIR}/jquery.jqplot.js"/>
-        <replaceregexp match="@VERSION" replace="${version}" flags="g">
+        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}" flags="g">
           <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
           <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
         </replaceregexp>
