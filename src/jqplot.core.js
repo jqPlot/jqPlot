@@ -1973,7 +1973,7 @@
         // idx - 0 based index of the series to move.  This will be the index of the series
         // as it was first passed into the jqplot function.
         this.moveSeriesToFront = function (idx) { 
-            idx = parseInt(idx);
+            idx = parseInt(idx, 10);
             var stackIndex = $.inArray(idx, this.seriesStack);
             // if already in front, return
             if (stackIndex == -1) {
@@ -2001,7 +2001,7 @@
         // idx - 0 based index of the series to move.  This will be the index of the series
         // as it was first passed into the jqplot function.
         this.moveSeriesToBack = function (idx) {
-            idx = parseInt(idx);
+            idx = parseInt(idx, 10);
             var stackIndex = $.inArray(idx, this.seriesStack);
             // if already in back, return
             if (stackIndex == 0 || stackIndex == -1) {
@@ -2061,8 +2061,8 @@
                 this.series[i-1].shadowCanvas._elem.after(shadelem);
                 this.series[i-1].canvas._elem.after(serelem);
             }
-        }
-    };
+        };
+    }
     
     
         
