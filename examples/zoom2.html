@@ -43,7 +43,7 @@ plot = $.jqplot('chart', [goog], {
     title: 'Google, Inc.',
     series: [{
         label: 'Google, Inc.',
-        neighborThreshold: 10
+        neighborThreshold: 8
     }],
     axes: {
         xaxis: {
@@ -69,7 +69,8 @@ plot = $.jqplot('chart', [goog], {
   </head>
   <body>
 <?php include "nav.inc"; ?>
-<p>This sample tests for a condition where, when zooming with tooltips active, zooming control is lost when mousing over a tooltip.  A high neighborThreshold is set on the series so that the mouse will activate points from up to 10 pixels away and the highlighter tooltipOffset is set to 0 to place the tooltip close to the point.</p>
+<p>This sample tests for a condition where, when zooming with tooltips active, zooming control is lost when mousing over a tooltip.  A high neighborThreshold is set on the series so that the mouse will activate points from far away and the highlighter tooltipOffset is set to 0 to place the tooltip close to the point.</p>
+<p>In practice, you would set a low neighborThreshold when data is close together.  When the neighborThreshold is too high, tooltips can display longer than they should.</p>
     <div id="chart" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
     <div style="padding-top:20px"><button value="reset" type="button" onclick="plot.resetZoom();">Zoom Out</button></div>
   </body>

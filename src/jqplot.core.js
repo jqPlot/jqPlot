@@ -1816,8 +1816,8 @@
             // would be nice not to have to do this b/c it means re-calculating
             // these offsets constantly.
             var go = {
-                left: this.eventCanvas._elem.offset().left + this.eventCanvas._offsets.left, 
-                top: this.eventCanvas._elem.offset().top + this.eventCanvas._offsets.top
+                left: plot.eventCanvas._elem.offset().left + plot.eventCanvas._offsets.left, 
+                top: plot.eventCanvas._elem.offset().top + plot.eventCanvas._offsets.top
             };
             var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
             var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
