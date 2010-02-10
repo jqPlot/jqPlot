@@ -1811,7 +1811,14 @@
         
         function getEventPosition(ev) {
             var plot = ev.data.plot;
-            var go = plot.eventCanvas.gridOffset;
+            //var go = plot.eventCanvas.gridOffset;
+            // Mod to account for movement of plot after plot is drawn.
+            // would be nice not to have to do this b/c it means re-calculating
+            // these offsets constantly.
+            var go = {
+                left: this.eventCanvas._elem.offset().left + this.eventCanvas._offsets.left, 
+                top: this.eventCanvas._elem.offset().top + this.eventCanvas._offsets.top
+            };
             var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
             var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
             var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
