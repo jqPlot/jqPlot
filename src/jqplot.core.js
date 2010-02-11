@@ -201,7 +201,7 @@
         var elem = document.createElement(el);
         this._elem = $(elem);
         this._elem.addClass(klass);
-        this._elem.css({ position: 'absolute', left: '0px', top: '0px', width: width+'px', height: height+'px' });
+        this._elem.css({ position: 'absolute', left: this._offsets.left + 'px', top: this._offsets.top + 'px', width: this._plotDimensions.width - this._offsets.left - this._offsets.right + 'px', height: this._plotDimensions.height - this._offsets.top - this._offsets.bottom + 'px' });
         return this._elem;
     };
     
@@ -1118,6 +1118,8 @@
         // used in mekko chart.
         this._sumy = 0;
         this._sumx = 0;
+        // true if mouse is over the event canvas.
+        this.onGrid = false;
         
         this.colorGenerator = $.jqplot.ColorGenerator;
         
@@ -1752,6 +1754,8 @@
                 }
                 
                 this.target.append(this.eventCanvas.createElement('div', this._gridPadding, 'jqplot-event-canvas', this._width, this._height));
+                this.eventCanvas._elem.bind('mouseenter', {plot:this}, function(ev) { ev.data.plot.onGrid = true; } );
+                this.eventCanvas._elem.bind('mouseleave', {plot:this}, function(ev) { ev.data.plot.onGrid = false; } );
                 // offsets of grid relative to document.
                 this.eventCanvas.gridOffset = {
                     left: this.eventCanvas._elem.offset().left + this.eventCanvas._offsets.left, 
@@ -1815,12 +1819,13 @@
             // Mod to account for movement of plot after plot is drawn.
             // would be nice not to have to do this b/c it means re-calculating
             // these offsets constantly.
-            var go = {
-                left: plot.eventCanvas._elem.offset().left + plot.eventCanvas._offsets.left, 
-                top: plot.eventCanvas._elem.offset().top + plot.eventCanvas._offsets.top
-            };
+            // var go = {
+            //     left: plot.eventCanvas._elem.offset().left + plot.eventCanvas._offsets.left, 
+            //     top: plot.eventCanvas._elem.offset().top + plot.eventCanvas._offsets.top
+            // };
+            var go = plot.eventCanvas._elem.offset();
             var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-            var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
+            // var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
             var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
             var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
             var ax = plot.axes;
@@ -1832,7 +1837,7 @@
                 }
             }
 
-            return {offsets:plot.eventCanvas.gridOffset, gridPos:gridPos, dataPos:dataPos, onGrid: onGrid};
+            return {offsets:go, gridPos:gridPos, dataPos:dataPos, onGrid: plot.onGrid};
         }
         
         function getNeighborPoint(plot, x, y) {
