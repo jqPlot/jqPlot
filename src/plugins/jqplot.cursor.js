@@ -118,6 +118,11 @@
         this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
         // whether the cursor is over the grid or not.
         this.onGrid = false;
+        // prop: zoomOutsidePlot
+        // True to allow zoom boundary outside of plot grid.  This will allow
+        // cursor zoom to expand range of plot.
+        // False will limit range to current axes min and max.
+        this.zoomOutsidePlot = false;
         this._oldHandlers = {onselectstart: null, ondrag: null, onmousedown: null};
         $.extend(true, this, options);
     };
@@ -134,8 +139,12 @@
         if (c.show) {
             $.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleMouseEnter]);
             $.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
-            // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);
-            $(document).bind('mousemove.jqplot_cursor', {plot:this}, handleMouseMove);
+            if (c.zoomOutsidePlot) {
+                $(document).bind('mousemove.jqplot_cursor', {plot:this}, handleDocumentMouseMove);
+            }
+            else {
+                $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);   
+            }
             
             if (c.showCursorLegend) {              
                 opts.legend = opts.legend || {};
@@ -665,7 +674,7 @@
         return {offsets:go, gridPos:gridPos, dataPos:dataPos};
     }
     
-    function handleMouseMove(ev) {
+    function handleDocumentMouseMove(ev) {
         ev.preventDefault();
         ev.stopImmediatePropagation();
         var plot = ev.data.plot;
@@ -748,22 +757,105 @@
         }
     }
     
-    function handleMouseDown(ev, gridpos, datapos, neighbor, plot, ongrid) {
+    
+    
+    function handleMouseMove(ev, gridpos, datapos, neighbor, plot, ongrid) {
         ev.preventDefault();
         ev.stopImmediatePropagation();
+        var c = plot.plugins.cursor;
+        var ctx = c.zoomCanvas._ctx;
+        if (c.show) {
+            if (ongrid) {
+                // initialize if needed
+                if (c.onGrid == false) {
+                    c.onGrid = true;
+                    c.previousCursor = ev.target.style.cursor;
+                    ev.target.style.cursor = c.style;
+                    if (c.showTooltip) {
+                        updateTooltip(gridpos, datapos, plot);
+                        if (c.followMouse) {
+                            moveTooltip(gridpos, plot);
+                        }
+                        else {
+                            positionTooltip(plot);
+                        }
+                        c._tooltipElem.show();
+                    }
+                }
+                else if (c.showTooltip) {
+                    updateTooltip(gridpos, datapos, plot);
+                    if (c.followMouse) {
+                        moveTooltip(gridpos, plot);
+                    }
+                }
+            }
+            // off of grid
+            else {
+                c.onGrid = false;
+                if (c.show) {
+                    $(ev.target).css('cursor', c.previousCursor);
+                    if (c.showTooltip) {
+                        c._tooltipElem.hide();
+                    }
+                    if (c.showVerticalLine || c.showHorizontalLine) {
+                        var ctx = c.cursorCanvas._ctx;
+                        ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+                    }
+                    if (c.showCursorLegend) {
+                        var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
+                        for (var i=0; i<cells.length; i++) {
+                            var idx = $(cells[i]).data('seriesIndex');
+                            var series = plot.series[idx];
+                            var label = series.label.toString();
+                            if (plot.legend.escapeHtml) {
+                                $(cells[i]).text($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
+                            }
+                            else {
+                                $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
+                            }
+                
+                        }        
+                    }
+                }
+            }
+            if (c.zoom && c._zoom.started && !c.zoomTarget) {
+                c._zoom.zooming = true;
+                if (c.constrainZoomTo == 'x') {
+                    c._zoom.end = [gridpos.x, ctx.canvas.height];
+                }
+                else if (c.constrainZoomTo == 'y') {
+                    c._zoom.end = [ctx.canvas.width, gridpos.y];
+                }
+                else {
+                    c._zoom.end = [gridpos.x, gridpos.y];
+                }
+                drawZoomBox.call(c);
+            }
+            if (c.showVerticalLine || c.showHorizontalLine) {
+                moveLine(gridpos, plot);
+            }
+        }
+    }
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot, ongrid) {
+        // ev.preventDefault();
+        // ev.stopImmediatePropagation();
         var c = plot.plugins.cursor;
         var axes = plot.axes;
         // document.body.focus();
         $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
-        if (document.onselectstart !== undefined) {
+        if (document.onselectstart != undefined) {
+            console.log('onselectstart');
             c._oldHandlers.onselectstart = document.onselectstart;
             document.onselectstart = function () { return false; };
         }
-        if (document.ondrag !== undefined) {
+        if (document.ondrag != undefined) {
+            console.log('ondrag');
             c._oldHandlers.ondrag = document.ondrag;
             document.ondrag = function () { return false; };
         }
-        if (document.onmousedown !== undefined) {
+        if (document.onmousedown != undefined) {
+            console.log('onmousedown');
             c._oldHandlers.onmousedown = document.onmousedown;
             document.onmousedown = function () { return false; };
         }
@@ -798,15 +890,15 @@
             var datapos = positions.dataPos;
             c.doZoom(gridpos, datapos, plot, c);
         }
-        if (document.onselectstart !== undefined && c._oldHandlers.onselectstart != null){
+        if (document.onselectstart != undefined && c._oldHandlers.onselectstart != null){
             document.onselectstart = c._oldHandlers.onselectstart;
             c._oldHandlers.onselectstart = null;
         }
-        if (document.ondrag !== undefined && c._oldHandlers.ondrag != null){
+        if (document.ondrag != undefined && c._oldHandlers.ondrag != null){
             document.ondrag = c._oldHandlers.ondrag;
             c._oldHandlers.ondrag = null;
         }
-        if (document.onmousedown !== undefined && c._oldHandlers.onmousedown != null){
+        if (document.onmousedown != undefined && c._oldHandlers.onmousedown != null){
             document.onmousedown = c._oldHandlers.onmousedown;
             c._oldHandlers.onmousedown = null;
         }

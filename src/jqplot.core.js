@@ -201,7 +201,15 @@
         var elem = document.createElement(el);
         this._elem = $(elem);
         this._elem.addClass(klass);
-        this._elem.css({ position: 'absolute', left: this._offsets.left + 'px', top: this._offsets.top + 'px', width: this._plotDimensions.width - this._offsets.left - this._offsets.right + 'px', height: this._plotDimensions.height - this._offsets.top - this._offsets.bottom + 'px' });
+        var l = '0px';
+        // var l = this._offsets.left + 'px';
+        var t = '0px';
+        // var t = this._offsets.top + 'px';
+        var w = width + 'px';
+        // var w = this._plotDimensions.width - this._offsets.left - this._offsets.right + 'px';
+        var h = height + 'px';
+        // var h = this._plotDimensions.height - this._offsets.top - this._offsets.bottom + 'px';
+        this._elem.css({ position: 'absolute', left: l, top: t, width: w, height: h });
         return this._elem;
     };
     
@@ -1819,13 +1827,13 @@
             // Mod to account for movement of plot after plot is drawn.
             // would be nice not to have to do this b/c it means re-calculating
             // these offsets constantly.
-            // var go = {
-            //     left: plot.eventCanvas._elem.offset().left + plot.eventCanvas._offsets.left, 
-            //     top: plot.eventCanvas._elem.offset().top + plot.eventCanvas._offsets.top
-            // };
-            var go = plot.eventCanvas._elem.offset();
+            var go = {
+                left: plot.eventCanvas._elem.offset().left + plot.eventCanvas._offsets.left, 
+                top: plot.eventCanvas._elem.offset().top + plot.eventCanvas._offsets.top
+            };
+            // var go = plot.eventCanvas._elem.offset();
             var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-            // var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
+            var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
             var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
             var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
             var ax = plot.axes;
@@ -1837,7 +1845,7 @@
                 }
             }
 
-            return {offsets:go, gridPos:gridPos, dataPos:dataPos, onGrid: plot.onGrid};
+            return {offsets:go, gridPos:gridPos, dataPos:dataPos, onGrid: onGrid};
         }
         
         function getNeighborPoint(plot, x, y) {
