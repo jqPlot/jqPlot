@@ -19,7 +19,6 @@
     /**
     *  class: $.jqplot.CategoryAxisRenderer
     *  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
-    *  This renderer has no options beyond those supplied by the <Axis> class. 
     *  
     *  To use this renderer, include the plugin in your source
     *  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
@@ -30,6 +29,23 @@
     **/
     $.jqplot.CategoryAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
+        // prop: sortMergedLabels
+        // True to sort tick labels when labels are created by merging
+        // x axis values from multiple series.  That is, say you have
+        // two series like:
+        // > line1 = [[2006, 4],            [2008, 9], [2009, 16]];
+        // > line2 = [[2006, 3], [2007, 7], [2008, 6]];
+        // If no label array is specified, tick labels will be collected
+        // from the x values of the series.  With sortMergedLabels
+        // set to true, tick labels will be:
+        // > [2006, 2007, 2008, 2009]
+        // With sortMergedLabels set to false, tick labels will be:
+        // > [2006, 2008, 2009, 2007]
+        //
+        // Note, this property is specified on the renderOptions for the 
+        // axes when creating a plot:
+        // > axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer, rendererOptions:{sortMergedLabels:true}}}
+        this.sortMergedLabels = false;
     };
     
     $.jqplot.CategoryAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
@@ -139,6 +155,7 @@
             var numcats = 0;
             var min = 0.5;
             var max, val;
+            var isMerged = false;
             for (var i=0; i<this._series.length; i++) {
                 var s = this._series[i];
                 for (var j=0; j<s.data.length; j++) {
@@ -149,10 +166,15 @@
                         val = s.data[j][1];
                     }
                     if ($.inArray(val, labels) == -1) {
+                        isMerged = true;
                         numcats += 1;      
                         labels.push(val);
                     }
                 }
+            }
+            
+            if (isMerged && this.sortMergedLabels) {
+                labels.sort(function(a,b) { return a - b; });
             }
             
             // keep a reference to these tick labels to use for redrawing plot (see bug #57)

@@ -773,20 +773,27 @@
         this.index = index;
         this.gridBorderWidth = gridbw;
         var d = this.data;
-        for (var i=0; i<d.length; i++) {
+        var temp = [], i;
+        for (i=0; i<d.length; i++) {
             if (! this.breakOnNull) {
                 if (d[i] == null || d[i][0] == null || d[i][1] == null) {
-                    d.splice(i,1);
                     continue;
+                }
+                else {
+                    temp.push(d[i]);
                 }
             }
             else {
                 if (d[i] == null || d[i][0] == null || d[i][1] == null) {
                     // TODO: figure out what to do with null values
+                    // probably involve keeping nulls in data array
+                    // and then updating renderers to break line
+                    // when it hits null value.
                     var undefined;
                 }
             }
         }
+        this.data = temp;
         if (!this.fillColor) {
             this.fillColor = this.color;
         }
@@ -1529,7 +1536,7 @@
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
-                    for (var i=0; i<data.length; i++) {
+                    for (i=0; i<data.length; i++) {
                         if (dir == 'vertical') {
                             temp.push([i+1, data[i]]);   
                         }
