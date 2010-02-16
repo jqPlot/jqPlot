@@ -195,21 +195,14 @@
         this._plotDimensions = {height:null, width:null};
     };
     
-    $.jqplot.ElemContainer.prototype.createElement = function(el, offsets, clss, width, height) {
+    $.jqplot.ElemContainer.prototype.createElement = function(el, offsets, clss, cssopts, attrib) {
         this._offsets = offsets;
         var klass = clss || 'jqplot';
         var elem = document.createElement(el);
         this._elem = $(elem);
         this._elem.addClass(klass);
-        var l = '0px';
-        // var l = this._offsets.left + 'px';
-        var t = '0px';
-        // var t = this._offsets.top + 'px';
-        var w = width + 'px';
-        // var w = this._plotDimensions.width - this._offsets.left - this._offsets.right + 'px';
-        var h = height + 'px';
-        // var h = this._plotDimensions.height - this._offsets.top - this._offsets.bottom + 'px';
-        this._elem.css({ position: 'absolute', left: l, top: t, width: w, height: h });
+        this._elem.css(cssopts);
+        this._elem.attr(attrib);
         return this._elem;
     };
     
@@ -1065,7 +1058,7 @@
         // to highest, back to front.
         this.seriesStack = [];
         this.previousSeriesStack = [];
-        this.eventCanvas = new $.jqplot.ElemContainer();
+        this.eventCanvas = new $.jqplot.GenericCanvas();
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
@@ -1133,8 +1126,6 @@
         // used in mekko chart.
         this._sumy = 0;
         this._sumx = 0;
-        // true if mouse is over the event canvas.
-        this.onGrid = false;
         
         this.colorGenerator = $.jqplot.ColorGenerator;
         
@@ -1767,15 +1758,12 @@
                     this.series[j].canvas.setContext();
                     this.series[j].canvas._elem.data('seriesIndex', j);
                 }
-                
-                this.target.append(this.eventCanvas.createElement('div', this._gridPadding, 'jqplot-event-canvas', this._width, this._height));
-                this.eventCanvas._elem.bind('mouseenter', {plot:this}, function(ev) { ev.data.plot.onGrid = true; } );
-                this.eventCanvas._elem.bind('mouseleave', {plot:this}, function(ev) { ev.data.plot.onGrid = false; } );
-                // offsets of grid relative to document.
-                this.eventCanvas.gridOffset = {
-                    left: this.eventCanvas._elem.offset().left + this.eventCanvas._offsets.left, 
-                    top: this.eventCanvas._elem.offset().top + this.eventCanvas._offsets.top
-                };
+                // Need to use filled canvas to capture events in IE.
+                // Also, canvas seems to block selection of other elements in document on FF.
+                this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas'));
+                var ectx = this.eventCanvas.setContext();
+                ectx.fillStyle = 'rgba(0,0,0,0)';
+                ectx.fillRect(0,0,ectx.canvas.width, ectx.canvas.height);
             
                 // bind custom event handlers to regular events.
                 this.bindCustomEvents();
@@ -1830,17 +1818,8 @@
         
         function getEventPosition(ev) {
             var plot = ev.data.plot;
-            //var go = plot.eventCanvas.gridOffset;
-            // Mod to account for movement of plot after plot is drawn.
-            // would be nice not to have to do this b/c it means re-calculating
-            // these offsets constantly.
-            var go = {
-                left: plot.eventCanvas._elem.offset().left + plot.eventCanvas._offsets.left, 
-                top: plot.eventCanvas._elem.offset().top + plot.eventCanvas._offsets.top
-            };
-            // var go = plot.eventCanvas._elem.offset();
+            var go = plot.eventCanvas._elem.offset();
             var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-            var onGrid = (gridPos.x < 0 || gridPos.y < 0 || gridPos.x > plot.grid._width || gridPos.y > plot.grid._height) ? false : true;
             var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
             var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
             var ax = plot.axes;
@@ -1852,7 +1831,7 @@
                 }
             }
 
-            return {offsets:go, gridPos:gridPos, dataPos:dataPos, onGrid: onGrid};
+            return {offsets:go, gridPos:gridPos, dataPos:dataPos};
         }
         
         function getNeighborPoint(plot, x, y) {
@@ -1911,7 +1890,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onDblClick = function(ev) {
@@ -1920,26 +1899,26 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseUp = function(ev) {
             var positions = getEventPosition(ev);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot, positions.onGrid]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
         };
         
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p, positions.onGrid]);
+            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseEnter = function(ev) {

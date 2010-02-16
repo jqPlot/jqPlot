@@ -29,7 +29,7 @@
       }  
     }
     
-    echo '<a href="'.$prevfile.'">Previous</a> <a href="'.$nextfile.'">Next</a>';
+    echo '<a href="'.$prevfile.'">Previous</a> <a href="./">Examples</a> <a href="'.$nextfile.'">Next</a>';
     
   ?>
 </div>

@@ -101,7 +101,7 @@
         // // auatoscale the adjacent axis.
         // this.autoscaleConstraint = true;
         this.shapeRenderer = new $.jqplot.ShapeRenderer();
-        this._zoom = {start:[], end:[], started: false, zooming:false, isZoomed:false, axes:{start:{}, end:{}}};
+        this._zoom = {start:[], end:[], started: false, zooming:false, isZoomed:false, axes:{start:{}, end:{}}, gridpos:{}, datapos:{}};
         this._tooltipElem;
         this.zoomCanvas;
         this.cursorCanvas;
@@ -117,12 +117,6 @@
         // this will also be the default format string used by tooltipFormatString.
         this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
         // whether the cursor is over the grid or not.
-        this.onGrid = false;
-        // prop: zoomOutsidePlot
-        // True to allow zoom boundary outside of plot grid.  This will allow
-        // cursor zoom to expand range of plot.
-        // False will limit range to current axes min and max.
-        this.zoomOutsidePlot = false;
         this._oldHandlers = {onselectstart: null, ondrag: null, onmousedown: null};
         $.extend(true, this, options);
     };
@@ -139,12 +133,7 @@
         if (c.show) {
             $.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleMouseEnter]);
             $.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleMouseLeave]);
-            if (c.zoomOutsidePlot) {
-                $(document).bind('mousemove.jqplot_cursor', {plot:this}, handleDocumentMouseMove);
-            }
-            else {
-                $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);   
-            }
+            $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMouseMove]);
             
             if (c.showCursorLegend) {              
                 opts.legend = opts.legend || {};
@@ -155,7 +144,6 @@
             
             if (c.zoom) {
                 $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-                // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
                 
                 if (c.clickReset) {
                     $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
@@ -590,9 +578,10 @@
         }
     }
     
-    function handleClick (ev, gridpos, datapos, neighbor, plot, ongrid) {
-        ev.stopPropagation();
+    function handleClick (ev, gridpos, datapos, neighbor, plot) {
         ev.preventDefault();
+        ev.stopImmediatePropagation();
+        // document.body.focus();
         var c = plot.plugins.cursor;
         if (c.clickReset) {
             c.resetZoom(plot, c);
@@ -600,9 +589,10 @@
         return false;
     }
     
-    function handleDblClick (ev, gridpos, datapos, neighbor, plot, ongrid) {
-        ev.stopPropagation();
+    function handleDblClick (ev, gridpos, datapos, neighbor, plot) {
         ev.preventDefault();
+        ev.stopImmediatePropagation();
+        // document.body.focus();
         var c = plot.plugins.cursor;
         if (c.dblClickReset) {
             c.resetZoom(plot, c);
@@ -612,20 +602,15 @@
     
     function handleMouseLeave(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
-        c.onGrid = false;
         if (c.show) {
             $(ev.target).css('cursor', c.previousCursor);
             if (c.showTooltip) {
                 c._tooltipElem.hide();
             }
-            // if (c.zoom) {
-            //     c._zoom.started = false;
-            //     c._zoom.zooming = false;
-            //     if (!c.zoomProxy) {
-            //         var ctx = c.zoomCanvas._ctx;
-            //         ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-            //     }
-            // }
+            if (c.zoom) {
+                c._zoom.gridpos = gridpos;
+                c._zoom.datapos = datapos;
+            }
             if (c.showVerticalLine || c.showHorizontalLine) {
                 var ctx = c.cursorCanvas._ctx;
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
@@ -649,216 +634,86 @@
     }
     
     function handleMouseEnter(ev, gridpos, datapos, neighbor, plot) {
-        var c = plot.plugins.cursor;
-        // just to be sure, set onGrid to false and let mouse move
-        // set it to true if over grid.
-        c.onGrid = false;
-
-    }
-        
-    function getEventPosition(ev) {
-        var plot = ev.data.plot;
-        var go = plot.eventCanvas._elem.offset();
-        var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-        var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
-        var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
-        var ax = plot.axes;
-        var n, axis;
-        for (n=11; n>0; n--) {
-            axis = an[n-1];
-            if (ax[axis].show) {
-                dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
-            }
-        }
-
-        return {offsets:go, gridPos:gridPos, dataPos:dataPos};
-    }
-    
-    function handleDocumentMouseMove(ev) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
-        var plot = ev.data.plot;
-        var ongrid = plot.onGrid;
-        var c = plot.plugins.cursor;
-        var ctx = c.zoomCanvas._ctx;
-        if (c.show) {
-            var positions = getEventPosition(ev);
-            var gridpos = positions.gridPos;
-            var datapos = positions.dataPos;
-            if (ongrid) {
-                // initialize if needed
-                if (c.onGrid == false) {
-                    c.onGrid = true;
-                    c.previousCursor = ev.target.style.cursor;
-                    ev.target.style.cursor = c.style;
-                    if (c.showTooltip) {
-                        updateTooltip(gridpos, datapos, plot);
-                        if (c.followMouse) {
-                            moveTooltip(gridpos, plot);
-                        }
-                        else {
-                            positionTooltip(plot);
-                        }
-                        c._tooltipElem.show();
-                    }
-                }
-                else if (c.showTooltip) {
-                    updateTooltip(gridpos, datapos, plot);
-                    if (c.followMouse) {
-                        moveTooltip(gridpos, plot);
-                    }
-                }
-            }
-            // off of grid
-            else {
-                c.onGrid = false;
-                if (c.show) {
-                    $(ev.target).css('cursor', c.previousCursor);
-                    if (c.showTooltip) {
-                        c._tooltipElem.hide();
-                    }
-                    if (c.showVerticalLine || c.showHorizontalLine) {
-                        var ctx = c.cursorCanvas._ctx;
-                        ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-                    }
-                    if (c.showCursorLegend) {
-                        var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
-                        for (var i=0; i<cells.length; i++) {
-                            var idx = $(cells[i]).data('seriesIndex');
-                            var series = plot.series[idx];
-                            var label = series.label.toString();
-                            if (plot.legend.escapeHtml) {
-                                $(cells[i]).text($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
-                            }
-                            else {
-                                $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
-                            }
-                
-                        }        
-                    }
-                }
-            }
-            if (c.zoom && c._zoom.started && !c.zoomTarget) {
-                c._zoom.zooming = true;
-                if (c.constrainZoomTo == 'x') {
-                    c._zoom.end = [gridpos.x, ctx.canvas.height];
-                }
-                else if (c.constrainZoomTo == 'y') {
-                    c._zoom.end = [ctx.canvas.width, gridpos.y];
-                }
-                else {
-                    c._zoom.end = [gridpos.x, gridpos.y];
-                }
-                drawZoomBox.call(c);
-            }
-            if (c.showVerticalLine || c.showHorizontalLine) {
-                moveLine(gridpos, plot);
-            }
-        }
-    }
-    
-    
-    
-    function handleMouseMove(ev, gridpos, datapos, neighbor, plot, ongrid) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
-        var c = plot.plugins.cursor;
-        var ctx = c.zoomCanvas._ctx;
-        if (c.show) {
-            if (ongrid) {
-                // initialize if needed
-                if (c.onGrid == false) {
-                    c.onGrid = true;
-                    c.previousCursor = ev.target.style.cursor;
-                    ev.target.style.cursor = c.style;
-                    if (c.showTooltip) {
-                        updateTooltip(gridpos, datapos, plot);
-                        if (c.followMouse) {
-                            moveTooltip(gridpos, plot);
-                        }
-                        else {
-                            positionTooltip(plot);
-                        }
-                        c._tooltipElem.show();
-                    }
-                }
-                else if (c.showTooltip) {
-                    updateTooltip(gridpos, datapos, plot);
-                    if (c.followMouse) {
-                        moveTooltip(gridpos, plot);
-                    }
-                }
-            }
-            // off of grid
-            else {
-                c.onGrid = false;
-                if (c.show) {
-                    $(ev.target).css('cursor', c.previousCursor);
-                    if (c.showTooltip) {
-                        c._tooltipElem.hide();
-                    }
-                    if (c.showVerticalLine || c.showHorizontalLine) {
-                        var ctx = c.cursorCanvas._ctx;
-                        ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-                    }
-                    if (c.showCursorLegend) {
-                        var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
-                        for (var i=0; i<cells.length; i++) {
-                            var idx = $(cells[i]).data('seriesIndex');
-                            var series = plot.series[idx];
-                            var label = series.label.toString();
-                            if (plot.legend.escapeHtml) {
-                                $(cells[i]).text($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
-                            }
-                            else {
-                                $(cells[i]).html($.jqplot.sprintf(c.cursorLegendFormatString, label, undefined, undefined));
-                            }
-                
-                        }        
-                    }
-                }
-            }
-            if (c.zoom && c._zoom.started && !c.zoomTarget) {
-                c._zoom.zooming = true;
-                if (c.constrainZoomTo == 'x') {
-                    c._zoom.end = [gridpos.x, ctx.canvas.height];
-                }
-                else if (c.constrainZoomTo == 'y') {
-                    c._zoom.end = [ctx.canvas.width, gridpos.y];
-                }
-                else {
-                    c._zoom.end = [gridpos.x, gridpos.y];
-                }
-                drawZoomBox.call(c);
-            }
-            if (c.showVerticalLine || c.showHorizontalLine) {
-                moveLine(gridpos, plot);
-            }
-        }
-    }
-    
-    function handleMouseDown(ev, gridpos, datapos, neighbor, plot, ongrid) {
         // ev.preventDefault();
         // ev.stopImmediatePropagation();
-        var c = plot.plugins.cursor;
-        var axes = plot.axes;
         // document.body.focus();
+        var c = plot.plugins.cursor;
+        if (c.show) {
+            c.previousCursor = ev.target.style.cursor;
+            ev.target.style.cursor = c.style;
+            if (c.showTooltip) {
+                updateTooltip(gridpos, datapos, plot);
+                if (c.followMouse) {
+                    moveTooltip(gridpos, plot);
+                }
+                else {
+                    positionTooltip(plot);
+                }
+                c._tooltipElem.show();
+            }
+            if (c.showVerticalLine || c.showHorizontalLine) {
+                moveLine(gridpos, plot);
+            }
+        }
+
+    }    
+    
+    function handleMouseMove(ev, gridpos, datapos, neighbor, plot) {
+        // ev.preventDefault();
+        // ev.stopImmediatePropagation();
+        // document.body.focus();
+        var c = plot.plugins.cursor;
+        var ctx = c.zoomCanvas._ctx;
+        if (c.show) {
+            if (c.showTooltip) {
+                updateTooltip(gridpos, datapos, plot);
+                if (c.followMouse) {
+                    moveTooltip(gridpos, plot);
+                }
+            }
+            if (c.zoom && c._zoom.started && !c.zoomTarget) {
+                c._zoom.gridpos = gridpos;
+                c._zoom.datapos = datapos;
+                c._zoom.zooming = true;
+                if (c.constrainZoomTo == 'x') {
+                    c._zoom.end = [gridpos.x, ctx.canvas.height];
+                }
+                else if (c.constrainZoomTo == 'y') {
+                    c._zoom.end = [ctx.canvas.width, gridpos.y];
+                }
+                else {
+                    c._zoom.end = [gridpos.x, gridpos.y];
+                }
+                drawZoomBox.call(c);
+            }
+            if (c.showVerticalLine || c.showHorizontalLine) {
+                moveLine(gridpos, plot);
+            }
+        }
+    }
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        // ev.preventDefault();
+        // ev.stopImmediatePropagation();
+        // document.body.focus();
+        var c = plot.plugins.cursor;
         $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
-        if (document.onselectstart != undefined) {
-            console.log('onselectstart');
-            c._oldHandlers.onselectstart = document.onselectstart;
-            document.onselectstart = function () { return false; };
-        }
-        if (document.ondrag != undefined) {
-            console.log('ondrag');
-            c._oldHandlers.ondrag = document.ondrag;
-            document.ondrag = function () { return false; };
-        }
-        if (document.onmousedown != undefined) {
-            console.log('onmousedown');
-            c._oldHandlers.onmousedown = document.onmousedown;
-            document.onmousedown = function () { return false; };
-        }
+        var axes = plot.axes;
+        // if (document.onselectstart != undefined) {
+        //     console.log('onselectstart');
+        //     c._oldHandlers.onselectstart = document.onselectstart;
+        //     document.onselectstart = function () { return false; };
+        // }
+        // if (document.ondrag != undefined) {
+        //     console.log('ondrag');
+        //     c._oldHandlers.ondrag = document.ondrag;
+        //     document.ondrag = function () { return false; };
+        // }
+        // if (document.onmousedown != undefined) {
+        //     console.log('onmousedown');
+        //     c._oldHandlers.onmousedown = document.onmousedown;
+        //     document.onmousedown = function () { return false; };
+        // }
         if (c.zoom) {
             if (!c.zoomProxy) {
                 var ctx = c.zoomCanvas._ctx;
@@ -882,29 +737,29 @@
     }
     
     function handleMouseUp(ev) {
+        // ev.preventDefault();
+        // ev.stopImmediatePropagation();
+        // document.body.focus();
         var plot = ev.data.plot;
         var c = plot.plugins.cursor;
         if (c.zoom && c._zoom.zooming && !c.zoomTarget) {
-            var positions = getEventPosition(ev);
-            var gridpos = positions.gridPos;
-            var datapos = positions.dataPos;
-            c.doZoom(gridpos, datapos, plot, c);
+            c.doZoom(c._zoom.gridpos, c._zoom.datapos, plot, c);
         }
-        if (document.onselectstart != undefined && c._oldHandlers.onselectstart != null){
-            document.onselectstart = c._oldHandlers.onselectstart;
-            c._oldHandlers.onselectstart = null;
-        }
-        if (document.ondrag != undefined && c._oldHandlers.ondrag != null){
-            document.ondrag = c._oldHandlers.ondrag;
-            c._oldHandlers.ondrag = null;
-        }
-        if (document.onmousedown != undefined && c._oldHandlers.onmousedown != null){
-            document.onmousedown = c._oldHandlers.onmousedown;
-            c._oldHandlers.onmousedown = null;
-        }
-
         c._zoom.started = false;
         c._zoom.zooming = false;
+        // if (document.onselectstart != undefined && c._oldHandlers.onselectstart != null){
+        //     document.onselectstart = c._oldHandlers.onselectstart;
+        //     c._oldHandlers.onselectstart = null;
+        // }
+        // if (document.ondrag != undefined && c._oldHandlers.ondrag != null){
+        //     document.ondrag = c._oldHandlers.ondrag;
+        //     c._oldHandlers.ondrag = null;
+        // }
+        // if (document.onmousedown != undefined && c._oldHandlers.onmousedown != null){
+        //     document.onmousedown = c._oldHandlers.onmousedown;
+        //     c._oldHandlers.onmousedown = null;
+        // }
+
     }
     
     function drawZoomBox() {

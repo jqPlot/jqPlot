@@ -1,17 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
-
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Simple Test</title>
-  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.min.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.1.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.3.2.min.js"></script>
   <!-- END: load jquery -->
   
   <!-- BEGIN: load jqplot -->
@@ -43,7 +41,7 @@ plot = $.jqplot('chart', [goog], {
     title: 'Google, Inc.',
     series: [{
         label: 'Google, Inc.',
-        neighborThreshold: 8
+        neighborThreshold: 0
     }],
     axes: {
         xaxis: {
@@ -59,18 +57,14 @@ plot = $.jqplot('chart', [goog], {
             tickOptions:{formatString:'$%.2f'}
         }
     },
-    cursor:{zoom:true, showTooltip:false, clickReset:true},
-    highlighter:{tooltipLocation:'s', tooltipOffset: 0}
+    cursor:{zoom:true, showTooltip:false},
+    highlighter:{show:true, tooltipLocation:'s', tooltipOffset: 4}
 });
-
-
   });
   </script>
   </head>
   <body>
 <?php include "nav.inc"; ?>
-<p>This sample tests for a condition where, when zooming with tooltips active, zooming control is lost when mousing over a tooltip.  A high neighborThreshold is set on the series so that the mouse will activate points from far away and the highlighter tooltipOffset is set to 0 to place the tooltip close to the point.</p>
-<p>In practice, you would set a low neighborThreshold when data is close together.  When the neighborThreshold is too high, tooltips can display longer than they should.</p>
     <div id="chart" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
     <div style="padding-top:20px"><button value="reset" type="button" onclick="plot.resetZoom();">Zoom Out</button></div>
   </body>

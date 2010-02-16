@@ -194,7 +194,8 @@
             var y = (drag.constrainTo == 'x') ? dp.data[1] : datapos[s.yaxis];
             // var x = datapos[s.xaxis];
             // var y = datapos[s.yaxis];
-            s.data[dp.pointIndex] = [x,y];
+            s.data[dp.pointIndex][0] = x;
+            s.data[dp.pointIndex][1] = y;
             plot.drawSeries({preventJqPlotSeriesDrawTrigger:true}, dp.seriesIndex);
             dc._neighbor = null;
             ev.target.style.cursor = dc._cursors.pop();
