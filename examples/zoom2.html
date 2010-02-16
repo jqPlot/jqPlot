@@ -57,7 +57,7 @@ plot = $.jqplot('chart', [goog], {
             tickOptions:{formatString:'$%.2f'}
         }
     },
-    cursor:{zoom:true, showTooltip:false},
+    cursor:{zoom:true, showTooltip:true, followMouse: true, showTooltipOutsideZoom: true, constrainOutsideZoom: false},
     highlighter:{show:true, tooltipLocation:'s', tooltipOffset: 4}
 });
   });

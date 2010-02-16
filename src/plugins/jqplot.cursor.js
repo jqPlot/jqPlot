@@ -623,7 +623,7 @@
         c.onGrid = false;
         if (c.show) {
             $(ev.target).css('cursor', c.previousCursor);
-            if (c.showTooltip && !(c._zoom.zooming && c.showTooltipOutsideZoom)) {
+            if (c.showTooltip && !(c._zoom.zooming && c.showTooltipOutsideZoom && !c.constrainOutsideZoom)) {
                 c._tooltipElem.hide();
             }
             if (c.zoom) {
