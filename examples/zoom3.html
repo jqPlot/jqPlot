@@ -41,10 +41,10 @@ var ERPM = [[0.0,1503.],[10.0,3006.],[20.0,3005.],[30.0,1505.],[40.0,1505.],[50.
 
     plot = $.jqplot('chart', [InPr, OutPr, ERPM],
       {
-        Title:'Plot with Zooming and 3 Y Axes',
+        // Title:'Plot with Zooming and 3 Y Axes',
         seriesDefaults: {showMarker:false},
         series:[{},{yaxis:'y2axis'}, {yaxis:'y3axis'}],
-        cursor: {tooltipLocation:'sw', zoom:true, showTooltipGridPosition:true, zoomOutsidePlot:false},
+        cursor: {tooltipLocation:'sw', zoom:true, showTooltipGridPosition:true},
         axesDefaults:{useSeriesColor: true},
         axes:{xaxis:{min:0, max:1600}, yaxis:{min:0, max:600}, 
         y2axis:{min:1000, max:2000, numberTicks:9, tickOptions:{showGridline:false}}, 

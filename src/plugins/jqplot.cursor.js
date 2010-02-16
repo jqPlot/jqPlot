@@ -118,6 +118,16 @@
         this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
         // whether the cursor is over the grid or not.
         this._oldHandlers = {onselectstart: null, ondrag: null, onmousedown: null};
+        // prop:  zoomOutsidePlot
+        // True to enable the effective zoom area to extend outside of the plot.
+        // This allows zooming out by zooming over an area larger than the plot.
+        this.zoomOutsidePlot = true;
+        // prop: constrainOutsideZoom
+        // True to limit actual zoom area to edges of grid, even when zooming
+        // outside of plot area.  That is, can't zoom out by mousing outside plot.
+        this.constrainOutsideZoom = false;
+        // true if mouse is over grid, false if not.
+        this.onGrid = false;
         $.extend(true, this, options);
     };
     
@@ -151,6 +161,10 @@
                 
                 if (c.dblClickReset) {
                     $.jqplot.eventListenerHooks.push(['jqplotDblClick', handleDblClick]);
+                }
+                
+                if (c.zoomOutsidePlot) {
+                    $(document).bind('mousemove.jqplotCursor', {plot:this}, handleDocumentMouseMove);
                 }
             }
     
@@ -602,6 +616,7 @@
     
     function handleMouseLeave(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
+        c.onGrid = false;
         if (c.show) {
             $(ev.target).css('cursor', c.previousCursor);
             if (c.showTooltip) {
@@ -638,6 +653,7 @@
         // ev.stopImmediatePropagation();
         // document.body.focus();
         var c = plot.plugins.cursor;
+        c.onGrid = true;
         if (c.show) {
             c.previousCursor = ev.target.style.cursor;
             ev.target.style.cursor = c.style;
@@ -689,6 +705,57 @@
             if (c.showVerticalLine || c.showHorizontalLine) {
                 moveLine(gridpos, plot);
             }
+        }
+    }
+            
+    function getEventPosition(ev) {
+        var plot = ev.data.plot;
+        var go = plot.eventCanvas._elem.offset();
+        var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
+        var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
+        var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+        var ax = plot.axes;
+        var n, axis;
+        for (n=11; n>0; n--) {
+            axis = an[n-1];
+            if (ax[axis].show) {
+                dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
+            }
+        }
+
+        return {offsets:go, gridPos:gridPos, dataPos:dataPos};
+    }    
+    
+    function handleDocumentMouseMove(ev) {
+        // ev.preventDefault();
+        // ev.stopImmediatePropagation();
+        // document.body.focus();
+        var plot = ev.data.plot;
+        var c = plot.plugins.cursor;
+        // don't do anything if not on grid.
+        if (c.show && !c.onGrid && c.zoom && c._zoom.started && !c.zoomTarget) {
+            var ctx = c.zoomCanvas._ctx;
+            var positions = getEventPosition(ev);
+            var gridpos = positions.gridPos;
+            var datapos = positions.dataPos;
+            c._zoom.gridpos = gridpos;
+            c._zoom.datapos = datapos;
+            c._zoom.zooming = true;
+            var xpos = gridpos.x;
+            var ypos = gridpos.y;
+            var height = ctx.canvas.height;
+            var width = ctx.canvas.width;
+            
+            if (c.constrainZoomTo == 'x') {
+                c._zoom.end = [xpos, height];
+            }
+            else if (c.constrainZoomTo == 'y') {
+                c._zoom.end = [width, ypos];
+            }
+            else {
+                c._zoom.end = [xpos, ypos];
+            }
+            drawZoomBox.call(c);
         }
     }
     
@@ -743,7 +810,41 @@
         var plot = ev.data.plot;
         var c = plot.plugins.cursor;
         if (c.zoom && c._zoom.zooming && !c.zoomTarget) {
-            c.doZoom(c._zoom.gridpos, c._zoom.datapos, plot, c);
+            var xpos = c._zoom.gridpos.x;
+            var ypos = c._zoom.gridpos.y;
+            var datapos = c._zoom.datapos;
+            var height = c.zoomCanvas._ctx.canvas.height;
+            var width = c.zoomCanvas._ctx.canvas.width;
+            var axes = plot.axes;
+            
+            if (c.constrainOutsideZoom && !c.onGrid) {
+                if (xpos < 0) { xpos = 0 }
+                else if (xpos > width) { xpos = width }
+                if (ypos < 0) { ypos = 0 }
+                else if (ypos > height) { ypos = height }
+                
+                for (var axis in datapos) {
+                    if (datapos[axis]) {
+                        if (axis.charAt(0) == 'x') {
+                            datapos[axis] = axes[axis].series_p2u(xpos)
+                        }
+                        else {
+                            datapos[axis] = axes[axis].series_p2u(ypos)   
+                        }
+                    }
+                }
+            }
+            
+            if (c.constrainZoomTo == 'x') {
+                ypos = height;
+            }
+            else if (c.constrainZoomTo == 'y') {
+                xpos = width;
+            }
+            c._zoom.end = [xpos, ypos];
+            c._zoom.gridpos = {x:xpos, y:ypos};
+            
+            c.doZoom(c._zoom.gridpos, datapos, plot, c);
         }
         c._zoom.started = false;
         c._zoom.zooming = false;
