@@ -32,7 +32,8 @@
         // wether to show the cursor or not.
         this.show = $.jqplot.config.enablePlugins;
         // prop: showTooltip
-        // show a cursor position tooltip near the cursor
+        // show a cursor position tooltip.  Location of the tooltip
+        // will be controlled by followMouse and tooltipLocation.
         this.showTooltip = true;
         // prop: followMouse
         // Tooltip follows the mouse, it is not at a fixed location.
@@ -125,7 +126,10 @@
         // prop: constrainOutsideZoom
         // True to limit actual zoom area to edges of grid, even when zooming
         // outside of plot area.  That is, can't zoom out by mousing outside plot.
-        this.constrainOutsideZoom = false;
+        this.constrainOutsideZoom = true;
+        // prop: showTooltipOutsideZoom
+        // True will keep updating the tooltip when zooming of the grid.
+        this.showTooltipOutsideZoom = false;
         // true if mouse is over grid, false if not.
         this.onGrid = false;
         $.extend(true, this, options);
@@ -619,7 +623,7 @@
         c.onGrid = false;
         if (c.show) {
             $(ev.target).css('cursor', c.previousCursor);
-            if (c.showTooltip) {
+            if (c.showTooltip && !(c._zoom.zooming && c.showTooltipOutsideZoom)) {
                 c._tooltipElem.hide();
             }
             if (c.zoom) {
@@ -745,6 +749,13 @@
             var ypos = gridpos.y;
             var height = ctx.canvas.height;
             var width = ctx.canvas.width;
+            
+            if (c.showTooltip && c.showTooltipOutsideZoom) {
+                updateTooltip(gridpos, datapos, plot);
+                if (c.followMouse) {
+                    moveTooltip(gridpos, plot);
+                }
+            }
             
             if (c.constrainZoomTo == 'x') {
                 c._zoom.end = [xpos, height];
