@@ -119,10 +119,6 @@
         this.cursorLegendFormatString = $.jqplot.Cursor.cursorLegendFormatString;
         // whether the cursor is over the grid or not.
         this._oldHandlers = {onselectstart: null, ondrag: null, onmousedown: null};
-        // prop:  zoomOutsidePlot
-        // True to enable the effective zoom area to extend outside of the plot.
-        // This allows zooming out by zooming over an area larger than the plot.
-        this.zoomOutsidePlot = true;
         // prop: constrainOutsideZoom
         // True to limit actual zoom area to edges of grid, even when zooming
         // outside of plot area.  That is, can't zoom out by mousing outside plot.
@@ -165,11 +161,7 @@
                 
                 if (c.dblClickReset) {
                     $.jqplot.eventListenerHooks.push(['jqplotDblClick', handleDblClick]);
-                }
-                
-                if (c.zoomOutsidePlot) {
-                    $(document).bind('mousemove.jqplotCursor', {plot:this}, handleDocumentMouseMove);
-                }
+                }             
             }
     
             this.resetZoom = function() {
@@ -599,10 +591,17 @@
     function handleClick (ev, gridpos, datapos, neighbor, plot) {
         ev.preventDefault();
         ev.stopImmediatePropagation();
-        // document.body.focus();
         var c = plot.plugins.cursor;
         if (c.clickReset) {
             c.resetZoom(plot, c);
+        }
+        var sel = window.getSelection;
+        if (document.selection && document.selection.empty)
+        {
+            document.selection.empty();
+        }
+        else if (sel && !sel().isCollapsed) {
+            sel().collapse();
         }
         return false;
     }
@@ -610,10 +609,17 @@
     function handleDblClick (ev, gridpos, datapos, neighbor, plot) {
         ev.preventDefault();
         ev.stopImmediatePropagation();
-        // document.body.focus();
         var c = plot.plugins.cursor;
         if (c.dblClickReset) {
             c.resetZoom(plot, c);
+        }
+        var sel = window.getSelection;
+        if (document.selection && document.selection.empty)
+        {
+            document.selection.empty();
+        }
+        else if (sel && !sel().isCollapsed) {
+            sel().collapse();
         }
         return false;
     }
@@ -653,9 +659,6 @@
     }
     
     function handleMouseEnter(ev, gridpos, datapos, neighbor, plot) {
-        // ev.preventDefault();
-        // ev.stopImmediatePropagation();
-        // document.body.focus();
         var c = plot.plugins.cursor;
         c.onGrid = true;
         if (c.show) {
@@ -679,9 +682,6 @@
     }    
     
     function handleMouseMove(ev, gridpos, datapos, neighbor, plot) {
-        // ev.preventDefault();
-        // ev.stopImmediatePropagation();
-        // document.body.focus();
         var c = plot.plugins.cursor;
         var ctx = c.zoomCanvas._ctx;
         if (c.show) {
@@ -690,21 +690,6 @@
                 if (c.followMouse) {
                     moveTooltip(gridpos, plot);
                 }
-            }
-            if (c.zoom && c._zoom.started && !c.zoomTarget) {
-                c._zoom.gridpos = gridpos;
-                c._zoom.datapos = datapos;
-                c._zoom.zooming = true;
-                if (c.constrainZoomTo == 'x') {
-                    c._zoom.end = [gridpos.x, ctx.canvas.height];
-                }
-                else if (c.constrainZoomTo == 'y') {
-                    c._zoom.end = [ctx.canvas.width, gridpos.y];
-                }
-                else {
-                    c._zoom.end = [gridpos.x, gridpos.y];
-                }
-                drawZoomBox.call(c);
             }
             if (c.showVerticalLine || c.showHorizontalLine) {
                 moveLine(gridpos, plot);
@@ -730,14 +715,11 @@
         return {offsets:go, gridPos:gridPos, dataPos:dataPos};
     }    
     
-    function handleDocumentMouseMove(ev) {
-        // ev.preventDefault();
-        // ev.stopImmediatePropagation();
-        // document.body.focus();
+    function handleZoomMove(ev) {
         var plot = ev.data.plot;
         var c = plot.plugins.cursor;
         // don't do anything if not on grid.
-        if (c.show && !c.onGrid && c.zoom && c._zoom.started && !c.zoomTarget) {
+        if (c.show && c.zoom && c._zoom.started && !c.zoomTarget) {
             var ctx = c.zoomCanvas._ctx;
             var positions = getEventPosition(ev);
             var gridpos = positions.gridPos;
@@ -749,14 +731,12 @@
             var ypos = gridpos.y;
             var height = ctx.canvas.height;
             var width = ctx.canvas.width;
-            
-            if (c.showTooltip && c.showTooltipOutsideZoom) {
+            if (c.showTooltip && !c.onGrid && c.showTooltipOutsideZoom) {
                 updateTooltip(gridpos, datapos, plot);
                 if (c.followMouse) {
                     moveTooltip(gridpos, plot);
                 }
             }
-            
             if (c.constrainZoomTo == 'x') {
                 c._zoom.end = [xpos, height];
             }
@@ -766,32 +746,37 @@
             else {
                 c._zoom.end = [xpos, ypos];
             }
+            var sel = window.getSelection;
+            if (document.selection && document.selection.empty)
+            {
+                document.selection.empty();
+            }
+            else if (sel && !sel().isCollapsed) {
+                sel().collapse();
+            }
             drawZoomBox.call(c);
         }
     }
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
-        // ev.preventDefault();
-        // ev.stopImmediatePropagation();
-        // document.body.focus();
         var c = plot.plugins.cursor;
         $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
         var axes = plot.axes;
-        // if (document.onselectstart != undefined) {
-        //     console.log('onselectstart');
-        //     c._oldHandlers.onselectstart = document.onselectstart;
-        //     document.onselectstart = function () { return false; };
-        // }
-        // if (document.ondrag != undefined) {
-        //     console.log('ondrag');
-        //     c._oldHandlers.ondrag = document.ondrag;
-        //     document.ondrag = function () { return false; };
-        // }
-        // if (document.onmousedown != undefined) {
-        //     console.log('onmousedown');
-        //     c._oldHandlers.onmousedown = document.onmousedown;
-        //     document.onmousedown = function () { return false; };
-        // }
+        if (document.onselectstart != undefined) {
+            console.log('onselectstart');
+            c._oldHandlers.onselectstart = document.onselectstart;
+            document.onselectstart = function () { return false; };
+        }
+        if (document.ondrag != undefined) {
+            console.log('ondrag');
+            c._oldHandlers.ondrag = document.ondrag;
+            document.ondrag = function () { return false; };
+        }
+        if (document.onmousedown != undefined) {
+            console.log('onmousedown');
+            c._oldHandlers.onmousedown = document.onmousedown;
+            document.onmousedown = function () { return false; };
+        }
         if (c.zoom) {
             if (!c.zoomProxy) {
                 var ctx = c.zoomCanvas._ctx;
@@ -810,14 +795,12 @@
             for (var ax in datapos) {
                 // get zoom starting position.
                 c._zoom.axes.start[ax] = datapos[ax];
-            }
+            }  
+            $(document).bind('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
         }
     }
     
     function handleMouseUp(ev) {
-        // ev.preventDefault();
-        // ev.stopImmediatePropagation();
-        // document.body.focus();
         var plot = ev.data.plot;
         var c = plot.plugins.cursor;
         if (c.zoom && c._zoom.zooming && !c.zoomTarget) {
@@ -829,18 +812,18 @@
             var axes = plot.axes;
             
             if (c.constrainOutsideZoom && !c.onGrid) {
-                if (xpos < 0) { xpos = 0 }
-                else if (xpos > width) { xpos = width }
-                if (ypos < 0) { ypos = 0 }
-                else if (ypos > height) { ypos = height }
+                if (xpos < 0) { xpos = 0; }
+                else if (xpos > width) { xpos = width; }
+                if (ypos < 0) { ypos = 0; }
+                else if (ypos > height) { ypos = height; }
                 
                 for (var axis in datapos) {
                     if (datapos[axis]) {
                         if (axis.charAt(0) == 'x') {
-                            datapos[axis] = axes[axis].series_p2u(xpos)
+                            datapos[axis] = axes[axis].series_p2u(xpos);
                         }
                         else {
-                            datapos[axis] = axes[axis].series_p2u(ypos)   
+                            datapos[axis] = axes[axis].series_p2u(ypos);
                         }
                     }
                 }
@@ -859,18 +842,21 @@
         }
         c._zoom.started = false;
         c._zoom.zooming = false;
-        // if (document.onselectstart != undefined && c._oldHandlers.onselectstart != null){
-        //     document.onselectstart = c._oldHandlers.onselectstart;
-        //     c._oldHandlers.onselectstart = null;
-        // }
-        // if (document.ondrag != undefined && c._oldHandlers.ondrag != null){
-        //     document.ondrag = c._oldHandlers.ondrag;
-        //     c._oldHandlers.ondrag = null;
-        // }
-        // if (document.onmousedown != undefined && c._oldHandlers.onmousedown != null){
-        //     document.onmousedown = c._oldHandlers.onmousedown;
-        //     c._oldHandlers.onmousedown = null;
-        // }
+        
+        $(document).unbind('mousemove.jqplotCursor', handleZoomMove);
+        
+        if (document.onselectstart != undefined && c._oldHandlers.onselectstart != null){
+            document.onselectstart = c._oldHandlers.onselectstart;
+            c._oldHandlers.onselectstart = null;
+        }
+        if (document.ondrag != undefined && c._oldHandlers.ondrag != null){
+            document.ondrag = c._oldHandlers.ondrag;
+            c._oldHandlers.ondrag = null;
+        }
+        if (document.onmousedown != undefined && c._oldHandlers.onmousedown != null){
+            document.onmousedown = c._oldHandlers.onmousedown;
+            c._oldHandlers.onmousedown = null;
+        }
 
     }
     

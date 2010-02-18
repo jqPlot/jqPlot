@@ -15,7 +15,7 @@ Many more examples of dynamically rendered plots can be seen on the test and exa
 
 Include the Files:
 
-jqPlot requires jQuery (tested with 1.3.2 or better). jQuery 1.3.2 is included in the distribution.  
+jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.1 is included in the distribution.  
 To use jqPlot include jquery, the jqPlot jQuery plugin, jqPlot css file and optionally the excanvas 
 script for IE support in your web page:
 

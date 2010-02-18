@@ -26,7 +26,7 @@
  * 
  * About: Introduction
  * 
- * jqPlot requires jQuery (tested with 1.3.2 or better). jQuery 1.3.2 is included in the distribution.  
+ * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.1 is included in the distribution.  
  * To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally 
  * the excanvas script for IE support in your web page:
  * 
@@ -980,11 +980,19 @@
         if (plotDimensions != undefined) {
             this._plotDimensions = plotDimensions;
         }
-        elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
-        elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
-        this._elem = $(elem);
+        if (false) {
+            elem.width = this._plotDimensions.width;
+            elem.height = this._plotDimensions.height;
+            this._elem = $(elem);
+            this._elem.css({ position: 'absolute', left: 0, top: 0 });
+        }
+        else {
+            elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+            elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+            this._elem = $(elem);
+            this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
+        }
         this._elem.addClass(klass);
-        this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
         }
