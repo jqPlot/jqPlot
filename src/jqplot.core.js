@@ -490,6 +490,10 @@
         // prop: location
         // Placement of the legend.  one of the compass directions: nw, n, ne, e, se, s, sw, w
         this.location = 'ne';
+        // prop: placement
+        // "inside" places the legend inside of the grid, 
+        // '"outside" places it ouside of the grid.
+        this.placement = "inside";
         // prop: xoffset
         // offset from the inside edge of the plot in the x direction in pixels.
         this.xoffset = 12;
