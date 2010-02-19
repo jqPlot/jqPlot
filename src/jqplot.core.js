@@ -1340,14 +1340,12 @@
             this.grid._plotDimensions = this._plotDimensions;
             this.title._plotDimensions = this._plotDimensions;
             this.baseCanvas._plotDimensions = this._plotDimensions;
-            // this.seriesCanvas._plotDimensions = this._plotDimensions;
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
             
             for (var n in this.axes) {
-                var axis = this.axes[n];
-                axis._plotWidth = this._width;
-                axis._plotHeight = this._height;
+                this.axes[n]._plotWidth = this._width;
+                this.axes[n]._plotHeight = this._height;
             }
             
             this.title._plotWidth = this._width;
@@ -1704,11 +1702,11 @@
                 }
                 // create an underlying canvas to be used for special features.
                 this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas'));
-                var bctx = this.baseCanvas.setContext();
+                this.baseCanvas.setContext();
                 this.target.append(this.title.draw());
                 this.title.pack({top:0, left:0});
                 for (var name in this.axes) {
-                    this.target.append(this.axes[name].draw(bctx));
+                    this.target.append(this.axes[name].draw(this.baseCanvas._ctx));
                     this.axes[name].set();
                 }
                 if (this.axes.yaxis.show) {
@@ -1717,12 +1715,11 @@
                 var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
                 var rapad = [0, 0, 0, 0];
                 var gpr = 0;
-                var n, ax;
+                var n;
                 for (n=8; n>0; n--) {
-                    ax = this.axes[ra[n-1]];
-                    if (ax.show) {
+                    if (this.axes[ra[n-1]].show) {
                         rapad[n-1] = gpr;
-                        gpr += ax.getWidth();
+                        gpr += this.axes[ra[n-1]].getWidth();
                     }
                 }
                 if (gpr > this._gridPadding.right) {
@@ -1773,9 +1770,9 @@
                 // Need to use filled canvas to capture events in IE.
                 // Also, canvas seems to block selection of other elements in document on FF.
                 this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas'));
-                var ectx = this.eventCanvas.setContext();
-                ectx.fillStyle = 'rgba(0,0,0,0)';
-                ectx.fillRect(0,0,ectx.canvas.width, ectx.canvas.height);
+                this.eventCanvas.setContext();
+                this.eventCanvas._ctx.fillStyle = 'rgba(0,0,0,0)';
+                this.eventCanvas._ctx.fillRect(0,0,this.eventCanvas._ctx.canvas.width, this.eventCanvas._ctx.canvas.height);
             
                 // bind custom event handlers to regular events.
                 this.bindCustomEvents();
@@ -1800,10 +1797,9 @@
             
                 // register event listeners on the overlay canvas
                 for (var i=0; i<$.jqplot.eventListenerHooks.length; i++) {
-                    var h = $.jqplot.eventListenerHooks[i];
                     // in the handler, this will refer to the eventCanvas dom element.
                     // make sure there are references back into plot objects.
-                    this.eventCanvas._elem.bind(h[0], {plot:this}, h[1]);
+                    this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
                 }
 
                 for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
