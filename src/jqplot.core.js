@@ -979,23 +979,37 @@
         if (clss != undefined) {
             klass = clss;
         }
-        var elem = document.createElement('canvas');
+        var elem;
+        // if this canvas already has a dom element, don't make a new one.
+        if (this._elem) {
+            elem = this._elem.get(0);
+        }
+        else {
+            elem = document.createElement('canvas');
+        }
         // if new plotDimensions supplied, use them.
         if (plotDimensions != undefined) {
             this._plotDimensions = plotDimensions;
         }
-        if (false) {
-            elem.width = this._plotDimensions.width;
-            elem.height = this._plotDimensions.height;
-            this._elem = $(elem);
-            this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        }
-        else {
-            elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
-            elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
-            this._elem = $(elem);
-            this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
-        }
+        // some experimentation with varying size of cnavases.
+        // if (false) {
+        //     elem.width = this._plotDimensions.width;
+        //     elem.height = this._plotDimensions.height;
+        //     this._elem = $(elem);
+        //     this._elem.css({ position: 'absolute', left: 0, top: 0 });
+        // }
+        // else {
+        //     elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+        //     elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        //     this._elem = $(elem);
+        //     this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
+        // }
+        
+        elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
+        elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        this._elem = $(elem);
+        this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
+        
         this._elem.addClass(klass);
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
@@ -1390,39 +1404,45 @@
         function sortData(series) {
             var d, sd, pd, ppd, ret;
             for (var i=0; i<series.length; i++) {
-                d = series[i].data;
-                sd = series[i]._stackData;
-                pd = series[i]._plotData;
-                ppd = series[i]._prevPlotData;
-                var check = true;
-                if (series[i]._stackAxis == 'x') {
-                    for (var j = 0; j < d.length; j++) {
-                        if (typeof(d[j][1]) != "number") {
-                            check = false;
-                            break;
+                // d = series[i].data;
+                // sd = series[i]._stackData;
+                // pd = series[i]._plotData;
+                // ppd = series[i]._prevPlotData;
+                var check;
+                var bat = [series[i].data, series[i]._stackData, series[i]._plotData, series[i]._prevPlotData];
+                for (var n=0; n<4; n++) {
+                    check = true;
+                    d = bat[n];
+                    if (series[i]._stackAxis == 'x') {
+                        for (var j = 0; j < d.length; j++) {
+                            if (typeof(d[j][1]) != "number") {
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            d.sort(function(a,b) { return a[1] - b[1]; });
+                            // sd.sort(function(a,b) { return a[1] - b[1]; });
+                            // pd.sort(function(a,b) { return a[1] - b[1]; });
+                            // ppd.sort(function(a,b) { return a[1] - b[1]; });
                         }
                     }
-                    if (check) {
-                        d.sort(function(a,b) { return a[1] - b[1]; });
-                        sd.sort(function(a,b) { return a[1] - b[1]; });
-                        pd.sort(function(a,b) { return a[1] - b[1]; });
-                        ppd.sort(function(a,b) { return a[1] - b[1]; });
-                    }
-                }
-                else {
-                    for (var j = 0; j < d.length; j++) {
-                        if (typeof(d[j][0]) != "number") {
-                            check = false;
-                            break;
+                    else {
+                        for (var j = 0; j < d.length; j++) {
+                            if (typeof(d[j][0]) != "number") {
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            d.sort(function(a,b) { return a[0] - b[0]; });
+                            // sd.sort(function(a,b) { return a[0] - b[0]; });
+                            // pd.sort(function(a,b) { return a[0] - b[0]; });
+                            // ppd.sort(function(a,b) { return a[0] - b[0]; });
                         }
                     }
-                    if (check) {
-                        d.sort(function(a,b) { return a[0] - b[0]; });
-                        sd.sort(function(a,b) { return a[0] - b[0]; });
-                        pd.sort(function(a,b) { return a[0] - b[0]; });
-                        ppd.sort(function(a,b) { return a[0] - b[0]; });
-                    }
                 }
+               
             }
         }
         
