@@ -200,6 +200,7 @@
     function preInit(target, data, options) {
         options = options || {};
         options.axesDefaults = $.extend(true, {pad:0}, options.axesDefaults);
+        options.legend = $.extend(true, {placement:'outside'}, options.legend);
         // only set these if there is a pie series
         var setopts = false;
         if (options.seriesDefaults.renderer == $.jqplot.BezierCurveRenderer) {
