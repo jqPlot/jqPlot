@@ -94,7 +94,7 @@
         }
         this.shapeRenderer.draw(ctx, points, options);
 
-        ctx.restore();
+        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawPlus = function(x, y, ctx, fill, options) {
@@ -111,7 +111,7 @@
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
 
-        ctx.restore();
+        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawX = function(x, y, ctx, fill, options) {
@@ -128,7 +128,7 @@
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
 
-        ctx.restore();
+        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawDash = function(x, y, ctx, fill, options) {
@@ -141,7 +141,7 @@
         }
         this.shapeRenderer.draw(ctx, points, options);
 
-        ctx.restore();
+        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill, options) {
@@ -154,7 +154,7 @@
         }
         this.shapeRenderer.draw(ctx, points, options);
 
-        ctx.restore();
+        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill, options) {
@@ -166,7 +166,7 @@
         }
         this.shapeRenderer.draw(ctx, points, options);
         
-        ctx.restore();
+        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
