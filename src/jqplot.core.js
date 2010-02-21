@@ -1969,6 +1969,8 @@
         // to redraw if only one series is to be redrawn.
         this.drawSeries = function(options, idx){
             var i, series, ctx;
+            // if only one argument passed in and it is a number, use it ad idx.
+            idx = (typeof(options) == "number" && idx == null) ? options : idx;
             // draw specified series
             if (idx != undefined) {
                 series = this.series[idx];
@@ -1978,6 +1980,11 @@
                 ctx = series.canvas._ctx;
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 series.draw(ctx, options, this);
+                if (series.renderer.constructor == $.jqplot.BezierCurveRenderer) {
+                    if (idx < this.series.length - 1) {
+                        this.drawSeries(idx+1);
+                    }
+                }
             }
             
             else {

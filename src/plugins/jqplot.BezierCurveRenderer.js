@@ -38,34 +38,61 @@
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
         // this._plotData should be same as this.data
-        var data = this._plotData;
+        var data = this.data;
         this.gridData = [];
         this._prevGridData = [];
         // if seriesIndex = 0, fill to x axis.
         // if seriesIndex > 0, fill to previous series data.
         var idx = this.index;
-        if (idx == 0) {
-            this.gridData = [
-                [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
-                [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
-                    xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
-                    xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
-                [xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, this._yaxis.min)],
-                [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, this._yaxis.min)]
-            ];
+        if (data.length == 2) {
+            if (idx == 0) {
+                this.gridData = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
+                        xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
+                    [xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, this._yaxis.min)],
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, this._yaxis.min)]
+                ];
+            }
+            else {
+                var psd = plot.series[idx-1].data;
+                this.gridData = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
+                        xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
+                    [xp.call(this._xaxis, psd[1][4]), yp.call(this._yaxis, psd[1][5])],
+                    [xp.call(this._xaxis, psd[1][2]), yp.call(this._yaxis, psd[1][3]), 
+                        xp.call(this._xaxis, psd[1][0]), yp.call(this._yaxis, psd[1][1]),  
+                        xp.call(this._xaxis, psd[0][0]), yp.call(this._yaxis, psd[0][1])]
+                ];
+            }
         }
         else {
-            var psd = plot.series[idx-1]._plotData;
-            this.gridData = [
-                [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
-                [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
-                    xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
-                    xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
-                [xp.call(this._xaxis, psd[1][4]), yp.call(this._yaxis, psd[1][5])],
-                [xp.call(this._xaxis, psd[1][2]), yp.call(this._yaxis, psd[1][3]), 
-                    xp.call(this._xaxis, psd[1][0]), yp.call(this._yaxis, psd[1][1]),  
-                    xp.call(this._xaxis, psd[0][0]), yp.call(this._yaxis, psd[0][1])]
-            ];
+            if (idx == 0) {
+                this.gridData = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[2][0]), yp.call(this._yaxis, data[2][1]),  
+                        xp.call(this._xaxis, data[3][0]), yp.call(this._yaxis, data[3][1])],
+                    [xp.call(this._xaxis, data[3][1]), yp.call(this._yaxis, this._yaxis.min)],
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, this._yaxis.min)]
+                ];
+            }
+            else {
+                var psd = plot.series[idx-1].data;
+                this.gridData = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[2][0]), yp.call(this._yaxis, data[2][1]),  
+                        xp.call(this._xaxis, data[3][0]), yp.call(this._yaxis, data[3][1])],
+                    [xp.call(this._xaxis, psd[3][0]), yp.call(this._yaxis, psd[3][1])],
+                    [xp.call(this._xaxis, psd[2][0]), yp.call(this._yaxis, psd[2][1]), 
+                        xp.call(this._xaxis, psd[1][0]), yp.call(this._yaxis, psd[1][1]),  
+                        xp.call(this._xaxis, psd[0][0]), yp.call(this._yaxis, psd[0][1])]
+                ];
+            }
         }
     };
     
@@ -84,28 +111,55 @@
         // if seriesIndex = 0, fill to x axis.
         // if seriesIndex > 0, fill to previous series data.
         var idx = this.index;
-        if (idx == 0) {
-            gd = [
-                [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
-                [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
-                    xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
-                    xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
-                [xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, this._yaxis.min)],
-                [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, this._yaxis.min)]
-            ];
+        if (data.length == 2) {
+            if (idx == 0) {
+                gd = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
+                        xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
+                    [xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, this._yaxis.min)],
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, this._yaxis.min)]
+                ];
+            }
+            else {
+                var psd = plot.series[idx-1].data;
+                gd = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
+                        xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
+                    [xp.call(this._xaxis, psd[1][4]), yp.call(this._yaxis, psd[1][5])],
+                    [xp.call(this._xaxis, psd[1][2]), yp.call(this._yaxis, psd[1][3]), 
+                        xp.call(this._xaxis, psd[1][0]), yp.call(this._yaxis, psd[1][1]),  
+                        xp.call(this._xaxis, psd[0][0]), yp.call(this._yaxis, psd[0][1])]
+                ];
+            }
         }
         else {
-            var psd = plot.series[idx-1]._plotData;
-            gd = [
-                [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
-                [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
-                    xp.call(this._xaxis, data[1][2]), yp.call(this._yaxis, data[1][3]),  
-                    xp.call(this._xaxis, data[1][4]), yp.call(this._yaxis, data[1][5])],
-                [xp.call(this._xaxis, psd[1][4]), yp.call(this._yaxis, psd[1][5])],
-                [xp.call(this._xaxis, psd[1][2]), yp.call(this._yaxis, psd[1][3]), 
-                    xp.call(this._xaxis, psd[1][0]), yp.call(this._yaxis, psd[1][1]),  
-                    xp.call(this._xaxis, psd[0][0]), yp.call(this._yaxis, psd[0][1])]
-            ];
+            if (idx == 0) {
+                gd = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[2][0]), yp.call(this._yaxis, data[2][1]),  
+                        xp.call(this._xaxis, data[3][0]), yp.call(this._yaxis, data[3][1])],
+                    [xp.call(this._xaxis, data[3][1]), yp.call(this._yaxis, this._yaxis.min)],
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, this._yaxis.min)]
+                ];
+            }
+            else {
+                var psd = plot.series[idx-1].data;
+                gd = [
+                    [xp.call(this._xaxis, data[0][0]), yp.call(this._yaxis, data[0][1])], 
+                    [xp.call(this._xaxis, data[1][0]), yp.call(this._yaxis, data[1][1]), 
+                        xp.call(this._xaxis, data[2][0]), yp.call(this._yaxis, data[2][1]),  
+                        xp.call(this._xaxis, data[3][0]), yp.call(this._yaxis, data[3][1])],
+                    [xp.call(this._xaxis, psd[3][0]), yp.call(this._yaxis, psd[3][1])],
+                    [xp.call(this._xaxis, psd[2][0]), yp.call(this._yaxis, psd[2][1]), 
+                        xp.call(this._xaxis, psd[1][0]), yp.call(this._yaxis, psd[1][1]),  
+                        xp.call(this._xaxis, psd[0][0]), yp.call(this._yaxis, psd[0][1])]
+                ];
+            }
         }
         return gd;
     };
@@ -159,38 +213,60 @@
         // the min/max bounds for this axis.
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
-            var d = s._plotData;            
-            if (this.name == 'xaxis' || this.name == 'x2axis') {
-                if (d[0][0] < db.min || db.min == null) {
-                    db.min = d[0][0];
+            var d = s.data;  
+            if (d.length == 4) {
+                for (var j=0; j<d.length; j++) { 
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        if (d[j][0] < db.min || db.min == null) {
+                            db.min = d[j][0];
+                        }
+                        if (d[j][0] > db.max || db.max == null) {
+                            db.max = d[j][0];
+                        }
+                    }              
+                    else {
+                        if (d[j][1] < db.min || db.min == null) {
+                            db.min = d[j][1];
+                        }
+                        if (d[j][1] > db.max || db.max == null) {
+                            db.max = d[j][1];
+                        }
+                    }              
                 }
-                if (d[0][0] > db.max || db.max == null) {
-                    db.max = d[0][0];
-                }
-                for (var j=0; j<5; j+=2) {
-                    if (d[1][j] < db.min || db.min == null) {
-                        db.min = d[1][j];
+            }          
+            else {    
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[0][0] < db.min || db.min == null) {
+                        db.min = d[0][0];
                     }
-                    if (d[1][j] > db.max || db.max == null) {
-                        db.max = d[1][j];
+                    if (d[0][0] > db.max || db.max == null) {
+                        db.max = d[0][0];
                     }
-                }
-            }              
-            else {
-                if (d[0][1] < db.min || db.min == null) {
-                    db.min = d[0][1];
-                }
-                if (d[0][1] > db.max || db.max == null) {
-                    db.max = d[0][1];
-                }
-                for (var j=1; j<6; j+=2) {
-                    if (d[1][j] < db.min || db.min == null) {
-                        db.min = d[1][j];
+                    for (var j=0; j<5; j+=2) {
+                        if (d[1][j] < db.min || db.min == null) {
+                            db.min = d[1][j];
+                        }
+                        if (d[1][j] > db.max || db.max == null) {
+                            db.max = d[1][j];
+                        }
                     }
-                    if (d[1][j] > db.max || db.max == null) {
-                        db.max = d[1][j];
+                }              
+                else {
+                    if (d[0][1] < db.min || db.min == null) {
+                        db.min = d[0][1];
                     }
-                }
+                    if (d[0][1] > db.max || db.max == null) {
+                        db.max = d[0][1];
+                    }
+                    for (var j=1; j<6; j+=2) {
+                        if (d[1][j] < db.min || db.min == null) {
+                            db.min = d[1][j];
+                        }
+                        if (d[1][j] > db.max || db.max == null) {
+                            db.max = d[1][j];
+                        }
+                    }
+                }           
             }
         }
     };
