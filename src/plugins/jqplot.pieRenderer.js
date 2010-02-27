@@ -121,11 +121,11 @@
                 return;
             }
             ctx.beginPath();  
-            ctx.moveTo(0, 0);
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
             ctx.arc(0, 0, r, ang1, ang2, false);
+            ctx.lineTo(0,0);
             ctx.closePath();
             if (fill) {
                 ctx.fill();
