@@ -508,6 +508,10 @@
         // prop: location
         // Placement of the legend.  one of the compass directions: nw, n, ne, e, se, s, sw, w
         this.location = 'ne';
+        // prop: labels
+        // Array of labels to use.  By default the renderer will look for labels on the series.
+        // Labels specified in this array will override labels specified on the series.
+        this.labels = [];
         // prop: placement
         // "inside" places the legend inside of the grid, 
         // '"outside" places it ouside of the grid.
@@ -1009,19 +1013,6 @@
         if (plotDimensions != undefined) {
             this._plotDimensions = plotDimensions;
         }
-        // some experimentation with varying size of cnavases.
-        // if (false) {
-        //     elem.width = this._plotDimensions.width;
-        //     elem.height = this._plotDimensions.height;
-        //     this._elem = $(elem);
-        //     this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        // }
-        // else {
-        //     elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
-        //     elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
-        //     this._elem = $(elem);
-        //     this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
-        // }
         
         elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
         elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;

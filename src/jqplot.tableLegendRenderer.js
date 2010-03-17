@@ -17,7 +17,7 @@
  */
 (function($) {
     // class $.jqplot.TableLegendRenderer
-    // The default legend renderer for jqPlot, this class has no options beyond the <Legend> class.
+    // The default legend renderer for jqPlot.
     $.jqplot.TableLegendRenderer = function(){
         //
     };
@@ -26,9 +26,12 @@
         $.extend(true, this, options);
     };
         
-    $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad) {
+    $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad, reverse) {
         var rs = (pad) ? this.rowSpacing : '0';
-        var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+        if (reverse)
+            var tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+        else
+            var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
         $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
             '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
             '</div></td>').appendTo(tr);
@@ -56,17 +59,24 @@
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
-            var pad = false;
+            var pad = false, 
+                reverse = false;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
+                if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer)
+                    reverse = true;
                 if (s.show && s.showLabel) {
-                    var lt = s.label.toString();
+                    var lt = this.labels[i] || s.label.toString();
                     if (lt) {
                         var color = s.color;
                         if (s._stack && !s.fill) {
                             color = '';
                         }
-                        this.renderer.addrow.call(this, lt, color, pad);
+                        if (reverse && i < series.length - 1)
+                            pad = true;
+                        else if (reverse && i == series.length - 1)
+                            pad = false;
+                        this.renderer.addrow.call(this, lt, color, pad, reverse);
                         pad = true;
                     }
                     // let plugins add more rows to legend.  Used by trend line plugin.
