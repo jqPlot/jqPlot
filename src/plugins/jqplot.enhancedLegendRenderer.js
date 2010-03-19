@@ -16,37 +16,23 @@
  * 
  */
 (function($) {
-    // class $.jqplot.TableLegendRenderer
-    // The default legend renderer for jqPlot.
-    $.jqplot.TableLegendRenderer = function(){
+    // class $.jqplot.EnhancedLegendRenderer
+    $.jqplot.EnhancedLegendRenderer = function(){
         //
     };
     
-    $.jqplot.TableLegendRenderer.prototype.init = function(options) {
+    $.jqplot.EnhancedLegendRenderer.prototype.init = function(options) {
+        // prop: numberRows
+        // Maximum number of rows in the legend.  0 or null for unlimited.
+        this.numberRows = null;
+        // prop: numberColumns
+        // Maximum number of columns in the legend.  0 or null for unlimited.
+        this.numberColumns = null;
         $.extend(true, this, options);
-    };
-        
-    $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad, reverse) {
-        var rs = (pad) ? this.rowSpacing : '0';
-        if (reverse)
-            var tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
-        else
-            var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
-        $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
-            '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
-            '</div></td>').appendTo(tr);
-        var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
-        elem.appendTo(tr);
-        if (this.escapeHtml) {
-            elem.text(label);
-        }
-        else {
-            elem.html(label);
-        }
     };
     
     // called with scope of legend
-    $.jqplot.TableLegendRenderer.prototype.draw = function() {
+    $.jqplot.EnhancedLegendRenderer.prototype.draw = function() {
         var legend = this;
         if (this.show) {
             var series = this._series;
@@ -60,40 +46,87 @@
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
             var pad = false, 
-                reverse = false;
-            for (var i = 0; i< series.length; i++) {
-                s = series[i];
-                if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer)
+                reverse = false,
+                nr, nc;
+            if (this.numberRows) {
+                nr = this.numberRows;
+                if (!this.numberColumns)
+                    nc = Math.ceil(series.length/nr);
+                else
+                    nc = this.numberColumns;
+            }
+            else if (this.numberColumns) {
+                nc = this.numberColumns;
+                nr = Math.ceil(series.length/this.numberColumns);
+            }
+            else {
+                nr = series.length;
+                nc = 1;
+            }
+                
+            nc = this.numberColumns || Math.ceil(series.length/this.numberRows);
+            var i, j, tr, td1, td2, lt, rs;
+            var idx = 0;
+            // check to see if we need to reverse
+            for (i=series.length-1; i>=0; i--) {
+                if (series[i]._stack || series[i].renderer.constructor == $.jqplot.BezierCurveRenderer)
                     reverse = true;
-                if (s.show && s.showLabel) {
-                    var lt = this.labels[i] || s.label.toString();
-                    if (lt) {
-                        var color = s.color;
-                        if (s._stack && !s.fill) {
-                            color = '';
+            }    
+                
+            for (i=0; i<nr; i++) {
+                if (reverse)
+                    tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+                else
+                    tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+                for (j=0; j<nc; j++) {
+                    if (idx < series.length && series[idx].show && series[idx].showLabel){
+                        s = series[idx];
+                        lt = this.labels[idx] || s.label.toString();
+                        if (lt) {
+                            var color = s.color;
+                            if (s._stack && !s.fill) {
+                                color = '';
+                            }
+                            if (!reverse)
+                                if (i>0)
+                                    pad = true;
+                                else
+                                    pad = false;
+                            else
+                                if (i == nr -1)
+                                    pad = false;
+                                else
+                                    pad = true;
+                    
+                            rs = (pad) ? this.rowSpacing : '0';
+                    
+                            td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
+                                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
+                                '</div></td>');
+                            td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+                            if (this.escapeHtml)
+                                td2.text(lt);
+                            else 
+                                td2.html(lt);
+                            if (reverse) {
+                                td2.prependTo(tr);
+                                td1.prependTo(tr);
+                            }
+                            else {
+                                td1.appendTo(tr);
+                                td2.appendTo(tr);
+                            }
+                            pad = true;
                         }
-                        if (reverse && i < series.length - 1)
-                            pad = true;
-                        else if (reverse && i == series.length - 1)
-                            pad = false;
-                        this.renderer.addrow.call(this, lt, color, pad, reverse);
-                        pad = true;
                     }
-                    // let plugins add more rows to legend.  Used by trend line plugin.
-                    for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
-                        var item = $.jqplot.addLegendRowHooks[j].call(this, s);
-                        if (item) {
-                            this.renderer.addrow.call(this, item.label, item.color, pad);
-                            pad = true;
-                        } 
-                    }
-                }
+                    idx++;
+                }   
             }
         }
         return this._elem;
     };
     
-    $.jqplot.TableLegendRenderer.prototype.pack = function(offsets) {
+    $.jqplot.EnhancedLegendRenderer.prototype.pack = function(offsets) {
         if (this.show) {
             // fake a grid for positioning
             var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom};        

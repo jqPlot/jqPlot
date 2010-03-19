@@ -15,6 +15,7 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
   <!-- END: load jqplot -->
 
 
@@ -24,55 +25,63 @@ $(document).ready(function(){
    s1 = [1,6,9,8];
    s2 = [4,3,1,2];
    s3 = [6,2,4,1];
+   s4 = [1,2,3,4];
+   s5 = [4,3,2,1];
+   s6 = [8,2,6,3];
 
-   plot1 = $.jqplot('chart1',[s1, s2, s3],{
+   plot1 = $.jqplot('chart1',[s1, s2, s3, s4, s5, s6],{
        stackSeries: true,
         seriesDefaults: {
             fill: true,
             showMarker: false
         },
        legend:{
+           renderer: $.jqplot.EnhancedLegendRenderer,
            show:true,
-           numberColumns:3,
+           labels:['Fog', 'Rain', 'Frost', 'Sleet', 'Hail', 'Snow'],
            rendererOptions:{
-               labels:["a","b", "c"]
+               numberColumns:3
            }
 		},
 		axes: {
 		    xaxis:{min:1, max:4},
-		    yaxis:{min:0, max:20}
+		    yaxis:{min:0, max:35}
 		}
    });
 
-   plot2 = $.jqplot('chart2',[s1, s2, s3],{
+   plot2 = $.jqplot('chart2',[s1, s2, s3, s4, s5, s6],{
        stackSeries: true,
         seriesDefaults: {
             fill: true,
             showMarker: false
         },
        legend:{
+           renderer: $.jqplot.EnhancedLegendRenderer,
            show:true,
+           labels:['Fog', 'Rain', 'Frost', 'Sleet', 'Hail', 'Snow'],
            rendererOptions:{
-               labels:["a","b", "c"]
+               numberColumns:2
            },
            placement:'outside'
 		},
 		axes: {
 		    xaxis:{min:1, max:4},
-		    yaxis:{min:0, max:20}
+		    yaxis:{min:0, max:35}
 		}
    });
 
-   plot3 = $.jqplot('chart3',[s1, s2, s3],{
+   plot3 = $.jqplot('chart3',[s1, s2, s3, s4, s5, s6],{
        stackSeries: true,
         seriesDefaults: {
             fill: true,
             showMarker: false
         },
        legend:{
+           renderer: $.jqplot.EnhancedLegendRenderer,
            show:true,
+           labels:['Fog', 'Rain', 'Frost', 'Sleet', 'Hail', 'Snow'],
            rendererOptions:{
-               labels:["a","b", "c"]
+               numberRows:1
            },
            placement:'outside',
            location:'s',
@@ -80,7 +89,7 @@ $(document).ready(function(){
 		},
 		axes: {
 		    xaxis:{min:1, max:4},
-		    yaxis:{min:0, max:20}
+		    yaxis:{min:0, max:35}
 		}
    });
    

@@ -763,17 +763,14 @@
         $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
         var axes = plot.axes;
         if (document.onselectstart != undefined) {
-            console.log('onselectstart');
             c._oldHandlers.onselectstart = document.onselectstart;
             document.onselectstart = function () { return false; };
         }
         if (document.ondrag != undefined) {
-            console.log('ondrag');
             c._oldHandlers.ondrag = document.ondrag;
             document.ondrag = function () { return false; };
         }
         if (document.onmousedown != undefined) {
-            console.log('onmousedown');
             c._oldHandlers.onmousedown = document.onmousedown;
             document.onmousedown = function () { return false; };
         }
