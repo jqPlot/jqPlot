@@ -82,9 +82,6 @@
                         lt = this.labels[idx] || s.label.toString();
                         if (lt) {
                             var color = s.color;
-                            if (s._stack && !s.fill) {
-                                color = '';
-                            }
                             if (!reverse)
                                 if (i>0)
                                     pad = true;

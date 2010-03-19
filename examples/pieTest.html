@@ -27,7 +27,7 @@
 
     plot1 = $.jqplot('pie1', [[['a',25],['b',14],['c',7]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{show:true, numberColumns:2}      
+      legend:{show:true}      
     });
 
     plot2 = $.jqplot('pie2', [[['a',25],['b',0],['c',0]]], {
@@ -40,7 +40,7 @@
       legend:{show:true}      
     });
     
-    plot4 = $.jqplot('pie4', [[["a",1000],["b",.001],["c",.001]]], {
+    plot4 = $.jqplot('pie4', [[["a",0],["b",1],["c",.01]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
       legend:{show:true}      
     });
@@ -50,7 +50,7 @@
   </head>
   <body>
 <?php include "nav.inc"; ?>
-    This page tests for 3 conditions.  Plotting pies with a slice that begins at 0 and ends at and near 2*pi (360 degrees), disabling the trendline plugin on pies, and plotting a pie that has a 0 value in the data set.
+    This page tests for 3 conditions.  Plotting pies with a slice that begins at 0 and ends at and near 2*pi (360 degrees), disabling the trendline plugin on pies, and plotting a pie that has a 0 value (or a very small value relative to other values) in the data set.
     <div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie2" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie3" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>

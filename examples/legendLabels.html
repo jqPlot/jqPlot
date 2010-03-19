@@ -16,9 +16,14 @@
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
   <!-- END: load jqplot -->
 
-
+<style type="text/css">
+    div.plot {
+        margin-bottom: 70px;
+    }
+</style>
 <script language="javascript" type="text/javascript">
 $(document).ready(function(){
 
@@ -73,7 +78,7 @@ $(document).ready(function(){
    plot3 = $.jqplot('chart3',[s1, s2, s3, s4, s5, s6],{
        stackSeries: true,
         seriesDefaults: {
-            fill: true,
+            fill: false,
             showMarker: false
         },
        legend:{
@@ -92,6 +97,18 @@ $(document).ready(function(){
 		    yaxis:{min:0, max:35}
 		}
    });
+
+    plot4 = $.jqplot('chart4', [[['A',25],['B',14],['C',7],['D', 13],['E', 11],['F',35]]], {
+      seriesDefaults:{
+          renderer:$.jqplot.PieRenderer
+      },
+      legend:{
+          show:true, 
+          rendererOptions:{
+              numberColumns:2
+          }
+      }      
+    });
    
  });
 </script>
@@ -100,7 +117,8 @@ $(document).ready(function(){
 <?php include "nav.inc"; ?>
 <div id="chart1" class="plot" style="width:500px;height:300px;"></div>
 <div id="chart2" class="plot" style="width:500px;height:300px;"></div>
-<div id="chart3" class="plot" style="margin-bottom:50px;width:500px;height:300px;"></div>
+<div id="chart3" class="plot" style="width:500px;height:300px;"></div>
+<div id="chart4" class="plot" style="width:500px;height:300px;"></div>
 <p>
   </body>
 </html>

@@ -69,9 +69,6 @@
                     var lt = this.labels[i] || s.label.toString();
                     if (lt) {
                         var color = s.color;
-                        if (s._stack && !s.fill) {
-                            color = '';
-                        }
                         if (reverse && i < series.length - 1)
                             pad = true;
                         else if (reverse && i == series.length - 1)
