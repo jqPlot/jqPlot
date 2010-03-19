@@ -29,7 +29,7 @@
         var r = this.renderer;
         if (!this.text) {
             this.show = false;
-            this._elem = $('<div style="height:0px;width:0px;"></div>');
+            this._elem = $('<div class="jqplot-title" style="height:0px;width:0px;"></div>');
         }
         else if (this.text) {
             // don't trust that a stylesheet is present, set the position.

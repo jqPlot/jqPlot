@@ -50,6 +50,10 @@
     #chart2 .jqplot-axis {
         font-size: 0.7em;
     }
+    
+    #chart3 .jqplot-title {
+        padding-bottom: 40px;
+    }
   </style>
   <script type="text/javascript" language="javascript">
   
@@ -63,7 +67,7 @@
     plot1 = $.jqplot('chart1', [bar1, bar2, bar3], {
         title: 'Revenue Breakdown per Character',
         seriesDefaults:{renderer:$.jqplot.MekkoRenderer},
-        legend:{show:true, numberColumns:2},
+        legend:{show:true},
         axesDefaults:{
             renderer:$.jqplot.MekkoAxisRenderer
         },
@@ -109,8 +113,9 @@
         seriesDefaults:{renderer:$.jqplot.MekkoRenderer},
         legend:{
             show:true, 
-            rendererOptions:{labels:legendLabels, placement: "outside"}, 
-            location:'e'
+            location: 'n',
+            labels: legendLabels,
+            rendererOptions:{numberRows: 1, placement: "outside"}
         },
         axesDefaults:{
             renderer:$.jqplot.MekkoAxisRenderer, 
@@ -119,11 +124,6 @@
         axes:{
             xaxis:{
                 tickMode:"bar", 
-                tickOptions:{formatString:'$%dM'}
-            }, 
-            x2axis:{
-                show:true, 
-                tickMode:'even', 
                 tickOptions:{formatString:'$%dM'}
             }
         }
@@ -184,14 +184,18 @@ legend:{
     
     <div id="chart2" style="width:500px; height:300px;"></div>
     
-    <p>Legend labels can be specified independently of the series with the "labels" option on the legend.  These will override any labels specified with the series.
+    <p>Legend labels can be specified independently of the series with the "labels" option on the legend.  These will override any labels specified with the series. There are also options to control the number of rows and number of columns in the legend as well as placement.</p>
+    
+    <p>Here the legend is positioned to the "north" and set to render 1 row tall (number of columns determined automatically).  Note that an extra css specification was added to pad the bottom of the title of this chart to give room for the legend above the plot.</p>
     
 <pre>
 legendLabels = ['hotels', 'rides', 'buses', 'instruments', 'totes'];
 
 legend:{
     show:true, 
-    rendererOptions:{labels:legendLabels, placement: "outside"}, 
+    location: 'n',
+    labels: legendLabels,
+    rendererOptions:{numberRows: 1, placement: "outside"}
 },    
 </pre>
 
