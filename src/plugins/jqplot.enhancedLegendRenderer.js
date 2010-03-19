@@ -64,7 +64,6 @@
                 nc = 1;
             }
                 
-            nc = this.numberColumns || Math.ceil(series.length/this.numberRows);
             var i, j, tr, td1, td2, lt, rs;
             var idx = 0;
             // check to see if we need to reverse
