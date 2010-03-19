@@ -33,9 +33,50 @@ $(document).ready(function(){
         },
        legend:{
            show:true,
+           numberColumns:3,
            rendererOptions:{
                labels:["a","b", "c"]
            }
+		},
+		axes: {
+		    xaxis:{min:1, max:4},
+		    yaxis:{min:0, max:20}
+		}
+   });
+
+   plot2 = $.jqplot('chart2',[s1, s2, s3],{
+       stackSeries: true,
+        seriesDefaults: {
+            fill: true,
+            showMarker: false
+        },
+       legend:{
+           show:true,
+           rendererOptions:{
+               labels:["a","b", "c"]
+           },
+           placement:'outside'
+		},
+		axes: {
+		    xaxis:{min:1, max:4},
+		    yaxis:{min:0, max:20}
+		}
+   });
+
+   plot3 = $.jqplot('chart3',[s1, s2, s3],{
+       stackSeries: true,
+        seriesDefaults: {
+            fill: true,
+            showMarker: false
+        },
+       legend:{
+           show:true,
+           rendererOptions:{
+               labels:["a","b", "c"]
+           },
+           placement:'outside',
+           location:'s',
+           yoffset: 35
 		},
 		axes: {
 		    xaxis:{min:1, max:4},
@@ -49,5 +90,8 @@ $(document).ready(function(){
   <body>
 <?php include "nav.inc"; ?>
 <div id="chart1" class="plot" style="width:500px;height:300px;"></div>
+<div id="chart2" class="plot" style="width:500px;height:300px;"></div>
+<div id="chart3" class="plot" style="margin-bottom:50px;width:500px;height:300px;"></div>
+<p>
   </body>
 </html>

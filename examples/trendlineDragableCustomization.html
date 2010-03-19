@@ -32,6 +32,7 @@
 
     mp = $.jqplot('chart1',[s1, s2],{
             title: 'mytitle',
+            legend:{show:true},
             axes: {
                 xaxis: {
                     renderer: $.jqplot.DateAxisRenderer, 
@@ -54,6 +55,7 @@
               },
               trendline: {
                   show:true,
+                  label: 'trendline 1',
                     color: '#cccccc'
               }
             }, {

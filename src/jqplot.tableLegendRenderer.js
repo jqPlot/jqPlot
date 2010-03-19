@@ -60,34 +60,65 @@
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
             var pad = false, 
-                reverse = false;
-            for (var i = 0; i< series.length; i++) {
-                s = series[i];
-                if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer)
+                reverse = false,
+                nr = this.numberRows || (this.numberColumns) ? Math.ceil(series.length/this.numberColumns) : series.length,
+                nc = this.numberColumns || Math.ceil(series.length/this.numberRows),
+                i, j, tr, td1, td2, lt, rs,
+                idx = 0;
+            // check to see if we need to reverse
+            for (i=series.length-1; i>=0; i--) {
+                if (series[i]._stack || series[i].renderer.constructor == $.jqplot.BezierCurveRenderer)
                     reverse = true;
-                if (s.show && s.showLabel) {
-                    var lt = this.labels[i] || s.label.toString();
-                    if (lt) {
-                        var color = s.color;
-                        if (s._stack && !s.fill) {
-                            color = '';
+            }    
+                
+            for (i=0; i<nr; i++) {
+                if (reverse)
+                    tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+                else
+                    tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+                for (j=0; j<nc; j++) {
+                    if (idx < series.length && series[idx].show && series[idx].showLabel){
+                        s = series[idx];
+                        lt = this.labels[idx] || s.label.toString();
+                        if (lt) {
+                            var color = s.color;
+                            if (s._stack && !s.fill) {
+                                color = '';
+                            }
+                            if (!reverse)
+                                if (i>0)
+                                    pad = true;
+                                else
+                                    pad = false;
+                            else
+                                if (i == nr -1)
+                                    pad = false;
+                                else
+                                    pad = true;
+                    
+                            rs = (pad) ? this.rowSpacing : '0';
+                    
+                            td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
+                                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
+                                '</div></td>');
+                            td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+                            if (this.escapeHtml)
+                                td2.text(lt);
+                            else 
+                                td2.html(lt);
+                            if (reverse) {
+                                td2.prependTo(tr);
+                                td1.prependTo(tr);
+                            }
+                            else {
+                                td1.appendTo(tr);
+                                td2.appendTo(tr);
+                            }
+                            pad = true;
                         }
-                        if (reverse && i < series.length - 1)
-                            pad = true;
-                        else if (reverse && i == series.length - 1)
-                            pad = false;
-                        this.renderer.addrow.call(this, lt, color, pad, reverse);
-                        pad = true;
                     }
-                    // let plugins add more rows to legend.  Used by trend line plugin.
-                    for (var j=0; j<$.jqplot.addLegendRowHooks.length; j++) {
-                        var item = $.jqplot.addLegendRowHooks[j].call(this, s);
-                        if (item) {
-                            this.renderer.addrow.call(this, item.label, item.color, pad);
-                            pad = true;
-                        } 
-                    }
-                }
+                    idx++;
+                }   
             }
         }
         return this._elem;

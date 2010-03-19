@@ -512,6 +512,12 @@
         // Array of labels to use.  By default the renderer will look for labels on the series.
         // Labels specified in this array will override labels specified on the series.
         this.labels = [];
+        // prop: numberRows
+        // Maximum number of rows in the legend.  0 or null for unlimited.
+        this.numberRows = null;
+        // prop: numberColumns
+        // Maximum number of columns in the legend.  0 or null for unlimited.
+        this.numberColumns = 1;
         // prop: placement
         // "inside" places the legend inside of the grid, 
         // '"outside" places it ouside of the grid.
