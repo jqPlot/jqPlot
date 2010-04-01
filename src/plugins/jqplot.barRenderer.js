@@ -255,7 +255,10 @@
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
                     if (shadow && !this._stack) {
-                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                        var sopts = $.extend(true, {}, opts);
+                        // need to get rid of fillStyle on shadow.
+                        delete sopts.fillStyle;
+                        this.renderer.shadowRenderer.draw(ctx, points, sopts);
                     }
                     this.renderer.shapeRenderer.draw(ctx, points, opts); 
                 }
@@ -308,7 +311,9 @@
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
                     if (shadow && !this._stack) {
-                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                        var sopts = $.extend(true, {}, opts);
+                        delete sopts.fillStyle;
+                        this.renderer.shadowRenderer.draw(ctx, points, sopts);
                     }
                     this.renderer.shapeRenderer.draw(ctx, points, opts); 
                 }  

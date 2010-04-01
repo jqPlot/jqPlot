@@ -118,8 +118,8 @@
                         if (this.index == 0 || !this._stack) {
                         
                             var tempgd = [];
-                            var pyzero = this._yaxis.series_u2p(0);
-                            var pxzero = this._xaxis.series_u2p(0);
+                            var pyzero = this._yaxis.series_u2p(this.fillToValue);
+                            var pxzero = this._xaxis.series_u2p(this.fillToValue);
                             
                             if (this.fillAxis == 'y') {
                                 tempgd.push([gd[0][0], pyzero]);

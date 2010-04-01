@@ -755,6 +755,10 @@
         // prop: fillToZero
         // true will force bar and filled series to fill toward zero on the fill Axis.
         this.fillToZero = false;
+        // prop: fillToValue
+        // fill a filled series to this value on the fill axis.
+        // Works in conjunction with fillToZero, so that must be true.
+        this.fillToValue = 0;
         // prop: fillAxis
         // Either 'x' or 'y'.  Which axis to fill the line toward if fillToZero is true.
         // 'y' means fill up/down to 0 on the y axis for this series.
@@ -949,6 +953,9 @@
         // prop: shadowDepth
         // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
         this.shadowDepth = 3;
+        // prop: shadowColor
+        // an optional css color spec for the shadow in 'rgba(n, n, n, n)' form
+        this.shadowColor = null;
         // prop: shadowAlpha
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.07';

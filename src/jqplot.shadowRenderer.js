@@ -48,6 +48,7 @@
         // prop: depth
         // how many times the shadow is stroked.  Each stroke will be offset by offset at angle degrees.
         this.depth = 3;
+        this.strokeStyle = 'rgba(0,0,0,0.1)';
         // prop: isarc
         // wether the shadow is an arc or not.
         this.isarc = false;
@@ -75,8 +76,8 @@
         ctx.lineWidth = (opts.lineWidth != null) ? opts.lineWidth : this.lineWidth;
         ctx.lineJoin = (opts.lineJoin != null) ? opts.lineJoin : this.lineJoin;
         ctx.lineCap = (opts.lineCap != null) ? opts.lineCap : this.lineCap;
-        ctx.strokeStyle = 'rgba(0,0,0,'+alpha+')';
-        ctx.fillStyle = 'rgba(0,0,0,'+alpha+')';
+        ctx.strokeStyle = opts.strokeStyle || this.strokeStyle || 'rgba(0,0,0,'+alpha+')';
+        ctx.fillStyle = opts.fillStyle || this.fillStyle || 'rgba(0,0,0,'+alpha+')';
         for (var j=0; j<depth; j++) {
             ctx.translate(Math.cos(this.angle*Math.PI/180)*offset, Math.sin(this.angle*Math.PI/180)*offset);
             ctx.beginPath();
