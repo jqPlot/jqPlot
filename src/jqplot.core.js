@@ -1544,6 +1544,9 @@
             if (this.options.seriesColors) {
                 this.seriesColors = this.options.seriesColors;
             }
+            if (this.options.negativeSeriesColors) {
+                this.negativeSeriesColors = this.options.negativeSeriesColors;
+            }
             var cg = new this.colorGenerator(this.seriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
