@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2009 Chris Leonello
+ * Copyright (c) 2009 - 2010 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
@@ -148,6 +148,8 @@
     
     // called within scope of series
     $.jqplot.Highlighter.parseOptions = function (defaults, options) {
+        // Add a showHighlight option to the series 
+        // and set it to true by default.
         this.showHighlight = true;
     };
     
