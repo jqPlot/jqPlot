@@ -1029,8 +1029,6 @@
         this._elem.addClass(klass);
         if ($.browser.msie) {
             window.G_vmlCanvasManager.init_(document);
-        }
-        if ($.browser.msie) {
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
         return this._elem;
