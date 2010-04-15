@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Simple Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.1.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.blockRenderer.js"></script>
+  <!-- END: load jqplot -->
+
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+
+   s1 = [[1.2, 120, 'Yellow Mello'], [2.3, 140, 'Fanta'], [4, 90, 'Vernors and Barqs', {background:'#ddbb33'}]];
+   s2 = [[2, 44, 'Pepsi'], [4, 170, 'Coke'], [6, 66, 'Arizona Iced Tea']];
+   s3 = [[2.4, 59, 'Red Bull', {background:'rgba(250, 60, 60, 0.4)'}], [4.8, 50, 'Avian'], [7, 90, 'Shasta']];
+
+    plot1 = $.jqplot('chart1',[s1, s2, s3],{
+        seriesDefaults:{
+            renderer:$.jqplot.BlockRenderer
+        }, 
+        series: [
+           {rendererOptions: {
+               css:{background:'#A1D0F2'}
+           }},
+           {rendererOptions: {
+               css:{background:'#A1EED6'}
+           }},
+           {rendererOptions: {
+               css:{background:'#D3E4A0'}
+           }}
+        ],
+        axes: {
+            xaxis: {
+                min:0,
+                max: 8
+            },
+            yaxis: {
+                min:0,
+                max: 200
+            }
+        }
+    });
+   
+ });
+ 
+ function move(dir, val) {
+     val = parseFloat(val);
+     var sidx = parseInt($('#seriesId').val());
+     var pidx = parseInt($('#pointId').val());
+     var x = plot1.series[sidx].data[pidx][0];
+     var y = plot1.series[sidx].data[pidx][1];
+     (dir == 'x') ? x += val : y += val; 
+     plot1.series[sidx].moveBlock(pidx, x, y);
+ }
+ 
+</script>
+  </head>
+  <body>
+<?php include "nav.inc"; ?>
+    <div id="chart1" class="plot" style="width:500px;height:300px;margin-bottom:30px;"></div>
+
+    Series: <select id="seriesId">
+        <option value="0" selected>First</option>
+        <option value="1">Second</option>
+        <option value="2">Third</option>
+    </select>
+    Point: <select id="pointId">
+        <option value="0" selected>first</option>
+        <option value="1">second</option>
+        <option value="2">third</option>
+    </select>
+    X: <button id="mxval" type="button" value="-0.5" onclick="move('x', -0.5);">-0.5</button> <button id="pxval" type="button" value="-0.5" onclick="move('x', 0.5);">0.5</button>
+    Y: <button id="myval" type="button" name="myval" value="-10" onclick="move('y', -10);">-10</button> <button id="pyval" type="button" name="pyval" value="10" onclick="move('y', 10);">10</button>
+  </body>
+</html>
