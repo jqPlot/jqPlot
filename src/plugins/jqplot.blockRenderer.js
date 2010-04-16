@@ -18,7 +18,22 @@
 (function($) {
     /**
      * Class: $.jqplot.BlockRenderer
-     * Plugin renderer to draw a x-y block chart.
+     * Plugin renderer to draw a x-y block chart.  A Block chart has data points displayed as
+     * colored squares with a text label inside.  Data must be supplied in the form:
+     * 
+     * > [[x1, y1, "label 1", {css}], [x2, y2, "label 2", {css}], ...]
+     * 
+     * The label and css object are optional.  If the label is ommitted, the
+     * box will collapse unless a css height and/or width is specified.
+     * 
+     * The css object is an object specifying css properties 
+     * such as:
+     * 
+     * > {background:'#4f98a5', border:'3px solid gray', padding:'1px'}
+     * 
+     * Note that css properties specified with the data point override defaults
+     * specified with the series.
+     * 
      */
     $.jqplot.BlockRenderer = function(){
         $.jqplot.LineRenderer.call(this);
@@ -35,14 +50,7 @@
         // default css styles that will be applied to all data blocks.
         // these values will be overridden by css styles supplied with the
         // individulal data points.
-        this.css = {padding:'2px', background:'#ddd', border:'1px solid #999', textAlign:'center'};
-        // prop: clss
-        // css class name applied to all data blocks in the series.
-        this.clss = 'jqplot-series-block';
-        // prop varyBlockColors
-        // true to color each data block in this series differently, according
-        // to the "seriesColors" array of this series.
-        this.varyBlockColors = false;
+        this.css = {padding:'2px', border:'1px solid #999', textAlign:'center'};
         // prop: escapeHtml
         // true to escape html in the box label.
         this.escapeHtml = false;
@@ -55,6 +63,15 @@
         this.canvas._plotDimensions = this._plotDimensions;
         this.shadowCanvas._plotDimensions = this._plotDimensions;
         
+        // group: Methods 
+        //
+        // Method: moveBlock
+        // Moves an individual block.  More efficient than redrawing
+        // the whole series by calling plot.drawSeries().
+        // Parameters:
+        // idx - the 0 based index of the block or point in this series.
+        // x - the x coordinate in data units (value on x axis) to move the block to.
+        // y - the y coordinate in data units (value on the y axis) to move the block to.
         this.moveBlock = function (idx, x, y) {
             // update plotData, stackData, data and gridData
             // x and y are in data coordinates.
@@ -98,6 +115,11 @@
             // set text
             this.escapeHtml ? el.text(t) : el.html(t);
             // style it
+            // remove styles we don't want overridden.
+            delete css.position;
+            delete css.marginRight;
+            delete css.marginLeft;
+            if (!css.background && !css.backgroundColor && !css.backgroundImage) css.background = colorGenerator.next();
             el.css(css);
             w = el.outerWidth();
             h = el.outerHeight();
