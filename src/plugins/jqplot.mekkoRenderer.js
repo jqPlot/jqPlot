@@ -16,7 +16,30 @@
  * 
  */
 (function($) {
-    // Class: $.jqplot.MekkoRenderer
+    /**
+     * Class: $.jqplot.MekkoRenderer
+     * Draws a Mekko style chart which shows 3 dimensional data on a 2 dimensional graph.
+     * the <$.jqplot.MekkoAxisRenderer> should be used with mekko charts.  The mekko renderer
+     * overrides the default legend renderer with it's own $.jqplot.MekkoLegendRenderer
+     * which allows more flexibility to specify number of rows and columns in the legend.
+     * 
+     * Data is specified per bar in the chart.  You can specify data as an array of y values, or as 
+     * an array of [label, value] pairs.  Note that labels are used only on the first series.  
+     * Labels on subsequent series are ignored:
+     * 
+     * > bar1 = [['shirts', 8],['hats', 14],['shoes', 6],['gloves', 16],['dolls', 12]];
+     * > bar2 = [15,6,9,13,6];
+     * > bar3 = [['grumpy',4],['sneezy',2],['happy',7],['sleepy',9],['doc',7]];
+     * 
+     * If you want to place labels for each bar under the axis, you use the barLabels option on 
+     * the axes.  The bar labels can be styled with the ".jqplot-mekko-barLabel" css class.
+     * 
+     * > barLabels = ['Mickey Mouse', 'Donald Duck', 'Goofy'];
+     * > axes:{xaxis:{barLabels:barLabels}}
+     * 
+     */
+    
+    
     $.jqplot.MekkoRenderer = function(){
         this.shapeRenderer = new $.jqplot.ShapeRenderer();
     };
@@ -118,8 +141,13 @@
         // This is a no-op, no shadows on mekko charts.
     };
     
-    
-    
+    /**
+     * Class: $.jqplot.MekkoLegendRenderer
+     * Legend renderer used by mekko charts with options for 
+     * controlling number or rows and columns as well as placement
+     * outside of plot area.
+     * 
+     */
     $.jqplot.MekkoLegendRenderer = function(){
         //
     };

@@ -17,6 +17,7 @@
  */
 (function($) {
     // class $.jqplot.EnhancedLegendRenderer
+    // Legend renderer which can specify the number of rows and/or columns in the legend.
     $.jqplot.EnhancedLegendRenderer = function(){
         //
     };
