@@ -68,7 +68,7 @@
         // Method: moveBlock
         // Moves an individual block.  More efficient than redrawing
         // the whole series by calling plot.drawSeries().
-        // Parameters:
+        // Properties:
         // idx - the 0 based index of the block or point in this series.
         // x - the x coordinate in data units (value on x axis) to move the block to.
         // y - the y coordinate in data units (value on the y axis) to move the block to.
