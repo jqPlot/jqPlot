@@ -101,6 +101,12 @@
         // boundary in order to be drawn.  Negative values will allow overlap
         // with the grid boundaries.
         this.edgeTolerance = 0;
+        // prop: formatter
+        // A class of a formatter for the tick text.  sprintf by default.
+        this.formatter = $.jqplot.DefaultTickFormatter;
+        // prop: formatString
+        // string passed to the formatter.
+        this.formatString = '';
         // prop: hideZeros
         // true to not show a label for a value which is 0.
         this.hideZeros = false;
@@ -220,46 +226,12 @@
     $.jqplot.PointLabels.draw = function (sctx, options) {
         var p = this.plugins.pointLabels;
         if (p.show) {
-            // var xoffset, yoffset;
-            //         
-            // switch (p.location) {
-            //     case 'nw':
-            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-            //         break;
-            //     case 'n':
-            //         xoffset = function(elem) { return -elem.outerWidth(true)/2; };
-            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-            //         break;
-            //     case 'ne':
-            //         xoffset = function(elem) { return p.xpadding; };
-            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-            //         break;
-            //     case 'e':
-            //         xoffset = function(elem) { return p.xpadding; };
-            //         yoffset = function(elem) { return -elem.outerHeight(true)/2; };
-            //         break;
-            //     case 'se':
-            //         xoffset = function(elem) { return p.xpadding; };
-            //         yoffset = function(elem) { return p.ypadding; };
-            //         break;
-            //     case 's':
-            //         xoffset = function(elem) { return -elem.outerWidth(true)/2; };
-            //         yoffset = function(elem) { return p.ypadding; };
-            //         break;
-            //     case 'sw':
-            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-            //         yoffset = function(elem) { return p.ypadding; };
-            //         break;
-            //     case 'w':
-            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-            //         yoffset = function(elem) { return -elem.outerHeight(true)/2; };
-            //         break;
-            //     default: // same as 'nw'
-            //         xoffset = function(elem) { return -elem.outerWidth(true) - p.xpadding; };
-            //         yoffset = function(elem) { return -elem.outerHeight(true) - p.ypadding; };
-            //         break;
-            // }
+        
+            if (!p.formatString) {
+                var ax = '_'+this._stackAxis+'axis';
+                p.formatString = this[ax]._ticks[0].formatString;
+                p.formatter = this[ax]._ticks[0].formatter;
+            }
         
             for (var i=0; i<p.labels.length; i++) {
                 var pd = this._plotData;
@@ -270,6 +242,8 @@
                 if (p.hideZeros && parseInt(p.labels[i], 10) == 0) {
                     label = '';
                 }
+                
+                label = p.formatter(p.formatString, label);
                 
                 var elem = $('<div class="jqplot-point-label" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);

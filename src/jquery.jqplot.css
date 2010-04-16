@@ -154,6 +154,7 @@ table.jqplot-cursor-tooltip {
 
 .jqplot-point-label {
     font-size: 0.75em;
+    z-index: 2;
 }
       
 td.jqplot-cursor-legend-swatch {
