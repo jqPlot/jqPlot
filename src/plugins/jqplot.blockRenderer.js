@@ -72,7 +72,10 @@
         // idx - the 0 based index of the block or point in this series.
         // x - the x coordinate in data units (value on x axis) to move the block to.
         // y - the y coordinate in data units (value on the y axis) to move the block to.
-        this.moveBlock = function (idx, x, y) {
+        // duration - optional parameter to create an animated movement.  Can be a
+        // number (higher is slower animation) or 'fast', 'normal' or 'slow'.  If not
+        // provided, the element is moved without any animation.
+        this.moveBlock = function (idx, x, y, duration) {
             // update plotData, stackData, data and gridData
             // x and y are in data coordinates.
             var el = this.canvas._elem.children(':eq('+idx+')');
@@ -88,7 +91,8 @@
             var h = el.outerHeight();
             var left = this.gridData[idx][0] - w/2 + 'px';
             var top = this.gridData[idx][1] - h/2 + 'px';
-            el.css({left:left, top:top});
+            if (duration) el.animate({left:left, top:top}, 'fast');
+            else el.css({left:left, top:top});
             el = null;
         };
     };

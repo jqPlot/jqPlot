@@ -16,6 +16,7 @@
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.blockRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
   <!-- END: load jqplot -->
 
 
@@ -30,6 +31,10 @@ $(document).ready(function(){
         seriesDefaults:{
             renderer:$.jqplot.BlockRenderer
         }, 
+       legend:{
+           renderer: $.jqplot.EnhancedLegendRenderer,
+           show:true
+		},
         series: [
            {},
            {rendererOptions: {
@@ -60,7 +65,7 @@ $(document).ready(function(){
      var x = plot1.series[sidx].data[pidx][0];
      var y = plot1.series[sidx].data[pidx][1];
      (dir == 'x') ? x += val : y += val; 
-     plot1.series[sidx].moveBlock(pidx, x, y);
+     plot1.series[sidx].moveBlock(pidx, x, y, 250);
  }
  
 </script>
@@ -82,7 +87,7 @@ $(document).ready(function(){
         <option value="4">fifth</option>
         <option value="5">six</option>
     </select>
-    X: <button id="mxval" type="button" value="-0.5" onclick="move('x', -0.5);">-0.5</button> <button id="pxval" type="button" value="-0.5" onclick="move('x', 0.5);">0.5</button>
-    Y: <button id="myval" type="button" name="myval" value="-10" onclick="move('y', -10);">-10</button> <button id="pyval" type="button" name="pyval" value="10" onclick="move('y', 10);">10</button>
+    X: <button id="mxval" type="button" value="-0.5" onclick="move('x', -1);">-1</button> <button id="pxval" type="button" value="-0.5" onclick="move('x', 0.5);">0.5</button>
+    Y: <button id="myval" type="button" name="myval" value="-10" onclick="move('y', -20);">-30</button> <button id="pyval" type="button" name="pyval" value="10" onclick="move('y', 10);">15</button>
   </body>
 </html>

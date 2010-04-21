@@ -903,6 +903,15 @@
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         
+    };; 
+    
+    // toggles series display on plot, e.g. show/hide series
+    Series.prototype.toggleDisplay = function(ev) {
+        if (ev.data.series) var s = ev.data.series;
+        else var s = this;
+        if (ev.data.speed) var speed = ev.data.speed;
+        else var speed = 'normal';
+        (s.canvas._elem.is(':hidden')) ? s.canvas._elem.fadeIn(speed) : s.canvas._elem.fadeOut(speed);
     };
     
 
@@ -1816,7 +1825,8 @@
             
                 // draw legend before series if the series needs to know the legend dimensions.
                 if (this.legend.preDraw) {  
-                    this.target.append(this.legend.draw());
+                    // this.target.append(this.legend.draw());
+                    this.eventCanvas._elem.before(this.legend.draw());
                     this.legend.pack(this._gridPadding);
                     if (this.legend._elem) {
                         this.drawSeries({legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});

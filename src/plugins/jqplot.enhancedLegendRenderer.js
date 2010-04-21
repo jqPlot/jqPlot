@@ -22,6 +22,7 @@
         //
     };
     
+    // called with scope of legend.
     $.jqplot.EnhancedLegendRenderer.prototype.init = function(options) {
         // prop: numberRows
         // Maximum number of rows in the legend.  0 or null for unlimited.
@@ -29,7 +30,12 @@
         // prop: numberColumns
         // Maximum number of columns in the legend.  0 or null for unlimited.
         this.numberColumns = null;
+        // prop: seriesToggle
+        // true or a fadein/fadeout speed to enable show/hide of series on click of legend item.
+        this.seriesToggle = true;
         $.extend(true, this, options);
+        
+        if (this.seriesToggle) $.jqplot.postDrawHooks.push(postDraw);
     };
     
     // called with scope of legend
@@ -44,6 +50,7 @@
             ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
+            if (this.seriesToggle) this._elem.css('z-index', '3');
         
             var pad = false, 
                 reverse = false,
@@ -112,6 +119,16 @@
                                 td1.appendTo(tr);
                                 td2.appendTo(tr);
                             }
+                            
+                            if (this.seriesToggle) {
+                                var speed = 'normal';
+                                if (typeof(this.seriesToggle) == 'string' || typeof(this.seriesToggle == 'number')) speed = this.seriesToggle;
+                                td1.bind('click', {series:s, speed:speed}, s.toggleDisplay);
+                                td2.bind('click', {series:s, speed:speed}, s.toggleDisplay);
+                                // td1.bind('click', {series:s}, function(ev) {ev.series.toggleDisplay();});
+                                // td2.bind('click', {series:s}, function(ev) {ev.series.toggleDisplay();});
+                            }
+                            
                             pad = true;
                         }
                     }
@@ -120,6 +137,12 @@
             }
         }
         return this._elem;
+    };
+    
+    // called with scope of plot.
+    postDraw = function () {
+        var e = this.legend._elem.detach();
+        this.eventCanvas._elem.after(e);
     };
     
     $.jqplot.EnhancedLegendRenderer.prototype.pack = function(offsets) {
