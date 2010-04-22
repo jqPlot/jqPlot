@@ -924,10 +924,36 @@
             speed = ev.data.speed;
         }
         if (speed) {
-            (s.canvas._elem.is(':hidden')) ? s.canvas._elem.fadeIn(speed) : s.canvas._elem.fadeOut(speed);
+            if (s.canvas._elem.is(':hidden')) {
+                if (s.shadowCanvas._elem) {
+                    s.shadowCanvas._elem.fadeIn(speed);
+                }
+                s.canvas._elem.fadeIn(speed);
+                s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).fadeIn(speed);
+            }
+            else {
+                if (s.shadowCanvas._elem) {
+                    s.shadowCanvas._elem.fadeOut(speed);
+                }
+                s.canvas._elem.fadeOut(speed);
+                s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).fadeOut(speed);
+            }
         }
         else {
-            (s.canvas._elem.is(':hidden')) ? s.canvas._elem.show() : s.canvas._elem.hide();
+            if (s.canvas._elem.is(':hidden')) {
+                if (s.shadowCanvas._elem) {
+                    s.shadowCanvas._elem.show();
+                }
+                s.canvas._elem.show();
+                s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).show();
+            }
+            else {
+                if (s.shadowCanvas._elem) {
+                    s.shadowCanvas._elem.hide();
+                }
+                s.canvas._elem.hide();
+                s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).hide();
+            }
         }
     };
     

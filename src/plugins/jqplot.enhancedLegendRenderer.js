@@ -171,8 +171,10 @@
     
     // called with scope of plot.
     postDraw = function () {
-        var e = this.legend._elem.detach();
-        this.eventCanvas._elem.after(e);
+        if (this.legend.renderer.constructor == $.jqplot.EnhancedLegendRenderer && this.legend.seriesToggle){
+            var e = this.legend._elem.detach();
+            this.eventCanvas._elem.after(e);
+        }
     };
     
     $.jqplot.EnhancedLegendRenderer.prototype.pack = function(offsets) {

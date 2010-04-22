@@ -245,7 +245,7 @@
                 
                 label = p.formatter(p.formatString, label);
                 
-                var elem = $('<div class="jqplot-point-label" style="position:absolute"></div>');
+                var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+'" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
                 if (p.escapeHTML) {
                     elem.text(label);
