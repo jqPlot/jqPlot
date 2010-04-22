@@ -121,6 +121,9 @@
     
     // called with scope of series
     $.jqplot.BlockRenderer.prototype.draw = function (ctx, gd, options) {
+        if (this.plugins.pointLabels) {
+            this.plugins.pointLabels.show = false;
+        }
         var i, el, d, gd, t, css, w, h, left, top;
         var opts = (options != undefined) ? options : {};
         var colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
