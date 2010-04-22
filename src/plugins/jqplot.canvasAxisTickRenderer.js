@@ -119,7 +119,7 @@
             
             function support_canvas_text() {
                 return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-            };
+            }
             
             if (support_canvas_text()) {
                 this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);

@@ -28,20 +28,26 @@
         
     $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad, reverse) {
         var rs = (pad) ? this.rowSpacing : '0';
-        if (reverse)
+        if (reverse){
             var tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
-        else
+        }
+        else{
             var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
-        $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
+        }
+        if (this.showSwatches) {
+            $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
             '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
             '</div></td>').appendTo(tr);
-        var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
-        elem.appendTo(tr);
-        if (this.escapeHtml) {
-            elem.text(label);
         }
-        else {
-            elem.html(label);
+        if (this.showLabels) {
+            var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+            elem.appendTo(tr);
+            if (this.escapeHtml) {
+                elem.text(label);
+            }
+            else {
+                elem.html(label);
+            }
         }
     };
     
@@ -63,16 +69,19 @@
                 reverse = false;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
-                if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer)
+                if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer){
                     reverse = true;
+                }
                 if (s.show && s.showLabel) {
                     var lt = this.labels[i] || s.label.toString();
                     if (lt) {
                         var color = s.color;
-                        if (reverse && i < series.length - 1)
+                        if (reverse && i < series.length - 1){
                             pad = true;
-                        else if (reverse && i == series.length - 1)
+                        }
+                        else if (reverse && i == series.length - 1){
                             pad = false;
+                        }
                         this.renderer.addrow.call(this, lt, color, pad, reverse);
                         pad = true;
                     }

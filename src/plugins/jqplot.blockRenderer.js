@@ -57,7 +57,22 @@
         // prop: insertBreaks
         // true to turn spaces in data block label into html breaks <br />.
         this.insertBreaks = true;
+        // prop: varyBlockColors
+        // true to vary the color of each block in this series according to
+        // the seriesColors array.  False to set each block to the color
+        // specified on this series.  This has no effect if a css background color
+        // option is specified in the renderer css options.
+        this.varyBlockColors = false;
         $.extend(true, this, options);
+        if (this.css.backgroundColor) {
+            this.color = this.css.backgroundColor;
+        }
+        else if (this.css.background) {
+            this.color = this.css.background;
+        }
+        else if (!this.varyBlockColors) {
+            this.css.background = this.color;
+        }
         this.canvas = new $.jqplot.BlockCanvas();
         this.shadowCanvas =  new $.jqplot.BlockCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
@@ -91,8 +106,15 @@
             var h = el.outerHeight();
             var left = this.gridData[idx][0] - w/2 + 'px';
             var top = this.gridData[idx][1] - h/2 + 'px';
-            if (duration) el.animate({left:left, top:top}, 'fast');
-            else el.css({left:left, top:top});
+            if (duration) {
+                if (parseInt(duration, 10)) {
+                    duration = parseInt(duration, 10);
+                }
+                el.animate({left:left, top:top}, duration);
+            }
+            else {
+                el.css({left:left, top:top});
+            }
             el = null;
         };
     };
@@ -108,10 +130,18 @@
             gd = this.gridData[i];
             t = '';
             css = {};
-            if (typeof d[2] == 'string') t = d[2];
-            else if (typeof d[2] == 'object') css = d[2];
-            if (typeof d[3] ==  'object') css = d[3];
-            if (this.insertBreaks) t = t.replace(/ /g, '<br />');
+            if (typeof d[2] == 'string') {
+                t = d[2];
+            }
+            else if (typeof d[2] == 'object') {
+                css = d[2];
+            }
+            if (typeof d[3] ==  'object') {
+                css = d[3];
+            }
+            if (this.insertBreaks){ 
+                t = t.replace(/ /g, '<br />');
+            }
             css = $.extend(true, {}, this.css, css);
             // create a div
             el = $('<div style="position:absolute;margin-left:auto;margin-right:auto;"></div>');
@@ -123,7 +153,9 @@
             delete css.position;
             delete css.marginRight;
             delete css.marginLeft;
-            if (!css.background && !css.backgroundColor && !css.backgroundImage) css.background = colorGenerator.next();
+            if (!css.background && !css.backgroundColor && !css.backgroundImage){ 
+                css.background = colorGenerator.next();
+            }
             el.css(css);
             w = el.outerWidth();
             h = el.outerHeight();
@@ -176,7 +208,7 @@
                 width:0,
                 height:0
             },
-            clearRect:function(){return null}
+            clearRect:function(){return null;}
         };
         return this._ctx;
     };

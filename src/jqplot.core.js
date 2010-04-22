@@ -517,7 +517,7 @@
         this.showLabels = true;
         // prop: showSwatch
         // true to show the color swatches on the legend.
-        this.showSwatch = true;
+        this.showSwatches = true;
         // prop: placement
         // "inside" places the legend inside of the grid, 
         // '"outside" places it ouside of the grid.
@@ -909,15 +909,26 @@
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         
-    };; 
+    };
     
     // toggles series display on plot, e.g. show/hide series
     Series.prototype.toggleDisplay = function(ev) {
-        if (ev.data.series) var s = ev.data.series;
-        else var s = this;
-        if (ev.data.speed) var speed = ev.data.speed;
-        else var speed = 'normal';
-        (s.canvas._elem.is(':hidden')) ? s.canvas._elem.fadeIn(speed) : s.canvas._elem.fadeOut(speed);
+        var s, speed;
+        if (ev.data.series) {
+            s = ev.data.series;
+        }
+        else {
+            s = this;
+        }
+        if (ev.data.speed) {
+            speed = ev.data.speed;
+        }
+        if (speed) {
+            (s.canvas._elem.is(':hidden')) ? s.canvas._elem.fadeIn(speed) : s.canvas._elem.fadeOut(speed);
+        }
+        else {
+            (s.canvas._elem.is(':hidden')) ? s.canvas._elem.show() : s.canvas._elem.hide();
+        }
     };
     
 

@@ -290,10 +290,12 @@
                 var pd = s.data;
                 if (this.numberRows) {
                     nr = this.numberRows;
-                    if (!this.numberColumns)
+                    if (!this.numberColumns){
                         nc = Math.ceil(pd.length/nr);
-                    else
+                    }
+                    else{
                         nc = this.numberColumns;
+                    }
                 }
                 else if (this.numberColumns) {
                     nc = this.numberColumns;
@@ -308,35 +310,44 @@
                 var idx = 0;    
                 
                 for (i=0; i<nr; i++) {
-                    if (reverse)
+                    if (reverse){
                         tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
-                    else
+                    }
+                    else{
                         tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+                    }
                     for (j=0; j<nc; j++) {
                         if (idx < pd.length){
                             lt = this.labels[idx] || pd[idx][0].toString();
                             color = colorGenerator.next();
-                            if (!reverse)
-                                if (i>0)
+                            if (!reverse){
+                                if (i>0){
                                     pad = true;
-                                else
+                                }
+                                else{
                                     pad = false;
-                            else
-                                if (i == nr -1)
+                                }
+                            }
+                            else{
+                                if (i == nr -1){
                                     pad = false;
-                                else
+                                }
+                                else{
                                     pad = true;
-                
+                                }
+                            }
                             rs = (pad) ? this.rowSpacing : '0';
                 
                             td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
                                 '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
                                 '</div></td>');
                             td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
-                            if (this.escapeHtml)
+                            if (this.escapeHtml){
                                 td2.text(lt);
-                            else 
+                            }
+                            else {
                                 td2.html(lt);
+                            }
                             if (reverse) {
                                 td2.prependTo(tr);
                                 td1.prependTo(tr);

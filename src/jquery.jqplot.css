@@ -105,6 +105,10 @@ td.jqplot-table-legend {
     vertical-align:middle;
 }
 
+td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
+    cursor: pointer;
+}
+
 td.jqplot-table-legend > div {
     border:1px solid #cccccc;
     padding:0.2em;
