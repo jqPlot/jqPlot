@@ -512,6 +512,12 @@
         // Array of labels to use.  By default the renderer will look for labels on the series.
         // Labels specified in this array will override labels specified on the series.
         this.labels = [];
+        // prop: showLabels
+        // true to show the label text on the  legend.
+        this.showLabels = true;
+        // prop: showSwatch
+        // true to show the color swatches on the legend.
+        this.showSwatch = true;
         // prop: placement
         // "inside" places the legend inside of the grid, 
         // '"outside" places it ouside of the grid.
