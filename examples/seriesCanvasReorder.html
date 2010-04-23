@@ -11,12 +11,13 @@
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.1.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
   <!-- END: load jquery -->
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
 
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
@@ -43,7 +44,7 @@
 
 
     plot1 = $.jqplot('chart1', [l1, l2, l3], {
-        legend:{show:true},
+        legend:{show:true, renderer:$.jqplot.EnhancedLegendRenderer},
         seriesDefaults: {lineWidth:4},
         series:[{label:'lions'}, {label:'tigers'}, {label:'bears'}],
         seriesColors:['#cc6666', '#66cc66', '#6666cc'],
@@ -56,11 +57,16 @@
   <body>
 <?php include "nav.inc"; ?>
 
-    <p>When lines overlap each other it can be difficult to tell what is going on with the series below the top.  4 methods help to deal with this by enabling series to be brought forward and pushed back.  Click the buttons below to bring individual series to the front.  The "Last Order" button will toggle the current series order with the last displayed series order.  The "Original Original" button will reset the series to display in the order when the plot was created.</p>
+    <p>When lines overlap each other it can be difficult to tell what is going on with the series below the top.  The highlighter plugin, the enhancedLegendRenderer plugin and special methods of plot help with this situation.</p>
     
-    <p>Additionally, the highlighter plugin has been enhanced with a "bringSeriesToFront" option which will bring the series of the highlighted point to the front when a data point is highlighted.  Note, however, when highlighting a point which coincides with multiple series, highlighter will detect this as the top most series and no highlighting effect will be noticed.</p>
+    <p>The highlighter plugin has been enhanced with a "bringSeriesToFront" option which will bring the series of the highlighted point to the front when a data point is highlighted.  Note, however, when highlighting a point which coincides with multiple series, highlighter will detect this as the top most series and no highlighting effect will be noticed.</p>
     
-    <p>Roll over data points in the series below and the appropriate line will be brought to the top:</p>
+    <p>The enhancedLegendRenderer plugin enabled clickable legend labels which will show/hide series.  This functionality can be disabled by setting the "seriesToggle" option on the legend renderer to false.  You can also change the fade duration of the series by setting the seriesToggle option to a millisecond value like 450, or the 'slow' or 'fast' keywords.</p>
+    
+    <p>On IE, series are simple toggled without the fading.  This avoids some erratic behaviour with fading elements on IE.  IE fading can be re-enabled be setting the disableIEFading option to false.</p>
+    
+    <p> The plot object has 4 methods which can bring a series forward or push it backward on the stack.  Click the buttons below to bring individual series to the front.  The "Last Order" button will toggle the current series order with the last displayed series order.  The "Original" button will reset the series to display in the order when the plot was created.</p>
+    
     
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:360px; height:300px;"></div>
     

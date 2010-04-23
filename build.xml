@@ -278,7 +278,7 @@
   <target name="docs" description="Create documentation for distribution.">
     <echo message="Creating documentation" />
       <!-- don't want to process jquery itself -->
-        <move file="${BUILD_DIR}/jquery-1.4.1.js" tofile="${BUILD_DIR}/jquery-1.4.1.js.bak" />
+        <move file="${BUILD_DIR}/jquery-1.4.2.js" tofile="${BUILD_DIR}/jquery-1.4.2.js.bak" />
         <mkdir dir="${DIST_DIR}/docs" />
         <!-- rename files we don't used for docs -->
         <move file="${BUILD_DIR}/jquery.jqplot.js" tofile="${BUILD_DIR}/jquery.jqplot.js.bak"/>
@@ -311,7 +311,7 @@
           <fileset dir="${SRC_DIR}/images" includes="*.png" />
         </copy>
         <!-- put jquery back the way it was -->
-        <move file="${BUILD_DIR}/jquery-1.4.1.js.bak" tofile="${BUILD_DIR}/jquery-1.4.1.js" />
+        <move file="${BUILD_DIR}/jquery-1.4.2.js.bak" tofile="${BUILD_DIR}/jquery-1.4.2.js" />
         <echo message="Documentation Finished" />
   </target>
 
