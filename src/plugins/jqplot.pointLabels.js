@@ -233,7 +233,7 @@
                 p.formatter = this[ax]._ticks[0].formatter;
             }
         
-            for (var i=0; i<p.labels.length; i++) {
+            for (var i=p.labels.length-1; i>=0; i--) {
                 var pd = this._plotData;
                 var xax = this._xaxis;
                 var yax = this._yaxis;
@@ -245,7 +245,7 @@
                 
                 label = p.formatter(p.formatString, label);
                 
-                var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+'" style="position:absolute"></div>');
+                var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
                 if (p.escapeHTML) {
                     elem.text(label);
