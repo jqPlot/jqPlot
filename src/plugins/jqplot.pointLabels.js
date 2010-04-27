@@ -113,6 +113,7 @@
         // prop: hideZeros
         // true to not show a label for a value which is 0.
         this.hideZeros = false;
+        this._elems = [];
         
         $.extend(true, this, options);
     };
@@ -239,6 +240,10 @@
         var p = this.plugins.pointLabels;
         // set labels again in case they have changed.
         p.setLabels.call(this);
+        // remove any previous labels
+        for (var i=0; i<p._elems.length; i++) {
+            p._elems[i].remove();
+        }
         if (p.show) {
             var ax = '_'+this._stackAxis+'axis';
         
@@ -262,6 +267,7 @@
                 
                 var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
+                p._elems.push(elem);
                 if (p.escapeHTML) {
                     elem.text(label);
                 }
@@ -285,7 +291,7 @@
                 var scb = sctx.canvas.height + sct;
                 // if label is outside of allowed area, remove it
                 if (ell - et < scl || elt - et < sct || elr + et > scr || elb + et > scb) {
-                    $(elem).remove();
+                    $(elem).detach();
                 }
             }
         }

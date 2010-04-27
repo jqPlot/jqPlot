@@ -58,6 +58,9 @@
         // prop: waterfall
         // true to enable waterfall plot.
         this.waterfall = false;
+        // prop: groups
+        // group bars into this many groups
+        this.groups = 1;
         // prop: varyBarColor
         // true to color each bar separately.
         this.varyBarColor = false;
@@ -107,6 +110,24 @@
             }
             this.data[this.data.length] = (pos == 1) ? [this.data.length+1, sum] : [sum, this.data.length+1];
             this._data[this._data.length] = (pos == 1) ? [this._data.length+1, sum] : [sum, this._data.length+1];
+        }
+        if (this.rendererOptions.groups > 1) {
+            this.breakOnNull = true;
+            var l = this.data.length;
+            var skip = parseInt(l/this.rendererOptions.groups);
+            var count = 0;
+            for (var i=skip; i<l; i+=skip) {
+                this.data.splice(i+count, 0, [null, null]);
+                count++;
+            }
+            for (i=0; i<this.data.length; i++) {
+                if (this._primaryAxis == '_xaxis') {
+                    this.data[i][0] = i+1;
+                }
+                else {
+                    this.data[i][1] = i+1;
+                }
+            }
         }
     }
     
@@ -206,6 +227,9 @@
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
+                    if (this.data[i][1] == null) {
+                        continue;
+                    }
                     points = [];
                     var base = gridData[i][0] + this._barNudge;
                     var ystart;
@@ -266,6 +290,9 @@
             
             else if (this.barDirection == 'horizontal'){
                 for (var i=0; i<gridData.length; i++) {
+                    if (this.data[i][0] == null) {
+                        continue;
+                    }
                     points = [];
                     var base = gridData[i][1] - this._barNudge;
                     var xstart;
@@ -356,6 +383,9 @@
             
                 if (this.barDirection == 'vertical') {
                     for (var i=0; i<gridData.length; i++) {
+                        if (this.data[i][1] == null) {
+                            continue;
+                        }
                         points = [];
                         var base = gridData[i][0] + this._barNudge;
                         var ystart;
@@ -382,6 +412,9 @@
             
                 else if (this.barDirection == 'horizontal'){
                     for (var i=0; i<gridData.length; i++) {
+                        if (this.data[i][0] == null) {
+                            continue;
+                        }
                         points = [];
                         var base = gridData[i][1] - this._barNudge;
                         var xstart;

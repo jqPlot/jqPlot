@@ -813,13 +813,12 @@
                 }
             }
             else {
-                if (d[i] == null || d[i][0] == null || d[i][1] == null) {
-                    // TODO: figure out what to do with null values
-                    // probably involve keeping nulls in data array
-                    // and then updating renderers to break line
-                    // when it hits null value.
-                    var undefined;
-                }
+                // TODO: figure out what to do with null values
+                // probably involve keeping nulls in data array
+                // and then updating renderers to break line
+                // when it hits null value.
+                // For now, just keep value.
+                temp.push(d[i]);
             }
         }
         this.data = temp;
