@@ -82,6 +82,9 @@
         // prop: labels
         // array of arrays of labels, one array for each series.
         this.labels = [];
+        // actual labels that will get displayed.
+        // needed to preserve user specified labels in labels array.
+        this._labels = [];
         // prop: stackedValue
         // true to display value as stacked in a stacked plot.
         // no effect if labels is specified.
@@ -123,13 +126,19 @@
         var options = $.extend(true, {}, seriesDefaults, opts);
         // add a pointLabels attribute to the series plugins
         this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
-        var p = this.plugins.pointLabels;
-        if (p.labels.length == 0 || p.labelsFromSeries) {
+        this.plugins.pointLabels.setLabels.call(this);
+    };
+    
+    // called with scope of series
+    $.jqplot.PointLabels.prototype.setLabels = function() {   
+        var p = this.plugins.pointLabels; 
+        p._labels = [];
+        if (p.labels.length == 0 || p.labelsFromSeries) {    
             if (p.stackedValue) {
                 if (this._plotData.length && this._plotData[0].length){
                     var idx = p.seriesLabelIndex || this._plotData[0].length -1;
                     for (var i=0; i<this._plotData.length; i++) {
-                        p.labels.push(this._plotData[i][idx]);
+                        p._labels.push(this._plotData[i][idx]);
                     }
                 }
             }
@@ -141,10 +150,13 @@
                 if (d.length && d[0].length) {
                     var idx = p.seriesLabelIndex || d[0].length -1;
                     for (var i=0; i<d.length; i++) {
-                        p.labels.push(d[i][idx]);
+                        p._labels.push(d[i][idx]);
                     }
                 }
             }
+        }
+        else if (p.labels.length){
+            p._labels = p.labels;
         }
     };
     
@@ -225,21 +237,24 @@
     // called with scope of series
     $.jqplot.PointLabels.draw = function (sctx, options) {
         var p = this.plugins.pointLabels;
+        // set labels again in case they have changed.
+        p.setLabels.call(this);
         if (p.show) {
+            var ax = '_'+this._stackAxis+'axis';
         
             if (!p.formatString) {
-                var ax = '_'+this._stackAxis+'axis';
                 p.formatString = this[ax]._ticks[0].formatString;
                 p.formatter = this[ax]._ticks[0].formatter;
             }
         
-            for (var i=p.labels.length-1; i>=0; i--) {
-                var pd = this._plotData;
-                var xax = this._xaxis;
-                var yax = this._yaxis;
-                var label = p.labels[i];
+            var pd = this._plotData;
+            var xax = this._xaxis;
+            var yax = this._yaxis;
+
+            for (var i=p._labels.length-1; i>=0; i--) {
+                var label = p._labels[i];
                 
-                if (p.hideZeros && parseInt(p.labels[i], 10) == 0) {
+                if (p.hideZeros && parseInt(p._labels[i], 10) == 0) {
                     label = '';
                 }
                 
