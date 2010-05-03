@@ -154,7 +154,9 @@
         debug:1,
         enablePlugins:true,
         defaultHeight:300,
-        defaultWidth:400
+        defaultWidth:400,
+        UTCAdjust:false,
+        timezoneOffset: new Date(new Date().getTimezoneOffset() * 60000)
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;

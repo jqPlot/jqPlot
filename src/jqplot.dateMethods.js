@@ -171,6 +171,8 @@
         strftime: function(formatStr) {
             // default the format string to year-month-day
             var source = formatStr || '%Y-%m-%d', result = '', match;
+            // Account for display of time in local time or as UTC time
+            // var val = ($.jqplot.comfig.convertUTCtoLocaltime) ? this : 
             // replace each format code
             while (source.length > 0) {
                 if (match = source.match(Date.prototype.strftime.formatCodes.matcher)) {
@@ -324,7 +326,7 @@
             if (date instanceof Date) {
                 return date;
             }
-            // if (typeof date == 'number') return new Date(date * 1000);
+            // if (typeof date == 'number') return new Date(date);
             // If the passed value is an integer, interpret it as a javascript timestamp
             if (typeof date == 'number') {
                 return new Date(date);
