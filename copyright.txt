@@ -1,7 +1,8 @@
 /**
  * Copyright (c) 2009 - 2010 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
  * Although not required, the author would appreciate an email letting him 
@@ -13,14 +14,14 @@
  *
  * jqPlot includes date instance methods and printf/sprintf functions by other authors:
  *
- * Date instance methods:
+ * Date instance methods contained in jqplot.dateMethods.js:
  *
  *     author Ken Snyder (ken d snyder at gmail dot com)
  *     date 2008-09-10
  *     version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
  *     license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
  *
- * JavaScript printf/sprintf functions:
+ * JavaScript printf/sprintf functions contained in jqplot.sprintf.js:
  *
  *     version 2007.04.27
  *     author Ash Searle

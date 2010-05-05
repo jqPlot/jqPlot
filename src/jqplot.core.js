@@ -1873,7 +1873,7 @@
                     this.eventCanvas._elem.before(this.legend.draw());
                     this.legend.pack(this._gridPadding);
                     if (this.legend._elem) {
-                        this.drawSeries({legendInfo:{location:this.legend.location, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
+                        this.drawSeries({legendInfo:{location:this.legend.location, placement:this.legend.placement, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
                     }
                     else {
                         this.drawSeries();

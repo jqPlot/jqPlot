@@ -1,37 +1,44 @@
 (function($) {      
     /**
      * JavaScript printf/sprintf functions.
-     *
-     * This code is unrestricted: you are free to use it however you like.
      * 
-     * The functions should work as expected, performing left or right alignment,
-     * truncating strings, outputting numbers with a required precision etc.
+     * This code has been adapted from the publicly available sprintf methods
+     * by Ash Searle. His original header follows:
      *
-     * For complex cases, these functions follow the Perl implementations of
-     * (s)printf, allowing arguments to be passed out-of-order, and to set the
-     * precision or length of the output based on arguments instead of fixed
-     * numbers.
+     *     This code is unrestricted: you are free to use it however you like.
+     *     
+     *     The functions should work as expected, performing left or right alignment,
+     *     truncating strings, outputting numbers with a required precision etc.
      *
-     * See http://perldoc.perl.org/functions/sprintf.html for more information.
+     *     For complex cases, these functions follow the Perl implementations of
+     *     (s)printf, allowing arguments to be passed out-of-order, and to set the
+     *     precision or length of the output based on arguments instead of fixed
+     *     numbers.
      *
-     * Implemented:
-     * - zero and space-padding
-     * - right and left-alignment,
-     * - base X prefix (binary, octal and hex)
-     * - positive number prefix
-     * - (minimum) width
-     * - precision / truncation / maximum width
-     * - out of order arguments
+     *     See http://perldoc.perl.org/functions/sprintf.html for more information.
      *
-     * Not implemented (yet):
-     * - vector flag
-     * - size (bytes, words, long-words etc.)
+     *     Implemented:
+     *     - zero and space-padding
+     *     - right and left-alignment,
+     *     - base X prefix (binary, octal and hex)
+     *     - positive number prefix
+     *     - (minimum) width
+     *     - precision / truncation / maximum width
+     *     - out of order arguments
+     *
+     *     Not implemented (yet):
+     *     - vector flag
+     *     - size (bytes, words, long-words etc.)
+     *     
+     *     Will not implement:
+     *     - %n or %p (no pass-by-reference in JavaScript)
+     *
+     *     @version 2007.04.27
+     *     @author Ash Searle 
      * 
-     * Will not implement:
-     * - %n or %p (no pass-by-reference in JavaScript)
-     *
-     * @version 2007.04.27
-     * @author Ash Searle
+     * You can see the original work and comments on his blog:
+     * http://hexmen.com/blog/2007/03/printf-sprintf/
+     * http://hexmen.com/js/sprintf.js
      */
      
      /**
