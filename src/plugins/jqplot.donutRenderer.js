@@ -22,6 +22,20 @@
      * x values, if present, will be used as slice labels.
      * y values give slice size.
      * 
+     * Properties described here are passed into the $.jqplot function
+     * as options on the series renderer.  For example:
+     * 
+     * > plot2 = $.jqplot('chart2', [s1, s2], {
+     * >     seriesDefaults: {
+     * >         renderer:$.jqplot.DonutRenderer,
+     * >         rendererOptions:{
+     * >              sliceMargin: 2,
+     * >              innerDiameter: 110,
+     * >              startAngle: -90
+     * >          }
+     * >      }
+     * > });
+     * 
      * A donut plot will trigger events on the plot target
      * according to user interaction.  All events return the event object,
      * the series index, the point (slice) index, and the point data for 
