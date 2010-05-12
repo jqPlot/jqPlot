@@ -22,7 +22,8 @@
      * x values, if present, will be used as slice labels.
      * y values give slice size.
      * 
-     * To use this renderer, you need to include the plugin, for example:
+     * To use this renderer, you need to include the 
+     * donut renderer plugin, for example:
      * 
      * > <script type="text/javascript" src="plugins/jqplot.donutRenderer.js"></script>
      * 
