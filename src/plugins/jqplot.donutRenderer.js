@@ -133,7 +133,7 @@
                 for (var j=0; j<3; j++) {
                     // when darkening, lowest color component can be is 60.
                     newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
-                    newrgb[j] = parseInt(newrgb[j]);
+                    newrgb[j] = parseInt(newrgb[j], 10);
                 }
                 this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
             }
@@ -312,7 +312,7 @@
         var r = this._radius = this._diameter/2;
         this._innerRadius = this._radius - this._thickness;
         var sa = this.startAngle / 180 * Math.PI;
-        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy]
+        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
@@ -752,8 +752,12 @@
             }
             if (sa) {
                 theta -= sa;
-                if (theta < 0) theta += 2*Math.PI;
-                else if (theta > 2*Math.PI) theta -= 2*Math.PI;
+                if (theta < 0) {
+                    theta += 2*Math.PI;
+                }
+                else if (theta > 2*Math.PI) {
+                    theta -= 2*Math.PI;
+                }
             }
             
             sm = s.sliceMargin/180*Math.PI;
@@ -779,7 +783,7 @@
         
         this.eventCanvas._elem.before(this.plugins.donutRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-donutRenderer-highlight-canvas', this._plotDimensions));
         var hctx = this.plugins.donutRenderer.highlightCanvas.setContext();
-    };
+    }
     
     $.jqplot.preInitHooks.push(preInit);
     $.jqplot.postParseOptionsHooks.push(postParseOptions);

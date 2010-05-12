@@ -114,7 +114,7 @@
         if (this.rendererOptions.groups > 1) {
             this.breakOnNull = true;
             var l = this.data.length;
-            var skip = parseInt(l/this.rendererOptions.groups);
+            var skip = parseInt(l/this.rendererOptions.groups, 10);
             var count = 0;
             for (var i=skip; i<l; i+=skip) {
                 this.data.splice(i+count, 0, [null, null]);

@@ -116,7 +116,7 @@
             // adjust with blanks if we have groups
             if (this.groups > 1 && !this._grouped) {
                 var l = userTicks.length;
-                var skip = parseInt(l/this.groups);
+                var skip = parseInt(l/this.groups, 10);
                 var count = 0;
                 for (var i=skip; i<l; i+=skip) {
                     userTicks.splice(i+count, 0, ' ');
@@ -228,7 +228,7 @@
             // adjust with blanks if we have groups
             if (this.groups > 1 && !this._grouped) {
                 var l = labels.length;
-                var skip = parseInt(l/this.groups);
+                var skip = parseInt(l/this.groups, 10);
                 var count = 0;
                 for (var i=skip; i<l; i+=skip+1) {
                     labels[i] = ' ';
@@ -517,7 +517,7 @@
                 }
                 
                 // draw the group labels
-                var step = parseInt(this._ticks.length/this.groups);
+                var step = parseInt(this._ticks.length/this.groups, 10);
                 for (i=0; i<this._groupLabels.length; i++) {
                     var mid = 0;
                     var count = 0;
@@ -601,7 +601,7 @@
                 }
                 
                 // draw the group labels, position top here, do left after label position.
-                var step = parseInt(this._ticks.length/this.groups);
+                var step = parseInt(this._ticks.length/this.groups, 10);
                 for (i=0; i<this._groupLabels.length; i++) {
                     var mid = 0;
                     var count = 0;
