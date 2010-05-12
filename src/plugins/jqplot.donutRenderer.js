@@ -19,9 +19,22 @@
     /**
      * Class: $.jqplot.DonutRenderer
      * Plugin renderer to draw a donut chart.
-     * Donut charts will draw only the first series.  Other series are ignored.
      * x values, if present, will be used as slice labels.
      * y values give slice size.
+     * 
+     * A donut plot will trigger events on the plot target
+     * according to user interaction.  All events return the event object,
+     * the series index, the point (slice) index, and the point data for 
+     * the appropriate slice.
+     * 
+     * 'jqplotDataMouseOver' - triggered when user mouseing over a slice.
+     * 'jqplotDataHighlight' - triggered the first time user mouses over a slice,
+     * if highlighting is enabled.
+     * 'jqplotDataUnhighlight' - triggered when a user moves the mouse out of
+     * a highlighted slice.
+     * 'jqplotDataClick' - triggered when the user clicks on a slice.
+     * 'jqplotDataRightClick' - tiggered when the user right clicks on a slice if
+     * the "captureRightClick" option is set to true on the plot.
      */
     $.jqplot.DonutRenderer = function(){
         $.jqplot.LineRenderer.call(this);
@@ -69,6 +82,15 @@
         // number of strokes to apply to the shadow, 
         // each stroke offset shadowOffset from the last.
         this.shadowDepth = 5;
+        // prop: highlightMouseOver
+        // True to highlight slice when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
+        this.highlightMouseOver = true;
+        // prop: highlightMouseDown
+        // True to highlight when a mouse button is pressed over a slice.
+        // This will be disabled if highlightMouseOver is true.
+        this.highlightMouseDown = false;
+        this.highlightColors = [];
         // prop: startAngle
         // Angle to start drawing donut in degrees.  
         // According to orientation of canvas coordinate system:
@@ -78,20 +100,66 @@
         // 180 or - 180 = on the negative x axis.
         this.startAngle = 0;
         this.tickRenderer = $.jqplot.DonutTickRenderer;
+        
+        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+        if (options.highlightMouseDown && options.highlightMouseOver == null) {
+            options.highlightMouseOver = false;
+        }
+        
         $.extend(true, this, options);
         if (this.diameter != null) {
             this.diameter = this.diameter - this.sliceMargin;
         }
         this._diameter = null;
+        this._innerDiameter = null;
+        this._radius = null;
+        this._innerRadius = null;
         this._thickness = null;
         // references to the previous series in the plot to properly calculate diameters
         // and thicknesses of nested rings.
         this._previousSeries = [];
         this._numberSeries = 1;
+        // array of [start,end] angles arrays, one for each slice.  In radians.
+        this._sliceAngles = [];
+        // index of the currenty highlighted point, if any
+        this._highlightedPoint = null;
+        
+        // set highlight colors if none provided
+        if (this.highlightColors.length == 0) {
+            for (var i=0; i<this.seriesColors.length; i++){
+                var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
+                var newrgb = [rgba[0], rgba[1], rgba[2]];
+                var sum = newrgb[0] + newrgb[1] + newrgb[2];
+                for (var j=0; j<3; j++) {
+                    // when darkening, lowest color component can be is 60.
+                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
+                    newrgb[j] = parseInt(newrgb[j]);
+                }
+                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+            }
+        }
+        
+        
     };
     
     $.jqplot.DonutRenderer.prototype.setGridData = function(plot) {
-        // this is a no-op
+        // set gridData property.  This will hold angle in radians of each data point.
+        var stack = [];
+        var td = [];
+        var sa = this.startAngle/180*Math.PI;
+        for (var i=0; i<this.data.length; i++){
+            stack.push(this.data[i][1]);
+            td.push([this.data[i][0]]);
+            if (i>0) {
+                stack[i] += stack[i-1];
+            }
+        }
+        var fact = Math.PI*2/stack[stack.length - 1];
+        
+        for (var i=0; i<stack.length; i++) {
+            td[i][1] = stack[i] * fact;
+        }
+        this.gridData = td;
     };
     
     $.jqplot.DonutRenderer.prototype.makeGridData = function(data, plot) {
@@ -105,7 +173,7 @@
                 stack[i] += stack[i-1];
             }
         }
-        var fact = Math.PI*2/stack[stack.length - 1] // +  sa;
+        var fact = Math.PI*2/stack[stack.length - 1];
         
         for (var i=0; i<stack.length; i++) {
             td[i][1] = stack[i] * fact;
@@ -117,8 +185,9 @@
         var r = this._diameter / 2;
         var ri = r - this._thickness;
         var fill = this.fill;
-        var lineWidth = this.lineWidth;
+        // var lineWidth = this.lineWidth;
         ctx.save();
+        ctx.translate(this._center[0], this._center[1]);
         // ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
         
         if (isShadow) {
@@ -150,7 +219,7 @@
             ctx.beginPath();  
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
-            ctx.lineWidth = lineWidth;
+            // ctx.lineWidth = lineWidth;
             ctx.arc(0, 0, r, ang1, ang2, false);
             ctx.lineTo(ri*Math.cos(ang2), ri*Math.sin(ang2));
             ctx.arc(0,0, ri, ang2, ang1, true);
@@ -169,7 +238,7 @@
             }
         }
         
-        ctx.restore();        
+        ctx.restore();
     };
     
     // called with scope of series
@@ -180,7 +249,7 @@
         var offx = 0;
         var offy = 0;
         var trans = 1;
-        var colorGenerator = new this.colorGenerator(this.seriesColors);
+        // var colorGenerator = new this.colorGenerator(this.seriesColors);
         if (options.legendInfo && options.legendInfo.placement == 'inside') {
             var li = options.legendInfo;
             switch (li.location) {
@@ -240,10 +309,10 @@
             this._thickness = this.thickness || mindim / 2 / (this._numberSeries + 1) * 0.85;
         }
 
-        var r = this._diameter/2;
+        var r = this._radius = this._diameter/2;
+        this._innerRadius = this._radius - this._thickness;
         var sa = this.startAngle / 180 * Math.PI;
-        ctx.save();
-        ctx.translate((cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy);
+        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy]
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
@@ -259,10 +328,10 @@
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
             ang1 += this.sliceMargin/180*Math.PI;
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, colorGenerator.next());
+            this._sliceAngles.push([ang1, gd[i][1]+sa]);
+            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i]);
         }
-        
-        ctx.restore();        
+               
     };
     
     $.jqplot.DonutAxisRenderer = function() {
@@ -556,12 +625,23 @@
         // donut rings can nest.
         for (var i=1; i<this.series.length; i++) {
             for (var j=0; j<i; j++) {
-                this.series[i]._previousSeries.push(this.series[j]);
+                if (this.series[i].renderer.constructor == $.jqplot.DonutRenderer && this.series[j].renderer.constructor == $.jqplot.DonutRenderer) {
+                    this.series[i]._previousSeries.push(this.series[j]);
+                }
             }
         }
         for (i=0; i<this.series.length; i++) {
-            this.series[i]._numberSeries = this.series.length;
+            if (this.series[i].renderer.constructor == $.jqplot.DonutRenderer) {
+                this.series[i]._numberSeries = this.series.length;
+                // don't allow mouseover and mousedown at same time.
+                if (this.series[i].highlightMouseOver) {
+                    this.series[i].highlightMouseDown = false;
+                }
+            }
         }
+        // set the _processGetNeighbor to false, we'll do this in the renderer.
+        this._processGetNeighbor = false;
+        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     // called with scope of plot
@@ -572,9 +652,144 @@
         }
     }
     
+    function highlight (plot, sidx, pidx) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.donutRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.donutRenderer.highlightedSeriesIndex = sidx;
+        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColors[pidx], false);
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.donutRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.donutRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+    }
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        var ins = checkIntersection(gridpos, plot);
+        if (ins) {
+            plot.target.trigger('jqplotDataMouseOver', ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (ins == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        var ins = checkIntersection(gridpos, plot);
+        if (ins && plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+            plot.target.trigger('jqplotDataHighlight', ins);
+            highlight (plot, ins[0], ins[1]);
+        }
+        else if (ins == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+        var idx = plot.plugins.donutRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        var intersection = checkIntersection(gridpos, plot);
+        if (intersection) {
+            plot.target.trigger('jqplotDataClick', intersection);
+        }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        var intersection = checkIntersection(gridpos, plot);
+        var idx = plot.plugins.donutRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+        if (intersection) {
+            plot.target.trigger('jqplotDataRightClick', intersection);
+        }
+    }
+    
+    // function to check if event location is over a slice area
+    function checkIntersection(gridpos, plot) {
+        //figure out if over a slice
+        var series = plot.series;
+        var i, j, s, r, x, y, theta, sm, sa, minang, maxang;
+        for (i=0; i<series.length; i++) {
+            s = series[i];
+            sa = s.startAngle/180*Math.PI;
+            x = gridpos.x - s._center[0];
+            y = gridpos.y - s._center[1];
+            r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+            if (x > 0 && -y >= 0) {
+                theta = 2*Math.PI - Math.atan(-y/x);
+            }
+            else if (x > 0 && -y < 0) {
+                theta = -Math.atan(-y/x);
+            }
+            else if (x < 0) {
+                theta = Math.PI - Math.atan(-y/x);
+            }
+            else if (x == 0 && -y > 0) {
+                theta = 3*Math.PI/2;
+            }
+            else if (x == 0 && -y < 0) {
+                theta = Math.PI/2;
+            }
+            else if (x == 0 && y == 0) {
+                theta = 0;
+            }
+            if (sa) {
+                theta -= sa;
+                if (theta < 0) theta += 2*Math.PI;
+                else if (theta > 2*Math.PI) theta -= 2*Math.PI;
+            }
+            
+            sm = s.sliceMargin/180*Math.PI;
+            if (r < s._radius && r > s._innerRadius) {
+                for (j=0; j<s.gridData.length; j++) {
+                    minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
+                    maxang = s.gridData[j][1];
+                    if (theta > minang && theta < maxang) {
+                        return [s.index, j, s.gridData[j]];
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        this.plugins.donutRenderer = {highlightedSeriesIndex:null};
+        this.plugins.donutRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.donutRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-donutRenderer-highlight-canvas', this._plotDimensions));
+        var hctx = this.plugins.donutRenderer.highlightCanvas.setContext();
+    };
+    
     $.jqplot.preInitHooks.push(preInit);
     $.jqplot.postParseOptionsHooks.push(postParseOptions);
     $.jqplot.postInitHooks.push(postInit);
+    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+    $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+    $.jqplot.postDrawHooks.push(postPlotDraw);
     
     $.jqplot.DonutTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);

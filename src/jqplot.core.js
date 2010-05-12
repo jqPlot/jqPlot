@@ -1209,12 +1209,20 @@
         // After plot has been visibly drawn once, it generally doesn't need redrawn if its
         // container is hidden and shown.
         this._drawCount = 0;
+        // true to run through the getNeighborPoint function.  Some plot types
+        // supply their own neighbor detection (donut, bar, pie), so they don't
+        // want to waste cycles with this routine.
+        this._processGetNeighbor = true;
+        // this.doCustomEventBinding = true;
         // prop: drawIfHidden
         // True to execute the draw method even if the plot target is hidden.
         // Generally, this should be false.  Most plot elements will not be sized/
         // positioned correclty if renderered into a hidden container.  To render into
         // a hidden container, call the replot method when the container is shown.
         this.drawIfHidden = false;
+        // true to intercept right click events and fire a 'jqplotRightClick' event.
+        // this will also block the context menu.
+        this.captureRightClick = false;
         // sum of y values for all series in plot.
         // used in mekko chart.
         this._sumy = 0;
@@ -1600,6 +1608,9 @@
             if (this.options.negativeSeriesColors) {
                 this.negativeSeriesColors = this.options.negativeSeriesColors;
             }
+            if (this.options.captureRightClick) {
+                this.captureRightClick = this.options.captureRightClick;
+            }
             var cg = new this.colorGenerator(this.seriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
@@ -1909,10 +1920,18 @@
             this.eventCanvas._elem.bind('click', {plot:this}, this.onClick);
             this.eventCanvas._elem.bind('dblclick', {plot:this}, this.onDblClick);
             this.eventCanvas._elem.bind('mousedown', {plot:this}, this.onMouseDown);
-            this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
             this.eventCanvas._elem.bind('mousemove', {plot:this}, this.onMouseMove);
             this.eventCanvas._elem.bind('mouseenter', {plot:this}, this.onMouseEnter);
             this.eventCanvas._elem.bind('mouseleave', {plot:this}, this.onMouseLeave);
+            if (this.captureRightClick) {
+                this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onRightClick);
+                this.eventCanvas._elem.get(0).oncontextmenu = function() {
+					return false;
+				};
+            }
+            else {
+                this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
+            }
         };
         
         function getEventPosition(ev) {
@@ -1984,28 +2003,28 @@
         }
         
         this.onClick = function(ev) {
-            // Event passed in is unnormalized and will have data attribute.
-            // Event passed out in normalized and won't have data attribute.
+            // Event passed in is normalized and will have data attribute.
+            // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
+            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
             ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onDblClick = function(ev) {
-            // Event passed in is unnormalized and will have data attribute.
-            // Event passed out in normalized and won't have data attribute.
+            // Event passed in is normalized and will have data attribute.
+            // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
+            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
             ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
+            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            p.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseUp = function(ev) {
@@ -2013,11 +2032,26 @@
             ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
         };
         
+        this.onRightClick = function(ev) {
+            var positions = getEventPosition(ev);
+            var p = ev.data.plot;
+            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            if (p.captureRightClick) {
+                if (ev.which == 3) {
+                    p.eventCanvas._elem.trigger('jqplotRightClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+                }
+                else {
+                    p.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, neighbor, p]);
+                }
+            }
+        };
+        
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
+            var p = ev.data.plot;
+            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            p.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseEnter = function(ev) {
