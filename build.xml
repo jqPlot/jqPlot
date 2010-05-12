@@ -238,10 +238,10 @@
         </copy>
     </target>
     
-  <target name="compress" depends="dist" description="Create the zip, gzip, and bzip compressed archives for downloading">
+  <target name="compress" depends="dist, min, docs" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"
        basedir=""
-       includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/overcast/* ${DIST_DIR}/examples/jquery-ui/css/overcast/images/* ${DIST_DIR}/examples/jquery-ui/js/*"
+       includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/images/* ${DIST_DIR}/examples/jquery-ui/js/* ${DIST_DIR}/docs/*"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.tar.gz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"/>
