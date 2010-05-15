@@ -17,81 +17,82 @@
  */
 (function($) {
     /**
-     * Class: $.jqplot.DonutRenderer
-     * Plugin renderer to draw a donut chart.
-     * x values, if present, will be used as slice labels.
-     * y values give slice size.
+     * Class: $.jqplot.FunnelRenderer
+     * Plugin renderer to draw a funnel chart.
+     * x values, if present, will be used as labels.
+     * y values give area size.
+     * 
+     * Funnel charts will draw a single series
+     * only.
      * 
      * To use this renderer, you need to include the 
-     * donut renderer plugin, for example:
+     * funnel renderer plugin, for example:
      * 
-     * > <script type="text/javascript" src="plugins/jqplot.donutRenderer.js"></script>
+     * > <script type="text/javascript" src="plugins/jqplot.funnelRenderer.js"></script>
      * 
      * Properties described here are passed into the $.jqplot function
      * as options on the series renderer.  For example:
      * 
      * > plot2 = $.jqplot('chart2', [s1, s2], {
      * >     seriesDefaults: {
-     * >         renderer:$.jqplot.DonutRenderer,
+     * >         renderer:$.jqplot.FunnelRenderer,
      * >         rendererOptions:{
-     * >              sliceMargin: 2,
-     * >              innerDiameter: 110,
-     * >              startAngle: -90
+     * >              sectionMargin: 12,
+     * >              widthRatio: 0.3
      * >          }
      * >      }
      * > });
      * 
-     * A donut plot will trigger events on the plot target
-     * according to user interaction.  All events return the event object,
-     * the series index, the point (slice) index, and the point data for 
-     * the appropriate slice.
+     * IMPORTANT
      * 
-     * 'jqplotDataMouseOver' - triggered when user mouseing over a slice.
-     * 'jqplotDataHighlight' - triggered the first time user mouses over a slice,
+     * *The funnel renderer will reorder data in descending order* so the largest value in
+     * the data set is first and displayed on top of the funnel.  Data will then
+     * be displayed in descending order down the funnel.  The area of each funnel
+     * section will correspond to the value of each data point relative to the sum
+     * of all values.  That is section area is proportional to section value divided by 
+     * sum of all section values.
+     * 
+     * If your data is not in descending order when passed into the plot, *it will be
+     * reordered* when stored in the series.data property.  A copy of the unordered
+     * data is kept in the series._unorderedData property.
+     * 
+     * A funnel plot will trigger events on the plot target
+     * according to user interaction.  All events return the event object,
+     * the series index, the point (section) index, and the point data for 
+     * the appropriate section. *Note* the point index will referr to the ordered
+     * data, not the original unordered data.
+     * 
+     * 'jqplotDataMouseOver' - triggered when mousing over a section.
+     * 'jqplotDataHighlight' - triggered the first time user mouses over a section,
      * if highlighting is enabled.
      * 'jqplotDataUnhighlight' - triggered when a user moves the mouse out of
-     * a highlighted slice.
-     * 'jqplotDataClick' - triggered when the user clicks on a slice.
-     * 'jqplotDataRightClick' - tiggered when the user right clicks on a slice if
+     * a highlighted section.
+     * 'jqplotDataClick' - triggered when the user clicks on a section.
+     * 'jqplotDataRightClick' - tiggered when the user right clicks on a section if
      * the "captureRightClick" option is set to true on the plot.
      */
-    $.jqplot.DonutRenderer = function(){
+    $.jqplot.FunnelRenderer = function(){
         $.jqplot.LineRenderer.call(this);
     };
     
-    $.jqplot.DonutRenderer.prototype = new $.jqplot.LineRenderer();
-    $.jqplot.DonutRenderer.prototype.constructor = $.jqplot.DonutRenderer;
+    $.jqplot.FunnelRenderer.prototype = new $.jqplot.LineRenderer();
+    $.jqplot.FunnelRenderer.prototype.constructor = $.jqplot.FunnelRenderer;
     
     // called with scope of a series
-    $.jqplot.DonutRenderer.prototype.init = function(options) {
+    $.jqplot.FunnelRenderer.prototype.init = function(options) {
         // Group: Properties
         //
-        // prop: diameter
-        // Outer diameter of the donut, auto computed by default
-        this.diameter = null;
-        // prop: innerDiameter
-        // Inner diameter of teh donut, auto calculated by default.
-        // If specified will override thickness value.
-        this.innerDiameter = null;
-        // prop: thickness
-        // thickness of the donut, auto computed by default
-        // Overridden by if innerDiameter is specified.
-        this.thickness = null;
         // prop: padding
-        // padding between the donut and plot edges, legend, etc.
-        this.padding = 20;
-        // prop: sliceMargin
-        // angular spacing between donut slices in degrees.
-        this.sliceMargin = 0;
-        // prop: ringMargin
-        // pixel distance between rings, or multiple series in a donut plot.
-        // null will compute ringMargin based on sliceMargin.
-        this.ringMargin = null;
+        // padding between the funnel and plot edges, legend, etc.
+        this.padding = {top: 20, right: 20, bottom: 20, left: 20};
+        // prop: sectionMargin
+        // spacing between funnel sections in pixels.
+        this.sectionMargin = 6;
         // prop: fill
-        // true or false, wether to fil the slices.
+        // true or false, wether to fill the areas.
         this.fill = true;
         // prop: shadowOffset
-        // offset of the shadow from the slice and offset of 
+        // offset of the shadow from the area and offset of 
         // each succesive stroke of the shadow from the last.
         this.shadowOffset = 2;
         // prop: shadowAlpha
@@ -102,25 +103,22 @@
         // each stroke offset shadowOffset from the last.
         this.shadowDepth = 5;
         // prop: highlightMouseOver
-        // True to highlight slice when moused over.
-        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
+        // True to highlight area when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on a area.
         this.highlightMouseOver = true;
         // prop: highlightMouseDown
-        // True to highlight when a mouse button is pressed over a slice.
+        // True to highlight when a mouse button is pressed over a area.
         // This will be disabled if highlightMouseOver is true.
         this.highlightMouseDown = false;
         // prop: highlightColors
-        // an array of colors to use when highlighting a slice.
+        // array of colors to use when highlighting an area.
         this.highlightColors = [];
-        // prop: startAngle
-        // Angle to start drawing donut in degrees.  
-        // According to orientation of canvas coordinate system:
-        // 0 = on the positive x axis
-        // -90 = on the positive y axis.
-        // 90 = on the negaive y axis.
-        // 180 or - 180 = on the negative x axis.
-        this.startAngle = 0;
-        this.tickRenderer = $.jqplot.DonutTickRenderer;
+        // prop: widthRatio
+        // The ratio of the width of the top of the funnel to the bottom.
+        // a ratio of 0 will make an upside down pyramid. 
+        this.widthRatio = 0.2;
+        
+        this.tickRenderer = $.jqplot.FunnelTickRenderer;
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -128,22 +126,24 @@
         }
         
         $.extend(true, this, options);
-        if (this.diameter != null) {
-            this.diameter = this.diameter - this.sliceMargin;
-        }
-        this._diameter = null;
-        this._innerDiameter = null;
-        this._radius = null;
-        this._innerRadius = null;
-        this._thickness = null;
-        // references to the previous series in the plot to properly calculate diameters
-        // and thicknesses of nested rings.
-        this._previousSeries = [];
-        this._numberSeries = 1;
-        // array of [start,end] angles arrays, one for each slice.  In radians.
-        this._sliceAngles = [];
+        
         // index of the currenty highlighted point, if any
         this._highlightedPoint = null;
+        
+        // lengths of bases, or horizontal sides of areas of trapezoid.
+        this._bases = [];
+        // total area
+        this._atot;
+        // areas of segments.
+        this._areas = [];
+        // vertical lengths of segments.
+        this._lengths = [];
+        // angle of the funnel to vertical.
+        this._angle;
+        
+        // sort data
+        this._unorderedData = $.extend(true, [], this.data);
+        this.data.sort( function (a, b) { return b[1] - a[1]; } );
         
         // set highlight colors if none provided
         if (this.highlightColors.length == 0) {
@@ -153,7 +153,7 @@
                 var sum = newrgb[0] + newrgb[1] + newrgb[2];
                 for (var j=0; j<3; j++) {
                     // when darkening, lowest color component can be is 60.
-                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
                     newrgb[j] = parseInt(newrgb[j], 10);
                 }
                 this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
@@ -163,53 +163,50 @@
         
     };
     
-    $.jqplot.DonutRenderer.prototype.setGridData = function(plot) {
+    $.jqplot.FunnelRenderer.prototype.setGridData = function(plot) {
         // set gridData property.  This will hold angle in radians of each data point.
-        var stack = [];
+        var sum = 0;
         var td = [];
-        var sa = this.startAngle/180*Math.PI;
         for (var i=0; i<this.data.length; i++){
-            stack.push(this.data[i][1]);
-            td.push([this.data[i][0]]);
-            if (i>0) {
-                stack[i] += stack[i-1];
-            }
+            sum += this.data[i][1];
+            td.push([this.data[i][0], this.data[i][1]]);
         }
-        var fact = Math.PI*2/stack[stack.length - 1];
         
-        for (var i=0; i<stack.length; i++) {
-            td[i][1] = stack[i] * fact;
+        // normalize y values, so areas are proportional.
+        for (var i=0; i<td.length; i++) {
+            td[i][1] = td[i][1]/sum;
         }
+        
+        this._bases = new Array(td.length + 1);
+        this._lengths = new Array(td.length);
+        
         this.gridData = td;
     };
     
-    $.jqplot.DonutRenderer.prototype.makeGridData = function(data, plot) {
-        var stack = [];
+    $.jqplot.FunnelRenderer.prototype.makeGridData = function(data, plot) {
+        // set gridData property.  This will hold angle in radians of each data point.
+        var sum = 0;
         var td = [];
-        var sa = this.startAngle/180*Math.PI;
-        for (var i=0; i<data.length; i++){
-            stack.push(data[i][1]);
-            td.push([data[i][0]]);
-            if (i>0) {
-                stack[i] += stack[i-1];
-            }
+        for (var i=0; i<this.data.length; i++){
+            sum += this.data[i][1];
+            td.push([this.data[i][0], this.data[i][1]]);
         }
-        var fact = Math.PI*2/stack[stack.length - 1];
         
-        for (var i=0; i<stack.length; i++) {
-            td[i][1] = stack[i] * fact;
+        // normalize y values, so areas are proportional.
+        for (var i=0; i<td.length; i++) {
+            td[i][1] = td[i][1]/sum;
         }
+        
+        this._bases = new Array(td.length + 1);
+        this._lengths = new Array(td.length);
+        
         return td;
     };
     
-    $.jqplot.DonutRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
-        var r = this._diameter / 2;
-        var ri = r - this._thickness;
+    $.jqplot.FunnelRenderer.prototype.drawSection = function (ctx, vertices, color, isShadow) {
         var fill = this.fill;
         // var lineWidth = this.lineWidth;
         ctx.save();
-        ctx.translate(this._center[0], this._center[1]);
-        // ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
         
         if (isShadow) {
             for (var i=0; i<this.shadowDepth; i++) {
@@ -224,26 +221,14 @@
         }
         
         function doDraw () {
-            // Fix for IE and Chrome that can't seem to draw circles correctly.
-            // ang2 should always be <= 2 pi since that is the way the data is converted.
-             if (ang2 > 6.282 + this.startAngle) {
-                ang2 = 6.282 + this.startAngle;
-                if (ang1 > ang2) {
-                    ang1 = 6.281 + this.startAngle;
-                }
-            }
-            // Fix for IE, where it can't seem to handle 0 degree angles.  Also avoids
-            // ugly line on unfilled donuts.
-            if (ang1 == ang2) {
-                return;
-            }
             ctx.beginPath();  
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
             // ctx.lineWidth = lineWidth;
-            ctx.arc(0, 0, r, ang1, ang2, false);
-            ctx.lineTo(ri*Math.cos(ang2), ri*Math.sin(ang2));
-            ctx.arc(0,0, ri, ang2, ang1, true);
+            ctx.moveTo(vertices[0][0], vertices[0][1]);
+            for (var i=1; i<4; i++) {
+                ctx.lineTo(vertices[i][0], vertices[i][1]);
+            }
             ctx.closePath();
             if (fill) {
                 ctx.fill();
@@ -263,7 +248,7 @@
     };
     
     // called with scope of series
-    $.jqplot.DonutRenderer.prototype.draw = function (ctx, gd, options) {
+    $.jqplot.FunnelRenderer.prototype.draw = function (ctx, gd, options) {
         var i;
         var opts = (options != undefined) ? options : {};
         // offset and direction of offset due to legend placement
@@ -307,68 +292,136 @@
             }
         }
         
+        var loff = (trans==1) ? this.padding.left + offx : this.padding.left;
+        var toff = (trans==1) ? this.padding.top + offy : this.padding.top;
+        var roff = (trans==-1) ? this.padding.right + offx : this.padding.right;
+        var boff = (trans==-1) ? this.padding.bottom + offy : this.padding.bottom;
+        
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var cw = ctx.canvas.width;
         var ch = ctx.canvas.height;
-        var w = cw - offx - 2 * this.padding;
-        var h = ch - offy - 2 * this.padding;
-        var mindim = Math.min(w,h);
-        var d = mindim;
-        var ringmargin =  (this.ringMargin == null) ? this.sliceMargin * 2.0 : this.ringMargin;
-        
-        for (var i=0; i<this._previousSeries.length; i++) {
-            d -= 2.0 * this._previousSeries[i]._thickness + 2.0 * ringmargin;
-        }
-        this._diameter = this.diameter || d;
-        if (this.innerDiameter != null) {
-            var od = (this._numberSeries > 1 && this.index > 0) ? this._previousSeries[0]._diameter : this._diameter;
-            this._thickness = this.thickness || (od - this.innerDiameter - 2.0*ringmargin*this._numberSeries) / this._numberSeries/2.0;
-        }
-        else {
-            this._thickness = this.thickness || mindim / 2 / (this._numberSeries + 1) * 0.85;
+        this._bases[0] = cw - loff - roff;
+        var ltot = this._length = ch - toff - boff;
+
+        var hend = this._bases[0]*this.widthRatio;
+        this._atot = ltot/2 * (this._bases[0] + this._bases[0]*this.widthRatio);
+
+        this._angle = Math.atan((this._bases[0] - hend)/2/ltot);
+
+        for (i=0; i<gd.length; i++) {
+            this._areas.push(gd[i][1] * this._atot);
         }
 
-        var r = this._radius = this._diameter/2;
-        this._innerRadius = this._radius - this._thickness;
-        var sa = this.startAngle / 180 * Math.PI;
-        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
+        var guess, err, count, lsum=0;
+        var tolerance = 0.0001;
+
+        for (i=0; i<this._areas.length; i++) {
+            guess = this._areas[i]/this._bases[i];
+            err = 999999;
+            this._lengths[i] = guess;
+            count = 0;
+            while (err > this._lengths[i]*tolerance && count < 100) {
+                this._lengths[i] = this._areas[i]/(this._bases[i] - this._lengths[i] * Math.tan(this._angle));
+                err = Math.abs(this._lengths[i] - guess);
+                this._bases[i+1] = this._bases[i] - (2*this._lengths[i]*Math.tan(this._angle));
+                guess = this._lengths[i];
+                count++;
+            }
+            lsum += this._lengths[i];
+        }
+        
+        // figure out vertices of each section
+        this._vertices = new Array(gd.length);
+        
+        // these are 4 coners of entire trapezoid
+        var p0 = [loff, toff],
+            p1 = [loff+this._bases[0], toff],
+            p2 = [loff + (this._bases[0] - this._bases[this._bases.length-1])/2, toff + this._length],
+            p3 = [p2[0] + this._bases[this._bases.length-1], p2[1]];
+            
+        // equations of right and left sides, returns x, y values given height of section (y value)
+        function findleft (l) {
+            var m = (p0[1] - p2[1])/(p0[0] - p2[0]);
+            var b = p0[1] - m*p0[0];
+            var y = l + p0[1];
+            
+            return [(y - b)/m, y];
+        }
+        
+        function findright (l) {
+            var m = (p1[1] - p3[1])/(p1[0] - p3[0]);
+            var b = p1[1] - m*p1[0];
+            var y = l + p1[1];
+            
+            return [(y - b)/m, y];
+        }
+        
+        var x = offx, y = offy;
+        var h=0, adj=0;
+        
+        for (i=0; i<gd.length; i++) {
+            this._vertices[i] = new Array();
+            var v = this._vertices[i];
+            var sm = this.sectionMargin;
+            if (i == 0) {
+                adj = 0;
+            }
+            if (i == 1) {
+                adj = sm/3;
+            }
+            else if (i > 0 && i < gd.length-1) {
+                adj = sm/2;
+            }
+            else if (i == gd.length -1) {
+                adj = 2*sm/3;
+            }
+            v.push(findleft(h+adj));
+            v.push(findright(h+adj));
+            h += this._lengths[i];
+            if (i == 0) {
+                adj = -2*sm/3;
+            }
+            else if (i > 0 && i < gd.length-1) {
+                adj = -sm/2;
+            }
+            else if (i == gd.length - 1) {
+                adj = 0;
+            }
+            v.push(findright(h+adj));
+            v.push(findleft(h+adj));
+            
+        }
+
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
-                var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
-                // Adjust ang1 and ang2 for sliceMargin
-                ang1 += this.sliceMargin/180*Math.PI;
-                this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
+                this.renderer.drawSection.call (this, ctx, this._vertices[i], shadowColor, true);
             }
             
         }
         for (var i=0; i<gd.length; i++) {
-            var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
-            // Adjust ang1 and ang2 for sliceMargin
-            ang1 += this.sliceMargin/180*Math.PI;
-            this._sliceAngles.push([ang1, gd[i][1]+sa]);
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i]);
+            this.renderer.drawSection.call (this, ctx, this._vertices[i], this.seriesColors[i]);
         }
                
     };
     
-    $.jqplot.DonutAxisRenderer = function() {
+    $.jqplot.FunnelAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
     };
     
-    $.jqplot.DonutAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
-    $.jqplot.DonutAxisRenderer.prototype.constructor = $.jqplot.DonutAxisRenderer;
+    $.jqplot.FunnelAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
+    $.jqplot.FunnelAxisRenderer.prototype.constructor = $.jqplot.FunnelAxisRenderer;
         
     
-    // There are no traditional axes on a donut chart.  We just need to provide
+    // There are no traditional axes on a funnel chart.  We just need to provide
     // dummy objects with properties so the plot will render.
     // called with scope of axis object.
-    $.jqplot.DonutAxisRenderer.prototype.init = function(options){
+    $.jqplot.FunnelAxisRenderer.prototype.init = function(options){
         //
-        this.tickRenderer = $.jqplot.DonutTickRenderer;
+        this.tickRenderer = $.jqplot.FunnelTickRenderer;
         $.extend(true, this, options);
         // I don't think I'm going to need _dataBounds here.
         // have to go Axis scaling in a way to fit chart onto plot area
@@ -386,17 +439,16 @@
     
     
     
-    
-    $.jqplot.DonutLegendRenderer = function(){
+    /**
+     * Class: $.jqplot.FunnelLegendRenderer
+     * Legend Renderer specific to funnel plots.  Set by default
+     * when the user creates a funnel plot.
+     */
+    $.jqplot.FunnelLegendRenderer = function(){
         //
     };
     
-    /**
-     * Class: $.jqplot.DonutLegendRenderer
-     * Legend Renderer specific to donut plots.  Set by default
-     * when user creates a donut plot.
-     */
-    $.jqplot.DonutLegendRenderer.prototype.init = function(options) {
+    $.jqplot.FunnelLegendRenderer.prototype.init = function(options) {
         // Group: Properties
         //
         // prop: numberRows
@@ -409,7 +461,7 @@
     };
     
     // called with context of legend
-    $.jqplot.DonutLegendRenderer.prototype.draw = function() {
+    $.jqplot.FunnelLegendRenderer.prototype.draw = function() {
         var legend = this;
         if (this.show) {
             var series = this._series;
@@ -420,7 +472,7 @@
             ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
-            // Donut charts legends don't go by number of series, but by number of data points
+            // Funnel charts legends don't go by number of series, but by number of data points
             // in the series.  Refactor things here for that.
             
             var pad = false, 
@@ -509,7 +561,7 @@
         return this._elem;                
     };
     
-    $.jqplot.DonutLegendRenderer.prototype.pack = function(offsets) {
+    $.jqplot.FunnelLegendRenderer.prototype.pack = function(offsets) {
         if (this.show) {
             // fake a grid for positioning
             var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom};        
@@ -626,41 +678,31 @@
         options.axesDefaults = options.axesDefaults || {};
         options.legend = options.legend || {};
         options.seriesDefaults = options.seriesDefaults || {};
-        // only set these if there is a donut series
+        // only set these if there is a funnel series
         var setopts = false;
-        if (options.seriesDefaults.renderer == $.jqplot.DonutRenderer) {
+        if (options.seriesDefaults.renderer == $.jqplot.FunnelRenderer) {
             setopts = true;
         }
         else if (options.series) {
             for (var i=0; i < options.series.length; i++) {
-                if (options.series[i].renderer == $.jqplot.DonutRenderer) {
+                if (options.series[i].renderer == $.jqplot.FunnelRenderer) {
                     setopts = true;
                 }
             }
         }
         
         if (setopts) {
-            options.axesDefaults.renderer = $.jqplot.DonutAxisRenderer;
-            options.legend.renderer = $.jqplot.DonutLegendRenderer;
+            options.axesDefaults.renderer = $.jqplot.FunnelAxisRenderer;
+            options.legend.renderer = $.jqplot.FunnelLegendRenderer;
             options.legend.preDraw = true;
-            // options.seriesDefaults.colorGenerator = this.colorGenerator;
-            // options.seriesDefaults.seriesColors = this.seriesColors;
         }
     }
     
     function postInit(target, data, options) {
         // if multiple series, add a reference to the previous one so that
-        // donut rings can nest.
-        for (var i=1; i<this.series.length; i++) {
-            for (var j=0; j<i; j++) {
-                if (this.series[i].renderer.constructor == $.jqplot.DonutRenderer && this.series[j].renderer.constructor == $.jqplot.DonutRenderer) {
-                    this.series[i]._previousSeries.push(this.series[j]);
-                }
-            }
-        }
+        // funnel rings can nest.
         for (i=0; i<this.series.length; i++) {
-            if (this.series[i].renderer.constructor == $.jqplot.DonutRenderer) {
-                this.series[i]._numberSeries = this.series.length;
+            if (this.series[i].renderer.constructor == $.jqplot.FunnelRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
                     this.series[i].highlightMouseDown = false;
@@ -682,20 +724,20 @@
     
     function highlight (plot, sidx, pidx) {
         var s = plot.series[sidx];
-        var canvas = plot.plugins.donutRenderer.highlightCanvas;
+        var canvas = plot.plugins.funnelRenderer.highlightCanvas;
         canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         s._highlightedPoint = pidx;
-        plot.plugins.donutRenderer.highlightedSeriesIndex = sidx;
-        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColors[pidx], false);
+        plot.plugins.funnelRenderer.highlightedSeriesIndex = sidx;
+        s.renderer.drawSection.call(s, canvas._ctx, s._vertices[pidx], s.highlightColors[pidx], false);
     }
     
     function unhighlight (plot) {
-        var canvas = plot.plugins.donutRenderer.highlightCanvas;
+        var canvas = plot.plugins.funnelRenderer.highlightCanvas;
         canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         for (var i=0; i<plot.series.length; i++) {
             plot.series[i]._highlightedPoint = null;
         }
-        plot.plugins.donutRenderer.highlightedSeriesIndex = null;
+        plot.plugins.funnelRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
     }
     
@@ -703,7 +745,7 @@
         var ins = checkIntersection(gridpos, plot);
         if (ins) {
             plot.target.trigger('jqplotDataMouseOver', ins);
-            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.funnelRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 plot.target.trigger('jqplotDataHighlight', ins);
                 highlight (plot, ins[0], ins[1]);
             }
@@ -715,7 +757,7 @@
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
         var ins = checkIntersection(gridpos, plot);
-        if (ins && plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+        if (ins && plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.funnelRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
             plot.target.trigger('jqplotDataHighlight', ins);
             highlight (plot, ins[0], ins[1]);
         }
@@ -725,7 +767,7 @@
     }
     
     function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
-        var idx = plot.plugins.donutRenderer.highlightedSeriesIndex;
+        var idx = plot.plugins.funnelRenderer.highlightedSeriesIndex;
         if (idx != null && plot.series[idx].highlightMouseDown) {
             unhighlight(plot);
         }
@@ -740,7 +782,7 @@
     
     function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
         var intersection = checkIntersection(gridpos, plot);
-        var idx = plot.plugins.donutRenderer.highlightedSeriesIndex;
+        var idx = plot.plugins.funnelRenderer.highlightedSeriesIndex;
         if (idx != null && plot.series[idx].highlightMouseDown) {
             unhighlight(plot);
         }
@@ -749,56 +791,40 @@
         }
     }
     
-    // function to check if event location is over a slice area
+    // function to check if event location is over a area area
     function checkIntersection(gridpos, plot) {
-        //figure out if over a slice
+        //figure out if over a area
         var series = plot.series;
         var i, j, s, r, x, y, theta, sm, sa, minang, maxang;
-        for (i=0; i<series.length; i++) {
-            s = series[i];
-            sa = s.startAngle/180*Math.PI;
-            x = gridpos.x - s._center[0];
-            y = gridpos.y - s._center[1];
-            r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-            if (x > 0 && -y >= 0) {
-                theta = 2*Math.PI - Math.atan(-y/x);
-            }
-            else if (x > 0 && -y < 0) {
-                theta = -Math.atan(-y/x);
-            }
-            else if (x < 0) {
-                theta = Math.PI - Math.atan(-y/x);
-            }
-            else if (x == 0 && -y > 0) {
-                theta = 3*Math.PI/2;
-            }
-            else if (x == 0 && -y < 0) {
-                theta = Math.PI/2;
-            }
-            else if (x == 0 && y == 0) {
-                theta = 0;
-            }
-            if (sa) {
-                theta -= sa;
-                if (theta < 0) {
-                    theta += 2*Math.PI;
-                }
-                else if (theta > 2*Math.PI) {
-                    theta -= 2*Math.PI;
-                }
-            }
+        s = series[0];
+        x = gridpos.x;
+        y = gridpos.y;
+        var v = s._vertices,
+            vfirst = v[0],
+            vlast = v[v.length-1],
+            lex,
+            rex;
+        
+        // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
+        
+        function findedge (l, p1 , p2) {
+            var m = (p1[1] - p2[1])/(p1[0] - p2[0]);
+            var b = p1[1] - m*p1[0];
+            var y = l + p1[1];
             
-            sm = s.sliceMargin/180*Math.PI;
-            if (r < s._radius && r > s._innerRadius) {
-                for (j=0; j<s.gridData.length; j++) {
-                    minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
-                    maxang = s.gridData[j][1];
-                    if (theta > minang && theta < maxang) {
-                        return [s.index, j, s.gridData[j]];
-                    }
-                }
+            return [(y - b)/m, y];
+        }
+        
+        // check each section
+        lex = findedge(y, vfirst[0], vlast[3]);
+        rex = findedge(y, vfirst[1], vlast[2]);
+        for (i=0; i<v.length; i++) {
+            cv = v[i];
+            if (y >= cv[0][1] && y <= cv[3][1] && x >= lex[0] && x <= rex[0]) {
+                return [s.index, i, s.data[i]];
             }
         }
+        
         return null;
     }
     
@@ -806,11 +832,11 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
-        this.plugins.donutRenderer = {highlightedSeriesIndex:null};
-        this.plugins.donutRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        this.plugins.funnelRenderer = {};
+        this.plugins.funnelRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.donutRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-donutRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.donutRenderer.highlightCanvas.setContext();
+        this.eventCanvas._elem.before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions));
+        var hctx = this.plugins.funnelRenderer.highlightCanvas.setContext();
     }
     
     $.jqplot.preInitHooks.push(preInit);
@@ -823,12 +849,12 @@
     $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
     $.jqplot.postDrawHooks.push(postPlotDraw);
     
-    $.jqplot.DonutTickRenderer = function() {
+    $.jqplot.FunnelTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);
     };
     
-    $.jqplot.DonutTickRenderer.prototype = new $.jqplot.AxisTickRenderer();
-    $.jqplot.DonutTickRenderer.prototype.constructor = $.jqplot.DonutTickRenderer;
+    $.jqplot.FunnelTickRenderer.prototype = new $.jqplot.AxisTickRenderer();
+    $.jqplot.FunnelTickRenderer.prototype.constructor = $.jqplot.FunnelTickRenderer;
     
 })(jQuery);
     
