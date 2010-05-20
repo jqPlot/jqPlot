@@ -69,6 +69,15 @@
     text-align: left;
 }
 
+.jqplot-meterGauge-tick {
+    font-size: 0.75em;
+    color: #999999;
+}
+
+.jqplot-meterGauge-label {
+    font-size: 1em;
+    color: #999999;
+}
 .jqplot-xaxis-label {
     margin-top: 10px;
     font-size: 11pt;
