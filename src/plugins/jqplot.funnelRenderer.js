@@ -709,8 +709,6 @@
                 }
             }
         }
-        // set the _processGetNeighbor to false, we'll do this in the renderer.
-        this._processGetNeighbor = false;
         this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
@@ -742,26 +740,28 @@
     }
     
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        var ins = checkIntersection(gridpos, plot);
-        if (ins) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
             plot.target.trigger('jqplotDataMouseOver', ins);
             if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.funnelRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 plot.target.trigger('jqplotDataHighlight', ins);
                 highlight (plot, ins[0], ins[1]);
             }
         }
-        else if (ins == null) {
+        else if (neighbor == null) {
             unhighlight (plot);
         }
     }
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
-        var ins = checkIntersection(gridpos, plot);
-        if (ins && plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.funnelRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-            plot.target.trigger('jqplotDataHighlight', ins);
-            highlight (plot, ins[0], ins[1]);
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.funnelRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
+            }
         }
-        else if (ins == null) {
+        else if (neighbor == null) {
             unhighlight (plot);
         }
     }
@@ -774,58 +774,21 @@
     }
     
     function handleClick(ev, gridpos, datapos, neighbor, plot) {
-        var intersection = checkIntersection(gridpos, plot);
-        if (intersection) {
-            plot.target.trigger('jqplotDataClick', intersection);
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataClick', ins);
         }
     }
     
     function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
-        var intersection = checkIntersection(gridpos, plot);
-        var idx = plot.plugins.funnelRenderer.highlightedSeriesIndex;
-        if (idx != null && plot.series[idx].highlightMouseDown) {
-            unhighlight(plot);
-        }
-        if (intersection) {
-            plot.target.trigger('jqplotDataRightClick', intersection);
-        }
-    }
-    
-    // function to check if event location is over a area area
-    function checkIntersection(gridpos, plot) {
-        //figure out if over a area
-        var series = plot.series;
-        var i, j, s, r, x, y, theta, sm, sa, minang, maxang;
-        s = series[0];
-        x = gridpos.x;
-        y = gridpos.y;
-        var v = s._vertices,
-            vfirst = v[0],
-            vlast = v[v.length-1],
-            lex,
-            rex;
-        
-        // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
-        
-        function findedge (l, p1 , p2) {
-            var m = (p1[1] - p2[1])/(p1[0] - p2[0]);
-            var b = p1[1] - m*p1[0];
-            var y = l + p1[1];
-            
-            return [(y - b)/m, y];
-        }
-        
-        // check each section
-        lex = findedge(y, vfirst[0], vlast[3]);
-        rex = findedge(y, vfirst[1], vlast[2]);
-        for (i=0; i<v.length; i++) {
-            cv = v[i];
-            if (y >= cv[0][1] && y <= cv[3][1] && x >= lex[0] && x <= rex[0]) {
-                return [s.index, i, s.data[i]];
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.funnelRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
             }
+            plot.target.trigger('jqplotDataRightClick', ins);
         }
-        
-        return null;
     }
     
     // called within context of plot

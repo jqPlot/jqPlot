@@ -45,6 +45,8 @@ $(document).ready(function(){
         }
     });
     
+    plot4 = $.jqplot('chart4', [[1,2,3,4]]);
+    
     $('#chart1').bind('jqplotDataClick', 
         function (ev, seriesIndex, pointIndex, data) {
             $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);

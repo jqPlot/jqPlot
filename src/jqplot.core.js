@@ -1209,10 +1209,6 @@
         // After plot has been visibly drawn once, it generally doesn't need redrawn if its
         // container is hidden and shown.
         this._drawCount = 0;
-        // true to run through the getNeighborPoint function.  Some plot types
-        // supply their own neighbor detection (donut, bar, pie), so they don't
-        // want to waste cycles with this routine.
-        this._processGetNeighbor = true;
         // this.doCustomEventBinding = true;
         // prop: drawIfHidden
         // True to execute the draw method even if the plot target is hidden.
@@ -2002,12 +1998,149 @@
             return ret;
         }
         
+        
+        // function to check if event location is over a area area
+        function checkIntersection(gridpos, plot) {
+            var series = plot.series;
+            var i, j, k, s, r, x, y, theta, sm, sa, minang, maxang;
+            var d0, d;
+            var threshold, t;
+            for (k=plot.seriesStack.length-1; k>=0; k--) {
+                i = plot.seriesStack[k];
+                s = series[i];
+                switch (s.renderer.constructor) {
+                    case $.jqplot.DonutRenderer:
+                        sa = s.startAngle/180*Math.PI;
+                        x = gridpos.x - s._center[0];
+                        y = gridpos.y - s._center[1];
+                        r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                        if (x > 0 && -y >= 0) {
+                            theta = 2*Math.PI - Math.atan(-y/x);
+                        }
+                        else if (x > 0 && -y < 0) {
+                            theta = -Math.atan(-y/x);
+                        }
+                        else if (x < 0) {
+                            theta = Math.PI - Math.atan(-y/x);
+                        }
+                        else if (x == 0 && -y > 0) {
+                            theta = 3*Math.PI/2;
+                        }
+                        else if (x == 0 && -y < 0) {
+                            theta = Math.PI/2;
+                        }
+                        else if (x == 0 && y == 0) {
+                            theta = 0;
+                        }
+                        if (sa) {
+                            theta -= sa;
+                            if (theta < 0) {
+                                theta += 2*Math.PI;
+                            }
+                            else if (theta > 2*Math.PI) {
+                                theta -= 2*Math.PI;
+                            }
+                        }
+            
+                        sm = s.sliceMargin/180*Math.PI;
+                        if (r < s._radius && r > s._innerRadius) {
+                            for (j=0; j<s.gridData.length; j++) {
+                                minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
+                                maxang = s.gridData[j][1];
+                                if (theta > minang && theta < maxang) {
+                                    return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case $.jqplot.FunnelRenderer:
+                        x = gridpos.x;
+                        y = gridpos.y;
+                        var v = s._vertices,
+                            vfirst = v[0],
+                            vlast = v[v.length-1],
+                            lex,
+                            rex;
+    
+                        // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
+    
+                        function findedge (l, p1 , p2) {
+                            var m = (p1[1] - p2[1])/(p1[0] - p2[0]);
+                            var b = p1[1] - m*p1[0];
+                            var y = l + p1[1];
+        
+                            return [(y - b)/m, y];
+                        }
+    
+                        // check each section
+                        lex = findedge(y, vfirst[0], vlast[3]);
+                        rex = findedge(y, vfirst[1], vlast[2]);
+                        for (j=0; j<v.length; j++) {
+                            cv = v[j];
+                            if (y >= cv[0][1] && y <= cv[3][1] && x >= lex[0] && x <= rex[0]) {
+                                return {seriesIndex:s.index, pointIndex:j, gridData:null, data:s.data[j]};
+                            }
+                        }         
+                        break;           
+                    
+                    default:
+                        x = gridpos.x;
+                        y = gridpos.y;
+                        r = s.renderer;
+                        if (s.show) {
+                            t = s.markerRenderer.size/2+s.neighborThreshold;
+                            threshold = (t > 0) ? t : 0;
+                            for (var j=0; j<s.gridData.length; j++) {
+                                p = s.gridData[j];
+                                // neighbor looks different to OHLC chart.
+                                if (r.constructor == $.jqplot.OHLCRenderer) {
+                                    if (r.candleStick) {
+                                        var yp = s._yaxis.series_u2p;
+                                        if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                            return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                        }
+                                    }
+                                    // if an open hi low close chart
+                                    else if (!r.hlc){
+                                        var yp = s._yaxis.series_u2p;
+                                        if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                            return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                        }
+                                    }
+                                    // a hi low close chart
+                                    else {
+                                        var yp = s._yaxis.series_u2p;
+                                        if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
+                                            return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                        }
+                                    }
+                            
+                                }
+                                else {
+                                    d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
+                                    if (d <= threshold && (d <= d0 || d0 == null)) {
+                                       d0 = d;
+                                       return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                    }
+                                }
+                            } 
+                        }
+                        break;
+                }
+            }
+            
+            return null;
+        }
+        
+        
+        
         this.onClick = function(ev) {
             // Event passed in is normalized and will have data attribute.
             // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            var neighbor = checkIntersection(positions.gridPos, p);
             ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
@@ -2016,14 +2149,14 @@
             // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            var neighbor = checkIntersection(positions.gridPos, p);
             ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            var neighbor = checkIntersection(positions.gridPos, p);
             p.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
@@ -2035,7 +2168,7 @@
         this.onRightClick = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            var neighbor = checkIntersection(positions.gridPos, p);
             if (p.captureRightClick) {
                 if (ev.which == 3) {
                     p.eventCanvas._elem.trigger('jqplotRightClick', [positions.gridPos, positions.dataPos, neighbor, p]);
@@ -2050,7 +2183,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var p = ev.data.plot;
-            var neighbor = (p._processGetNeighbor) ? getNeighborPoint(p, positions.gridPos.x, positions.gridPos.y) : null;
+            var neighbor = checkIntersection(positions.gridPos, p);
             p.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         

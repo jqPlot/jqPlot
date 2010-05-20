@@ -667,8 +667,6 @@
                 }
             }
         }
-        // set the _processGetNeighbor to false, we'll do this in the renderer.
-        this._processGetNeighbor = false;
         this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
@@ -698,28 +696,30 @@
         plot.plugins.donutRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
     }
-    
+ 
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        var ins = checkIntersection(gridpos, plot);
-        if (ins) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
             plot.target.trigger('jqplotDataMouseOver', ins);
             if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 plot.target.trigger('jqplotDataHighlight', ins);
                 highlight (plot, ins[0], ins[1]);
             }
         }
-        else if (ins == null) {
+        else if (neighbor == null) {
             unhighlight (plot);
         }
-    }
+    } 
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
-        var ins = checkIntersection(gridpos, plot);
-        if (ins && plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-            plot.target.trigger('jqplotDataHighlight', ins);
-            highlight (plot, ins[0], ins[1]);
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
+            }
         }
-        else if (ins == null) {
+        else if (neighbor == null) {
             unhighlight (plot);
         }
     }
@@ -732,75 +732,22 @@
     }
     
     function handleClick(ev, gridpos, datapos, neighbor, plot) {
-        var intersection = checkIntersection(gridpos, plot);
-        if (intersection) {
-            plot.target.trigger('jqplotDataClick', intersection);
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataClick', ins);
         }
     }
     
     function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
-        var intersection = checkIntersection(gridpos, plot);
-        var idx = plot.plugins.donutRenderer.highlightedSeriesIndex;
-        if (idx != null && plot.series[idx].highlightMouseDown) {
-            unhighlight(plot);
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.donutRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
+            }
+            plot.target.trigger('jqplotDataRightClick', ins);
         }
-        if (intersection) {
-            plot.target.trigger('jqplotDataRightClick', intersection);
-        }
-    }
-    
-    // function to check if event location is over a slice area
-    function checkIntersection(gridpos, plot) {
-        //figure out if over a slice
-        var series = plot.series;
-        var i, j, s, r, x, y, theta, sm, sa, minang, maxang;
-        for (i=0; i<series.length; i++) {
-            s = series[i];
-            sa = s.startAngle/180*Math.PI;
-            x = gridpos.x - s._center[0];
-            y = gridpos.y - s._center[1];
-            r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-            if (x > 0 && -y >= 0) {
-                theta = 2*Math.PI - Math.atan(-y/x);
-            }
-            else if (x > 0 && -y < 0) {
-                theta = -Math.atan(-y/x);
-            }
-            else if (x < 0) {
-                theta = Math.PI - Math.atan(-y/x);
-            }
-            else if (x == 0 && -y > 0) {
-                theta = 3*Math.PI/2;
-            }
-            else if (x == 0 && -y < 0) {
-                theta = Math.PI/2;
-            }
-            else if (x == 0 && y == 0) {
-                theta = 0;
-            }
-            if (sa) {
-                theta -= sa;
-                if (theta < 0) {
-                    theta += 2*Math.PI;
-                }
-                else if (theta > 2*Math.PI) {
-                    theta -= 2*Math.PI;
-                }
-            }
-            
-            sm = s.sliceMargin/180*Math.PI;
-            if (r < s._radius && r > s._innerRadius) {
-                for (j=0; j<s.gridData.length; j++) {
-                    minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
-                    maxang = s.gridData[j][1];
-                    if (theta > minang && theta < maxang) {
-                        return [s.index, j, s.gridData[j]];
-                    }
-                }
-            }
-        }
-        return null;
-    }
+    }    
     
     // called within context of plot
     // create a canvas which we can draw on.
