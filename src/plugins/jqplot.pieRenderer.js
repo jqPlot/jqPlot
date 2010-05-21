@@ -19,9 +19,40 @@
     /**
      * Class: $.jqplot.PieRenderer
      * Plugin renderer to draw a pie chart.
-     * Pie charts will draw only the first series.  Other series are ignored.
      * x values, if present, will be used as slice labels.
      * y values give slice size.
+     * 
+     * To use this renderer, you need to include the 
+     * pie renderer plugin, for example:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.pieRenderer.js"></script>
+     * 
+     * Properties described here are passed into the $.jqplot function
+     * as options on the series renderer.  For example:
+     * 
+     * > plot2 = $.jqplot('chart2', [s1, s2], {
+     * >     seriesDefaults: {
+     * >         renderer:$.jqplot.PieRenderer,
+     * >         rendererOptions:{
+     * >              sliceMargin: 2,
+     * >              startAngle: -90
+     * >          }
+     * >      }
+     * > });
+     * 
+     * A pie plot will trigger events on the plot target
+     * according to user interaction.  All events return the event object,
+     * the series index, the point (slice) index, and the point data for 
+     * the appropriate slice.
+     * 
+     * 'jqplotDataMouseOver' - triggered when user mouseing over a slice.
+     * 'jqplotDataHighlight' - triggered the first time user mouses over a slice,
+     * if highlighting is enabled.
+     * 'jqplotDataUnhighlight' - triggered when a user moves the mouse out of
+     * a highlighted slice.
+     * 'jqplotDataClick' - triggered when the user clicks on a slice.
+     * 'jqplotDataRightClick' - tiggered when the user right clicks on a slice if
+     * the "captureRightClick" option is set to true on the plot.
      */
     $.jqplot.PieRenderer = function(){
         $.jqplot.LineRenderer.call(this);
@@ -35,13 +66,13 @@
         // Group: Properties
         //
         // prop: diameter
-        // diameter of the pie, auto computed by default
+        // Outer diameter of the pie, auto computed by default
         this.diameter = null;
         // prop: padding
         // padding between the pie and plot edges, legend, etc.
         this.padding = 20;
         // prop: sliceMargin
-        // pixels spacing between pie slices.
+        // angular spacing between pie slices in degrees.
         this.sliceMargin = 0;
         // prop: fill
         // true or false, wether to fil the slices.
@@ -57,32 +88,102 @@
         // number of strokes to apply to the shadow, 
         // each stroke offset shadowOffset from the last.
         this.shadowDepth = 5;
+        // prop: highlightMouseOver
+        // True to highlight slice when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
+        this.highlightMouseOver = true;
+        // prop: highlightMouseDown
+        // True to highlight when a mouse button is pressed over a slice.
+        // This will be disabled if highlightMouseOver is true.
+        this.highlightMouseDown = false;
+        // prop: highlightColors
+        // an array of colors to use when highlighting a slice.
+        this.highlightColors = [];
+        // prop: startAngle
+        // Angle to start drawing pie in degrees.  
+        // According to orientation of canvas coordinate system:
+        // 0 = on the positive x axis
+        // -90 = on the positive y axis.
+        // 90 = on the negaive y axis.
+        // 180 or - 180 = on the negative x axis.
+        this.startAngle = 0;
         this.tickRenderer = $.jqplot.PieTickRenderer;
+        
+        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+        if (options.highlightMouseDown && options.highlightMouseOver == null) {
+            options.highlightMouseOver = false;
+        }
+        
         $.extend(true, this, options);
         if (this.diameter != null) {
             this.diameter = this.diameter - this.sliceMargin;
         }
         this._diameter = null;
+        this._radius = null;
+        // array of [start,end] angles arrays, one for each slice.  In radians.
+        this._sliceAngles = [];
+        // index of the currenty highlighted point, if any
+        this._highlightedPoint = null;
+        
+        // set highlight colors if none provided
+        if (this.highlightColors.length == 0) {
+            for (var i=0; i<this.seriesColors.length; i++){
+                var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
+                var newrgb = [rgba[0], rgba[1], rgba[2]];
+                var sum = newrgb[0] + newrgb[1] + newrgb[2];
+                for (var j=0; j<3; j++) {
+                    // when darkening, lowest color component can be is 60.
+                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                    newrgb[j] = parseInt(newrgb[j], 10);
+                }
+                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+            }
+        }
+        
+        
     };
     
     $.jqplot.PieRenderer.prototype.setGridData = function(plot) {
-        // this is a no-op
+        // set gridData property.  This will hold angle in radians of each data point.
+        var stack = [];
+        var td = [];
+        var sa = this.startAngle/180*Math.PI;
+        var tot = 0;
+        for (var i=0; i<this.data.length; i++){
+            stack.push(this.data[i][1]);
+            td.push([this.data[i][0]]);
+            if (i>0) {
+                stack[i] += stack[i-1];
+            }
+            tot += this.data[i][1];
+        }
+        var fact = Math.PI*2/stack[stack.length - 1];
+        
+        for (var i=0; i<stack.length; i++) {
+            td[i][1] = stack[i] * fact;
+            td[i][2] = this.data[i][1]/tot;
+        }
+        this.gridData = td;
     };
     
     $.jqplot.PieRenderer.prototype.makeGridData = function(data, plot) {
         var stack = [];
         var td = [];
+        var tot = 0;
+        var sa = this.startAngle/180*Math.PI;
         for (var i=0; i<data.length; i++){
             stack.push(data[i][1]);
             td.push([data[i][0]]);
             if (i>0) {
                 stack[i] += stack[i-1];
             }
+            tot += data[i][1];
         }
         var fact = Math.PI*2/stack[stack.length - 1];
         
         for (var i=0; i<stack.length; i++) {
             td[i][1] = stack[i] * fact;
+            td[i][2] = data[i][1]/tot;
         }
         return td;
     };
@@ -92,7 +193,7 @@
         var fill = this.fill;
         var lineWidth = this.lineWidth;
         ctx.save();
-        ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
+        ctx.translate(this._center[0], this._center[1]);
         
         if (isShadow) {
             for (var i=0; i<this.shadowDepth; i++) {
@@ -109,17 +210,18 @@
         function doDraw () {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
-             if (ang2 > 6.282) {
-                ang2 = 6.282;
+             if (ang2 > 6.282 + this.startAngle) {
+                ang2 = 6.282 + this.startAngle;
                 if (ang1 > ang2) {
-                    ang1 = 6.281;
+                    ang1 = 6.281 + this.startAngle;
                 }
             }
             // Fix for IE, where it can't seem to handle 0 degree angles.  Also avoids
             // ugly line on unfilled pies.
             if (ang1 == ang2) {
                 return;
-            }
+            }            
+            
             ctx.beginPath();  
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
@@ -127,6 +229,7 @@
             ctx.arc(0, 0, r, ang1, ang2, false);
             ctx.lineTo(0,0);
             ctx.closePath();
+            
             if (fill) {
                 ctx.fill();
             }
@@ -141,7 +244,7 @@
             }
         }
         
-        ctx.restore();        
+        ctx.restore();
     };
     
     // called with scope of series
@@ -152,8 +255,8 @@
         var offx = 0;
         var offy = 0;
         var trans = 1;
-        var colorGenerator = new this.colorGenerator(this.seriesColors);
-        if (options.legendInfo) {
+        // var colorGenerator = new this.colorGenerator(this.seriesColors);
+        if (options.legendInfo && options.legendInfo.placement == 'inside') {
             var li = options.legendInfo;
             switch (li.location) {
                 case 'nw':
@@ -196,27 +299,32 @@
         var ch = ctx.canvas.height;
         var w = cw - offx - 2 * this.padding;
         var h = ch - offy - 2 * this.padding;
-        var d = Math.min(w,h);
-        this._diameter = this.diameter  || d - this.sliceMargin;
-        // this.diameter -= this.sliceMargin;
-        var r = this._diameter/2;
-        ctx.save();
-        ctx.translate((cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy);
+        var mindim = Math.min(w,h);
+        var d = mindim;
+        this._diameter = this.diameter || d;
+
+        var r = this._radius = this._diameter/2;
+        var sa = this.startAngle / 180 * Math.PI;
+        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
-                var ang1 = (i == 0) ? 0 : gd[i-1][1];
-                this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], shadowColor, true);
+                var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
+                // Adjust ang1 and ang2 for sliceMargin
+                ang1 += this.sliceMargin/180*Math.PI;
+                this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
             }
             
         }
         for (var i=0; i<gd.length; i++) {
-            var ang1 = (i == 0) ? 0 : gd[i-1][1];
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1], colorGenerator.next());
+            var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
+            // Adjust ang1 and ang2 for sliceMargin
+            ang1 += this.sliceMargin/180*Math.PI;
+            this._sliceAngles.push([ang1, gd[i][1]+sa]);
+            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i]);
         }
-        
-        ctx.restore();        
+               
     };
     
     $.jqplot.PieAxisRenderer = function() {
@@ -255,7 +363,14 @@
         //
     };
     
+    /**
+     * Class: $.jqplot.PieLegendRenderer
+     * Legend Renderer specific to pie plots.  Set by default
+     * when user creates a pie plot.
+     */
     $.jqplot.PieLegendRenderer.prototype.init = function(options) {
+        // Group: Properties
+        //
         // prop: numberRows
         // Maximum number of rows in the legend.  0 or null for unlimited.
         this.numberRows = null;
@@ -500,9 +615,28 @@
             options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
             options.legend.renderer = $.jqplot.PieLegendRenderer;
             options.legend.preDraw = true;
-            // options.seriesDefaults.colorGenerator = this.colorGenerator;
-            // options.seriesDefaults.seriesColors = this.seriesColors;
         }
+    }
+    
+    function postInit(target, data, options) {
+        // if multiple series, add a reference to the previous one so that
+        // pie rings can nest.
+        for (var i=1; i<this.series.length; i++) {
+            for (var j=0; j<i; j++) {
+                if (this.series[i].renderer.constructor == $.jqplot.PieRenderer && this.series[j].renderer.constructor == $.jqplot.PieRenderer) {
+                    this.series[i]._previousSeries.push(this.series[j]);
+                }
+            }
+        }
+        for (i=0; i<this.series.length; i++) {
+            if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
+                // don't allow mouseover and mousedown at same time.
+                if (this.series[i].highlightMouseOver) {
+                    this.series[i].highlightMouseDown = false;
+                }
+            }
+        }
+        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     // called with scope of plot
@@ -513,8 +647,97 @@
         }
     }
     
+    function highlight (plot, sidx, pidx) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.pieRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.pieRenderer.highlightedSeriesIndex = sidx;
+        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColors[pidx], false);
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.pieRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.pieRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+    }
+ 
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataMouseOver', ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    } 
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+        var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataClick', ins);
+        }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
+            }
+            plot.target.trigger('jqplotDataRightClick', ins);
+        }
+    }    
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        this.plugins.pieRenderer = {highlightedSeriesIndex:null};
+        this.plugins.pieRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
+        var hctx = this.plugins.pieRenderer.highlightCanvas.setContext();
+    }
+    
     $.jqplot.preInitHooks.push(preInit);
     $.jqplot.postParseOptionsHooks.push(postParseOptions);
+    $.jqplot.postInitHooks.push(postInit);
+    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+    $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+    $.jqplot.postDrawHooks.push(postPlotDraw);
     
     $.jqplot.PieTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);

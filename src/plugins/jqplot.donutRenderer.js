@@ -643,8 +643,6 @@
             options.axesDefaults.renderer = $.jqplot.DonutAxisRenderer;
             options.legend.renderer = $.jqplot.DonutLegendRenderer;
             options.legend.preDraw = true;
-            // options.seriesDefaults.colorGenerator = this.colorGenerator;
-            // options.seriesDefaults.seriesColors = this.seriesColors;
         }
     }
     
