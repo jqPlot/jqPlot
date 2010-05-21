@@ -2055,7 +2055,7 @@
                         break;
                         
                     case $.jqplot.PieRenderer:
-                        sa = 0/180*Math.PI;
+                        sa = s.startAngle/180*Math.PI;
                         x = gridpos.x - s._center[0];
                         y = gridpos.y - s._center[1];
                         r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));

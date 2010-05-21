@@ -194,6 +194,7 @@
         var lineWidth = this.lineWidth;
         ctx.save();
         ctx.translate(this._center[0], this._center[1]);
+        ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
         
         if (isShadow) {
             for (var i=0; i<this.shadowDepth; i++) {
@@ -301,7 +302,8 @@
         var h = ch - offy - 2 * this.padding;
         var mindim = Math.min(w,h);
         var d = mindim;
-        this._diameter = this.diameter || d;
+        // this._diameter = this.diameter || d;
+        this._diameter = this.diameter  || d - this.sliceMargin;
 
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
@@ -619,15 +621,6 @@
     }
     
     function postInit(target, data, options) {
-        // if multiple series, add a reference to the previous one so that
-        // pie rings can nest.
-        for (var i=1; i<this.series.length; i++) {
-            for (var j=0; j<i; j++) {
-                if (this.series[i].renderer.constructor == $.jqplot.PieRenderer && this.series[j].renderer.constructor == $.jqplot.PieRenderer) {
-                    this.series[i]._previousSeries.push(this.series[j]);
-                }
-            }
-        }
         for (i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
                 // don't allow mouseover and mousedown at same time.
