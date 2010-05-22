@@ -105,6 +105,9 @@
         // prop: labelHeightAdjust
         // Number of Pixels to offset the label up (-) or down (+) from its default position.
         this.labelHeightAdjust = 0;
+        // prop: labelPosition
+        // Where to position the label, either 'inside' or 'bottom'.
+        this.labelPosition = 'inside';
         // prop: intervals
         // Array of ranges to be drawn around the gauge.
         // Array of form:
@@ -163,6 +166,8 @@
             this.semiCircular = (this.span <= 180) ? true : false;
         }
         this._tickPoints = [];
+        // reference to label element.
+        this._labelElm = null;
         
         // start the gauge at the beginning of the span
         this.startAngle = (90 + (360 - this.span)/2) * Math.PI/180;
@@ -332,6 +337,14 @@
             }
         }
         
+        
+            
+        // pre-draw so can get it's dimensions.
+        if (this.label) {
+            this._labelElem = $('<div class="jqplot-meterGauge-label" style="position:absolute;">'+this.label+'</div>');
+            this.canvas._elem.after(this._labelElem);
+        }
+        
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
@@ -339,6 +352,9 @@
         var ch = ctx.canvas.height;
         var w = cw - offx - 2 * this.padding;
         var h = ch - offy - 2 * this.padding;
+        if (this.labelPosition == 'bottom') {
+            h -= this._labelElem.outerHeight(true);
+        }
         var mindim = Math.min(w,h);
         var d = mindim;
             
@@ -375,6 +391,10 @@
                 // will be center of hub.
                 this._center = [(cw-trans*offx)/2 + trans * offx, (ch-trans*offy)/2 + trans * offy];
             }
+        }
+        
+        if (this._labelElem && this.labelPosition == 'bottom') {
+            this._center[1] -= this._labelElem.outerHeight(true);
         }
         
         this._radius = this.diameter/2;
@@ -551,7 +571,7 @@
                 outerea = this.outerEndAngle = ea + overAngle,
                 hubsa = this.hubStartAngle = sa - Math.atan(this.innerPad/this.hubRadius*2),
                 hubea = this.hubEndAngle = ea + Math.atan(this.innerPad/this.hubRadius*2);
-            // draw outer ring
+
             ctx.save();            
             
             ctx.translate(this._center[0], this._center[1]);
@@ -666,15 +686,22 @@
             }
             
             // draw the gauge label
-            if (this.label) {
+            if (this.label && this.labelPosition == 'inside') {
                 var l = this._center[0] + this.canvas._offsets.left;
                 var tp = this.tickPadding * (1 - 1/(this.diameter/80+1));
                 var t = 0.5*(this._center[1] + this.canvas._offsets.top - this.hubRadius) + 0.5*(this._center[1] + this.canvas._offsets.top - this.tickOuterRadius + this.tickLength + tp) + this.labelHeightAdjust;
-                var elem = $('<div class="jqplot-meterGauge-label" style="position:absolute;">'+this.label+'</div>');
-                this.canvas._elem.after(elem);
-                l -= elem.outerWidth(true)/2;
-                t -= elem.outerHeight(true)/2;
-                elem.css({left:l, top:t});
+                // this._labelElem = $('<div class="jqplot-meterGauge-label" style="position:absolute;">'+this.label+'</div>');
+                // this.canvas._elem.after(this._labelElem);
+                l -= this._labelElem.outerWidth(true)/2;
+                t -= this._labelElem.outerHeight(true)/2;
+                this._labelElem.css({left:l, top:t});
+            }
+            
+            else if (this.label && this.labelPosition == 'bottom') {
+                var l = this._center[0] + this.canvas._offsets.left - this._labelElem.outerWidth(true)/2;
+                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + 2*this.padding;
+                this._labelElem.css({left:l, top:t});
+                
             }
             
             // draw the intervals

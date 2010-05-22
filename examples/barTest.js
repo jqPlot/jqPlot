@@ -39,7 +39,9 @@ $(document).ready(function(){
         captureRightClick: true,
         seriesDefaults:{
             renderer:$.jqplot.BarRenderer,
-            highlightMouseDown: true
+            rendererOptions: {
+                highlightMouseDown: true    
+            }
         },
         legend: {
             show: true,

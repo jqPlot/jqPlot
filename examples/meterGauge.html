@@ -26,6 +26,10 @@
     margin-right: auto;
 }
 
+#chart0 .jqplot-meterGauge-label {
+    font-size: 10pt;
+}
+
 #chart1 .jqplot-meterGauge-tick {
     font-size: 6pt;
 }
@@ -38,7 +42,7 @@
     font-size: 10pt;
 }
 
-#chart4 .jqplot-meterGauge-tick, chart4 .jqplot-meterGauge-label {
+#chart4 .jqplot-meterGauge-tick, #chart4 .jqplot-meterGauge-label {
     font-size: 12pt;
 }
 </style>
@@ -50,10 +54,15 @@ $(document).ready(function(){
 
    plot0 = $.jqplot('chart0',[s1],{
        title: 'Network Speed',
+       // title: {
+       //     text: 'Network Speed',
+       //     location: 'n'
+       // },
        seriesDefaults: {
            renderer: $.jqplot.MeterGaugeRenderer,
            rendererOptions: {
-               label: 'MB/s'
+               label: 'MB/s',
+               labelPosition: 'bottom'
            }
        }
    });
