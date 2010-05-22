@@ -61,8 +61,7 @@ $(document).ready(function(){
        seriesDefaults: {
            renderer: $.jqplot.MeterGaugeRenderer,
            rendererOptions: {
-               label: 'MB/s',
-               labelPosition: 'bottom'
+               label: 'MB/s'
            }
        }
    });
@@ -97,7 +96,8 @@ $(document).ready(function(){
            renderer: $.jqplot.MeterGaugeRenderer,
            rendererOptions: {
                label: 'Metric Tons per Year',
-               labelHeightAdjust: -15,
+               labelPosition: 'bottom',
+               labelHeightAdjust: -5,
                intervalOuterRadius: 85,
                ticks: [10000, 30000, 50000, 70000],
                intervals:[22000, 55000, 70000],
@@ -124,7 +124,7 @@ $(document).ready(function(){
 
 <div id="chart3" class="plot" style="width:300px;height:180px;"></div>
 
-<p>The inner and outer radii of the interval band can also be specified with the "intervalInnerRadius" and "intervalOuterRadius" options.  In the plot below, the "labelHeightAdjust" option was also used to raise the gauge label by 15 pixels</p>
+<p>The inner and outer radii of the interval band can also be specified with the "intervalInnerRadius" and "intervalOuterRadius" options.  In the plot below, the "labelPosition" option was set to "bottom" to put the gauge label below the plot.  The "labelHeightAdjust" option was set to -5 to raise the label slightly (5 pixels) to place it closer to the gauge.</p>
 <p>The gauge automatically resizes to best fit the container.  The font size of the tick labels and gauge labels do not size to the container, however.  The font size of the tick labels can be controlled by styling the css ".jqplot-meterGauge-ticks" class and the gauge label by the "jqplot-meterGauge-label" class.</p>
 <div id="chart4" class="plot" style="width:500px;height:300px;"></div>
   </body>

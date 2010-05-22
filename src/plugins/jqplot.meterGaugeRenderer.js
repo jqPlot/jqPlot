@@ -57,8 +57,9 @@
         // Outer diameter of the meterGauge, auto computed by default
         this.diameter = null;
         // prop: padding
-        // padding between the meterGauge and plot edges.
-        this.padding = 5;
+        // padding between the meterGauge and plot edges, auto
+        // calculated by default.
+        this.padding = null;
         // prop: shadowOffset
         // offset of the shadow from the gauge ring and offset of 
         // each succesive stroke of the shadow from the last.
@@ -350,6 +351,9 @@
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var cw = ctx.canvas.width;
         var ch = ctx.canvas.height;
+        if (this.padding == null) {
+            this.padding = Math.round(Math.min(cw, ch)/30);
+        }
         var w = cw - offx - 2 * this.padding;
         var h = ch - offy - 2 * this.padding;
         if (this.labelPosition == 'bottom') {
@@ -699,7 +703,7 @@
             
             else if (this.label && this.labelPosition == 'bottom') {
                 var l = this._center[0] + this.canvas._offsets.left - this._labelElem.outerWidth(true)/2;
-                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + 2*this.padding;
+                var t = this._center[1] + this.canvas._offsets.top + this.innerPad + + this.ringWidth + this.padding + this.labelHeightAdjust;
                 this._labelElem.css({left:l, top:t});
                 
             }
