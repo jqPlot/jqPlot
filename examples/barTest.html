@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Simple Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <link type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui-1.8.1.custom.css" rel="Stylesheet" />	
+  <script type="text/javascript" src="jquery-ui/js/jquery-ui-1.8.1.custom.min.js"></script>
+
+  
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <!-- END: load jqplot -->
+
+  <script type="text/javascript" src="barTest.js"></script>
+  <style type="text/css">
+    #code {
+        font: 10pt "Andale Mono", Monaco, "Courier New", sans-serif ;
+        white-space: pre;
+    }
+  </style>
+  
+    <script type="text/javascript">    
+    $(document).ready(function(){
+        $('#code').load('barTest.js');
+        $('#code').dialog({
+			height: 'auto',
+			width: 600,
+			modal: true,
+			autoOpen: false,
+			resizable: true,
+			draggable: true,
+			show: 'fold'
+		});
+
+    });
+    </script> 
+    
+  </head>
+  <body>
+<?php include "nav.inc"; ?>
+<div id="code"></div>
+    <p>To create bar plots, you have to include the "jqplot.barRenderer.js" file in your source.  You can view the javascript that generated these plots by clicking the "View Code" button below.</p>
+    <button id="seecode" onclick="$('#code').dialog('open');">View Code</button>
+
+    <p>Below is a default bar plot.  Bars will highlight on mouseover.  Events are triggered when you mouseover a bar and also when you click on a bar.  Here We capture the 'jqplotDataClick' event and display the clicked series index, point index and data values. When series data is assigned as a 1-dimensional array as in this example, jqPlot automatically converts it into a 2-dimensional array for plotting.  So a series defined as [2, 6, 7, 10] will become [[1,2], [2,6], [3,7], [4,10]].<p>
+    
+    <div><span>You Clicked: </span><span id="info1">Nothing yet</span></div>
+        
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:300px; height:300px;"></div>
+
+    <p>The plot target also fires a 'jqplotDataMouseOver' when the cursor is moused over a bar even if highlighting is turned off.  This event will fire continuously as the user mouses over the bar.  'jqplotDataHighlight' fires only once when the user first passes over the bar.  Additionally, a 'jqplotDataUnhighlight' event is fired when the user moves out of a bar (if highlighting is enabled).<p>
+
+    <div><span>Moused Over: </span><span id="info2">Nothing</span></div>
+    
+    <div id="chart2" style="margin-top:20px; margin-left:20px; width:300px; height:300px;"></div>
+    
+    <p>The next example has the plot's 'captureRightClick' option set to true.  This causes the plot to fire a 'jqplotRightClick' event the the user clicks the right mouse button over a bar.  Here, the 'highlightMouseDown' option is also set to true.  This will highlight a slice on mouse down instead of on move over.  Highlighting will occur for either left or right click.</p>
+
+    <div><span>You Right Clicked: </span><span id="info3">Nothing yet</span></div>
+    
+    <div id="chart3" style="margin-top:20px; margin-left:20px; width:300px; height:300px;"></div>
+        
+<p>A simple line chart is added to test for imcompatabilities.</p>
+        <div id="chart6" style="margin-top:20px; margin-left:20px; width:160px; height:100px;"></div>
+  </body>
+</html>

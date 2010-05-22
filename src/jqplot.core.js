@@ -2003,12 +2003,44 @@
         function checkIntersection(gridpos, plot) {
             var series = plot.series;
             var i, j, k, s, r, x, y, theta, sm, sa, minang, maxang;
-            var d0, d;
+            var d0, d, p, pp, points, bw;
             var threshold, t;
             for (k=plot.seriesStack.length-1; k>=0; k--) {
                 i = plot.seriesStack[k];
                 s = series[i];
                 switch (s.renderer.constructor) {
+                    case $.jqplot.BarRenderer:
+                        switch (s.barDirection) {
+                            case 'vertical':
+                                // is it a single series or a stacked series
+                                if (true) {
+                                    x = gridpos.x;
+                                    y = gridpos.y;
+                                    bw = s.barWidth/2;
+                                    for (j=s.gridData.length-1; j>=0; j--) {
+                                        // p = s.gridData[j];
+                                        // pp = s._prevGridData[j] || [p[0], s.canvas._ctx.canvas.height];
+                                        // points = [[p[0]-bw, p[1]], [p[0]+bw, p[1]], [p[0]+bw, pp[1]], [p[0]-bw, pp[1]]];
+                                        // points = [p[0]-bw, p[1], bw, pp[1]-p[1]];
+                                        points = s._barPoints[j];
+                                        // if (x<p[0]+bw && x>p[0]-bw && y<pp[1] && y>p[1]) {
+                                        if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
+                                            return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
+                                        }
+                                    }
+                                }
+                                // else side by side series
+                                else {
+                                    
+                                }
+                                break;
+                                
+                            case 'horizontal':
+                                //
+                                break;
+                        }
+                        break;
+                    
                     case $.jqplot.DonutRenderer:
                         sa = s.startAngle/180*Math.PI;
                         x = gridpos.x - s._center[0];
