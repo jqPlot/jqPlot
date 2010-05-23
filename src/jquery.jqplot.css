@@ -119,7 +119,9 @@ td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
 }
 
 td.jqplot-table-legend > div {
-    border:1px solid #cccccc;
+    border-width:1px;
+    border-style solid;
+    border-color: #cccccc;
     padding:0.2em;
 }
 

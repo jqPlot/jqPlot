@@ -1219,6 +1219,7 @@
         // true to intercept right click events and fire a 'jqplotRightClick' event.
         // this will also block the context menu.
         this.captureRightClick = false;
+        this.themeEngine = new $.jqplot.ThemeEngine();
         // sum of y values for all series in plot.
         // used in mekko chart.
         this._sumy = 0;
@@ -2418,6 +2419,10 @@
                 this.series[i-1].canvas._elem.after(serelem);
             }
         };
+        
+        this.activateTheme = function (name) {
+            this.themeEngine.activate(this, name);
+        }
     }
     
     
