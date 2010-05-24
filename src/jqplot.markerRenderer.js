@@ -171,6 +171,14 @@
     
     $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
         options = options || {};
+        // hack here b/c shape renderer uses canvas based color style options
+        // and marker uses css style names.
+        if (options.color && !options.fillStyle) {
+            options.fillStyle = options.color;
+        }
+        if (options.color && !options.strokeStyle) {
+            options.strokeStyle = options.color;
+        }
         switch (this.style) {
             case 'diamond':
                 this.drawDiamond(x,y,ctx, false, options);

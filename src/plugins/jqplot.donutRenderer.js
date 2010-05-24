@@ -63,7 +63,7 @@
     $.jqplot.DonutRenderer.prototype.constructor = $.jqplot.DonutRenderer;
     
     // called with scope of a series
-    $.jqplot.DonutRenderer.prototype.init = function(options) {
+    $.jqplot.DonutRenderer.prototype.init = function(options, plot) {
         // Group: Properties
         //
         // prop: diameter
@@ -159,6 +159,15 @@
                 this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
             }
         }
+        
+        plot.postParseOptionsHooks.push(postParseOptions);
+        plot.postInitHooks.push(postInit);
+        plot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+        plot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+        plot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+        plot.eventListenerHooks.push(['jqplotClick', handleClick]);
+        plot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+        plot.postDrawHooks.push(postPlotDraw);
         
         
     };
@@ -646,13 +655,16 @@
         }
     }
     
+    // called with scope of plot.
     function postInit(target, data, options) {
         // if multiple series, add a reference to the previous one so that
         // donut rings can nest.
         for (var i=1; i<this.series.length; i++) {
-            for (var j=0; j<i; j++) {
-                if (this.series[i].renderer.constructor == $.jqplot.DonutRenderer && this.series[j].renderer.constructor == $.jqplot.DonutRenderer) {
-                    this.series[i]._previousSeries.push(this.series[j]);
+            if (!this.series[i]._previousSeries.length){
+                for (var j=0; j<i; j++) {
+                    if (this.series[i].renderer.constructor == $.jqplot.DonutRenderer && this.series[j].renderer.constructor == $.jqplot.DonutRenderer) {
+                        this.series[i]._previousSeries.push(this.series[j]);
+                    }
                 }
             }
         }
@@ -668,6 +680,7 @@
         this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
+    var postParseOptionsRun = false;
     // called with scope of plot
     function postParseOptions(options) {
         for (var i=0; i<this.series.length; i++) {
@@ -759,14 +772,14 @@
     }
     
     $.jqplot.preInitHooks.push(preInit);
-    $.jqplot.postParseOptionsHooks.push(postParseOptions);
-    $.jqplot.postInitHooks.push(postInit);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
-    $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
-    $.jqplot.postDrawHooks.push(postPlotDraw);
+    // $.jqplot.postParseOptionsHooks.push(postParseOptions);
+    // $.jqplot.postInitHooks.push(postInit);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+    // $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+    // $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+    // $.jqplot.postDrawHooks.push(postPlotDraw);
     
     $.jqplot.DonutTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);

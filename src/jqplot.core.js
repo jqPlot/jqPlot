@@ -152,7 +152,7 @@
     $.jqplot.debug = 1;
     $.jqplot.config = {
         debug:1,
-        enablePlugins:true,
+        enablePlugins:false,
         defaultHeight:300,
         defaultWidth:400,
         UTCAdjust:false,
@@ -1224,6 +1224,23 @@
         // used in mekko chart.
         this._sumy = 0;
         this._sumx = 0;
+        this.preInitHooks = [];
+        this.postInitHooks = [];
+        this.preParseOptionsHooks = [];
+        this.postParseOptionsHooks = [];
+        this.preDrawHooks = [];
+        this.postDrawHooks = [];
+        this.preDrawSeriesHooks = [];
+        this.postDrawSeriesHooks = [];
+        this.preDrawLegendHooks = [];
+        this.addLegendRowHooks = [];
+        this.preSeriesInitHooks = [];
+        this.postSeriesInitHooks = [];
+        this.preParseSeriesOptionsHooks = [];
+        this.postParseSeriesOptionsHooks = [];
+        this.eventListenerHooks = [];
+        this.preDrawSeriesShadowHooks = [];
+        this.postDrawSeriesShadowHooks = [];
         
         this.colorGenerator = $.jqplot.ColorGenerator;
         
@@ -1349,6 +1366,10 @@
 
             for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
                 $.jqplot.postInitHooks[i].call(this, target, data, options);
+            }
+
+            for (var i=0; i<this.postInitHooks.length; i++) {
+                this.postInitHooks[i].call(this, target, data, options);
             }
         };  
         
@@ -1594,6 +1615,9 @@
         })(this);
     
         this.parseOptions = function(options){
+            for (var i=0; i<this.preParseOptionsHooks.length; i++) {
+                this.preParseOptionsHooks[i].call(this, options);
+            }
             for (var i=0; i<$.jqplot.preParseOptionsHooks.length; i++) {
                 $.jqplot.preParseOptionsHooks[i].call(this, options);
             }
@@ -1655,6 +1679,9 @@
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+                }
+                for (var j=0; j<this.preParseSeriesOptionsHooks.length; j++) {
+                    this.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
                 $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i]);
                 var dir = 'vertical';
@@ -1724,6 +1751,9 @@
             
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
                 $.jqplot.postParseOptionsHooks[i].call(this, options);
+            }
+            for (var i=0; i<this.postParseOptionsHooks.length; i++) {
+                this.postParseOptionsHooks[i].call(this, options);
             }
         };
         
@@ -1797,6 +1827,9 @@
                 var i, j;
                 for (i=0; i<$.jqplot.preDrawHooks.length; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
+                }
+                for (i=0; i<this.preDrawHooks.length; i++) {
+                    this.preDrawHooks[i].call(this);
                 }
                 // create an underlying canvas to be used for special features.
                 this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas'));
@@ -1900,9 +1933,20 @@
                     // make sure there are references back into plot objects.
                     this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
                 }
+            
+                // register event listeners on the overlay canvas
+                for (var i=0; i<this.eventListenerHooks.length; i++) {
+                    // in the handler, this will refer to the eventCanvas dom element.
+                    // make sure there are references back into plot objects.
+                    this.eventCanvas._elem.bind(this.eventListenerHooks[i][0], {plot:this}, this.eventListenerHooks[i][1]);
+                }
 
                 for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
                     $.jqplot.postDrawHooks[i].call(this);
+                }
+
+                for (var i=0; i<this.postDrawHooks.length; i++) {
+                    this.postDrawHooks[i].call(this);
                 }
             
                 if (this.target.is(':visible')) {
@@ -2024,7 +2068,6 @@
                                         // points = [[p[0]-bw, p[1]], [p[0]+bw, p[1]], [p[0]+bw, pp[1]], [p[0]-bw, pp[1]]];
                                         // points = [p[0]-bw, p[1], bw, pp[1]-p[1]];
                                         points = s._barPoints[j];
-                                        // if (x<p[0]+bw && x>p[0]-bw && y<pp[1] && y>p[1]) {
                                         if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
                                             return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
                                         }
@@ -2287,6 +2330,7 @@
             var i, series, ctx;
             // if only one argument passed in and it is a number, use it ad idx.
             idx = (typeof(options) == "number" && idx == null) ? options : idx;
+            options = (typeof(options) == "object") ? options : {};
             // draw specified series
             if (idx != undefined) {
                 series = this.series[idx];

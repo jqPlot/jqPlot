@@ -63,7 +63,8 @@
         var axes = this._axes;
         // Add the grid onto the grid canvas.  This is the bottom most layer.
         ctx.save();
-        ctx.fillStyle = this.background;
+        ctx.clearRect(0, 0, this._plotDimensions.width, this._plotDimensions.height);
+        ctx.fillStyle = this.backgroundColor || this.background;
         ctx.fillRect(this._left, this._top, this._width, this._height);
         
         if (this.drawGridlines) {

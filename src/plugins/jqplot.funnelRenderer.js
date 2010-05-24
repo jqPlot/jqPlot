@@ -79,7 +79,7 @@
     $.jqplot.FunnelRenderer.prototype.constructor = $.jqplot.FunnelRenderer;
     
     // called with scope of a series
-    $.jqplot.FunnelRenderer.prototype.init = function(options) {
+    $.jqplot.FunnelRenderer.prototype.init = function(options, plot) {
         // Group: Properties
         //
         // prop: padding
@@ -117,6 +117,9 @@
         // The ratio of the width of the top of the funnel to the bottom.
         // a ratio of 0 will make an upside down pyramid. 
         this.widthRatio = 0.2;
+        // prop: lineWidth
+        // width of line if areas are stroked and not filled.
+        this.lineWidth = 2;
         
         this.tickRenderer = $.jqplot.FunnelTickRenderer;
         
@@ -159,7 +162,15 @@
                 this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
             }
         }
-        
+
+        plot.postParseOptionsHooks.push(postParseOptions);
+        plot.postInitHooks.push(postInit);
+        plot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+        plot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+        plot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+        plot.eventListenerHooks.push(['jqplotClick', handleClick]);
+        plot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+        plot.postDrawHooks.push(postPlotDraw);        
         
     };
     
@@ -205,7 +216,7 @@
     
     $.jqplot.FunnelRenderer.prototype.drawSection = function (ctx, vertices, color, isShadow) {
         var fill = this.fill;
-        // var lineWidth = this.lineWidth;
+        var lineWidth = this.lineWidth;
         ctx.save();
         
         if (isShadow) {
@@ -224,7 +235,7 @@
             ctx.beginPath();  
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
-            // ctx.lineWidth = lineWidth;
+            ctx.lineWidth = lineWidth;
             ctx.moveTo(vertices[0][0], vertices[0][1]);
             for (var i=1; i<4; i++) {
                 ctx.lineTo(vertices[i][0], vertices[i][1]);
@@ -803,14 +814,14 @@
     }
     
     $.jqplot.preInitHooks.push(preInit);
-    $.jqplot.postParseOptionsHooks.push(postParseOptions);
-    $.jqplot.postInitHooks.push(postInit);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
-    $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
-    $.jqplot.postDrawHooks.push(postPlotDraw);
+    // $.jqplot.postParseOptionsHooks.push(postParseOptions);
+    // $.jqplot.postInitHooks.push(postInit);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+    // $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+    // $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+    // $.jqplot.postDrawHooks.push(postPlotDraw);
     
     $.jqplot.FunnelTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);

@@ -25,7 +25,7 @@
     $.jqplot.ThemeEngine = function(){
         this.themes = {};
         // pointer to currently active theme
-        this.activeTheme = null;
+        this.activeTheme=null;
         
     };
     
@@ -43,16 +43,52 @@
             }
         }
         
-        n = ['drawGridlines', 'gridlineColor', 'gridlineWidth', 'backgroundColor', 'borderColor', 'borderWidth', 'shadow'];
-        for (i=0; i<n.length; i++) {
-            th.grid[n[i]] = this.grid[n[i]];
-        }
+        // n = ['drawGridlines', 'gridlineColor', 'gridlineWidth', 'backgroundColor', 'borderColor', 'borderWidth', 'shadow'];
+        // for (i=0; i<n.length; i++) {
+        //     th.grid[n[i]] = this.grid[n[i]];
+        // }
         
-        for (n in th.legend) {
-            th.legend[n] = this.legend._elem.css(n);
+        for (n in th.grid) {
+            th.grid[n] = this.grid[n];
+        }
+        if (th.grid.backgroundColor == null && this.grid.background != null) {
+            th.grid.backgroundColor = this.grid.background;
+        }
+        if (this.legend.show) {
+            for (n in th.legend) {
+                th.legend[n] = this.legend._elem.css(n);
+            }
+        }
+        var s;
+        for (i=0; i<this.series.length; i++) {
+            s = this.series[i];
+            if (s.renderer.constructor == $.jqplot.LineRenderer) {
+                th.series.push(new LineSeriesProperties());
+            }
+            else if (s.renderer.constructor == $.jqplot.BarRenderer) {
+                th.series.push(new BarSeriesProperties());
+            }
+            else if (s.renderer.constructor == $.jqplot.PieRenderer) {
+                th.series.push(new PieSeriesProperties());
+            }
+            else if (s.renderer.constructor == $.jqplot.DonutRenderer) {
+                th.series.push(new DonutSeriesProperties());
+            }
+            else if (s.renderer.constructor == $.jqplot.FunnelRenderer) {
+                th.series.push(new FunnelSeriesProperties());
+            }
+            else if (s.renderer.constructor == $.jqplot.MeterGaugeRenderer) {
+                th.series.push(new MeterSeriesProperties());
+            }
+            else {
+                th.series.push({});
+            }
+            for (n in th.series[i]) {
+                th.series[i][n] = s[n];
+            }
         }
         this.themeEngine.add(th);
-        this.themeEngine.activate(th._name);
+        this.themeEngine.activeTheme  = this.themeEngine.themes[th._name];
         
     };
     
@@ -93,14 +129,35 @@
     
     // change active theme to theme named 'name'.
     $.jqplot.ThemeEngine.prototype.activate = function(plot, name) {
-        if (!name && this.activeTheme._name) {
+        if (!name && this.activeTheme && this.activeTheme._name) {
             name = this.activeTheme._name;
         }
         if (!this.themes.hasOwnProperty(name)) {
             throw new Error("No theme of that name");
         }
         else {
-            this.activeTheme = this.themes[name];
+            var th = this.themes[name];
+            this.activeTheme = th;
+            for (var n in th.grid) {
+                plot.grid[n] = th.grid[n];
+            }
+            plot.grid.draw();
+            for (n in th.target) {
+                plot.target.css(n, th.target[n]);
+            }
+            for (n in th.legend) {
+                plot.legend._elem.css(n, th.legend[n]);
+            }
+            for (n in th.title) {
+                plot.title._elem.css(n, th.title[n]);
+            }
+            var i;
+            for (i=0; i<th.series.length; i++) {
+                for (n in th.series[i]) {
+                    plot.series[i][n] = th.series[i][n];
+                }
+                plot.drawSeries(th.series[i], i);
+            }
         }
         
     };
@@ -161,6 +218,38 @@
             fontSize: null,
             fontWeight: null,
             backgroundColor: null
+        };
+        this.legend = {
+            color: null,
+            fontFamily: null,
+            fontSize: null,
+            fontWeight: null,
+            borderLeftWidth: null,
+            borderRightWidth: null,
+            borderTopWidth: null,
+            borderBottomWidth: null,
+            borderLeftColor: null,
+            borderRightColor: null,
+            borderTopColor: null,
+            borderBottomColor: null,
+            backgroundColor: null
+        };
+        this.title = {
+            color: null,
+            fontFamily: null,
+            fontSize: null,
+            fontWeight: null,
+            paddingBottom: null
+        },
+        this.series = [];
+        this.grid = {
+            drawGridlines: null,
+            gridLineColor: null,
+            gridLineWidth: null,
+            backgroundColor: null,
+            borderColor: null,
+            borderWidth: null,
+            shadow: null
         };
         this.axesTicks = {
             color: null,
@@ -240,105 +329,73 @@
             fontSize: null,
             fontWeight: null
         };
-        this.xaxisLabels = {
+        this.xaxisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.yaxisLabels = {
+        this.yaxisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.x2axisLabels = {
+        this.x2axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y2axisLabels = {
+        this.y2axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y3axisLabels = {
+        this.y3axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y4axisLabels = {
+        this.y4axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y5axisLabels = {
+        this.y5axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y6axisLabels = {
+        this.y6axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y7axisLabels = {
+        this.y7axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y8axisLabels = {
+        this.y8axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.y9axisLabels = {
+        this.y9axisLabel = {
             color: null,
             fontFamily: null,
             fontSize: null,
             fontWeight: null
         };
-        this.legend = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null,
-            borderLeftWidth: null,
-            borderRightWidth: null,
-            borderTopWidth: null,
-            borderBottomWidth: null,
-            borderLeftColor: null,
-            borderRightColor: null,
-            borderTopColor: null,
-            borderBottomColor: null,
-            backgroundColor: null
-        };
-        this.title = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null,
-            paddingBottom: null
-        },
-        this.seriesDefaults = new SeriesProperties();
-        this.series = [];
-        this.grid = {
-            drawGridlines: null,
-            gridlineColor: null,
-            gridlineWidth: null,
-            backgroundColor: null,
-            borderColor: null,
-            borderWidth: null,
-            shadow: null
-        };
+        
         if (typeof(obj) == 'string') {
             this._name = obj;
         }
@@ -347,12 +404,78 @@
         }
     };
     
-    var SeriesProperties = function() {
-        this.color = null,
-        this.lineWidth = null,
-        this.shadow = null,
-        this.fillColor = null,
-        this.fillAlpha = null
+    var LineSeriesProperties = function() {
+        this.color=null;
+        this.lineWidth=null;
+        this.shadow=null;
+        this.fillColor=null;
+        this.fillAlpha=null;
+        this.showMarker=null;
+        this.markerOptions = new MarkerOptions();
+    };
+    
+    var MarkerOptions = function() {
+        this.show = null;
+        this.style = null;
+        this.lineWidth = null;
+        this.size = null;
+        this.color = null;
+        this.shadow = null;
+    }
+    
+    var BarSeriesProperties = function() {
+        this.color=null;
+        this.lineWidth=null;
+        this.shadow=null;
+        this.barPadding=null;
+        this.barMargin=null;
+        this.barWidth=null;
+    };
+    
+    var PieSeriesProperties = function() {
+        this.seriesColors=null;
+        this.padding=null;
+        this.sliceMargin=null;
+        this.fill=null;
+        this.shadow=null;
+        this.startAngle=null;
+        this.lineWidth=null;
+    };
+    
+    var DonutSeriesProperties = function() {
+        this.seriesColors=null;
+        this.padding=null;
+        this.sliceMargin=null;
+        this.fill=null;
+        this.shadow=null;
+        this.startAngle=null;
+        this.lineWidth=null;
+        this.innerDiameter=null;
+        this.thickness=null;
+        this.ringMargin=null;
+    };
+    
+    var FunnelSeriesProperties = function() {
+        this.color=null;
+        this.lineWidth=null;
+        this.shadow=null;
+        this.padding=null;
+        this.sectionMargin=null;
+        this.seriesColors=null;
+    };
+    
+    var MeterSeriesProperties = function() {
+        this.padding=null;
+        this.backgroundColor=null;
+        this.ringColor=null;
+        this.tickColor=null;
+        this.ringWidth=null;
+        this.intervalColors=null;
+        this.intervalInnerRadius=null;
+        this.intervalOuterRadius=null;
+        this.hubRadius=null;
+        this.needleThickness=null;
+        this.needlePad=null;
     };
     
     $.jqplot.postDrawHooks.push($.jqplot.ThemeEngine.init);

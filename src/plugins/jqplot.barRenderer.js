@@ -29,7 +29,7 @@
     $.jqplot.BarRenderer.prototype.constructor = $.jqplot.BarRenderer;
     
     // called with scope of series.
-    $.jqplot.BarRenderer.prototype.init = function(options) {
+    $.jqplot.BarRenderer.prototype.init = function(options, plot) {
         // Group: Properties
         //
         // prop: barPadding
@@ -115,6 +115,14 @@
         // set the shadow renderer options
         var sopts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
+        
+        plot.postInitHooks.push(postInit);
+        plot.postDrawHooks.push(postPlotDraw);
+        plot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+        plot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+        plot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+        plot.eventListenerHooks.push(['jqplotClick', handleClick]);
+        plot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]); 
     };
     
     // called with scope of series
@@ -243,6 +251,8 @@
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
         var pointx, pointy, nvals, nseries, pos;
+        // clear out data colors.
+        this._dataColors = [];
         
         if (this.barWidth == null) {
             this.renderer.setBarWidth.call(this);
@@ -590,13 +600,13 @@
         }
     }
     
-    $.jqplot.postInitHooks.push(postInit);
-    $.jqplot.postDrawHooks.push(postPlotDraw);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
-    $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]); 
+    // $.jqplot.postInitHooks.push(postInit);
+    // $.jqplot.postDrawHooks.push(postPlotDraw);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+    // $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+    // $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]); 
     
     
 })(jQuery);    

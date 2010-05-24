@@ -32,13 +32,21 @@
             this._elem = $('<div class="jqplot-title" style="height:0px;width:0px;"></div>');
         }
         else if (this.text) {
+            var color;
+            if (this.color) {
+                color = this.color;
+            }
+            else if (this.textColor) {
+                color = this.textColor;
+            }
             // don't trust that a stylesheet is present, set the position.
             var styletext = 'position:absolute;top:0px;left:0px;';
             styletext += (this._plotWidth) ? 'width:'+this._plotWidth+'px;' : '';
             styletext += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             styletext += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
             styletext += (this.textAlign) ? 'text-align:'+this.textAlign+';' : 'text-align:center;';
-            styletext += (this.textColor) ? 'color:'+this.textColor+';' : '';
+            styletext += (color) ? 'color:'+color+';' : '';
+            styletext += (this.paddingBottom) ? 'padding-bottom:'+this.paddingBottom+';' : '';
             this._elem = $('<div class="jqplot-title" style="'+styletext+'">'+this.text+'</div>');
         }
         

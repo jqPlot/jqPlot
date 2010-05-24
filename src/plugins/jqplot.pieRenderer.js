@@ -62,7 +62,7 @@
     $.jqplot.PieRenderer.prototype.constructor = $.jqplot.PieRenderer;
     
     // called with scope of a series
-    $.jqplot.PieRenderer.prototype.init = function(options) {
+    $.jqplot.PieRenderer.prototype.init = function(options, plot) {
         // Group: Properties
         //
         // prop: diameter
@@ -140,7 +140,14 @@
             }
         }
         
-        
+        plot.postParseOptionsHooks.push(postParseOptions);
+        plot.postInitHooks.push(postInit);
+        plot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+        plot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+        plot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+        plot.eventListenerHooks.push(['jqplotClick', handleClick]);
+        plot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+        plot.postDrawHooks.push(postPlotDraw);
     };
     
     $.jqplot.PieRenderer.prototype.setGridData = function(plot) {
@@ -593,6 +600,25 @@
         } 
     };
     
+    $.jqplot.PieRenderer.prototype.handleMove = function(ev, gridpos, datapos, neighbor, plot) {
+        if (1){
+            if (neighbor) {
+                var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+                plot.target.trigger('jqplotDataMouseOver', ins);
+                if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                    plot.target.trigger('jqplotDataHighlight', ins);
+                    highlight (plot, ins[0], ins[1]);
+                }
+            }
+            else if (neighbor == null) {
+                unhighlight (plot);
+            }
+        }
+    };
+    
+    
+    // this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
+    
     // setup default renderers for axes and legend so user doesn't have to
     // called with scope of plot
     function preInit(target, data, options) {
@@ -660,55 +686,65 @@
     }
  
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            plot.target.trigger('jqplotDataMouseOver', ins);
-            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                plot.target.trigger('jqplotDataHighlight', ins);
-                highlight (plot, ins[0], ins[1]);
+        // if (plot.series[0] && plot.series[0].renderer.constructor == $.jqplot.PieRenderer){
+            if (neighbor) {
+                var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+                plot.target.trigger('jqplotDataMouseOver', ins);
+                if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                    plot.target.trigger('jqplotDataHighlight', ins);
+                    highlight (plot, ins[0], ins[1]);
+                }
             }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
+            else if (neighbor == null) {
+                unhighlight (plot);
+            }
+        // }
     } 
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                plot.target.trigger('jqplotDataHighlight', ins);
-                highlight (plot, ins[0], ins[1]);
+        // if (plot.series[0] && plot.series[0].renderer.constructor == $.jqplot.PieRenderer) {
+            if (neighbor) {
+                var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+                if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                    plot.target.trigger('jqplotDataHighlight', ins);
+                    highlight (plot, ins[0], ins[1]);
+                }
             }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
+            else if (neighbor == null) {
+                unhighlight (plot);
+            }
+        // }
     }
     
     function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
-        var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
-        if (idx != null && plot.series[idx].highlightMouseDown) {
-            unhighlight(plot);
-        }
-    }
-    
-    function handleClick(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            plot.target.trigger('jqplotDataClick', ins);
-        }
-    }
-    
-    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+        // if (plot.series[0] && plot.series[0].renderer.constructor == $.jqplot.PieRenderer) {
             var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
             if (idx != null && plot.series[idx].highlightMouseDown) {
                 unhighlight(plot);
             }
-            plot.target.trigger('jqplotDataRightClick', ins);
-        }
+        // }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        // if (plot.series[0] && plot.series[0].renderer.constructor == $.jqplot.PieRenderer) {
+            if (neighbor) {
+                var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+                plot.target.trigger('jqplotDataClick', ins);
+            }
+        // }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        // if (plot.series[0] && plot.series[0].renderer.constructor == $.jqplot.PieRenderer) {
+            if (neighbor) {
+                var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+                var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
+                if (idx != null && plot.series[idx].highlightMouseDown) {
+                    unhighlight(plot);
+                }
+                plot.target.trigger('jqplotDataRightClick', ins);
+            }
+        // }
     }    
     
     // called within context of plot
@@ -723,14 +759,14 @@
     }
     
     $.jqplot.preInitHooks.push(preInit);
-    $.jqplot.postParseOptionsHooks.push(postParseOptions);
-    $.jqplot.postInitHooks.push(postInit);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
-    $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
-    $.jqplot.postDrawHooks.push(postPlotDraw);
+    // $.jqplot.postParseOptionsHooks.push(postParseOptions);
+    // $.jqplot.postInitHooks.push(postInit);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
+    // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
+    // $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
+    // $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
+    // $.jqplot.postDrawHooks.push(postPlotDraw);
     
     $.jqplot.PieTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);
