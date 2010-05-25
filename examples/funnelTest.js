@@ -1,7 +1,5 @@
 $(document).ready(function(){
 
-    $.jqplot.config.enablePlugins = true;
-
     s1 = [['Sony',7], ['Samsumg',13], ['LG',14], ['Vizio',5]];
     s2 = [['a', 4], ['b', 12], ['c', 6], ['d', 3]];
     s3 = [['a', 2], ['b', 1], ['c', 3], ['d', 3]];

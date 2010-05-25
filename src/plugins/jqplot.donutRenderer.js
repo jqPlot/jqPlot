@@ -160,14 +160,14 @@
             }
         }
         
-        plot.postParseOptionsHooks.push(postParseOptions);
-        plot.postInitHooks.push(postInit);
-        plot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-        plot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-        plot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-        plot.eventListenerHooks.push(['jqplotClick', handleClick]);
-        plot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
-        plot.postDrawHooks.push(postPlotDraw);
+        plot.postParseOptionsHooks.addOnce(postParseOptions);
+        plot.postInitHooks.addOnce(postInit);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+        plot.postDrawHooks.addOnce(postPlotDraw);
         
         
     };
@@ -772,14 +772,6 @@
     }
     
     $.jqplot.preInitHooks.push(preInit);
-    // $.jqplot.postParseOptionsHooks.push(postParseOptions);
-    // $.jqplot.postInitHooks.push(postInit);
-    // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-    // $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-    // $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
-    // $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]);
-    // $.jqplot.postDrawHooks.push(postPlotDraw);
     
     $.jqplot.DonutTickRenderer = function() {
         $.jqplot.AxisTickRenderer.call(this);

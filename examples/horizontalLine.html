@@ -26,6 +26,7 @@
   <script type="text/javascript" language="javascript">
   
   $(document).ready(function(){
+      $.jqplot.config.enablePlugins = true;
 
 line1 = [[1244337000000, 10], [1244337300000, 10], [1244337600000, 10], [1244337900000, 10], [1244338200000, 10]];
 plot2 = $.jqplot('chart', [line1], {

@@ -30,7 +30,7 @@
     };
     
     // called with scope of plot
-    $.jqplot.ThemeEngine.init = function() {
+    $.jqplot.ThemeEngine.prototype.init = function() {
         // get the default theme from the current plot settings.
         var th = new $.jqplot.Theme({_name:'default'});
         var n, i;
@@ -212,6 +212,7 @@
     
     $.jqplot.Theme = function(obj) {
         this._name = '';
+        this.autoHighlightColors = true;
         this.target = {
             color: null,
             fontFamily: null,
@@ -477,8 +478,6 @@
         this.needleThickness=null;
         this.needlePad=null;
     };
-    
-    $.jqplot.postDrawHooks.push($.jqplot.ThemeEngine.init);
         
 
 })(jQuery);

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Theming Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.donutRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.funnelRenderer.js"></script>
+  <!-- END: load jqplot -->
+
+<style type="text/css">
+.jqplot-target {
+    margin: 30px;
+}
+</style>
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+
+   l1 = [['Seoul', 1], ['Paris', 7], ['Singapore',3], ['Hong  Kong',5], ['Chicago', 2], ['New York', 9]];
+   l2 = [11, 9, 5, 12, 14];
+   l3 = [4, 8, 3, 2, 6];
+
+   plot1 = $.jqplot('chart1',[l1],{
+       title: 'Line Chart',
+       legend: {
+           show: true,
+           location: 'nw'
+       },
+       highlighter: {
+           show:true
+       },
+       cursor: {
+           show: true,
+           zoom: true
+       },
+       axes: {
+           xaxis: {
+               renderer: $.jqplot.CategoryAxisRenderer
+           }
+       }
+       
+   });
+   
+   plot2 = $.jqplot('chart2',[l2, l3],{
+       title: 'Bar Chart',
+       legend: {
+           show: true,
+           location: 'nw'
+       },
+       seriesDefaults: {
+           renderer: $.jqplot.BarRenderer
+       },
+       axes: {
+           xaxis: {
+               renderer: $.jqplot.CategoryAxisRenderer
+           }
+       }
+   });
+   
+   plot2b = $.jqplot('chart2b',[l2, l3],{
+       title: 'Stacked Bar Chart',
+       stackSeries: true,
+       legend: {
+           show: true,
+           location: 'nw'
+       },
+       seriesDefaults: {
+           renderer: $.jqplot.BarRenderer
+       },
+       axes: {
+           xaxis: {
+               renderer: $.jqplot.CategoryAxisRenderer
+           }
+       }
+   });
+   
+   plot3 = $.jqplot('chart3',[l3],{
+       title: 'Pie Chart',
+       legend: {
+           show: true,
+           rendererOptions: {
+               numberColumns: 2,
+               fontSize: '8pt',
+           }
+       },
+       seriesDefaults: {
+           renderer: $.jqplot.PieRenderer
+       }
+   });
+   
+   plot4 = $.jqplot('chart4',[l2, l3],{
+       title: 'Donut Chart',
+       legend: {
+           show: true,
+           rendererOptions: {
+               numberColumns: 2,
+               fontSize: '8pt',
+           }
+       },
+       seriesDefaults: {
+           renderer: $.jqplot.DonutRenderer,
+           rendererOptions: {
+               ringMargin: 4
+           }
+       }
+   });
+
+   plot4 = $.jqplot('chart5',[l1],{
+       title: 'Funnel Chart',
+       legend: {
+           show: true,
+           rendererOptions: {
+               numberColumns: 2,
+               fontSize: '8pt',
+           }
+        },
+       seriesDefaults: {
+           renderer: $.jqplot.FunnelRenderer
+       }
+   });
+   
+ });
+</script>
+  </head>
+  <body>
+<?php include "nav.inc"; ?>
+<div id="chart1" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart2" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart2b" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart3" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart4" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart5" class="plot" style="width:400px;height:260px;"></div>
+  </body>
+</html>

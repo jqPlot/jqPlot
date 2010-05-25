@@ -116,13 +116,13 @@
         var sopts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         
-        plot.postInitHooks.push(postInit);
-        plot.postDrawHooks.push(postPlotDraw);
-        plot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-        plot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-        plot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-        plot.eventListenerHooks.push(['jqplotClick', handleClick]);
-        plot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]); 
+        plot.postInitHooks.addOnce(postInit);
+        plot.postDrawHooks.addOnce(postPlotDraw);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick); 
     };
     
     // called with scope of series
@@ -599,14 +599,6 @@
             plot.target.trigger('jqplotDataRightClick', ins);
         }
     }
-    
-    // $.jqplot.postInitHooks.push(postInit);
-    // $.jqplot.postDrawHooks.push(postPlotDraw);
-    // $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
-    // $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleMouseDown]);
-    // $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleMouseUp]);
-    // $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
-    // $.jqplot.eventListenerHooks.push(['jqplotRightClick', handleRightClick]); 
     
     
 })(jQuery);    

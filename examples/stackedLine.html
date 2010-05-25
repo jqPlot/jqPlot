@@ -20,6 +20,7 @@
 <script type="text/javascript" language="javascript">
 
 $(document).ready(function(){
+      $.jqplot.config.enablePlugins = true;
 var line1 = [['04-05-2006',4], ['04-06-2006',5],['05-03-2006',9], ['05-15-2006',6]];
 var line2 = [['04-05-2006',1], ['04-06-2006',2],['05-03-2006',6], ['05-15-2006',1]];
 plot1 = $.jqplot("chart4", [line1,line2], {

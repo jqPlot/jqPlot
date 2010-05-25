@@ -146,6 +146,7 @@
         var plot = new jqPlot();
         plot.init(target, _data, _options);
         plot.draw();
+        plot.themeEngine.init.call(plot);
         return plot;
     };
         
@@ -1091,6 +1092,47 @@
         this._ctx = this._elem.get(0).getContext("2d");
         return this._ctx;
     };
+    
+    $.jqplot.HooksManager = function () {
+        this.hooks =[];
+    };
+    
+    $.jqplot.HooksManager.prototype.addOnce = function(fn) {
+        var havehook = false, i;
+        for (i=0; i<this.hooks.length; i++) {
+            if (this.hooks[i][0] == fn) {
+                havehook = true;
+            }
+        }
+        if (!havehook) {
+            this.hooks.push(fn);
+        }
+    };
+    
+    $.jqplot.HooksManager.prototype.add = function(fn) {
+        this.hooks.push(fn);
+    };
+    
+    $.jqplot.EventListenerManager = function () {
+        this.hooks =[];
+    };
+    
+    $.jqplot.EventListenerManager.prototype.addOnce = function(ev, fn) {
+        var havehook = false, h, i;
+        for (i=0; i<this.hooks.length; i++) {
+            h = this.hooks[i];
+            if (h[0] == ev && h[1] == fn) {
+                havehook = true;
+            }
+        }
+        if (!havehook) {
+            this.hooks.push([ev, fn]);
+        }
+    };
+    
+    $.jqplot.EventListenerManager.prototype.add = function(ev, fn) {
+        this.hooks.push([ev, fn]);
+    };
 
     /**
      * Class: jqPlot
@@ -1224,23 +1266,23 @@
         // used in mekko chart.
         this._sumy = 0;
         this._sumx = 0;
-        this.preInitHooks = [];
-        this.postInitHooks = [];
-        this.preParseOptionsHooks = [];
-        this.postParseOptionsHooks = [];
-        this.preDrawHooks = [];
-        this.postDrawHooks = [];
-        this.preDrawSeriesHooks = [];
-        this.postDrawSeriesHooks = [];
-        this.preDrawLegendHooks = [];
-        this.addLegendRowHooks = [];
-        this.preSeriesInitHooks = [];
-        this.postSeriesInitHooks = [];
-        this.preParseSeriesOptionsHooks = [];
-        this.postParseSeriesOptionsHooks = [];
-        this.eventListenerHooks = [];
-        this.preDrawSeriesShadowHooks = [];
-        this.postDrawSeriesShadowHooks = [];
+        this.preInitHooks = new $.jqplot.HooksManager();
+        this.postInitHooks = new $.jqplot.HooksManager();
+        this.preParseOptionsHooks = new $.jqplot.HooksManager();
+        this.postParseOptionsHooks = new $.jqplot.HooksManager();
+        this.preDrawHooks = new $.jqplot.HooksManager();
+        this.postDrawHooks = new $.jqplot.HooksManager();
+        this.preDrawSeriesHooks = new $.jqplot.HooksManager();
+        this.postDrawSeriesHooks = new $.jqplot.HooksManager();
+        this.preDrawLegendHooks = new $.jqplot.HooksManager();
+        this.addLegendRowHooks = new $.jqplot.HooksManager();
+        this.preSeriesInitHooks = new $.jqplot.HooksManager();
+        this.postSeriesInitHooks = new $.jqplot.HooksManager();
+        this.preParseSeriesOptionsHooks = new $.jqplot.HooksManager();
+        this.postParseSeriesOptionsHooks = new $.jqplot.HooksManager();
+        this.eventListenerHooks = new $.jqplot.EventListenerManager();
+        this.preDrawSeriesShadowHooks = new $.jqplot.HooksManager();
+        this.postDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         
         this.colorGenerator = $.jqplot.ColorGenerator;
         
@@ -1253,6 +1295,11 @@
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
             }
+
+            for (var i=0; i<this.preInitHooks.hooks.length; i++) {
+                this.preInitHooks.hooks[i].call(this, target, data, options);
+            }
+            
             this.targetId = '#'+target;
             this.target = $('#'+target);
             if (!this.target.get(0)) {
@@ -1341,11 +1388,17 @@
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
                     $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
                 }
+                for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
+                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
+                }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
                     $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
+                }
+                for (var j=0; j<this.postSeriesInitHooks.hooks.length; j++) {
+                    plot.postSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
                 }
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
@@ -1368,8 +1421,8 @@
                 $.jqplot.postInitHooks[i].call(this, target, data, options);
             }
 
-            for (var i=0; i<this.postInitHooks.length; i++) {
-                this.postInitHooks[i].call(this, target, data, options);
+            for (var i=0; i<this.postInitHooks.hooks.length; i++) {
+                this.postInitHooks.hooks[i].call(this, target, data, options);
             }
         };  
         
@@ -1615,8 +1668,8 @@
         })(this);
     
         this.parseOptions = function(options){
-            for (var i=0; i<this.preParseOptionsHooks.length; i++) {
-                this.preParseOptionsHooks[i].call(this, options);
+            for (var i=0; i<this.preParseOptionsHooks.hooks.length; i++) {
+                this.preParseOptionsHooks.hooks[i].call(this, options);
             }
             for (var i=0; i<$.jqplot.preParseOptionsHooks.length; i++) {
                 $.jqplot.preParseOptionsHooks[i].call(this, options);
@@ -1680,8 +1733,8 @@
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
-                for (var j=0; j<this.preParseSeriesOptionsHooks.length; j++) {
-                    this.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+                for (var j=0; j<this.preParseSeriesOptionsHooks.hooks.length; j++) {
+                    this.preParseSeriesOptionsHooks.hooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
                 $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i]);
                 var dir = 'vertical';
@@ -1720,6 +1773,9 @@
                 for (var j=0; j<$.jqplot.postParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.postParseSeriesOptionsHooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
                 }
+                for (var j=0; j<this.postParseSeriesOptionsHooks.hooks.length; j++) {
+                    this.postParseSeriesOptionsHooks.hooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
+                }
             }
             
             // copy the grid and title options into this object.
@@ -1752,8 +1808,8 @@
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
                 $.jqplot.postParseOptionsHooks[i].call(this, options);
             }
-            for (var i=0; i<this.postParseOptionsHooks.length; i++) {
-                this.postParseOptionsHooks[i].call(this, options);
+            for (var i=0; i<this.postParseOptionsHooks.hooks.length; i++) {
+                this.postParseOptionsHooks.hooks[i].call(this, options);
             }
         };
         
@@ -1828,8 +1884,8 @@
                 for (i=0; i<$.jqplot.preDrawHooks.length; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
                 }
-                for (i=0; i<this.preDrawHooks.length; i++) {
-                    this.preDrawHooks[i].call(this);
+                for (i=0; i<this.preDrawHooks.hooks.length; i++) {
+                    this.preDrawHooks.hooks[i].call(this);
                 }
                 // create an underlying canvas to be used for special features.
                 this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas'));
@@ -1935,18 +1991,18 @@
                 }
             
                 // register event listeners on the overlay canvas
-                for (var i=0; i<this.eventListenerHooks.length; i++) {
+                for (var i=0; i<this.eventListenerHooks.hooks.length; i++) {
                     // in the handler, this will refer to the eventCanvas dom element.
                     // make sure there are references back into plot objects.
-                    this.eventCanvas._elem.bind(this.eventListenerHooks[i][0], {plot:this}, this.eventListenerHooks[i][1]);
+                    this.eventCanvas._elem.bind(this.eventListenerHooks.hooks[i][0], {plot:this}, this.eventListenerHooks.hooks[i][1]);
                 }
 
                 for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
                     $.jqplot.postDrawHooks[i].call(this);
                 }
 
-                for (var i=0; i<this.postDrawHooks.length; i++) {
-                    this.postDrawHooks[i].call(this);
+                for (var i=0; i<this.postDrawHooks.hooks.length; i++) {
+                    this.postDrawHooks.hooks[i].call(this);
                 }
             
                 if (this.target.is(':visible')) {

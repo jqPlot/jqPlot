@@ -356,7 +356,7 @@
         }
         var w = cw - offx - 2 * this.padding;
         var h = ch - offy - 2 * this.padding;
-        if (this.labelPosition == 'bottom') {
+        if (this.labelPosition == 'bottom' && this.label) {
             h -= this._labelElem.outerHeight(true);
         }
         var mindim = Math.min(w,h);

@@ -20,7 +20,8 @@
 
 <script type="text/javascript" language="javascript">
   
- $(document).ready(function(){		
+ $(document).ready(function(){
+      $.jqplot.config.enablePlugins = true;		
     line1 = [20, 10];
     line2 = [80, 90];
     plot2 = $.jqplot('chart2', [line1, line2], {

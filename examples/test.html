@@ -27,6 +27,7 @@
   <script type="text/javascript" language="javascript">
   
   $(document).ready(function(){
+      $.jqplot.config.enablePlugins = true;
     
 			data = [ [25,1], [26,0], [27,1], [28,0], [29,0], [30,3], [31,3]];
 			plot1 = $.jqplot('chartdiv', [data], {
