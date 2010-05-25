@@ -525,7 +525,7 @@
     
     $.jqplot.BarRenderer.prototype.highlightBar = function(ctx, points, options) {
         
-    }
+    };
     
     function highlight (plot, sidx, pidx, points) {
         var s = plot.series[sidx];

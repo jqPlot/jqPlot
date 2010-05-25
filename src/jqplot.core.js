@@ -2131,7 +2131,7 @@
                                 }
                                 // else side by side series
                                 else {
-                                    
+                                    //
                                 }
                                 break;
                                 
@@ -2522,7 +2522,7 @@
         
         this.activateTheme = function (name) {
             this.themeEngine.activate(this, name);
-        }
+        };
     }
     
     

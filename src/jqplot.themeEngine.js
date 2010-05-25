@@ -241,7 +241,7 @@
             fontSize: null,
             fontWeight: null,
             paddingBottom: null
-        },
+        };
         this.series = [];
         this.grid = {
             drawGridlines: null,
@@ -422,7 +422,7 @@
         this.size = null;
         this.color = null;
         this.shadow = null;
-    }
+    };
     
     var BarSeriesProperties = function() {
         this.color=null;
