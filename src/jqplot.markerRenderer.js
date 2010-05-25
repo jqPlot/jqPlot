@@ -173,43 +173,45 @@
         options = options || {};
         // hack here b/c shape renderer uses canvas based color style options
         // and marker uses css style names.
-        if (options.color && !options.fillStyle) {
-            options.fillStyle = options.color;
-        }
-        if (options.color && !options.strokeStyle) {
-            options.strokeStyle = options.color;
-        }
-        switch (this.style) {
-            case 'diamond':
-                this.drawDiamond(x,y,ctx, false, options);
-                break;
-            case 'filledDiamond':
-                this.drawDiamond(x,y,ctx, true, options);
-                break;
-            case 'circle':
-                this.drawCircle(x,y,ctx, false, options);
-                break;
-            case 'filledCircle':
-                this.drawCircle(x,y,ctx, true, options);
-                break;
-            case 'square':
-                this.drawSquare(x,y,ctx, false, options);
-                break;
-            case 'filledSquare':
-                this.drawSquare(x,y,ctx, true, options);
-                break;
-            case 'x':
-                this.drawX(x,y,ctx, true, options);
-                break;
-            case 'plus':
-                this.drawPlus(x,y,ctx, true, options);
-                break;
-            case 'dash':
-                this.drawDash(x,y,ctx, true, options);
-                break;
-            default:
-                this.drawDiamond(x,y,ctx, false, options);
-                break;
+        if (options.show == null || options.show != false) {
+            if (options.color && !options.fillStyle) {
+                options.fillStyle = options.color;
+            }
+            if (options.color && !options.strokeStyle) {
+                options.strokeStyle = options.color;
+            }
+            switch (this.style) {
+                case 'diamond':
+                    this.drawDiamond(x,y,ctx, false, options);
+                    break;
+                case 'filledDiamond':
+                    this.drawDiamond(x,y,ctx, true, options);
+                    break;
+                case 'circle':
+                    this.drawCircle(x,y,ctx, false, options);
+                    break;
+                case 'filledCircle':
+                    this.drawCircle(x,y,ctx, true, options);
+                    break;
+                case 'square':
+                    this.drawSquare(x,y,ctx, false, options);
+                    break;
+                case 'filledSquare':
+                    this.drawSquare(x,y,ctx, true, options);
+                    break;
+                case 'x':
+                    this.drawX(x,y,ctx, true, options);
+                    break;
+                case 'plus':
+                    this.drawPlus(x,y,ctx, true, options);
+                    break;
+                case 'dash':
+                    this.drawDash(x,y,ctx, true, options);
+                    break;
+                default:
+                    this.drawDiamond(x,y,ctx, false, options);
+                    break;
+            }
         }
     };
 })(jQuery);    

@@ -22,6 +22,8 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.funnelRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
   <!-- END: load jqplot -->
 
 <style type="text/css">
@@ -33,48 +35,104 @@
 <script language="javascript" type="text/javascript">
 $(document).ready(function(){
 
-   l1 = [['Seoul', 1], ['Paris', 7], ['Singapore',3], ['Hong  Kong',5], ['Chicago', 2], ['New York', 9]];
-   l2 = [11, 9, 5, 12, 14];
-   l3 = [4, 8, 3, 2, 6];
+    l1 = [['Seoul', 1], ['Paris', 7], ['Singapore',3], ['Hong  Kong',5], ['Chicago', 2], ['New York', 9]];
+    l2 = [11, 9, 5, 12, 14];
+    l3 = [4, 8, 5, 3, 6];
+    l4 = [12, 6, 13, 11, 2];
+    l5 = [4, -3, 3, 6, 2, -2];
 
-   plot1 = $.jqplot('chart1',[l1],{
+    pop1980 = [7071639, 2968528, 3005072, 1595138, 789704, 1688210, 785940, 904599, 875538, 629400]
+    pop1990 = [7322564, 3485398, 2783726, 1630553, 983403, 1585577, 935933, 1006877, 1110549, 782248]
+    pop2000 = [8008654, 3694644, 2896051, 1974152, 1322025, 1517550, 1160005, 1188603, 1223418, 895809]
+    pop2008 = [8363710, 3833995, 2853114, 2242193, 1567924, 1447395, 1351305, 1279910, 1279329, 948279]
+
+    ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas", "San Diego", "San Jose"]      
+
+    plot1 = $.jqplot('chart1',[l2],{
        title: 'Line Chart',
-       legend: {
-           show: true,
-           location: 'nw'
-       },
        highlighter: {
            show:true
        },
        cursor: {
            show: true,
            zoom: true
-       },
-       axes: {
-           xaxis: {
-               renderer: $.jqplot.CategoryAxisRenderer
+       }
+    });
+    
+    plot1b = $.jqplot('chart1b',[l2, l3, l4],{
+       stackSeries: true,
+       showMarker: false,
+       seriesDefaults: {
+           fill: true
+       }
+    });
+    
+    plot1c = $.jqplot('chart1c',[l5],{
+       stackSeries: true,
+       showMarker: false,
+       seriesDefaults: {
+           fill: true,
+           fillToZero: true,
+           rendererOptions: {
+               highlightMouseDown: true
            }
        }
-       
-   });
-   
-   plot2 = $.jqplot('chart2',[l2, l3],{
-       title: 'Bar Chart',
+    });
+
+    plot2 = $.jqplot('chart2',[pop1980, pop1990, pop2000, pop2008],{
+       title: 'City Population',
        legend: {
-           show: true,
-           location: 'nw'
+           show: true
        },
        seriesDefaults: {
-           renderer: $.jqplot.BarRenderer
+           renderer: $.jqplot.BarRenderer,
+           fillToZero: true,
+           rendererOptions: {
+               barPadding: 2
+           }
        },
+       series: [
+          {label: '1980'},
+          {label: '1990'},
+          {label: '2000'},
+          {label: '2008 (est)'}
+       ],
        axes: {
            xaxis: {
-               renderer: $.jqplot.CategoryAxisRenderer
+               renderer: $.jqplot.CategoryAxisRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               ticks: ticks,
+               tickOptions: {
+                   angle: -30
+                }
+           },
+           yaxis: {
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               max: 9000000,
+               min: 0,
+               tickOptions: {
+                   formatString: '%d',
+                   angle: -30
+                }
            }
        }
-   });
-   
-   plot2b = $.jqplot('chart2b',[l2, l3],{
+    });
+    
+    plot3 = $.jqplot('chart3',[l1],{
+       title: 'Global City Index',
+       legend: {
+           show: true,
+           rendererOptions: {
+               // numberColumns: 2,
+               fontSize: '10pt',
+           }
+        },
+       seriesDefaults: {
+           renderer: $.jqplot.FunnelRenderer
+       }
+    });
+    
+    plot4 = $.jqplot('chart4',[l2, l3],{
        title: 'Stacked Bar Chart',
        stackSeries: true,
        legend: {
@@ -89,63 +147,78 @@ $(document).ready(function(){
                renderer: $.jqplot.CategoryAxisRenderer
            }
        }
-   });
-   
-   plot3 = $.jqplot('chart3',[l3],{
+    });
+    
+    plot5 = $.jqplot('chart5',[l3],{
        title: 'Pie Chart',
-       legend: {
-           show: true,
-           rendererOptions: {
-               numberColumns: 2,
-               fontSize: '8pt',
-           }
-       },
        seriesDefaults: {
            renderer: $.jqplot.PieRenderer
        }
-   });
-   
-   plot4 = $.jqplot('chart4',[l2, l3],{
+    });
+    
+    plot6 = $.jqplot('chart6',[l2, l3],{
        title: 'Donut Chart',
-       legend: {
-           show: true,
-           rendererOptions: {
-               numberColumns: 2,
-               fontSize: '8pt',
-           }
-       },
        seriesDefaults: {
            renderer: $.jqplot.DonutRenderer,
            rendererOptions: {
                ringMargin: 4
            }
        }
-   });
+    });
 
-   plot4 = $.jqplot('chart5',[l1],{
-       title: 'Funnel Chart',
-       legend: {
-           show: true,
-           rendererOptions: {
-               numberColumns: 2,
-               fontSize: '8pt',
-           }
+    e1 = plot1.themeEngine;
+    brass = e1.copy('default', 'brass');
+    brass.target.fontFamily = 'Georgia, "Times New Roman"';
+    brass.title.fontFamily = 'Georgia, "Times New Roman"';
+    brass.grid.backgroundColor = "rgb(216, 198, 114)";
+    brass.grid.drawGridlines = false;
+    brass.series[0].lineWidth = 6.5;
+    brass.series[0].markerOptions.show = false;
+    
+    temp = {
+        target: {
+            fontFamily: '"Comic Sans MS", cursive',
+            fontSize: '11pt',
+            color: "#907CEC"
         },
-       seriesDefaults: {
-           renderer: $.jqplot.FunnelRenderer
-       }
-   });
-   
- });
+        grid: {
+            backgroundColor: "#593D2B"
+        },
+        title: {
+            fontFamily: '"Comic Sans MS", cursive',
+            fontSize: '15pt'
+        },
+        series: [
+            {
+                color: "#DBBCAF",
+                lineWidth: 8,
+                markerOptions: {
+                    show: false
+                }
+            }
+        ]
+    };
+    chocolate = plot1.themeEngine.copy('default', 'chocolate', temp);
+    
+
+});
+
+function switchTheme(plot, theme) {
+    plot.activateTheme(theme);
+}
+
+
 </script>
   </head>
   <body>
 <?php include "nav.inc"; ?>
 <div id="chart1" class="plot" style="width:400px;height:260px;"></div>
-<div id="chart2" class="plot" style="width:400px;height:260px;"></div>
-<div id="chart2b" class="plot" style="width:400px;height:260px;"></div>
-<div id="chart3" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart1b" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart1c" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart2" class="plot" style="width:700px;height:310px;"></div>
+<div id="chart3" class="plot" style="width:400px;height:320px;"></div>
 <div id="chart4" class="plot" style="width:400px;height:260px;"></div>
 <div id="chart5" class="plot" style="width:400px;height:260px;"></div>
+<div id="chart6" class="plot" style="width:400px;height:260px;"></div>
   </body>
 </html>

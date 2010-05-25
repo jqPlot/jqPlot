@@ -388,9 +388,9 @@
                     }
                     
                     points.push([xstart, base+this.barWidth/2]);
-                    points.push([gridData[i][0], base+this.barWidth/2]);
-                    points.push([gridData[i][0], base-this.barWidth/2]);
                     points.push([xstart, base-this.barWidth/2]);
+                    points.push([gridData[i][0], base-this.barWidth/2]);
+                    points.push([gridData[i][0], base+this.barWidth/2]);
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
@@ -522,10 +522,6 @@
         this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions));
         var hctx = this.plugins.barRenderer.highlightCanvas.setContext();
     }   
-    
-    $.jqplot.BarRenderer.prototype.highlightBar = function(ctx, points, options) {
-        
-    };
     
     function highlight (plot, sidx, pidx, points) {
         var s = plot.series[sidx];

@@ -22,6 +22,7 @@
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
   <!-- END: load jqplot -->
 
   <script type="text/javascript" src="barTest.js"></script>
@@ -67,6 +68,10 @@
     <div><span>Moused Over: </span><span id="info2">Nothing</span></div>
     
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:300px; height:300px;"></div>
+    
+    <div><span>Moused Over: </span><span id="info2b">Nothing</span></div>
+    
+    <div id="chart2b" style="margin-top:20px; margin-left:20px; width:300px; height:300px;"></div>
     
     <p>The next example has the plot's 'captureRightClick' option set to true.  This causes the plot to fire a 'jqplotRightClick' event the the user clicks the right mouse button over a bar.  Here, the 'highlightMouseDown' option is also set to true.  This will highlight a slice on mouse down instead of on move over.  Highlighting will occur for either left or right click.</p>
 

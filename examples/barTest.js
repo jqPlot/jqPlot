@@ -19,7 +19,8 @@ $(document).ready(function(){
                 renderer: $.jqplot.CategoryAxisRenderer,
                 ticks: ticks
             }
-        }
+        },
+        highlighter: { show: false }
     });
     
     plot2 = $.jqplot('chart2', [s1, s2], {
@@ -30,6 +31,21 @@ $(document).ready(function(){
             xaxis: {
                 renderer: $.jqplot.CategoryAxisRenderer,
                 ticks: ticks
+            }
+        }
+    });
+    
+    plot2b = $.jqplot('chart2b', [[[2,1], [4,2], [6,3], [3,4]], [[5,1], [1,2], [3,3], [4,4]]], {
+        seriesDefaults: {
+            renderer:$.jqplot.BarRenderer,
+            shadowAngle: 135,
+            rendererOptions: {
+                barDirection: 'horizontal'
+            }
+        },
+        axes: {
+            yaxis: {
+                renderer: $.jqplot.CategoryAxisRenderer
             }
         }
     });
@@ -68,7 +84,19 @@ $(document).ready(function(){
         function (ev) {
             $('#info2').html('Nothing');
         }
-    ); 
+    );
+    
+    $('#chart2b').bind('jqplotDataHighlight', 
+        function (ev, seriesIndex, pointIndex, data) {
+            $('#info2b').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+        }
+    );
+    
+    $('#chart2b').bind('jqplotDataUnhighlight', 
+        function (ev) {
+            $('#info2b').html('Nothing');
+        }
+    );
     
     $('#chart3').bind('jqplotDataRightClick', 
         function (ev, seriesIndex, pointIndex, data) {

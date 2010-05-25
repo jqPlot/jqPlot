@@ -842,6 +842,7 @@
         if (this.markerOptions.show == null) {
             this.markerOptions.show = this.showMarker;
         }
+        this.showMarker = this.markerOptions.show;
         // the markerRenderer is called within it's own scaope, don't want to overwrite series options!!
         this.markerRenderer.init(this.markerOptions);
     };
@@ -2111,33 +2112,13 @@
                 s = series[i];
                 switch (s.renderer.constructor) {
                     case $.jqplot.BarRenderer:
-                        switch (s.barDirection) {
-                            case 'vertical':
-                                // is it a single series or a stacked series
-                                if (true) {
-                                    x = gridpos.x;
-                                    y = gridpos.y;
-                                    bw = s.barWidth/2;
-                                    for (j=s.gridData.length-1; j>=0; j--) {
-                                        // p = s.gridData[j];
-                                        // pp = s._prevGridData[j] || [p[0], s.canvas._ctx.canvas.height];
-                                        // points = [[p[0]-bw, p[1]], [p[0]+bw, p[1]], [p[0]+bw, pp[1]], [p[0]-bw, pp[1]]];
-                                        // points = [p[0]-bw, p[1], bw, pp[1]-p[1]];
-                                        points = s._barPoints[j];
-                                        if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
-                                            return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
-                                        }
-                                    }
-                                }
-                                // else side by side series
-                                else {
-                                    //
-                                }
-                                break;
-                                
-                            case 'horizontal':
-                                //
-                                break;
+                        x = gridpos.x;
+                        y = gridpos.y;
+                        for (j=s.gridData.length-1; j>=0; j--) {
+                            points = s._barPoints[j];
+                            if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
+                                return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
+                            }
                         }
                         break;
                     
@@ -2261,6 +2242,83 @@
                         }         
                         break;           
                     
+                    case $.jqplot.LineRenderer:
+                        x = gridpos.x;
+                        y = gridpos.y;
+                        r = s.renderer;
+                        if (s.show) {
+                            if (s.fill) {
+                                x = gridpos.x;
+                                y = gridpos.y;
+                                // first check if it is in bounding box
+                                var inside = false;
+                                if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
+                                    // now check the crossing number         
+                                    
+                                    var numPoints = s._areaPoints.length;
+                                    var ii;
+                                    var j = numPoints-1;
+
+                                    for(var ii=0; ii < numPoints; ii++) { 
+                                    	var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                    	var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+
+                                    	if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)	 {
+                                    		if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                    			inside = !inside;
+                                    		}
+                                    	}
+
+                                    	j = ii;
+                                    }        
+                                }
+                                if (inside) {
+                                    return {seriesIndex:i, pointIndex:null, gridData:s.gridData, data:s.data, points:s._areaPoints};
+                                }
+                                break;
+                                
+                            }
+                            else {
+                                t = s.markerRenderer.size/2+s.neighborThreshold;
+                                threshold = (t > 0) ? t : 0;
+                                for (var j=0; j<s.gridData.length; j++) {
+                                    p = s.gridData[j];
+                                    // neighbor looks different to OHLC chart.
+                                    if (r.constructor == $.jqplot.OHLCRenderer) {
+                                        if (r.candleStick) {
+                                            var yp = s._yaxis.series_u2p;
+                                            if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                                return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                            }
+                                        }
+                                        // if an open hi low close chart
+                                        else if (!r.hlc){
+                                            var yp = s._yaxis.series_u2p;
+                                            if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                                return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                            }
+                                        }
+                                        // a hi low close chart
+                                        else {
+                                            var yp = s._yaxis.series_u2p;
+                                            if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
+                                                return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                            }
+                                        }
+                            
+                                    }
+                                    else {
+                                        d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
+                                        if (d <= threshold && (d <= d0 || d0 == null)) {
+                                           d0 = d;
+                                           return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                        }
+                                    }
+                                } 
+                            }
+                        }
+                        break;
+                        
                     default:
                         x = gridpos.x;
                         y = gridpos.y;
@@ -2526,6 +2584,36 @@
     }
     
     
+    // conpute a highlight color or array of highlight colors from given colors.
+    $.jqplot.computeHighlightColors  = function(colors) {
+        var ret;
+        if (typeof(colors) == "array") {
+            ret = [];
+            for (var i=0; i<colors.length; i++){
+                var rgba = $.jqplot.getColorComponents(colors[i]);
+                var newrgb = [rgba[0], rgba[1], rgba[2]];
+                var sum = newrgb[0] + newrgb[1] + newrgb[2];
+                for (var j=0; j<3; j++) {
+                    // when darkening, lowest color component can be is 60.
+                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                    newrgb[j] = parseInt(newrgb[j], 10);
+                }
+                ret.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+            }
+        }
+        else {
+            var rgba = $.jqplot.getColorComponents(colors);
+            var newrgb = [rgba[0], rgba[1], rgba[2]];
+            var sum = newrgb[0] + newrgb[1] + newrgb[2];
+            for (var j=0; j<3; j++) {
+                // when darkening, lowest color component can be is 60.
+                newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                newrgb[j] = parseInt(newrgb[j], 10);
+            }
+            ret = 'rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')';
+        }
+        return ret;
+    }
         
    $.jqplot.ColorGenerator = function(colors) {
         var idx = 0;

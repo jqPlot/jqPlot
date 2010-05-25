@@ -145,11 +145,15 @@
             for (n in th.target) {
                 plot.target.css(n, th.target[n]);
             }
-            for (n in th.legend) {
-                plot.legend._elem.css(n, th.legend[n]);
+            if (plot.legend.show) { 
+                for (n in th.legend) {
+                    plot.legend._elem.css(n, th.legend[n]);
+                }
             }
-            for (n in th.title) {
-                plot.title._elem.css(n, th.title[n]);
+            if (plot.title.show) {
+                for (n in th.title) {
+                    plot.title._elem.css(n, th.title[n]);
+                }
             }
             var i;
             for (i=0; i<th.series.length; i++) {
@@ -162,7 +166,10 @@
         
     };
     
-    $.jqplot.ThemeEngine.prototype.add = function(theme) {
+    $.jqplot.ThemeEngine.prototype.add = function(theme, name) {
+        if (name) {
+            theme._name = name;
+        }
         if (!this.themes.hasOwnProperty(theme._name)) {
             this.themes[theme._name] = theme;
         }
@@ -179,8 +186,9 @@
     // create and return a copy of the current active theme.
     $.jqplot.ThemeEngine.prototype.newTheme = function(name) {
         name = name || Date.parse(new Date());
-        var th = new $.jqplot.Theme(name);
-        $.extend(true, th, this.activeTheme);
+        // var th = new $.jqplot.Theme(name);
+        var th = $.extend(true, {}, this.activeTheme);
+        th._name = name;
         this.add(th);
         return th;      
     };
@@ -197,10 +205,10 @@
         throw new Error("jqplot.ThemeEngine Error: Old name or new name invalid");
     };
     
-    $.jqplot.ThemeEngine.prototype.copy = function (sourceName, targetName) {
+    $.jqplot.ThemeEngine.prototype.copy = function (sourceName, targetName, obj) {
         if (this.themes.hasOwnProperty(sourceName) && !this.themes.hasOwnProperty(targetName)) {
-            var th = new $.jqplot.Theme(targetName);
-            $.extend(true, th, this.themes[sourceName]);
+            // var th = new $.jqplot.Theme(targetName);
+            var th = $.extend(true, {}, this.themes[sourceName], obj);
             th._name = targetName;
             this.add(th);
             return th;

@@ -25,7 +25,30 @@
     };
     
     // called with scope of series.
-    $.jqplot.LineRenderer.prototype.init = function(options) {
+    $.jqplot.LineRenderer.prototype.init = function(options, plot) {
+        // prop: highlightMouseOver
+        // True to highlight slice when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
+        this.highlightMouseOver = true;
+        // prop: highlightMouseDown
+        // True to highlight when a mouse button is pressed over a area on a filled plot.
+        // This will be disabled if highlightMouseOver is true.
+        this.highlightMouseDown = false;
+        // prop: highlightColor
+        // color to use when highlighting an area on a filled plot.
+        this.highlightColor = null;
+        
+        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+        if (options.highlightMouseDown && options.highlightMouseOver == null) {
+            options.highlightMouseOver = false;
+        }
+        
+        $.extend(true, this, {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor});
+        
+        delete (options.highlightMouseOver);
+        delete (options.highlightMouseDown);
+        delete (options.highlightColor);
+        
         $.extend(true, this.renderer, options);
         // set the shape renderer options
         var opts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
@@ -42,6 +65,21 @@
         }
         var sopts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
+        this._areaPoints = [];
+        this._boundingBox = [[0,0],[0,0]];
+        if (!this.highlightColor) {
+            this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
+        }
+        
+
+        plot.postInitHooks.addOnce(postInit);
+        plot.postDrawHooks.addOnce(postPlotDraw);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+
     };
     
     // Method: setGridData
@@ -95,6 +133,7 @@
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
+        var xmin, ymin, xmax, ymax;
         ctx.save();
         if (gd.length) {
             if (showLine) {
@@ -118,14 +157,17 @@
                         if (this.index == 0 || !this._stack) {
                         
                             var tempgd = [];
+                            this._areaPoints = [];
                             var pyzero = this._yaxis.series_u2p(this.fillToValue);
                             var pxzero = this._xaxis.series_u2p(this.fillToValue);
                             
                             if (this.fillAxis == 'y') {
                                 tempgd.push([gd[0][0], pyzero]);
+                                this._areaPoints.push([gd[0][0], pyzero]);
                                 
                                 for (var i=0; i<gd.length-1; i++) {
                                     tempgd.push(gd[i]);
+                                    this._areaPoints.push(gd[i]);
                                     // do we have an axis crossing?
                                     if (this._plotData[i][1] * this._plotData[i+1][1] < 0) {
                                         if (this._plotData[i][1] < 0) {
@@ -139,6 +181,7 @@
                                         
                                         var xintercept = gd[i][0] + (gd[i+1][0] - gd[i][0]) * (pyzero-gd[i][1])/(gd[i+1][1] - gd[i][1]);
                                         tempgd.push([xintercept, pyzero]);
+                                        this._areaPoints.push([xintercept, pyzero]);
                                         // now draw this shape and shadow.
                                         if (shadow) {
                                             this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
@@ -146,6 +189,7 @@
                                         this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
                                         // now empty temp array and continue
                                         tempgd = [[xintercept, pyzero]];
+                                        // this._areaPoints = [[xintercept, pyzero]];
                                     }   
                                 }
                                 if (this._plotData[gd.length-1][1] < 0) {
@@ -157,7 +201,9 @@
                                     opts.fillStyle = posfs;
                                 }
                                 tempgd.push(gd[gd.length-1]);
+                                this._areaPoints.push(gd[gd.length-1]);
                                 tempgd.push([gd[gd.length-1][0], pyzero]); 
+                                this._areaPoints.push([gd[gd.length-1][0], pyzero]); 
                             }
                             // now draw this shape and shadow.
                             if (shadow) {
@@ -177,6 +223,7 @@
                             var prev = this._prevGridData;
                             for (var i=prev.length; i>0; i--) {
                                 gd.push(prev[i-1]);
+                                this._areaPoints.push(prev[i-1]);
                             }
                             if (shadow) {
                                 this.renderer.shadowRenderer.draw(ctx, gd, opts);
@@ -206,6 +253,7 @@
                                 gd.push(prev[i-1]);
                             }
                         }
+                        this._areaPoints = gd;
                         if (shadow) {
                             this.renderer.shadowRenderer.draw(ctx, gd, opts);
                         }
@@ -236,6 +284,22 @@
                     this.renderer.shapeRenderer.draw(ctx, gd, opts);
                 }
             }
+            // calculate the bounding box
+            for (i=0; i<this._areaPoints.length; i++) {
+                var p = this._areaPoints[i];
+                if (this._boundingBox[0][0] > p[0]) {
+                    this._boundingBox[0][0] = p[0];
+                }
+                if (this._boundingBox[0][1] < p[1]) {
+                    this._boundingBox[0][1] = p[1];
+                }
+                if (this._boundingBox[1][0] < p[0]) {
+                    this._boundingBox[1][0] = p[0];
+                }
+                if (this._boundingBox[1][1] > p[1]) {
+                    this._boundingBox[1][1] = p[1];
+                }
+            }
         
             // now draw the markers
             if (this.markerRenderer.show && !fill) {
@@ -251,5 +315,107 @@
     $.jqplot.LineRenderer.prototype.drawShadow = function(ctx, gd, options) {
         // This is a no-op, shadows drawn with lines.
     };
+    
+    // called with scope of plot.
+    // make sure to not leave anything highlighted.
+    function postInit(target, data, options) {
+        for (i=0; i<this.series.length; i++) {
+            if (this.series[i].renderer.constructor == $.jqplot.LineRenderer) {
+                // don't allow mouseover and mousedown at same time.
+                if (this.series[i].highlightMouseOver) {
+                    this.series[i].highlightMouseDown = false;
+                }
+            }
+        }
+        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
+    }  
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        this.plugins.lineRenderer = {highlightedSeriesIndex:null};
+        this.plugins.lineRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.lineRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-lineRenderer-highlight-canvas', this._plotDimensions));
+        var hctx = this.plugins.lineRenderer.highlightCanvas.setContext();
+    } 
+    
+    $.jqplot.LineRenderer.prototype.highlightBar = function(ctx, points, options) {
+        
+    };
+    
+    function highlight (plot, sidx, pidx, points) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.lineRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.lineRenderer.highlightedSeriesIndex = sidx;
+        var opts = {fillStyle: s.highlightColor};
+        s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.lineRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.lineRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+    }
+    
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataMouseOver', ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.lineRenderer.highlightedSeriesIndex)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.lineRenderer.highlightedSeriesIndex)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+        var idx = plot.plugins.lineRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataClick', ins);
+        }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.lineRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
+            }
+            plot.target.trigger('jqplotDataRightClick', ins);
+        }
+    }
     
 })(jQuery);    
