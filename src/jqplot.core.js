@@ -2253,7 +2253,7 @@
                                 // first check if it is in bounding box
                                 var inside = false;
                                 if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
-                                    // now check the crossing number         
+                                    // now check the crossing number   
                                     
                                     var numPoints = s._areaPoints.length;
                                     var ii;

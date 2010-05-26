@@ -50,7 +50,7 @@
         var sopts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
-        this._boundingBox = [[0,0],[0,0]];
+        this._boundingBox = [[],[]];
         
         if (!this.isTrendline && this.fill) {
         
@@ -231,12 +231,12 @@
                             var prev = this._prevGridData;
                             for (var i=prev.length; i>0; i--) {
                                 gd.push(prev[i-1]);
-                                this._areaPoints.push(prev[i-1]);
+                                // this._areaPoints.push(prev[i-1]);
                             }
                             if (shadow) {
                                 this.renderer.shadowRenderer.draw(ctx, gd, opts);
                             }
-            
+                            this._areaPoints = gd;
                             this.renderer.shapeRenderer.draw(ctx, gd, opts);
                         }
                     }
@@ -262,6 +262,7 @@
                             }
                         }
                         this._areaPoints = gd;
+                        
                         if (shadow) {
                             this.renderer.shadowRenderer.draw(ctx, gd, opts);
                         }
@@ -293,21 +294,23 @@
                 }
             }
             // calculate the bounding box
+            var xmin = xmax = ymin = ymax = null;
             for (i=0; i<this._areaPoints.length; i++) {
                 var p = this._areaPoints[i];
-                if (this._boundingBox[0][0] > p[0]) {
-                    this._boundingBox[0][0] = p[0];
+                if (xmin > p[0] || xmin == null) {
+                    xmin = p[0];
                 }
-                if (this._boundingBox[0][1] < p[1]) {
-                    this._boundingBox[0][1] = p[1];
+                if (ymax < p[1] || ymax == null) {
+                    ymax = p[1];
                 }
-                if (this._boundingBox[1][0] < p[0]) {
-                    this._boundingBox[1][0] = p[0];
+                if (xmax < p[0] || xmax == null) {
+                    xmax = p[0];
                 }
-                if (this._boundingBox[1][1] > p[1]) {
-                    this._boundingBox[1][1] = p[1];
+                if (ymin > p[1] || ymin == null) {
+                    ymin = p[1];
                 }
             }
+            this._boundingBox = [[xmin, ymax], [xmax, ymin]];
         
             // now draw the markers
             if (this.markerRenderer.show && !fill) {

@@ -72,7 +72,7 @@
         
     };
     
-    $.jqplot.postParseSeriesOptionsHooks.push(parseTrendLineOptions);
+    $.jqplot.postSeriesInitHooks.push(parseTrendLineOptions);
     $.jqplot.postDrawSeriesHooks.push(drawTrendline);
     $.jqplot.addLegendRowHooks.push(addTrendlineLegend);
     

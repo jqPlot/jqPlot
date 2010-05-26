@@ -41,12 +41,12 @@ $(document).ready(function(){
     l4 = [12, 6, 13, 11, 2];
     l5 = [4, -3, 3, 6, 2, -2];
 
-    pop1980 = [7071639, 2968528, 3005072, 1595138, 789704, 1688210, 785940, 904599, 875538, 629400]
-    pop1990 = [7322564, 3485398, 2783726, 1630553, 983403, 1585577, 935933, 1006877, 1110549, 782248]
-    pop2000 = [8008654, 3694644, 2896051, 1974152, 1322025, 1517550, 1160005, 1188603, 1223418, 895809]
-    pop2008 = [8363710, 3833995, 2853114, 2242193, 1567924, 1447395, 1351305, 1279910, 1279329, 948279]
+    pop1980 = [7071639, 2968528, 3005072, 1595138, 789704, 1688210, 785940, 904599]
+    pop1990 = [7322564, 3485398, 2783726, 1630553, 983403, 1585577, 935933, 1006877]
+    pop2000 = [8008654, 3694644, 2896051, 1974152, 1322025, 1517550, 1160005, 1188603]
+    pop2008 = [8363710, 3833995, 2853114, 2242193, 1567924, 1447395, 1351305, 1279910]
 
-    ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas", "San Diego", "San Jose"]      
+    ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas"]      
 
     plot1 = $.jqplot('chart1',[l2],{
        title: 'Line Chart',
@@ -86,7 +86,6 @@ $(document).ready(function(){
        },
        seriesDefaults: {
            renderer: $.jqplot.BarRenderer,
-           fillToZero: true,
            rendererOptions: {
                barPadding: 2
            }
@@ -215,7 +214,7 @@ function switchTheme(plot, theme) {
 <div id="chart1" class="plot" style="width:400px;height:260px;"></div>
 <div id="chart1b" class="plot" style="width:400px;height:260px;"></div>
 <div id="chart1c" class="plot" style="width:400px;height:260px;"></div>
-<div id="chart2" class="plot" style="width:700px;height:310px;"></div>
+<div id="chart2" class="plot" style="width:760px;height:360px;"></div>
 <div id="chart3" class="plot" style="width:400px;height:320px;"></div>
 <div id="chart4" class="plot" style="width:400px;height:260px;"></div>
 <div id="chart5" class="plot" style="width:400px;height:260px;"></div>
