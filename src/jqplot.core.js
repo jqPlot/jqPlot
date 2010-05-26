@@ -2613,7 +2613,7 @@
             ret = 'rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')';
         }
         return ret;
-    }
+    };
         
    $.jqplot.ColorGenerator = function(colors) {
         var idx = 0;
