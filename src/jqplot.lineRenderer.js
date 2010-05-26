@@ -26,24 +26,8 @@
     
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
-        // prop: highlightMouseOver
-        // True to highlight slice when moused over.
-        // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
-        this.highlightMouseOver = true;
-        // prop: highlightMouseDown
-        // True to highlight when a mouse button is pressed over a area on a filled plot.
-        // This will be disabled if highlightMouseOver is true.
-        this.highlightMouseDown = false;
-        // prop: highlightColor
-        // color to use when highlighting an area on a filled plot.
-        this.highlightColor = null;
-        
-        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
-        if (options.highlightMouseDown && options.highlightMouseOver == null) {
-            options.highlightMouseOver = false;
-        }
-        
-        $.extend(true, this, {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor});
+        options = options || {};
+        var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);
         delete (options.highlightMouseDown);
@@ -67,18 +51,42 @@
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
         this._boundingBox = [[0,0],[0,0]];
-        if (!this.highlightColor) {
-            this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
-        }
         
-
-        plot.postInitHooks.addOnce(postInit);
-        plot.postDrawHooks.addOnce(postPlotDraw);
-        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
-        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
-        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
-        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
-        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+        if (!this.isTrendline && this.fill) {
+        
+            // prop: highlightMouseOver
+            // True to highlight slice when moused over.
+            // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
+            this.highlightMouseOver = true;
+            // prop: highlightMouseDown
+            // True to highlight when a mouse button is pressed over a area on a filled plot.
+            // This will be disabled if highlightMouseOver is true.
+            this.highlightMouseDown = false;
+            // prop: highlightColor
+            // color to use when highlighting an area on a filled plot.
+            this.highlightColor = null;
+            // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+            if (lopts.highlightMouseDown && lopts.highlightMouseOver == null) {
+                lopts.highlightMouseOver = false;
+            }
+        
+            $.extend(true, this, {highlightMouseOver: lopts.highlightMouseOver, highlightMouseDown: lopts.highlightMouseDown, highlightColor: lopts.highlightColor});
+            
+            if (!this.highlightColor) {
+                this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
+            }
+            // turn off traditional highlighter
+            if (this.highlighter) {
+                this.highlighter.show = false;
+            }
+            plot.postInitHooks.addOnce(postInit);
+            plot.postDrawHooks.addOnce(postPlotDraw);
+            plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+            plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+            plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+            plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+            plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+        }
 
     };
     
@@ -340,10 +348,6 @@
         this.eventCanvas._elem.before(this.plugins.lineRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-lineRenderer-highlight-canvas', this._plotDimensions));
         var hctx = this.plugins.lineRenderer.highlightCanvas.setContext();
     } 
-    
-    $.jqplot.LineRenderer.prototype.highlightBar = function(ctx, points, options) {
-        
-    };
     
     function highlight (plot, sidx, pidx, points) {
         var s = plot.series[sidx];

@@ -68,6 +68,7 @@
         // prop: shadowDepth
         // number of strokes to make of the shadow.
         this.shadowDepth = 3;
+        this.isTrendline = true;
         
     };
     
@@ -89,7 +90,7 @@
 
     // called within scope of a series
     function parseTrendLineOptions (seriesDefaults, options) {
-        if (this.renderer.constructor != $.jqplot.PieRenderer) {
+        if (this.renderer.constructor == $.jqplot.LineRenderer) {
             this.trendline = new $.jqplot.Trendline();
             options = options || {};
             $.extend(true, this.trendline, {color:this.color}, seriesDefaults.trendline, options.trendline);
@@ -108,7 +109,6 @@
             var data = options.data || this.data;
             fit = fitData(data, this.trendline.type);
             var gridData = options.gridData || this.renderer.makeGridData.call(this, fit.data);
-        
             this.trendline.renderer.draw.call(this.trendline, sctx, gridData, {showLine:true, shadow:this.trendline.shadow});
         }
     }

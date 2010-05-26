@@ -1,7 +1,5 @@
 $(document).ready(function(){
 
-    $.jqplot.config.enablePlugins = true;
-
     s1 = [2, 6, 7, 10];
     s2 = [7, 5, 3, 2];
     s3 = [14, 9, 3, 8];
@@ -66,7 +64,7 @@ $(document).ready(function(){
         }      
     });
 
-    plot6 = $.jqplot('chart6', [[1,2,3,4]]);
+    plot6 = $.jqplot('chart6', [[1,2,3,4]], {seriesDefaults:{highlighter:{show:true}}});
     
     $('#chart1').bind('jqplotDataClick', 
         function (ev, seriesIndex, pointIndex, data) {
