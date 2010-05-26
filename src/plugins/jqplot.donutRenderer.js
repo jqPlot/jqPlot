@@ -711,9 +711,15 @@
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
             var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            plot.target.trigger('jqplotDataMouseOver', ins);
+            var evt1 = jQuery.Event('jqplotDataMouseOver');
+            evt1.pageX = ev.pageX;
+            evt1.pageY = ev.pageY;
+            plot.target.trigger(evt1, ins);
             if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                plot.target.trigger('jqplotDataHighlight', ins);
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
                 highlight (plot, ins[0], ins[1]);
             }
         }
@@ -726,7 +732,10 @@
         if (neighbor) {
             var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
             if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.donutRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                plot.target.trigger('jqplotDataHighlight', ins);
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
                 highlight (plot, ins[0], ins[1]);
             }
         }
@@ -745,7 +754,10 @@
     function handleClick(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
             var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            plot.target.trigger('jqplotDataClick', ins);
+            var evt = jQuery.Event('jqplotDataClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
         }
     }
     
@@ -756,7 +768,10 @@
             if (idx != null && plot.series[idx].highlightMouseDown) {
                 unhighlight(plot);
             }
-            plot.target.trigger('jqplotDataRightClick', ins);
+            var evt = jQuery.Event('jqplotDataRightClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
         }
     }    
     

@@ -86,7 +86,12 @@ $(document).ready(function(){
     
     $('#chart2b').bind('jqplotDataHighlight', 
         function (ev, seriesIndex, pointIndex, data) {
-            $('#info2b').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+            $('#info2b').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
+        }
+    );    
+    $('#chart2b').bind('jqplotDataClick', 
+        function (ev, seriesIndex, pointIndex, data) {
+            $('#info2c').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
         }
     );
     

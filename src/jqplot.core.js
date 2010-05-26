@@ -2376,7 +2376,10 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+            var evt = jQuery.Event('jqplotClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onDblClick = function(ev) {
@@ -2385,19 +2388,28 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotDblClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+            var evt = jQuery.Event('jqplotDblClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            p.eventCanvas._elem.trigger('jqplotMouseDown', [positions.gridPos, positions.dataPos, neighbor, p]);
+            var evt = jQuery.Event('jqplotMouseDown');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseUp = function(ev) {
             var positions = getEventPosition(ev);
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, null, ev.data.plot]);
+            var evt = jQuery.Event('jqplotMouseUp');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, ev.data.plot]);
         };
         
         this.onRightClick = function(ev) {
@@ -2406,10 +2418,16 @@
             var neighbor = checkIntersection(positions.gridPos, p);
             if (p.captureRightClick) {
                 if (ev.which == 3) {
-                    p.eventCanvas._elem.trigger('jqplotRightClick', [positions.gridPos, positions.dataPos, neighbor, p]);
+                var evt = jQuery.Event('jqplotRightClick');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                    $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
                 }
                 else {
-                    p.eventCanvas._elem.trigger('jqplotMouseUp', [positions.gridPos, positions.dataPos, neighbor, p]);
+                var evt = jQuery.Event('jqplotMouseUp');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                    $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
                 }
             }
         };
@@ -2417,21 +2435,29 @@
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            p.eventCanvas._elem.trigger('jqplotMouseMove', [positions.gridPos, positions.dataPos, neighbor, p]);
+            var evt = jQuery.Event('jqplotMouseMove');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
         };
         
         this.onMouseEnter = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseEnter', [positions.gridPos, positions.dataPos, null, p]);
+            var evt = jQuery.Event('jqplotMouseEnter');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, p]);
         };
         
         this.onMouseLeave = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            ev.data.plot.eventCanvas._elem.trigger('jqplotMouseLeave', [positions.gridPos, positions.dataPos, null, p]);
+            var evt = jQuery.Event('jqplotMouseLeave');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, p]);
         };
         
         // method: drawSeries
