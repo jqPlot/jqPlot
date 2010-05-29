@@ -103,7 +103,7 @@
         // Number of pixels that the label must be away from an axis
         // boundary in order to be drawn.  Negative values will allow overlap
         // with the grid boundaries.
-        this.edgeTolerance = 0;
+        this.edgeTolerance = -5;
         // prop: formatter
         // A class of a formatter for the tick text.  sprintf by default.
         this.formatter = $.jqplot.DefaultTickFormatter;
@@ -125,6 +125,10 @@
     // called with scope of a series
     $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
         var options = $.extend(true, {}, seriesDefaults, opts);
+        options.pointLabels = options.pointLabels || {};
+        if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal' && !options.pointLabels.location) {
+            options.pointLabels.location = 'e';
+        }
         // add a pointLabels attribute to the series plugins
         this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
         this.plugins.pointLabels.setLabels.call(this);
@@ -133,13 +137,25 @@
     // called with scope of series
     $.jqplot.PointLabels.prototype.setLabels = function() {   
         var p = this.plugins.pointLabels; 
+        var labelIdx;
+        if (p.seriesLabelIndex) {
+            labelIdx = p.seriesLabelIndex;
+        }
+        else if (this.renderer.constuctor = $.jqplot.BarRenderer) {
+            if (this.barDirection == "vertical") {
+                labelIdx = this._plotData[0].length - 1;
+            }
+            else {
+                labelIdx = 0;
+            }
+        }
         p._labels = [];
         if (p.labels.length == 0 || p.labelsFromSeries) {    
             if (p.stackedValue) {
                 if (this._plotData.length && this._plotData[0].length){
-                    var idx = p.seriesLabelIndex || this._plotData[0].length -1;
+                    // var idx = p.seriesLabelIndex || this._plotData[0].length -1;
                     for (var i=0; i<this._plotData.length; i++) {
-                        p._labels.push(this._plotData[i][idx]);
+                        p._labels.push(this._plotData[i][labelIdx]);
                     }
                 }
             }
@@ -149,9 +165,9 @@
                     d = this._data;
                 }
                 if (d.length && d[0].length) {
-                    var idx = p.seriesLabelIndex || d[0].length -1;
+                    // var idx = p.seriesLabelIndex || d[0].length -1;
                     for (var i=0; i<d.length; i++) {
-                        p._labels.push(d[i][idx]);
+                        p._labels.push(d[i][labelIdx]);
                     }
                 }
             }
@@ -280,6 +296,14 @@
                 }
                 var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);
                 var elt = yax.u2p(pd[i][1]) + p.yOffset(elem, location);
+                if (this.renderer.constructor == $.jqplot.BarRenderer) {
+                    if (this.barDirection == "vertical") {
+                        ell += this._barNudge;
+                    }
+                    else {
+                        elt -= this._barNudge;
+                    }
+                }
                 elem.css('left', ell);
                 elem.css('top', elt);
                 var elr = ell + $(elem).width();

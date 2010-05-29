@@ -10,7 +10,8 @@ $(document).ready(function(){
     
     plot1 = $.jqplot('chart1', [s1], {
         seriesDefaults:{
-            renderer:$.jqplot.BarRenderer
+            renderer:$.jqplot.BarRenderer,
+            pointLabels: { show: true }
         },
         axes: {
             xaxis: {
@@ -23,7 +24,8 @@ $(document).ready(function(){
     
     plot2 = $.jqplot('chart2', [s1, s2], {
         seriesDefaults: {
-            renderer:$.jqplot.BarRenderer
+            renderer:$.jqplot.BarRenderer,
+            pointLabels: { show: true }
         },
         axes: {
             xaxis: {
@@ -33,9 +35,10 @@ $(document).ready(function(){
         }
     });
     
-    plot2b = $.jqplot('chart2b', [[[2,1], [4,2], [6,3], [3,4]], [[5,1], [1,2], [3,3], [4,4]]], {
+    plot2b = $.jqplot('chart2b', [[[2,1], [4,2], [6,3], [3,4]], [[5,1], [1,2], [3,3], [4,4]], [[4,1], [7,2], [1,3], [2,4]]], {
         seriesDefaults: {
             renderer:$.jqplot.BarRenderer,
+            pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
             shadowAngle: 135,
             rendererOptions: {
                 barDirection: 'horizontal'
@@ -55,13 +58,61 @@ $(document).ready(function(){
             renderer:$.jqplot.BarRenderer,
             rendererOptions: {
                 highlightMouseDown: true    
-            }
+            },
+            pointLabels: {show: true}
         },
         legend: {
             show: true,
             location: 'e',
             placement: 'outside'
         }      
+    });
+    
+    plot4 = $.jqplot('chart4', [[[2,1], [6,2], [7,3], [10,4]], [[7,1], [5,2],[3,3],[2,4]], [[14,1], [9,2], [9,3], [8,4]]], {
+        stackSeries: true,
+        captureRightClick: true,
+        seriesDefaults:{
+            renderer:$.jqplot.BarRenderer,
+            shadowAngle: 135,
+            rendererOptions: {
+                barDirection: 'horizontal',
+                highlightMouseDown: true    
+            },
+            pointLabels: {show: true, formatString: '%d'}
+        },
+        legend: {
+            show: true,
+            location: 'e',
+            placement: 'outside'
+        },
+        axes: {
+            yaxis: {
+                renderer: $.jqplot.CategoryAxisRenderer
+            }
+        }
+    });
+    
+    plot5 = $.jqplot('chart5', [[[2,1], [6,2], [7,3], [10,4]]], {
+        captureRightClick: true,
+        seriesDefaults:{
+            renderer:$.jqplot.BarRenderer,
+            shadowAngle: 135,
+            rendererOptions: {
+                barDirection: 'horizontal',
+                highlightMouseDown: true    
+            },
+            pointLabels: {show: true, formatString: '%d'}
+        },
+        legend: {
+            show: true,
+            location: 'e',
+            placement: 'outside'
+        },
+        axes: {
+            yaxis: {
+                renderer: $.jqplot.CategoryAxisRenderer
+            }
+        }
     });
 
     plot6 = $.jqplot('chart6', [[1,2,3,4]], {seriesDefaults:{highlighter:{show:true}}});
