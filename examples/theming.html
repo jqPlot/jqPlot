@@ -194,10 +194,17 @@ $(document).ready(function(){
         axesStyles: {
            borderWidth: 4,
            ticks: {
-               fontSize: '14pt',
+               fontSize: '12pt',
                fontFamily: '"Times New Roman"'
            } 
-        }
+        },
+        // seriesColors = ['red', 'green', 'blue', 'yellow', 'purple'],
+        series: [
+            {color: 'red'},
+            {color: 'green'},
+            {color: 'blue'},
+            {color: 'yellow'}
+        ]
     };
     
     old = plot2.themeEngine.newTheme('old', temp);

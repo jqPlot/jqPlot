@@ -65,7 +65,7 @@
             // position it and the labels correctly on the plot.
             var dim=0;
             var temp;
-            
+            // Added for theming.
             if (this._elem) {
                 this._elem.empty();
             }

@@ -96,7 +96,7 @@
             a.borderColor = ax.borderColor;
             a.borderWidth = ax.borderWidth;
             if (ax._ticks && ax._ticks[0]) {
-                if (ax._ticks[0].constructor == $.jqplot.AxisTickRenderer) {
+                if (ax._ticks[0].constructor == $.jqplot.AxisTickRenderer || true) {
                     for (nn in a.ticks) {
                         if (ax._ticks[0].hasOwnProperty(nn)) {
                             a.ticks[nn] = ax._ticks[0][nn];
@@ -191,7 +191,7 @@
                                 val = thax.ticks[nn]
                             }
                             if (val != null) {
-                                if (axis.tickRenderer == $.jqplot.CanvasAxisTickRenderer) {
+                                if (axis.tickRenderer == $.jqplot.CanvasAxisTickRenderer || true) {
                                     axis.tickOptions[nn] = val;
                                     axis._ticks = [];
                                     redrawPlot = true;
@@ -237,17 +237,44 @@
                     }
                 }
             }
+            
+            // if (redrawPlot) {
+            //     plot.target.empty();
+            //     plot.draw();
+            // }
+            
             var i;
             for (i=0; i<th.series.length; i++) {
+                var opts = {};
+                var redrawSeries = false;
                 for (n in th.series[i]) {
                     val = (th.seriesStyles[n] != null) ? th.seriesStyles[n] : th.series[i][n];
                     if (val != null) {
-                        plot.series[i][n] = val;
+                        opts[n] = val;
+                        if (n == 'color') {
+                            plot.series[i].renderer.shapeRenderer.fillStyle = val;
+                            plot.series[i].renderer.shapeRenderer.strokeStyle = val;
+                            plot.series[i][n] = val;
+                        }
+                        else if (n == 'lineWidth') {
+                            plot.series[i].renderer.shapeRenderer.lineWidth = val;
+                            plot.series[i][n] = val;
+                        }
+                        else if (n == 'markerOptions') {
+                            merge (plot.series[i].markerOptions, val);
+                            merge (plot.series[i].markerRenderer, val);
+                        }
+                        else {
+                            plot.series[i][n] = val;
+                        }
+                        redrawPlot = true;
+                        // redrawSeries = true;
                     }
                 }
-                if (!redrawPlot) {
-                    plot.drawSeries(th.series[i], i);
-                }
+                // if (redrawSeries) {
+                //     console.log('redrawing series ', i)
+                //     plot.drawSeries(opts, i);
+                // }
             }
             
             if (redrawPlot) {
@@ -292,18 +319,6 @@
         return th;
     };
     
-    // function clone(obj){
-    //     if(obj == null || typeof(obj) != 'object'){
-    //         return obj;
-    //     }
-    // 
-    //     var temp = new obj.constructor(); // changed (twice)
-    //     for(var key in obj){
-    //         temp[key] = clone(obj[key]);
-    //     }   
-    //     return temp;
-    // }
-    
     function clone(obj) {
         return eval(obj.toSource());
     }
@@ -329,8 +344,6 @@
             }
         }
     }
-    
-    $.jqplot.merge = merge;
     
     $.jqplot.ThemeEngine.prototype.rename = function (oldName, newName) {
         if (this.themes.hasOwnProperty(newName)) {
@@ -407,7 +420,7 @@
             this._name = obj;
         }
         else if(typeof(obj) == 'object') {
-            $.jqplot.merge(this, obj);
+            merge(this, obj);
         }
     };
     
@@ -428,7 +441,6 @@
         this.whiteSpace = null;
         this.fontSize = null;
         this.fontFamily = null;
-        this.fontWeight = null;
     }
     
     var AxisLabel = function() {
@@ -460,6 +472,7 @@
     
     var BarSeriesProperties = function() {
         this.color=null;
+        this.seriesColors=null;
         this.lineWidth=null;
         this.shadow=null;
         this.barPadding=null;
