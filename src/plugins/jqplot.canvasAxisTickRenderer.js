@@ -77,7 +77,7 @@
         this.fontFamily = '"Trebuchet MS", Arial, Helvetica, sans-serif';
         // prop: fontSize
         // CSS spec for font size.
-        this.fontSize = '11px';
+        this.fontSize = '10pt';
         // prop: fontWeight
         // CSS spec for fontWeight
         this.fontWeight = 'normal';
@@ -92,7 +92,7 @@
         // true to turn on native canvas font support in Mozilla 3.5+ and Safari 4+.
         // If true, tick label will be drawn with canvas tag native support for fonts.
         // If false, tick label will be drawn with Hershey font metrics.
-        this.enableFontSupport = false;
+        this.enableFontSupport = true;
         // prop: pt2px
         // Point to pixel scaling factor, used for computing height of bounding box
         // around a label.  The labels text renderer has a default setting of 1.4, which 

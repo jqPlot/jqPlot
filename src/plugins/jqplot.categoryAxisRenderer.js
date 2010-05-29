@@ -303,8 +303,12 @@
             // position it and the labels correctly on the plot.
             var dim=0;
             var temp;
+            // Added for theming.
+            if (this._elem) {
+                this._elem.empty();
+            }
             
-            this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
+            this._elem = this._elem || $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
             
             if (this.name == 'xaxis' || this.name == 'x2axis') {
                 this._elem.width(this._plotDimensions.width);

@@ -120,16 +120,16 @@ td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
 
 td.jqplot-table-legend > div {
     border: 1px solid #cccccc;
-    padding:0.2em;
+    padding:1px;
 }
 
 div.jqplot-table-legend-swatch {
     width:0px;
     height:0px;
-    border-top-width: 0.35em;
-    border-bottom-width: 0.35em;
-    border-left-width: 0.6em;
-    border-right-width: 0.6em;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 6px;
+    border-right-width: 6px;
     border-top-style: solid;
     border-bottom-style: solid;
     border-left-style: solid;

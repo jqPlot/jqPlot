@@ -6,6 +6,7 @@
   <title>Theming Test</title>
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
+  <!-- <link rel="stylesheet" type="text/css" href="../src/themes/jqplot.brass.css" /> -->
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
@@ -24,6 +25,7 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.funnelRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
   <!-- END: load jqplot -->
 
 <style type="text/css">
@@ -41,12 +43,12 @@ $(document).ready(function(){
     l4 = [12, 6, 13, 11, 2];
     l5 = [4, -3, 3, 6, 2, -2];
 
-    pop1980 = [7071639, 2968528, 3005072, 1595138, 789704, 1688210, 785940, 904599]
-    pop1990 = [7322564, 3485398, 2783726, 1630553, 983403, 1585577, 935933, 1006877]
-    pop2000 = [8008654, 3694644, 2896051, 1974152, 1322025, 1517550, 1160005, 1188603]
-    pop2008 = [8363710, 3833995, 2853114, 2242193, 1567924, 1447395, 1351305, 1279910]
+    pop1980 = [7071639, 2968528, 3005072, 1595138, 789704, 1688210, 785940, 904599];
+    pop1990 = [7322564, 3485398, 2783726, 1630553, 983403, 1585577, 935933, 1006877];
+    pop2000 = [8008654, 3694644, 2896051, 1974152, 1322025, 1517550, 1160005, 1188603];
+    pop2008 = [8363710, 3833995, 2853114, 2242193, 1567924, 1447395, 1351305, 1279910];
 
-    ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas"]      
+    ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas"];
 
     plot1 = $.jqplot('chart1',[l2],{
        title: 'Line Chart',
@@ -56,6 +58,11 @@ $(document).ready(function(){
        cursor: {
            show: true,
            zoom: true
+       },
+       axes: {
+           xaxis: {
+               label: 'Sample'
+           }
        }
     });
     
@@ -64,18 +71,6 @@ $(document).ready(function(){
        showMarker: false,
        seriesDefaults: {
            fill: true
-       }
-    });
-    
-    plot1c = $.jqplot('chart1c',[l5],{
-       stackSeries: true,
-       showMarker: false,
-       seriesDefaults: {
-           fill: true,
-           fillToZero: true,
-           rendererOptions: {
-               highlightMouseDown: true
-           }
        }
     });
 
@@ -98,8 +93,10 @@ $(document).ready(function(){
        ],
        axes: {
            xaxis: {
+               label: 'City',
                renderer: $.jqplot.CategoryAxisRenderer,
                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                ticks: ticks,
                tickOptions: {
                    angle: -30
@@ -167,19 +164,14 @@ $(document).ready(function(){
 
     e1 = plot1.themeEngine;
     brass = e1.copy('default', 'brass');
-    brass.target.fontFamily = 'Georgia, "Times New Roman"';
     brass.title.fontFamily = 'Georgia, "Times New Roman"';
     brass.grid.backgroundColor = "rgb(216, 198, 114)";
     brass.grid.drawGridlines = false;
     brass.series[0].lineWidth = 6.5;
     brass.series[0].markerOptions.show = false;
+    brass.axes.xaxis.ticks.fontFamily = "Impact";
     
     temp = {
-        target: {
-            fontFamily: '"Comic Sans MS", cursive',
-            fontSize: '11pt',
-            color: "#907CEC"
-        },
         grid: {
             backgroundColor: "#593D2B"
         },
@@ -187,19 +179,29 @@ $(document).ready(function(){
             fontFamily: '"Comic Sans MS", cursive',
             fontSize: '15pt'
         },
-        series: [
-            {
-                color: "#DBBCAF",
-                lineWidth: 8,
-                markerOptions: {
-                    show: false
-                }
+        seriesStyles: {
+            color: "#DBBCAF",
+            lineWidth: 8,
+            markerOptions: {
+                show: false
             }
-        ]
+        }
     };
+    
     chocolate = plot1.themeEngine.copy('default', 'chocolate', temp);
     
-
+    temp = {
+        axesStyles: {
+           borderWidth: 4,
+           ticks: {
+               fontSize: '14pt',
+               fontFamily: '"Times New Roman"'
+           } 
+        }
+    };
+    
+    old = plot2.themeEngine.newTheme('old', temp);
+    
 });
 
 function switchTheme(plot, theme) {
@@ -213,7 +215,6 @@ function switchTheme(plot, theme) {
 <?php include "nav.inc"; ?>
 <div id="chart1" class="plot" style="width:400px;height:260px;"></div>
 <div id="chart1b" class="plot" style="width:400px;height:260px;"></div>
-<div id="chart1c" class="plot" style="width:400px;height:260px;"></div>
 <div id="chart2" class="plot" style="width:760px;height:360px;"></div>
 <div id="chart3" class="plot" style="width:400px;height:320px;"></div>
 <div id="chart4" class="plot" style="width:400px;height:260px;"></div>

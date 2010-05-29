@@ -37,7 +37,7 @@
         for (n in th.target) {
             th.target[n] = this.target.css(n);
         }
-        if (this.title.show) {
+        if (this.title.show && this.title._elem) {
             for (n in th.title) {
                 th.title[n] = this.title._elem.css(n);
             }
@@ -54,12 +54,13 @@
         if (th.grid.backgroundColor == null && this.grid.background != null) {
             th.grid.backgroundColor = this.grid.background;
         }
-        if (this.legend.show) {
+        if (this.legend.show && this.legend._elem) {
             for (n in th.legend) {
                 th.legend[n] = this.legend._elem.css(n);
             }
         }
         var s;
+        
         for (i=0; i<this.series.length; i++) {
             s = this.series[i];
             if (s.renderer.constructor == $.jqplot.LineRenderer) {
@@ -87,9 +88,33 @@
                 th.series[i][n] = s[n];
             }
         }
-        this.themeEngine.add(th);
+        var a, ax, axis1;
+        for (n in this.axes) {
+            axis1 = axis1 || n;
+            ax = this.axes[n];
+            a = th.axes[n] = new AxisProperties();
+            a.borderColor = ax.borderColor;
+            a.borderWidth = ax.borderWidth;
+            if (ax._ticks && ax._ticks[0]) {
+                if (ax._ticks[0].constructor == $.jqplot.AxisTickRenderer) {
+                    for (nn in a.ticks) {
+                        if (ax._ticks[0].hasOwnProperty(nn)) {
+                            a.ticks[nn] = ax._ticks[0][nn];
+                        }
+                        else if (ax._ticks[0]._elem){
+                            a.ticks[nn] = ax._ticks[0]._elem.css(nn);
+                        }
+                    }
+                }
+            }
+            if (ax._label && ax._label._elem) {
+                for (nn in a.label) {
+                    a.label[nn] = ax._label._elem.css(nn);
+                }
+            }
+        }
+        this.themeEngine._add(th);
         this.themeEngine.activeTheme  = this.themeEngine.themes[th._name];
-        
     };
     
     $.jqplot.ThemeEngine.prototype.get = function(name) {
@@ -129,6 +154,8 @@
     
     // change active theme to theme named 'name'.
     $.jqplot.ThemeEngine.prototype.activate = function(plot, name) {
+        // sometimes need to redraw whole plot.
+        var redrawPlot = false;
         if (!name && this.activeTheme && this.activeTheme._name) {
             name = this.activeTheme._name;
         }
@@ -138,37 +165,105 @@
         else {
             var th = this.themes[name];
             this.activeTheme = th;
-            for (var n in th.grid) {
-                plot.grid[n] = th.grid[n];
+            var val;
+            for (axname in th.axes) {
+                var axis = plot.axes[axname];
+                if (axis.show) {
+                    var thax = th.axes[axname];
+                    val = (th.axesStyles.borderColor != null) ? th.axesStyles.borderColor : thax.borderColor;
+                    if (val != null) {
+                        axis.borderColor = val;
+                        redrawPlot = true;
+                    }
+                    val = (th.axesStyles.borderWidth != null) ? th.axesStyles.borderWidth : thax.borderWidth;
+                    if (val != null) {
+                        axis.borderWidth = val;
+                        redrawPlot = true;
+                    }
+                    if (axis._ticks && axis._ticks[0]) {
+
+                        for (nn in thax.ticks) {
+                            val = null;
+                            if (th.axesStyles.ticks && th.axesStyles.ticks[nn] != null) {
+                                val = th.axesStyles.ticks[nn];
+                            }
+                            else if (thax.ticks[nn] != null){
+                                val = thax.ticks[nn]
+                            }
+                            if (val != null) {
+                                if (axis.tickRenderer == $.jqplot.CanvasAxisTickRenderer) {
+                                    axis.tickOptions[nn] = val;
+                                    axis._ticks = [];
+                                    redrawPlot = true;
+                                }
+                                else if (axis._ticks[0]._elem){
+                                    for (var i=0; i<axis._ticks.length; i++) {
+                                        axis._ticks[i]._elem.css(nn, val);
+                                    }
+                                    redrawPlot = false;
+                                }
+                            }
+                        }
+
+                    }
+                }
             }
-            plot.grid.draw();
+            
+            
+            for (var n in th.grid) {
+                if (th.grid[n] != null) {
+                    plot.grid[n] = th.grid[n];
+                }
+            }
+            if (!redrawPlot) {
+                plot.grid.draw();
+            }
             for (n in th.target) {
-                plot.target.css(n, th.target[n]);
+                if (th.target[n] != null) {
+                    plot.target.css(n, th.target[n]);
+                }
             }
             if (plot.legend.show) { 
                 for (n in th.legend) {
-                    plot.legend._elem.css(n, th.legend[n]);
+                    if (th.legend[n] != null) {
+                        plot.legend._elem.css(n, th.legend[n]);
+                    }
                 }
             }
             if (plot.title.show) {
                 for (n in th.title) {
-                    plot.title._elem.css(n, th.title[n]);
+                    if (th.title[n] != null) {
+                        plot.title._elem.css(n, th.title[n]);
+                    }
                 }
             }
             var i;
             for (i=0; i<th.series.length; i++) {
                 for (n in th.series[i]) {
-                    plot.series[i][n] = th.series[i][n];
+                    val = (th.seriesStyles[n] != null) ? th.seriesStyles[n] : th.series[i][n];
+                    if (val != null) {
+                        plot.series[i][n] = val;
+                    }
                 }
-                plot.drawSeries(th.series[i], i);
+                if (!redrawPlot) {
+                    plot.drawSeries(th.series[i], i);
+                }
+            }
+            
+            if (redrawPlot) {
+                plot.target.empty();
+                plot.draw();
             }
         }
         
     };
     
-    $.jqplot.ThemeEngine.prototype.add = function(theme, name) {
+    $.jqplot.ThemeEngine.prototype._add = function(theme, name) {
         if (name) {
             theme._name = name;
+        }
+        if (!theme._name) {
+            theme._name = Date.parse(new Date());
         }
         if (!this.themes.hasOwnProperty(theme._name)) {
             this.themes[theme._name] = theme;
@@ -180,22 +275,66 @@
     
     // delete the names theme, return true on success, false on failure.
     $.jqplot.ThemeEngine.prototype.remove = function(name) {
+        if (name == 'default') return false;
         return delete this.themes[name];
     };
     
-    // create and return a copy of the current active theme.
-    $.jqplot.ThemeEngine.prototype.newTheme = function(name) {
+    // create a copy of the default theme and return it theme.
+    $.jqplot.ThemeEngine.prototype.newTheme = function(name, obj) {
+        if (typeof(name) == 'object') {
+            obj = obj || name;
+            name = null;
+        }
         name = name || Date.parse(new Date());
         // var th = new $.jqplot.Theme(name);
-        var th = $.extend(true, {}, this.activeTheme);
-        th._name = name;
-        this.add(th);
-        return th;      
+        var th = this.copy(this.themes.default._name, name);
+        merge(th, obj);
+        return th;
     };
+    
+    // function clone(obj){
+    //     if(obj == null || typeof(obj) != 'object'){
+    //         return obj;
+    //     }
+    // 
+    //     var temp = new obj.constructor(); // changed (twice)
+    //     for(var key in obj){
+    //         temp[key] = clone(obj[key]);
+    //     }   
+    //     return temp;
+    // }
+    
+    function clone(obj) {
+        return eval(obj.toSource());
+    }
+    
+    $.jqplot.clone = clone;
+    
+    function merge(obj1, obj2) {
+        if (obj2 ==  null || typeof(obj2) != 'object') {
+            return;
+        }
+        if (typeof(obj1) != 'object'){
+            obj1 = {};
+        }
+        for (var key in obj2) {
+            if (typeof(obj2[key]) == 'object') {
+                if (!obj1[key]) {
+                    obj1[key] = {};
+                }
+                merge(obj1[key], obj2[key]);
+            }
+            else {
+                obj1[key] = obj2[key];
+            }
+        }
+    }
+    
+    $.jqplot.merge = merge;
     
     $.jqplot.ThemeEngine.prototype.rename = function (oldName, newName) {
         if (this.themes.hasOwnProperty(newName)) {
-            throw new Error ("New name already in use.");
+            throw new Error ("jqplot.ThemeEngine Error: New name already in use.");
         }
         else if (this.themes.hasOwnProperty(oldName)) {
             var th = this.copy (oldName, newName);
@@ -206,15 +345,20 @@
     };
     
     $.jqplot.ThemeEngine.prototype.copy = function (sourceName, targetName, obj) {
-        if (this.themes.hasOwnProperty(sourceName) && !this.themes.hasOwnProperty(targetName)) {
-            // var th = new $.jqplot.Theme(targetName);
-            var th = $.extend(true, {}, this.themes[sourceName], obj);
-            th._name = targetName;
-            this.add(th);
-            return th;
+        if (!this.themes.hasOwnProperty(sourceName)) {
+            var s = "jqplot.ThemeEngine Error: Source name invalid";
+            throw new Error(s);
+        }
+        if (this.themes.hasOwnProperty(targetName)) {
+            var s = "jqplot.ThemeEngine Error: Target name invalid";
+            throw new Error(s);
         }
         else {
-            throw new Error("jqplot.ThemeEngine Error: Source or target name invalid");
+            var th = eval(this.themes[sourceName].toSource());
+            th._name = targetName;
+            merge (th, obj);
+            this._add(th);
+            return th;
         }
     };
     
@@ -222,10 +366,6 @@
         this._name = '';
         this.autoHighlightColors = true;
         this.target = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null,
             backgroundColor: null
         };
         this.legend = {
@@ -250,6 +390,7 @@
             fontWeight: null,
             paddingBottom: null
         };
+        this.seriesStyles = {};
         this.series = [];
         this.grid = {
             drawGridlines: null,
@@ -260,158 +401,43 @@
             borderWidth: null,
             shadow: null
         };
-        this.axesTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.xaxisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.yaxisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.x2axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y2axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y3axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y4axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y5axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y6axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y7axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y8axissTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y9axisTicks = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.axisLabels = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.xaxisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.yaxisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.x2axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y2axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y3axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y4axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y5axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y6axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y7axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y8axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        this.y9axisLabel = {
-            color: null,
-            fontFamily: null,
-            fontSize: null,
-            fontWeight: null
-        };
-        
+        this.axesStyles = {};
+        this.axes = {};
         if (typeof(obj) == 'string') {
             this._name = obj;
         }
         else if(typeof(obj) == 'object') {
-            $.extend(true, this, obj);
+            $.jqplot.merge(this, obj);
         }
     };
+    
+    var AxisProperties = function() {
+        this.borderColor = null;
+        this.borderWidth = null;
+        this.ticks = new AxisTicks();
+        this.label = new AxisLabel();
+    }
+    
+    var AxisTicks = function() {
+        this.show = null;
+        this.showGridline = null;
+        this.showLabel = null;
+        this.showMark = null;
+        this.size = null;
+        this.color = null;
+        this.whiteSpace = null;
+        this.fontSize = null;
+        this.fontFamily = null;
+        this.fontWeight = null;
+    }
+    
+    var AxisLabel = function() {
+        this.color = null;
+        this.whiteSpace = null;
+        this.fontSize = null;
+        this.fontFamily = null;
+        this.fontWeight = null;
+    }
     
     var LineSeriesProperties = function() {
         this.color=null;
