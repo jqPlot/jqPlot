@@ -42,12 +42,14 @@
             // don't trust that a stylesheet is present, set the position.
             var styletext = 'position:absolute;top:0px;left:0px;';
             styletext += (this._plotWidth) ? 'width:'+this._plotWidth+'px;' : '';
-            styletext += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             styletext += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
             styletext += (this.textAlign) ? 'text-align:'+this.textAlign+';' : 'text-align:center;';
             styletext += (color) ? 'color:'+color+';' : '';
             styletext += (this.paddingBottom) ? 'padding-bottom:'+this.paddingBottom+';' : '';
             this._elem = $('<div class="jqplot-title" style="'+styletext+'">'+this.text+'</div>');
+            if (this.fontFamily) {
+                this._elem.css('font-family', this.fontFamily);
+            }
         }
         
         return this._elem;

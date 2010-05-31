@@ -2,6 +2,8 @@
 
 <html lang="en">
 <head>
+  <!-- Use Compatibility mode in IE -->
+  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Theming Test</title>
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
@@ -50,29 +52,29 @@ $(document).ready(function(){
 
     ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas"];
 
-    plot1 = $.jqplot('chart1',[l2],{
-       title: 'Line Chart',
-       highlighter: {
-           show:true
-       },
-       cursor: {
-           show: true,
-           zoom: true
-       },
-       axes: {
-           xaxis: {
-               label: 'Sample'
-           }
-       }
-    });
-    
-    plot1b = $.jqplot('chart1b',[l2, l3, l4],{
-       stackSeries: true,
-       showMarker: false,
-       seriesDefaults: {
-           fill: true
-       }
-    });
+    // plot1 = $.jqplot('chart1',[l2],{
+    //    title: 'Line Chart',
+    //    highlighter: {
+    //        show:true
+    //    },
+    //    cursor: {
+    //        show: true,
+    //        zoom: true
+    //    },
+    //    axes: {
+    //        xaxis: {
+    //            label: 'Sample'
+    //        }
+    //    }
+    // });
+    // 
+    // plot1b = $.jqplot('chart1b',[l2, l3, l4],{
+    //    stackSeries: true,
+    //    showMarker: false,
+    //    seriesDefaults: {
+    //        fill: true
+    //    }
+    // });
 
     plot2 = $.jqplot('chart2',[pop1980, pop1990, pop2000, pop2008],{
        title: 'City Population',
@@ -114,100 +116,140 @@ $(document).ready(function(){
        }
     });
     
-    plot3 = $.jqplot('chart3',[l1],{
-       title: 'Global City Index',
-       legend: {
-           show: true,
-           rendererOptions: {
-               // numberColumns: 2,
-               fontSize: '10pt',
-           }
-        },
-       seriesDefaults: {
-           renderer: $.jqplot.FunnelRenderer
-       }
-    });
-    
-    plot4 = $.jqplot('chart4',[l2, l3],{
-       title: 'Stacked Bar Chart',
-       stackSeries: true,
-       legend: {
-           show: true,
-           location: 'nw'
-       },
-       seriesDefaults: {
-           renderer: $.jqplot.BarRenderer
-       },
-       axes: {
-           xaxis: {
-               renderer: $.jqplot.CategoryAxisRenderer
-           }
-       }
-    });
-    
-    plot5 = $.jqplot('chart5',[l3],{
-       title: 'Pie Chart',
-       seriesDefaults: {
-           renderer: $.jqplot.PieRenderer
-       }
-    });
-    
-    plot6 = $.jqplot('chart6',[l2, l3],{
-       title: 'Donut Chart',
-       seriesDefaults: {
-           renderer: $.jqplot.DonutRenderer,
-           rendererOptions: {
-               ringMargin: 4
-           }
-       }
-    });
-
-    e1 = plot1.themeEngine;
-    brass = e1.copy('default', 'brass');
-    brass.title.fontFamily = 'Georgia, "Times New Roman"';
-    brass.grid.backgroundColor = "rgb(216, 198, 114)";
-    brass.grid.drawGridlines = false;
-    brass.series[0].lineWidth = 6.5;
-    brass.series[0].markerOptions.show = false;
-    brass.axes.xaxis.ticks.fontFamily = "Impact";
-    
-    temp = {
-        grid: {
-            backgroundColor: "#593D2B"
-        },
-        title: {
-            fontFamily: '"Comic Sans MS", cursive',
-            fontSize: '15pt'
-        },
-        seriesStyles: {
-            color: "#DBBCAF",
-            lineWidth: 8,
-            markerOptions: {
-                show: false
-            }
-        }
-    };
-    
-    chocolate = plot1.themeEngine.copy('default', 'chocolate', temp);
+    // plot3 = $.jqplot('chart3',[l1],{
+    //    title: 'Global City Index',
+    //    legend: {
+    //        show: true,
+    //        rendererOptions: {
+    //            // numberColumns: 2,
+    //            fontSize: '10pt'
+    //        }
+    //     },
+    //    seriesDefaults: {
+    //        renderer: $.jqplot.FunnelRenderer
+    //    }
+    // });
+    // 
+    // plot4 = $.jqplot('chart4',[l2, l3],{
+    //    title: 'Stacked Bar Chart',
+    //    stackSeries: true,
+    //    legend: {
+    //        show: true,
+    //        location: 'nw'
+    //    },
+    //    seriesDefaults: {
+    //        renderer: $.jqplot.BarRenderer
+    //    },
+    //    axes: {
+    //        xaxis: {
+    //            renderer: $.jqplot.CategoryAxisRenderer
+    //        }
+    //    }
+    // });
+    // 
+    // plot5 = $.jqplot('chart5',[l3],{
+    //    title: 'Pie Chart',
+    //    seriesDefaults: {
+    //        renderer: $.jqplot.PieRenderer
+    //    }
+    // });
+    // 
+    // plot6 = $.jqplot('chart6',[l2, l3],{
+    //    title: 'Donut Chart',
+    //    seriesDefaults: {
+    //        renderer: $.jqplot.DonutRenderer,
+    //        rendererOptions: {
+    //            ringMargin: 4
+    //        }
+    //    }
+    // });
+    // 
+    // e1 = plot1.themeEngine;
+    // brass = e1.copy('Default', 'brass');
+    // brass.title.fontFamily = 'Copperplate, Impact';
+    // brass.grid.backgroundColor = "rgb(216, 198, 114)";
+    // brass.grid.drawGridlines = false;
+    // brass.series[0].lineWidth = 6.5;
+    // brass.series[0].markerOptions.show = false;
+    // // brass.axes.xaxis.ticks.fontFamily = "Copperplate, Impact";
+    // brass.axesStyles.label.fontFamily = "Copperplate, 'Copperplate Gothic Light', Impact";
+    // brass.axesStyles.ticks.fontFamily = "Copperplate, 'Copperplate Gothic Light', Impact";
+    // brass.axesStyles.label.fontSize = '14pt';
+    // 
+    // temp = {
+    //     grid: {
+    //         backgroundColor: "#593D2B",
+    //         gridLineColor: '#E8E8E8',
+    //         gridLineWidth: 3
+    //     },
+    //     title: {
+    //         fontFamily: '"Comic Sans MS", cursive',
+    //         fontSize: '18pt',
+    //         textColor: '#C7CC4E'
+    //     },
+    //     seriesStyles: {
+    //         color: "#DBBCAF",
+    //         lineWidth: 8,
+    //         markerOptions: {
+    //             show: false
+    //         }
+    //     }
+    // };
+    // 
+    // chocolate = plot1.themeEngine.copy('Default', 'chocolate', temp);
+    // 
+    // temp = {
+    //     series: [
+    //         {color: 'rgba(216, 159, 60, 0.4)'},
+    //         {color: 'rgba(159, 216, 60, 0.4)'},
+    //         {color: 'rgba(60, 159, 216, 0.4)'},
+    //     ],
+    //     grid: {
+    //         backgroundColor: '#DEA493'
+    //     }
+    // }
+    // 
+    // gabe = plot1b.themeEngine.newTheme('gabe', temp);
     
     temp = {
         axesStyles: {
-           borderWidth: 4,
+           borderWidth: 0,
            ticks: {
                fontSize: '12pt',
-               fontFamily: '"Times New Roman"'
-           } 
+               fontFamily: "'Times New Roman'",
+               textColor: 'black'
+           },
+           label: {
+               fontFamily: "'Times New Roman'",
+               textColor: 'black'
+           }
         },
-        // seriesColors = ['red', 'green', 'blue', 'yellow', 'purple'],
+        grid: {
+            backgroundColor: 'white',
+            borderWidth: 0,
+            gridLineColor: 'black',
+            gridLineWidth: 2,
+            borderColor: 'black'
+        },
         series: [
-            {color: 'red'},
-            {color: 'green'},
+            {color: 'red', highlightColors: ['pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink']},
+            {color: 'green', highlightColors: ['silver', 'silver', 'silver', 'silver', 'silver', 'silver', 'silver', 'silver']},
             {color: 'blue'},
             {color: 'yellow'}
-        ]
+        ],
+        legend: {
+            background: 'white',
+            textColor: 'black',
+            fontFamily: 'Times New Roman',
+            border: '1px solid black'
+        }
     };
     
-    old = plot2.themeEngine.newTheme('old', temp);
+    // old = plot2.themeEngine.newTheme('1995', temp);
+    
+    oldstyle = new $.jqplot.Theme('oldstyle', temp);
+    
+    plot2.themeEngine.add(oldstyle);
     
 });
 

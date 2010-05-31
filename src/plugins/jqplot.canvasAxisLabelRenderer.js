@@ -69,7 +69,7 @@
         // true to turn on native canvas font support in Mozilla 3.5+ and Safari 4+.
         // If true, label will be drawn with canvas tag native support for fonts.
         // If false, label will be drawn with Hershey font metrics.
-        this.enableFontSupport = false;
+        this.enableFontSupport = true;
         // prop: pt2px
         // Point to pixel scaling factor, used for computing height of bounding box
         // around a label.  The labels text renderer has a default setting of 1.4, which 
@@ -97,27 +97,14 @@
         }
         
         if (this.enableFontSupport) {
-            if ($.browser.safari) {
-                var p = $.browser.version.split('.');
-                for (var i=0; i<p.length; i++) { p[i] = Number(p[i]); }
-                if (p[0] > 528 || (p[0] == 528 && p[1] >= 16)) {
-                    this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts); 
-                }
-            }
-            else if ($.browser.mozilla) {
-                var p = $.browser.version.split(".");
-                if (p[0] > 1 || (p[0] == 1 &&  p[1] >= 9 && p[2] > 0) ) {
-                    this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
-                }
-                else {
-                    this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts);
-                }
+            
+            function support_canvas_text() {
+                return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
             }
             
-            // TODO: test and enable this
-            // else if ($.browser.msie) {
-            //     this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts); 
-            // }
+            if (support_canvas_text()) {
+                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+            }
             
             else {
                 this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 

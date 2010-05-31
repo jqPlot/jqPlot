@@ -29,6 +29,9 @@
         // prop: label
         // The text or html for the label.
         this.label = '';
+        this.fontFamily = null;
+        this.fontSize = null;
+        this.textColor = null;
         this._elem;
         // prop: escapeHTML
         // true to escape HTML entities in the label.
@@ -56,6 +59,15 @@
         }
         else {
             this._elem.text(this.label);
+        }
+        if (this.fontFamily) {
+            this._elem.css('font-family', this.fontFamily);
+        }
+        if (this.fontSize) {
+            this._elem.css('font-size', this.fontSize);
+        }
+        if (this.textColor) {
+            this._elem.css('color', this.textColor);
         }
         
         return this._elem;

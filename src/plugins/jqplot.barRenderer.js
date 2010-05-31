@@ -73,7 +73,7 @@
         // This will be disabled if highlightMouseOver is true.
         this.highlightMouseDown = false;
         // prop: highlightColors
-        // an array of colors to use when highlighting a slice.
+        // an array of colors to use when highlighting a bar.
         this.highlightColors = [];
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
@@ -253,6 +253,7 @@
         var pointx, pointy, nvals, nseries, pos;
         // clear out data colors.
         this._dataColors = [];
+        this._barPoints = [];
         
         if (this.barWidth == null) {
             this.renderer.setBarWidth.call(this);
@@ -409,6 +410,15 @@
         if (this.highlightColors.length == 0) {
             this.highlightColors = computeHighlightColors(this._dataColors);
         }
+        
+        else if (typeof(this.highlightColors) == 'string') {
+            var temp = this.highlightColors;
+            this.highlightColors = [];
+            for (var i=0; i<this._dataColors.length; i++) {
+                this.highlightColors.push(temp);
+            }
+        }
+        
     };
     
      
