@@ -222,7 +222,6 @@
         }
         return [nvals, nseries];
     };
-    
 
     function computeHighlightColors (colors) {
         var ret = [];

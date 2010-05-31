@@ -52,29 +52,29 @@ $(document).ready(function(){
 
     ticks = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas"];
 
-    // plot1 = $.jqplot('chart1',[l2],{
-    //    title: 'Line Chart',
-    //    highlighter: {
-    //        show:true
-    //    },
-    //    cursor: {
-    //        show: true,
-    //        zoom: true
-    //    },
-    //    axes: {
-    //        xaxis: {
-    //            label: 'Sample'
-    //        }
-    //    }
-    // });
-    // 
-    // plot1b = $.jqplot('chart1b',[l2, l3, l4],{
-    //    stackSeries: true,
-    //    showMarker: false,
-    //    seriesDefaults: {
-    //        fill: true
-    //    }
-    // });
+    plot1 = $.jqplot('chart1',[l2],{
+       title: 'Line Chart',
+       highlighter: {
+           show:true
+       },
+       cursor: {
+           show: true,
+           zoom: true
+       },
+       axes: {
+           xaxis: {
+               label: 'Sample'
+           }
+       }
+    });
+    
+    plot1b = $.jqplot('chart1b',[l2, l3, l4],{
+       stackSeries: true,
+       showMarker: false,
+       seriesDefaults: {
+           fill: true
+       }
+    });
 
     plot2 = $.jqplot('chart2',[pop1980, pop1990, pop2000, pop2008],{
        title: 'City Population',
@@ -116,20 +116,20 @@ $(document).ready(function(){
        }
     });
     
-    // plot3 = $.jqplot('chart3',[l1],{
-    //    title: 'Global City Index',
-    //    legend: {
-    //        show: true,
-    //        rendererOptions: {
-    //            // numberColumns: 2,
-    //            fontSize: '10pt'
-    //        }
-    //     },
-    //    seriesDefaults: {
-    //        renderer: $.jqplot.FunnelRenderer
-    //    }
-    // });
-    // 
+    plot3 = $.jqplot('chart3',[l1],{
+       title: 'Global City Index',
+       legend: {
+           show: true,
+           rendererOptions: {
+               // numberColumns: 2,
+               fontSize: '10pt'
+           }
+        },
+       seriesDefaults: {
+           renderer: $.jqplot.FunnelRenderer
+       }
+    });
+        
     // plot4 = $.jqplot('chart4',[l2, l3],{
     //    title: 'Stacked Bar Chart',
     //    stackSeries: true,
@@ -146,13 +146,16 @@ $(document).ready(function(){
     //        }
     //    }
     // });
-    // 
-    // plot5 = $.jqplot('chart5',[l3],{
-    //    title: 'Pie Chart',
-    //    seriesDefaults: {
-    //        renderer: $.jqplot.PieRenderer
-    //    }
-    // });
+        
+        plot5 = $.jqplot('chart5',[l1],{
+           title: 'Pie Chart',
+           seriesDefaults: {
+               renderer: $.jqplot.PieRenderer
+           },
+           legend: {
+               show: true
+           }
+        });
     // 
     // plot6 = $.jqplot('chart6',[l2, l3],{
     //    title: 'Donut Chart',
@@ -164,54 +167,66 @@ $(document).ready(function(){
     //    }
     // });
     // 
-    // e1 = plot1.themeEngine;
-    // brass = e1.copy('Default', 'brass');
-    // brass.title.fontFamily = 'Copperplate, Impact';
-    // brass.grid.backgroundColor = "rgb(216, 198, 114)";
-    // brass.grid.drawGridlines = false;
-    // brass.series[0].lineWidth = 6.5;
-    // brass.series[0].markerOptions.show = false;
-    // // brass.axes.xaxis.ticks.fontFamily = "Copperplate, Impact";
-    // brass.axesStyles.label.fontFamily = "Copperplate, 'Copperplate Gothic Light', Impact";
-    // brass.axesStyles.ticks.fontFamily = "Copperplate, 'Copperplate Gothic Light', Impact";
-    // brass.axesStyles.label.fontSize = '14pt';
-    // 
-    // temp = {
-    //     grid: {
-    //         backgroundColor: "#593D2B",
-    //         gridLineColor: '#E8E8E8',
-    //         gridLineWidth: 3
-    //     },
-    //     title: {
-    //         fontFamily: '"Comic Sans MS", cursive',
-    //         fontSize: '18pt',
-    //         textColor: '#C7CC4E'
-    //     },
-    //     seriesStyles: {
-    //         color: "#DBBCAF",
-    //         lineWidth: 8,
-    //         markerOptions: {
-    //             show: false
-    //         }
-    //     }
-    // };
-    // 
-    // chocolate = plot1.themeEngine.copy('Default', 'chocolate', temp);
-    // 
-    // temp = {
-    //     series: [
-    //         {color: 'rgba(216, 159, 60, 0.4)'},
-    //         {color: 'rgba(159, 216, 60, 0.4)'},
-    //         {color: 'rgba(60, 159, 216, 0.4)'},
-    //     ],
-    //     grid: {
-    //         backgroundColor: '#DEA493'
-    //     }
-    // }
-    // 
-    // gabe = plot1b.themeEngine.newTheme('gabe', temp);
+    e1 = plot1.themeEngine;
+    brass = e1.copy('Default', 'brass');
+    brass.title.fontFamily = 'Copperplate, Impact';
+    brass.grid.backgroundColor = "rgb(216, 198, 114)";
+    brass.grid.drawGridlines = false;
+    brass.series[0].lineWidth = 6.5;
+    brass.series[0].markerOptions.show = false;
+    // brass.axes.xaxis.ticks.fontFamily = "Copperplate, Impact";
+    brass.axesStyles.label.fontFamily = "Copperplate, 'Copperplate Gothic Light', Impact";
+    brass.axesStyles.ticks.fontFamily = "Copperplate, 'Copperplate Gothic Light', Impact";
+    brass.axesStyles.label.fontSize = '14pt';
     
     temp = {
+        grid: {
+            backgroundColor: "#593D2B",
+            gridLineColor: '#E8E8E8',
+            gridLineWidth: 3
+        },
+        title: {
+            fontFamily: '"Comic Sans MS", cursive',
+            fontSize: '18pt',
+            textColor: '#C7CC4E'
+        },
+        seriesStyles: {
+            color: "#DBBCAF",
+            lineWidth: 8,
+            markerOptions: {
+                show: false
+            }
+        },
+        axes: {
+            xaxis: {
+                label: {
+                    fontFamily: '"Comic Sans MS", cursive',
+                    textColor: '#C7CC4E'
+                }
+            }
+        }
+    };
+    
+    chocolate = plot1.themeEngine.copy('Default', 'chocolate', temp);
+    
+    temp = {
+        series: [
+            {color: 'rgba(216, 159, 60, 0.4)'},
+            {color: 'rgba(159, 216, 60, 0.4)'},
+            {color: 'rgba(60, 159, 216, 0.4)'},
+        ],
+        grid: {
+            backgroundColor: '#DEA493'
+        }
+    }
+    
+    gabe = plot1b.themeEngine.newTheme('gabe', temp);
+    
+    temp = {
+        title: {
+            fontFamily: 'Times New Roman',
+            textColor: 'black'
+        },
         axesStyles: {
            borderWidth: 0,
            ticks: {
@@ -232,10 +247,11 @@ $(document).ready(function(){
             borderColor: 'black'
         },
         series: [
-            {color: 'red', highlightColors: ['pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink']},
-            {color: 'green', highlightColors: ['silver', 'silver', 'silver', 'silver', 'silver', 'silver', 'silver', 'silver']},
-            {color: 'blue'},
-            {color: 'yellow'}
+            {color: 'red', highlightColors: ['aqua', 'black', 'blue', 'fuchsia', 'gray', 'green', 'lime', 'maroon', 'navy', 'olive', 'purple', 'red', 'silver', 'teal', 'white', 'yellow']},
+            // {color: 'red', highlightColors: []},
+            {color: 'green', highlightColors: []},
+            {color: 'blue', highlightColors: []},
+            {color: 'yellow', highlightColors: 'rgb(255, 245, 185)'}
         ],
         legend: {
             background: 'white',
@@ -250,6 +266,27 @@ $(document).ready(function(){
     oldstyle = new $.jqplot.Theme('oldstyle', temp);
     
     plot2.themeEngine.add(oldstyle);
+    
+    temp = {
+        seriesStyles: {
+            seriesColors: ['red', 'orange', 'yellow', 'green', 'blue', 'indigo'],
+            highlightColors: ['lightpink', 'lightsalmon', 'lightyellow', 'lightgreen', 'lightblue', 'mediumslateblue']
+        },
+        legend: {
+            fontSize: '8pt'
+        },
+        title: {
+            fontSize: '18pt'
+        },
+        grid: {
+            backgroundColor: 'rgb(211, 233, 195)'
+        }
+    };
+    
+    uma = new $.jqplot.Theme('uma', temp);
+    plot3.themeEngine.add(uma);
+    plot5.themeEngine.add(uma);
+    // uma = plot3.themeEngine.newTheme('uma', temp);
     
 });
 

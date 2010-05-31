@@ -116,14 +116,19 @@
                     }
                 }
             }
-            if (ax._label && ax._label._elem) {
+            if (ax._label && ax._label.show) {
                 for (nn in a.label) {
                     // a.label[nn] = ax._label._elem.css(nn);
-                    if (ax._label.hasOwnProperty(nn)) {
+                    if (ax._label[nn]) {
                         a.label[nn] = ax._label[nn];
                     }
                     else if (ax._label._elem){
-                        a.label[nn] = ax._label._elem.css(nn);
+                        if (nn == 'textColor') {
+                            a.label[nn] = ax._label._elem.css('color');
+                        }
+                        else {
+                            a.label[nn] = ax._label._elem.css(nn);
+                        }
                     }
                 }
             }
@@ -506,7 +511,7 @@
             borderWidth: null,
             shadow: null
         };
-        this.axesStyles = {};
+        this.axesStyles = {label:{}, ticks:{}};
         this.axes = {};
         if (typeof(obj) == 'string') {
             this._name = obj;

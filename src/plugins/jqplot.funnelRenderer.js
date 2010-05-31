@@ -266,6 +266,7 @@
         var offx = 0;
         var offy = 0;
         var trans = 1;
+        this._areas = [];
         // var colorGenerator = new this.colorGenerator(this.seriesColors);
         if (options.legendInfo && options.legendInfo.placement == 'inside') {
             var li = options.legendInfo;
