@@ -24,7 +24,7 @@
 
     <!-- MAIN -->
        
-    <target name="build" description="create and populate build area for making distribution">
+    <target name="build" depends="clean" description="create and populate build area for making distribution">
         <echo message="Building jqPlot" />
         <mkdir dir="${BUILD_DIR}" />
         <mkdir dir="${BUILD_DIR}/plugins" />
@@ -275,7 +275,7 @@
     <echo message="Test Suite Finished" />
   </target>
 
-  <target name="docs" description="Create documentation for distribution.">
+  <target name="docs" depends="dist" description="Create documentation for distribution.">
     <echo message="Creating documentation" />
       <!-- don't want to process jquery itself -->
         <move file="${BUILD_DIR}/jquery-1.4.2.js" tofile="${BUILD_DIR}/jquery-1.4.2.js.bak" />

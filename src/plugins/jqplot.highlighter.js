@@ -329,7 +329,8 @@
         elem.css('left', x);
         elem.css('top', y);
         if (hl.fadeTooltip) {
-            elem.fadeIn(hl.tooltipFadeSpeed);
+            // Fix for stacked up animations.  Thnanks Trevor!
+            elem.stop(true,true).fadeIn(hl.tooltipFadeSpeed);
         }
         else {
             elem.show();

@@ -16,15 +16,185 @@
  * 
  */
 (function($) {
-    // class: $.jqplot.ThemeEngine
-    // Theme Engine provides a programatic way to change some of the  more
-    // common jqplot options such as fonts, colors and grid options.
-    // A theme engine instance is created with each plot.  The theme engine
-    // manages a collection of themes which can be modified, added to, or 
-    // applied to the plot at will.
+    /**
+     * Class: $.jqplot.ThemeEngine
+     * Theme Engine provides a programatic way to change some of the  more
+     * common jqplot styling options such as fonts, colors and grid options.
+     * A theme engine instance is created with each plot.  The theme engine
+     * manages a collection of themes which can be modified, added to, or 
+     * applied to the plot.
+     * 
+     * The themeEngine class is not instantiated directly.
+     * When a plot is initialized, the current plot options are scanned
+     * an a default theme named "Default" is created.  This theme is
+     * used as the basis for other themes added to the theme engine and
+     * is always available.
+     * 
+     * A theme is a simple javascript object with styling parameters for
+     * various entities of the plot.  A theme has the form:
+     * 
+     * 
+     * > {
+     * >     _name:f "Default",
+     * >     target: {
+     * >         backgroundColor: "transparent"
+     * >     },
+     * >     legend: {
+     * >         textColor: null,
+     * >         fontFamily: null,
+     * >         fontSize: null,
+     * >         border: null,
+     * >         background: null
+     * >     },
+     * >     title: {
+     * >         textColor: "rgb(102, 102, 102)",
+     * >         fontFamily: "'Trebuchet MS',Arial,Helvetica,sans-serif",
+     * >         fontSize: "19.2px",
+     * >         textAlign: "center"
+     * >     },
+     * >     seriesStyles: {},
+     * >     series: [{
+     * >         color: "#4bb2c5",
+     * >         lineWidth: 2.5,
+     * >         shadow: true,
+     * >         fillColor: "#4bb2c5",
+     * >         showMarker: true,
+     * >         markerOptions: {
+     * >             color: "#4bb2c5",
+     * >             show: true,
+     * >             style: 'filledCircle',
+     * >             lineWidth: 1.5,
+     * >             size: 4,
+     * >             shadow: true
+     * >         }
+     * >     }],
+     * >     grid: {
+     * >         drawGridlines: true,
+     * >         gridLineColor: "#cccccc",
+     * >         gridLineWidth: 1,
+     * >         backgroundColor: "#fffdf6",
+     * >         borderColor: "#999999",
+     * >         borderWidth: 2,
+     * >         shadow: true
+     * >     },
+     * >     axesStyles: {
+     * >         label: {},
+     * >         ticks: {}
+     * >     },
+     * >     axes: {
+     * >         xaxis: {
+     * >             borderColor: "#999999",
+     * >             borderWidth: 2,
+     * >             ticks: {
+     * >                 show: true,
+     * >                 showGridline: true,
+     * >                 showLabel: true,
+     * >                 showMark: true,
+     * >                 size: 4,
+     * >                 textColor: "",
+     * >                 whiteSpace: "nowrap",
+     * >                 fontSize: "12px",
+     * >                 fontFamily: "'Trebuchet MS',Arial,Helvetica,sans-serif"
+     * >             },
+     * >             label: {
+     * >                 textColor: "rgb(102, 102, 102)",
+     * >                 whiteSpace: "normal",
+     * >                 fontSize: "14.6667px",
+     * >                 fontFamily: "'Trebuchet MS',Arial,Helvetica,sans-serif",
+     * >                 fontWeight: "400"
+     * >             }
+     * >         },
+     * >         yaxis: {
+     * >             borderColor: "#999999",
+     * >             borderWidth: 2,
+     * >             ticks: {
+     * >                 show: true,
+     * >                 showGridline: true,
+     * >                 showLabel: true,
+     * >                 showMark: true,
+     * >                 size: 4,
+     * >                 textColor: "",
+     * >                 whiteSpace: "nowrap",
+     * >                 fontSize: "12px",
+     * >                 fontFamily: "'Trebuchet MS',Arial,Helvetica,sans-serif"
+     * >             },
+     * >             label: {
+     * >                 textColor: null,
+     * >                 whiteSpace: null,
+     * >                 fontSize: null,
+     * >                 fontFamily: null,
+     * >                 fontWeight: null
+     * >             }
+     * >         },
+     * >         x2axis: {...
+     * >         },
+     * >         ...
+     * >         y9axis: {...
+     * >         }
+     * >     }
+     * > }
+     * 
+     * "seriesStyles" is a style object that will be applied to all series in the plot.
+     * It will forcibly override any styles applied on the individual series.  "axesStyles" is
+     * a style object that will be applied to all axes in the plot.  It will also forcibly
+     * override any styles on the individual axes.
+     * 
+     * The example shown above has series options for a line series.  Options for other
+     * series types are shown below:
+     * 
+     * Bar Series:
+     * 
+     * > {
+     * >     color: "#4bb2c5",
+     * >     seriesColors: ["#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
+     * >     lineWidth: 2.5,
+     * >     shadow: true,
+     * >     barPadding: 2,
+     * >     barMargin: 10,
+     * >     barWidth: 15.09375,
+     * >     highlightColors: ["rgb(129,201,214)", "rgb(129,201,214)", "rgb(129,201,214)", "rgb(129,201,214)", "rgb(129,201,214)", "rgb(129,201,214)", "rgb(129,201,214)", "rgb(129,201,214)"]
+     * > }
+     * 
+     * Pie Series:
+     * 
+     * > {
+     * >     seriesColors: ["#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
+     * >     padding: 20,
+     * >     sliceMargin: 0,
+     * >     fill: true,
+     * >     shadow: true,
+     * >     startAngle: 0,
+     * >     lineWidth: 2.5,
+     * >     highlightColors: ["rgb(129,201,214)", "rgb(240,189,104)", "rgb(214,202,165)", "rgb(137,180,158)", "rgb(168,180,137)", "rgb(180,174,89)", "rgb(180,113,161)", "rgb(129,141,236)", "rgb(227,205,120)", "rgb(255,138,76)", "rgb(76,169,219)", "rgb(215,126,190)", "rgb(220,232,135)", "rgb(200,167,96)", "rgb(103,202,235)", "rgb(208,154,215)"]
+     * > }
+     * 
+     * Funnel Series:
+     * 
+     * > {
+     * >     color: "#4bb2c5",
+     * >     lineWidth: 2,
+     * >     shadow: true,
+     * >     padding: {
+     * >         top: 20,
+     * >         right: 20,
+     * >         bottom: 20,
+     * >         left: 20
+     * >     },
+     * >     sectionMargin: 6,
+     * >     seriesColors: ["#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
+     * >     highlightColors: ["rgb(147,208,220)", "rgb(242,199,126)", "rgb(220,210,178)", "rgb(154,191,172)", "rgb(180,191,154)", "rgb(191,186,112)", "rgb(191,133,174)", "rgb(147,157,238)", "rgb(231,212,139)", "rgb(255,154,102)", "rgb(102,181,224)", "rgb(221,144,199)", "rgb(225,235,152)", "rgb(200,167,96)", "rgb(124,210,238)", "rgb(215,169,221)"]
+     * > }
+     * 
+     */
     $.jqplot.ThemeEngine = function(){
+        // Group: Properties
+        //
+        // prop: themes
+        // hash of themes managed by the theme engine.  
+        // Indexed by theme name.
         this.themes = {};
-        // pointer to currently active theme
+        // prop: activeTheme
+        // Pointer to currently active theme
         this.activeTheme=null;
         
     };
@@ -133,10 +303,24 @@
                 }
             }
         }
-        this.themeEngine.add(th);
+        this.themeEngine._add(th);
         this.themeEngine.activeTheme  = this.themeEngine.themes[th._name];
     };
-    
+    /**
+     * Group: methods
+     * 
+     * method: get
+     * 
+     * Get and return the named theme or the active theme if no name given.
+     * 
+     * parameter:
+     * 
+     * name - name of theme to get.
+     * 
+     * returns:
+     * 
+     * Theme instance of given name.
+     */   
     $.jqplot.ThemeEngine.prototype.get = function(name) {
         if (!name) {
             // return the active theme
@@ -149,7 +333,19 @@
     
     function numericalOrder(a,b) { return a-b; }
     
-    // return list of theme names in alpha-numerical order.
+    /**
+     * method: getThemeNames
+     * 
+     * Return the list of theme names in this manager in alpha-numerical order.
+     * 
+     * parameter:
+     * 
+     * None
+     * 
+     * returns:
+     * 
+     * A the list of theme names in this manager in alpha-numerical order.
+     */       
     $.jqplot.ThemeEngine.prototype.getThemeNames = function() {
         var tn = [];
         for (var n in this.themes) {
@@ -157,8 +353,20 @@
         }
         return tn.sort(numericalOrder);
     };
-    
-    // return a list of themes in alpha-numerical order by name.
+
+    /**
+     * method: getThemes
+     * 
+     * Return a list of themes in alpha-numerical order by name.
+     * 
+     * parameter:
+     * 
+     * None
+     * 
+     * returns:
+     * 
+     * A list of themes in alpha-numerical order by name.
+     */ 
     $.jqplot.ThemeEngine.prototype.getThemes = function() {
         var tn = [];
         var themes = [];
@@ -172,7 +380,6 @@
         return themes;
     };
     
-    // change active theme to theme named 'name'.
     $.jqplot.ThemeEngine.prototype.activate = function(plot, name) {
         // sometimes need to redraw whole plot.
         var redrawPlot = false;
@@ -318,7 +525,7 @@
         
     };
     
-    $.jqplot.ThemeEngine.prototype.add = function(theme, name) {
+    $.jqplot.ThemeEngine.prototype._add = function(theme, name) {
         if (name) {
             theme._name = name;
         }
@@ -333,13 +540,42 @@
         }
     };
     
-    // delete the names theme, return true on success, false on failure.
+    // method remove
+    // Delete the named theme, return true on success, false on failure.
+    
+
+    /**
+     * method: remove
+     * 
+     * Remove the given theme from the themeEngine.
+     * 
+     * parameters:
+     * 
+     * name - name of the theme to remove.
+     * 
+     * returns:
+     * 
+     * true on success, false on failure.
+     */
     $.jqplot.ThemeEngine.prototype.remove = function(name) {
         if (name == 'Default') return false;
         return delete this.themes[name];
     };
-    
-        // create a copy of the Default theme merging it with supplied options and return it.
+
+    /**
+     * method: newTheme
+     * 
+     * Create a new theme based on the default theme, adding it the themeEngine.
+     * 
+     * parameters:
+     * 
+     * name - name of the new theme.
+     * obj - optional object of styles to be applied to this new theme.
+     * 
+     * returns:
+     * 
+     * new Theme object.
+     */
     $.jqplot.ThemeEngine.prototype.newTheme = function(name, obj) {
         if (typeof(name) == 'object') {
             obj = obj || name;
@@ -379,11 +615,6 @@
         if (obj2 ==  null || typeof(obj2) != 'object') {
             return;
         }
-        // if (obj1 == null){
-        //     console.log('obj1 is null');
-        //     obj1 = clone(obj2);
-        //     return;
-        // }
         for (var key in obj2) {
             if (key == 'highlightColors') {
                 obj1[key] = clone(obj2[key]);
@@ -445,8 +676,25 @@
     	// Return the modified object
     	return target;
     };
-    
+
+    /**
+     * method: rename
+     * 
+     * Rename a theme.
+     * 
+     * parameters:
+     * 
+     * oldName - current name of the theme.
+     * newName - desired name of the theme.
+     * 
+     * returns:
+     * 
+     * new Theme object.
+     */
     $.jqplot.ThemeEngine.prototype.rename = function (oldName, newName) {
+        if (oldName == 'Default' || newName == 'Default') {
+            throw new Error ("jqplot.ThemeEngine Error: Cannot rename from/to Default");
+        }
         if (this.themes.hasOwnProperty(newName)) {
             throw new Error ("jqplot.ThemeEngine Error: New name already in use.");
         }
@@ -457,8 +705,26 @@
         }
         throw new Error("jqplot.ThemeEngine Error: Old name or new name invalid");
     };
-    
+
+    /**
+     * method: copy
+     * 
+     * Create a copy of an existing theme in the themeEngine, adding it the themeEngine.
+     * 
+     * parameters:
+     * 
+     * sourceName - name of the existing theme.
+     * targetName - name of the copy.
+     * obj - optional object of style parameter to apply to the new theme.
+     * 
+     * returns:
+     * 
+     * new Theme object.
+     */
     $.jqplot.ThemeEngine.prototype.copy = function (sourceName, targetName, obj) {
+        if (targetName == 'Default') {
+            throw new Error ("jqplot.ThemeEngine Error: Cannot copy over Default theme");
+        }
         if (!this.themes.hasOwnProperty(sourceName)) {
             var s = "jqplot.ThemeEngine Error: Source name invalid";
             throw new Error(s);
@@ -471,10 +737,11 @@
             var th = clone(this.themes[sourceName]);
             th._name = targetName;
             $.jqplot.extend(true, th, obj);
-            this.add(th);
+            this._add(th);
             return th;
         }
     };
+    
     
     $.jqplot.Theme = function(name, obj) {
         if (typeof(name) == 'object') {
@@ -483,7 +750,6 @@
         }
         name = name || Date.parse(new Date());
         this._name = name;
-        this.autoHighlightColors = true;
         this.target = {
             backgroundColor: null
         };
@@ -553,7 +819,6 @@
         this.lineWidth=null;
         this.shadow=null;
         this.fillColor=null;
-        this.fillAlpha=null;
         this.showMarker=null;
         this.markerOptions = new MarkerOptions();
     };
