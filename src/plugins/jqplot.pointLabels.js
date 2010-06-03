@@ -138,16 +138,14 @@
     $.jqplot.PointLabels.prototype.setLabels = function() {   
         var p = this.plugins.pointLabels; 
         var labelIdx;
-        if (p.seriesLabelIndex) {
+        if (p.seriesLabelIndex != null) {
             labelIdx = p.seriesLabelIndex;
         }
-        else if (this.renderer.constuctor = $.jqplot.BarRenderer) {
-            if (this.barDirection == "vertical") {
-                labelIdx = this._plotData[0].length - 1;
-            }
-            else {
-                labelIdx = 0;
-            }
+        else if (this.renderer.constuctor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+            labelIdx = 0;
+        }
+        else {
+            labelIdx = this._plotData[0].length -1;
         }
         p._labels = [];
         if (p.labels.length == 0 || p.labelsFromSeries) {    
@@ -279,8 +277,7 @@
                     label = '';
                 }
                 
-                label = p.formatter(p.formatString, label);
-                
+                if (label != null) label = p.formatter(p.formatString, label);
                 var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
                 p._elems.push(elem);
