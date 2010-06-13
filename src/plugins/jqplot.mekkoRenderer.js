@@ -42,6 +42,13 @@
     
     $.jqplot.MekkoRenderer = function(){
         this.shapeRenderer = new $.jqplot.ShapeRenderer();
+        // prop: borderColor
+        // color of the borders between areas on the chart
+        this.borderColor = null;
+        // prop: showBorders
+        // True to draw borders lines between areas on the chart.
+        // False will draw borders lines with the same color as the area.
+        this.showBorders = true;
     };
     
     // called with scope of series.
@@ -129,6 +136,12 @@
             if (showLine) {
                 for (i=0; i<gd.length; i++){
                     opts.fillStyle = colorGenerator.next();
+                    if (this.renderer.showBorders) {
+                        opts.strokeStyle = this.renderer.borderColor;
+                    }
+                    else {
+                        opts.strokeStyle = opts.fillStyle;
+                    }
                     this.renderer.shapeRenderer.draw(ctx, gd[i], opts);
                 }
             }

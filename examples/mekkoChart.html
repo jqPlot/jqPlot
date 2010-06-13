@@ -82,7 +82,7 @@
 
     plot2 = $.jqplot('chart2', [bar1, bar2, bar3], {
         title: 'Revenue Breakdown per Character',
-        seriesDefaults:{renderer:$.jqplot.MekkoRenderer},
+        seriesDefaults:{renderer:$.jqplot.MekkoRenderer, rendererOptions: {borderColor: '#dddddd'}},
         legend:{
             show:true, 
             rendererOptions:{placement: "inside"}, 
@@ -111,7 +111,7 @@
     
     plot3 = $.jqplot('chart3', [bar1, bar2, bar3], {
         title: 'Revenue Breakdown per Character',
-        seriesDefaults:{renderer:$.jqplot.MekkoRenderer},
+        seriesDefaults:{renderer:$.jqplot.MekkoRenderer, rendererOptions: {showBorders: false}},
         legend:{
             show:true, 
             location: 'n',
@@ -173,6 +173,12 @@ axes:{
 }
 </pre>
 
+    <p>Here the borders between chart areas have been given a custom color using the "borderColor" option on the series renderer.</p>
+    
+<pre>
+    seriesDefaults:{renderer:$.jqplot.MekkoRenderer, rendererOptions: {borderColor: '#dddddd'}}
+</pre>
+
     <p>Additionally, the legend can be placed "outside" (the default for a mekko chart) or "inside" of the grid area with the "placement" option on the legend renderer.</p>
 
 <pre>
@@ -198,6 +204,12 @@ legend:{
     labels: legendLabels,
     rendererOptions:{numberRows: 1, placement: "outside"}
 },    
+</pre>
+
+    <p>Also, the borders between the chart areas have been turned off with the "showBorders: false" option.</p>
+    
+<pre>
+    seriesDefaults:{renderer:$.jqplot.MekkoRenderer, rendererOptions: {showBorders: false}}
 </pre>
 
     <div id="chart3" style="width:500px; height:300px;"></div>
