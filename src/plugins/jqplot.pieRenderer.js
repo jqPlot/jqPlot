@@ -114,9 +114,12 @@
         // This applies to all label types, not just to percentage labels.
         this.dataLabelThreshold = 2;
         // prop: dataLabelPositionFactor
-        // Number (0-1) which controls position of label on slice.
+        // A Multiplier (0-1) of the pie radius which controls position of label on slice.
         // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
-        this.dataLabelPositionFactor = 0.53;
+        this.dataLabelPositionFactor = 0.52;
+        // prop: dataLabelNudge
+        // Number of pixels to slide the label away from (+) or toward (-) the center of the pie.
+        this.dataLabelNudge = 2;
         // prop: startAngle
         // Angle to start drawing pie in degrees.  
         // According to orientation of canvas coordinate system:
@@ -371,7 +374,7 @@
                     label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
                 }
                 
-                var fact = this._radius * this.dataLabelPositionFactor;
+                var fact = (this._radius ) * this.dataLabelPositionFactor + this.sliceMargin + this.dataLabelNudge;
                 
                 var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
                 var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
