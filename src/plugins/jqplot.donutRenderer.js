@@ -112,6 +112,27 @@
         // prop: highlightColors
         // an array of colors to use when highlighting a slice.
         this.highlightColors = [];
+        // prop: dataLabels
+        // Either 'label', 'value', 'percent' or an array of labels to place on the pie slices.
+        // Defaults to percentage of each pie slice.
+        this.dataLabels = 'percent';
+        // prop: showDataLabels
+        // true to show data labels on slices.
+        this.showDataLabels = true;
+        // prop: dataLabelFormatString
+        // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
+        this.dataLabelFormatString = null;
+        // prop: dataLabelThreshold
+        // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
+        // This applies to all label types, not just to percentage labels.
+        this.dataLabelThreshold = 3;
+        // prop: dataLabelPositionFactor
+        // A Multiplier (0-1) of the pie radius which controls position of label on slice.
+        // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
+        this.dataLabelPositionFactor = 0.5;
+        // prop: dataLabelNudge
+        // Number of pixels to slide the label away from (+) or toward (-) the center of the pie.
+        this.dataLabelNudge = 0;
         // prop: startAngle
         // Angle to start drawing donut in degrees.  
         // According to orientation of canvas coordinate system:
@@ -177,17 +198,20 @@
         var stack = [];
         var td = [];
         var sa = this.startAngle/180*Math.PI;
+        var tot = 0;
         for (var i=0; i<this.data.length; i++){
             stack.push(this.data[i][1]);
             td.push([this.data[i][0]]);
             if (i>0) {
                 stack[i] += stack[i-1];
             }
+            tot += this.data[i][1];
         }
         var fact = Math.PI*2/stack[stack.length - 1];
         
         for (var i=0; i<stack.length; i++) {
             td[i][1] = stack[i] * fact;
+            td[i][2] = this.data[i][1]/tot;
         }
         this.gridData = td;
     };
@@ -195,6 +219,7 @@
     $.jqplot.DonutRenderer.prototype.makeGridData = function(data, plot) {
         var stack = [];
         var td = [];
+        var tot = 0;
         var sa = this.startAngle/180*Math.PI;
         for (var i=0; i<data.length; i++){
             stack.push(data[i][1]);
@@ -202,11 +227,13 @@
             if (i>0) {
                 stack[i] += stack[i-1];
             }
+            tot += data[i][1];
         }
         var fact = Math.PI*2/stack[stack.length - 1];
         
         for (var i=0; i<stack.length; i++) {
             td[i][1] = stack[i] * fact;
+            td[i][2] = data[i][1]/tot;
         }
         return td;
     };
@@ -272,7 +299,7 @@
     };
     
     // called with scope of series
-    $.jqplot.DonutRenderer.prototype.draw = function (ctx, gd, options) {
+    $.jqplot.DonutRenderer.prototype.draw = function (ctx, gd, options, plot) {
         var i;
         var opts = (options != undefined) ? options : {};
         // offset and direction of offset due to legend placement
@@ -358,8 +385,42 @@
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
             ang1 += this.sliceMargin/180*Math.PI;
-            this._sliceAngles.push([ang1, gd[i][1]+sa]);
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i]);
+            var ang2 = gd[i][1] + sa;
+            this._sliceAngles.push([ang1, ang2]);
+            this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], false);
+            
+            if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
+                var fstr, avgang = (ang1+ang2)/2, label;
+                
+                if (this.dataLabels == 'label') {
+                    fstr = this.dataLabelFormatString || '%s';
+                    label = $.jqplot.sprintf(fstr, gd[i][0]);
+                }
+                else if (this.dataLabels == 'value') {
+                    fstr = this.dataLabelFormatString || '%d';
+                    label = $.jqplot.sprintf(fstr, gd[i][1]);
+                }
+                else if (this.dataLabels == 'percent') {
+                    fstr = this.dataLabelFormatString || '%d%%';
+                    label = $.jqplot.sprintf(fstr, gd[i][2]*100);
+                }
+                else if (this.dataLabels.constructor == Array) {
+                    fstr = this.dataLabelFormatString || '%d';
+                    label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
+                }
+                
+                var fact = this._innerRadius + this._thickness * this.dataLabelPositionFactor + this.sliceMargin + this.dataLabelNudge;
+                
+                var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
+                var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
+                
+                var labelelem = $('<span class="jqplot-donut-series jqplot-data-label" style="position:absolute;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
+                x -= labelelem.width()/2;
+                y -= labelelem.height()/2;
+                x = Math.round(x);
+                y = Math.round(y);
+                labelelem.css({left: x, top: y});
+            }
         }
                
     };
@@ -781,8 +842,15 @@
     function postPlotDraw() {
         this.plugins.donutRenderer = {highlightedSeriesIndex:null};
         this.plugins.donutRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
-        
-        this.eventCanvas._elem.before(this.plugins.donutRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-donutRenderer-highlight-canvas', this._plotDimensions));
+        // do we have any data labels?  if so, put highlight canvas before those
+        var labels = this.target.find('.jqplot-data-label:first');
+        if (labels.length) {
+            labels.before(this.plugins.donutRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-donutRenderer-highlight-canvas', this._plotDimensions));
+        }
+        // else put highlight canvas before event canvas.
+        else {
+            this.eventCanvas._elem.before(this.plugins.donutRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-donutRenderer-highlight-canvas', this._plotDimensions));
+        }
         var hctx = this.plugins.donutRenderer.highlightCanvas.setContext();
     }
     

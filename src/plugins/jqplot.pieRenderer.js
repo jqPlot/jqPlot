@@ -105,14 +105,14 @@
         this.dataLabels = 'percent';
         // prop: showDataLabels
         // true to show data labels on slices.
-        this.showDataLabels = true;
+        this.showDataLabels = false;
         // prop: dataLabelFormatString
         // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
         this.dataLabelFormatString = null;
         // prop: dataLabelThreshold
         // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
         // This applies to all label types, not just to percentage labels.
-        this.dataLabelThreshold = 2;
+        this.dataLabelThreshold = 3;
         // prop: dataLabelPositionFactor
         // A Multiplier (0-1) of the pie radius which controls position of label on slice.
         // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
@@ -354,6 +354,7 @@
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
             this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], false);
+            
             if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
                 var fstr, avgang = (ang1+ang2)/2, label;
                 
@@ -379,7 +380,7 @@
                 var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
                 var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
                 
-                var labelelem = $('<span class="jqplot-data-label" style="position:absolute;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
+                var labelelem = $('<span class="jqplot-pie-series jqplot-data-label" style="position:absolute;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
                 x -= labelelem.width()/2;
                 y -= labelelem.height()/2;
                 x = Math.round(x);
