@@ -100,9 +100,9 @@
         // an array of colors to use when highlighting a slice.
         this.highlightColors = [];
         // prop: dataLabels
-        // Array of labels to place on the pie slices.
+        // Either 'label', 'value', 'percent' or an array of labels to place on the pie slices.
         // Defaults to percentage of each pie slice.
-        this.dataLabels = [];
+        this.dataLabels = 'percent';
         // prop: showDataLabels
         // true to show data labels on slices.
         this.showDataLabels = true;
@@ -337,8 +337,30 @@
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
             ang1 += this.sliceMargin/180*Math.PI;
-            this._sliceAngles.push([ang1, gd[i][1]+sa]);
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i], plot);
+            var ang2 = gd[i][1] + sa;
+            this._sliceAngles.push([ang1, ang2]);
+            this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], plot);
+            if (this.showDataLabels) {
+                var avgang = (ang1+ang2)/2, label;
+                
+                if (this.dataLabels == 'label') {
+                    label = gd[i][0];
+                }
+                else if (this.dataLabels == 'value') {
+                    label = gd[i][1];
+                }
+                else if (this.dataLabels == 'percent') {
+                    label = String(Math.round(gd[i][2]*100))+'%';
+                }
+                else if (this.dataLabels.constructor == Array) {
+                    label = this.dataLabels[i];
+                }
+                
+                var x = parseInt(this._center[0] + Math.cos(avgang) * this._radius/2);
+                var y = parseInt(this._center[1] + Math.sin(avgang) * this._radius/2);
+                
+                $('<span class="jqplot-pie-data-label" style="position:absolute; left:' + x + 'px; top:' + y + 'px;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
+            }
         }
                
     };
@@ -608,18 +630,16 @@
     };
     
     $.jqplot.PieRenderer.prototype.handleMove = function(ev, gridpos, datapos, neighbor, plot) {
-        if (1){
-            if (neighbor) {
-                var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-                plot.target.trigger('jqplotDataMouseOver', ins);
-                if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                    plot.target.trigger('jqplotDataHighlight', ins);
-                    highlight (plot, ins[0], ins[1]);
-                }
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataMouseOver', ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
             }
-            else if (neighbor == null) {
-                unhighlight (plot);
-            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
         }
     };
     
