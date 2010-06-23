@@ -339,7 +339,7 @@
             ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
-            this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], plot);
+            this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], false);
             if (this.showDataLabels) {
                 var avgang = (ang1+ang2)/2, label;
                 
