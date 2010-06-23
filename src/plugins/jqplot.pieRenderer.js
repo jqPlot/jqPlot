@@ -202,7 +202,7 @@
         return td;
     };
     
-    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow, plot) {
+    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         var r = this._diameter / 2;
         var fill = this.fill;
         var lineWidth = this.lineWidth;
