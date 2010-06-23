@@ -99,6 +99,13 @@
         // prop: highlightColors
         // an array of colors to use when highlighting a slice.
         this.highlightColors = [];
+        // prop: dataLabels
+        // Array of labels to place on the pie slices.
+        // Defaults to percentage of each pie slice.
+        this.dataLabels = [];
+        // prop: showDataLabels
+        // true to show data labels on slices.
+        this.showDataLabels = true;
         // prop: startAngle
         // Angle to start drawing pie in degrees.  
         // According to orientation of canvas coordinate system:
@@ -195,7 +202,7 @@
         return td;
     };
     
-    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
+    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow, plot) {
         var r = this._diameter / 2;
         var fill = this.fill;
         var lineWidth = this.lineWidth;
@@ -256,7 +263,7 @@
     };
     
     // called with scope of series
-    $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options) {
+    $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options, plot) {
         var i;
         var opts = (options != undefined) ? options : {};
         // offset and direction of offset due to legend placement
@@ -331,7 +338,7 @@
             // Adjust ang1 and ang2 for sliceMargin
             ang1 += this.sliceMargin/180*Math.PI;
             this._sliceAngles.push([ang1, gd[i][1]+sa]);
-            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i]);
+            this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, this.seriesColors[i], plot);
         }
                
     };

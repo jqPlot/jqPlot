@@ -144,9 +144,14 @@
             return plot;
         }
         catch(e) {
-            var msg = $.jqplot.config.ErrorMessage || e.message;
-            $('#'+target).append('<div style="text-align:center;position:relative;top:50%;">'+msg+'</div>');
-            $('#'+target).css({background: $.jqplot.config.ErrorBackground, border: $.jqplot.config.ErrorBorder, font: $.jqplot.config.ErrorFont});
+            if ($.jqplot.config.catchErrors) {
+                var msg = $.jqplot.config.errorMessage || e.message;
+                $('#'+target).append('<div style="text-align:center;position:relative;top:50%;">'+msg+'</div>');
+                $('#'+target).css({background: $.jqplot.config.errorBackground, border: $.jqplot.config.errorBorder, font: $.jqplot.config.errorFont});
+            }
+            else {
+                throw e.message;
+            }
         }
     };
         
@@ -158,10 +163,11 @@
         defaultWidth:400,
         UTCAdjust:false,
         timezoneOffset: new Date(new Date().getTimezoneOffset() * 60000),
-        ErrorMessage: '',
-        ErrorBackground: '#fffbf9',
-        ErrorBorder: '1px solid #f6dccb',
-        ErrorFont: ''
+        errorMessage: '',
+        errorBackground: '',
+        errorBorder: '',
+        errorFont: '',
+        catchErrors: false
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
@@ -878,7 +884,7 @@
                 data = this._plotData;
             }
             var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
-            this.renderer.draw.call(this, sctx, gridData, options);
+            this.renderer.draw.call(this, sctx, gridData, options, plot);
         }
         
         for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
