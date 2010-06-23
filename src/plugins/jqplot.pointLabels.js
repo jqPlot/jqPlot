@@ -277,7 +277,9 @@
                     label = '';
                 }
                 
-                if (label != null) label = p.formatter(p.formatString, label);
+                if (label != null) {
+                    label = p.formatter(p.formatString, label);
+                } 
                 var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
                 elem.insertAfter(sctx.canvas);
                 p._elems.push(elem);

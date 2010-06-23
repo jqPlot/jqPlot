@@ -558,7 +558,9 @@
      * true on success, false on failure.
      */
     $.jqplot.ThemeEngine.prototype.remove = function(name) {
-        if (name == 'Default') return false;
+        if (name == 'Default') {
+            return false;
+        }
         return delete this.themes[name];
     };
 
@@ -647,32 +649,36 @@
     	}
 
     	// Handle case when target is a string or something (possible in deep copy)
-    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" )
-    		target = {};
+    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
+    	    target = {};
+    	}
 
-    	for ( ; i < length; i++ )
+    	for ( ; i < length; i++ ){
     		// Only deal with non-null/undefined values
-    		if ( (options = arguments[ i ]) != null )
+    		if ( (options = arguments[ i ]) != null ) {
     			// Extend the base object
     			for ( var name in options ) {
     				var src = target[ name ], copy = options[ name ];
 
     				// Prevent never-ending loop
-    				if ( target === copy )
+    				if ( target === copy ) {
     					continue;
+    				}
 
     				// Recurse if we're merging object values
-    				if ( deep && copy && typeof copy === "object" && !copy.nodeType )
+    				if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
     					target[ name ] = $.jqplot.extend( deep, 
     						// Never move original objects, clone them
     						src || ( copy.length != null ? [ ] : { } )
     					, copy );
-
+                    }
     				// Don't bring in undefined values
-    				else if ( copy !== undefined )
+    				else if ( copy !== undefined ) {
     					target[ name ] = copy;
+    				}
     			}
-
+    		}
+        }
     	// Return the modified object
     	return target;
     };
@@ -792,7 +798,7 @@
         this.borderWidth = null;
         this.ticks = new AxisTicks();
         this.label = new AxisLabel();
-    }
+    };
     
     var AxisTicks = function() {
         this.show = null;
@@ -804,7 +810,7 @@
         this.whiteSpace = null;
         this.fontSize = null;
         this.fontFamily = null;
-    }
+    };
     
     var AxisLabel = function() {
         this.textColor = null;
@@ -812,7 +818,7 @@
         this.fontSize = null;
         this.fontFamily = null;
         this.fontWeight = null;
-    }
+    };
     
     var LineSeriesProperties = function() {
         this.color=null;

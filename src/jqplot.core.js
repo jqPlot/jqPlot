@@ -121,13 +121,6 @@
     $.jqplot = function(target, data, options) {
         var _data, _options;
         
-        // check to see if only 2 arguments were specified, what is what.
-        if (data == null) {
-            throw "No data specified";
-        }
-        if (data.constructor == Array && data.length == 0 || data[0].constructor != Array) {
-            throw "Improper Data Array";
-        }
         if (options == null) {
             if (data instanceof Array) {
                 _data = data;
@@ -144,10 +137,17 @@
             _options = options;
         }
         var plot = new jqPlot();
-        plot.init(target, _data, _options);
-        plot.draw();
-        plot.themeEngine.init.call(plot);
-        return plot;
+        try {
+            plot.init(target, _data, _options);
+            plot.draw();
+            plot.themeEngine.init.call(plot);
+            return plot;
+        }
+        catch(e) {
+            var msg = $.jqplot.config.ErrorMessage || e.message;
+            $('#'+target).append('<div style="text-align:center;position:relative;top:50%;">'+msg+'</div>');
+            $('#'+target).css({background: $.jqplot.config.ErrorBackground, border: $.jqplot.config.ErrorBorder, font: $.jqplot.config.ErrorFont});
+        }
     };
         
     $.jqplot.debug = 1;
@@ -157,7 +157,11 @@
         defaultHeight:300,
         defaultWidth:400,
         UTCAdjust:false,
-        timezoneOffset: new Date(new Date().getTimezoneOffset() * 60000)
+        timezoneOffset: new Date(new Date().getTimezoneOffset() * 60000),
+        ErrorMessage: '',
+        ErrorBackground: '#fffbf9',
+        ErrorBorder: '1px solid #f6dccb',
+        ErrorFont: ''
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
@@ -1360,6 +1364,19 @@
             this.legend._plotDimensions = this._plotDimensions;
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
                 throw "Canvas dimension not set";
+            }
+            
+            if (data == null) {
+                throw{
+                    name: "DataError",
+                    message: "No data to plot."
+                };
+            }
+            if (data.constructor == Array && data.length == 0 || data[0].constructor != Array) {
+                throw{
+                    name: "DataError",
+                    message: "No data to plot."
+                };
             }
             
             this.data = data;
