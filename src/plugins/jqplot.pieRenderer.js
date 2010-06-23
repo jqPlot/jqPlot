@@ -106,6 +106,17 @@
         // prop: showDataLabels
         // true to show data labels on slices.
         this.showDataLabels = true;
+        // prop: dataLabelFormatString
+        // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
+        this.dataLabelFormatString = null;
+        // prop: dataLabelThreshold
+        // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
+        // This applies to all label types, not just to percentage labels.
+        this.dataLabelThreshold = 2;
+        // prop: dataLabelPositionFactor
+        // Number (0-1) which controls position of label on slice.
+        // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
+        this.dataLabelPositionFactor = 0.53;
         // prop: startAngle
         // Angle to start drawing pie in degrees.  
         // According to orientation of canvas coordinate system:
@@ -340,26 +351,37 @@
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
             this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], false);
-            if (this.showDataLabels) {
-                var avgang = (ang1+ang2)/2, label;
+            if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
+                var fstr, avgang = (ang1+ang2)/2, label;
                 
                 if (this.dataLabels == 'label') {
-                    label = gd[i][0];
+                    fstr = this.dataLabelFormatString || '%s';
+                    label = $.jqplot.sprintf(fstr, gd[i][0]);
                 }
                 else if (this.dataLabels == 'value') {
-                    label = gd[i][1];
+                    fstr = this.dataLabelFormatString || '%d';
+                    label = $.jqplot.sprintf(fstr, gd[i][1]);
                 }
                 else if (this.dataLabels == 'percent') {
-                    label = String(Math.round(gd[i][2]*100))+'%';
+                    fstr = this.dataLabelFormatString || '%d%%';
+                    label = $.jqplot.sprintf(fstr, gd[i][2]*100);
                 }
                 else if (this.dataLabels.constructor == Array) {
-                    label = this.dataLabels[i];
+                    fstr = this.dataLabelFormatString || '%d';
+                    label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
                 }
                 
-                var x = parseInt(this._center[0] + Math.cos(avgang) * this._radius/2);
-                var y = parseInt(this._center[1] + Math.sin(avgang) * this._radius/2);
+                var fact = this._radius * this.dataLabelPositionFactor;
                 
-                $('<span class="jqplot-pie-data-label" style="position:absolute; left:' + x + 'px; top:' + y + 'px;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
+                var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
+                var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
+                
+                var labelelem = $('<span class="jqplot-data-label" style="position:absolute;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
+                x -= labelelem.width()/2;
+                y -= labelelem.height()/2;
+                x = Math.round(x);
+                y = Math.round(y);
+                labelelem.css({left: x, top: y});
             }
         }
                
@@ -786,7 +808,16 @@
         this.plugins.pieRenderer = {highlightedSeriesIndex:null};
         this.plugins.pieRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
+        // do we have any data labels?  if so, put highlight canvas before those
+        var labels = this.target.find('.jqplot-data-label:first');
+        if (labels.length) {
+            labels.before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
+        }
+        // else put highlight canvas before event canvas.
+        else {
+            this.eventCanvas._elem.before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
+        }
+        
         var hctx = this.plugins.pieRenderer.highlightCanvas.setContext();
     }
     
