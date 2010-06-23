@@ -137,22 +137,27 @@
             _options = options;
         }
         var plot = new jqPlot();
-        try {
+        
+        if ($.jqplot.config.catchErrors) {
+            try {
+                plot.init(target, _data, _options);
+                plot.draw();
+                plot.themeEngine.init.call(plot);
+                return plot;
+            }
+            catch(e) {
+                var msg = $.jqplot.config.errorMessage || e.message;
+                $('#'+target).append('<div style="text-align:center;position:relative;top:50%;">'+msg+'</div>');
+                $('#'+target).css({background: $.jqplot.config.errorBackground, border: $.jqplot.config.errorBorder, font: $.jqplot.config.errorFont});
+            }
+        }
+        else {        
             plot.init(target, _data, _options);
             plot.draw();
             plot.themeEngine.init.call(plot);
             return plot;
         }
-        catch(e) {
-            if ($.jqplot.config.catchErrors) {
-                var msg = $.jqplot.config.errorMessage || e.message;
-                $('#'+target).append('<div style="text-align:center;position:relative;top:50%;">'+msg+'</div>');
-                $('#'+target).css({background: $.jqplot.config.errorBackground, border: $.jqplot.config.errorBorder, font: $.jqplot.config.errorFont});
-            }
-            else {
-                throw e.message;
-            }
-        }
+        
     };
         
     $.jqplot.debug = 1;
