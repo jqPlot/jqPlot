@@ -162,9 +162,17 @@
             case 'x': return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
             case 'X': return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace).toUpperCase();
             case 'u': return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad, htmlSpace);
-            case 'i':
-            case 'd': {
+            case 'i': {
               var number = parseInt(+value, 10);
+              if (isNaN(number)) {
+                return '';
+              }
+              var prefix = number < 0 ? '-' : positivePrefix;
+              value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+              return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
+                  }
+            case 'd': {
+              var number = Math.round(+value);
               if (isNaN(number)) {
                 return '';
               }
