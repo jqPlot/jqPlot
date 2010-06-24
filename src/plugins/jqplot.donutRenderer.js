@@ -118,7 +118,7 @@
         this.dataLabels = 'percent';
         // prop: showDataLabels
         // true to show data labels on slices.
-        this.showDataLabels = true;
+        this.showDataLabels = false;
         // prop: dataLabelFormatString
         // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
         this.dataLabelFormatString = null;
@@ -405,7 +405,7 @@
                     label = $.jqplot.sprintf(fstr, gd[i][2]*100);
                 }
                 else if (this.dataLabels.constructor == Array) {
-                    fstr = this.dataLabelFormatString || '%d';
+                    fstr = this.dataLabelFormatString || '%s';
                     label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
                 }
                 

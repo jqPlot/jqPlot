@@ -371,7 +371,7 @@
                     label = $.jqplot.sprintf(fstr, gd[i][2]*100);
                 }
                 else if (this.dataLabels.constructor == Array) {
-                    fstr = this.dataLabelFormatString || '%d';
+                    fstr = this.dataLabelFormatString || '%s';
                     label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
                 }
                 

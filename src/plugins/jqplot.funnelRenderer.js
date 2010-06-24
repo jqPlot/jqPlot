@@ -120,6 +120,20 @@
         // prop: lineWidth
         // width of line if areas are stroked and not filled.
         this.lineWidth = 2;
+        // prop: dataLabels
+        // Either 'label', 'value', 'percent' or an array of labels to place on the pie slices.
+        // Defaults to percentage of each pie slice.
+        this.dataLabels = 'percent';
+        // prop: showDataLabels
+        // true to show data labels on slices.
+        this.showDataLabels = false;
+        // prop: dataLabelFormatString
+        // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
+        this.dataLabelFormatString = null;
+        // prop: dataLabelThreshold
+        // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
+        // This applies to all label types, not just to percentage labels.
+        this.dataLabelThreshold = 3;
         
         this.tickRenderer = $.jqplot.FunnelTickRenderer;
         
@@ -143,10 +157,19 @@
         this._lengths = [];
         // angle of the funnel to vertical.
         this._angle;
+        this._dataIndices = [];
         
         // sort data
         this._unorderedData = $.extend(true, [], this.data);
+        var idxs = $.extend(true, [], this.data);
+        for (var i=0; i<idxs.length; i++) {
+            idxs[i].push(i);
+        }
         this.data.sort( function (a, b) { return b[1] - a[1]; } );
+        idxs.sort( function (a, b) { return b[1] - a[1]; });
+        for (var i=0; i<idxs.length; i++) {
+            this._dataIndices.push(idxs[i][2]);
+        }
         
         // set highlight colors if none provided
         if (this.highlightColors.length == 0) {
@@ -174,6 +197,7 @@
         
     };
     
+    // gridData will be of form [label, percentage of total]
     $.jqplot.FunnelRenderer.prototype.setGridData = function(plot) {
         // set gridData property.  This will hold angle in radians of each data point.
         var sum = 0;
@@ -259,7 +283,7 @@
     };
     
     // called with scope of series
-    $.jqplot.FunnelRenderer.prototype.draw = function (ctx, gd, options) {
+    $.jqplot.FunnelRenderer.prototype.draw = function (ctx, gd, options, plot) {
         var i;
         var opts = (options != undefined) ? options : {};
         // offset and direction of offset due to legend placement
@@ -415,7 +439,42 @@
             
         }
         for (var i=0; i<gd.length; i++) {
-            this.renderer.drawSection.call (this, ctx, this._vertices[i], this.seriesColors[i]);
+            var v = this._vertices[i];
+            this.renderer.drawSection.call (this, ctx, v, this.seriesColors[i]);
+            
+            if (this.showDataLabels && gd[i][1]*100 >= this.dataLabelThreshold) {
+                var fstr, label;
+                
+                if (this.dataLabels == 'label') {
+                    fstr = this.dataLabelFormatString || '%s';
+                    label = $.jqplot.sprintf(fstr, gd[i][0]);
+                }
+                else if (this.dataLabels == 'value') {
+                    fstr = this.dataLabelFormatString || '%d';
+                    label = $.jqplot.sprintf(fstr, this.data[i][1]);
+                }
+                else if (this.dataLabels == 'percent') {
+                    fstr = this.dataLabelFormatString || '%d%%';
+                    label = $.jqplot.sprintf(fstr, gd[i][1]*100);
+                }
+                else if (this.dataLabels.constructor == Array) {
+                    fstr = this.dataLabelFormatString || '%s';
+                    label = $.jqplot.sprintf(fstr, this.dataLabels[this._dataIndices[i]]);
+                }
+                
+                var fact = (this._radius ) * this.dataLabelPositionFactor + this.sliceMargin + this.dataLabelNudge;
+                
+                var x = (v[0][0] + v[1][0])/2 + this.canvas._offsets.left;
+                var y = (v[1][1] + v[2][1])/2 + this.canvas._offsets.top;
+                
+                var labelelem = $('<span class="jqplot-funnel-series jqplot-data-label" style="position:absolute;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
+                x -= labelelem.width()/2;
+                y -= labelelem.height()/2;
+                x = Math.round(x);
+                y = Math.round(y);
+                labelelem.css({left: x, top: y});
+            }
+            
         }
                
     };
@@ -826,7 +885,15 @@
         this.plugins.funnelRenderer = {};
         this.plugins.funnelRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions));
+        // do we have any data labels?  if so, put highlight canvas before those
+        var labels = this.target.find('.jqplot-data-label:first');
+        if (labels.length) {
+            labels.before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions));
+        }
+        // else put highlight canvas before event canvas.
+        else {
+            this.eventCanvas._elem.before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions));
+        }
         var hctx = this.plugins.funnelRenderer.highlightCanvas.setContext();
     }
     

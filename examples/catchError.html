@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Simple Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <!-- END: load jqplot -->
+
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+
+    // First, turn on error handling
+    $.jqplot.config.catchErrors = true;
+
+   plot1 = $.jqplot('chart1',[],{});
+   
+   // Second plot will use these customizations to error display.
+   $.jqplot.config.errorMessage = 'A Plot Error has Occurred';
+   $.jqplot.config.errorBackground = '#fbeddf';
+   $.jqplot.config.errorBorder = '2px solid #aaaaaa';
+   $.jqplot.config.errorFont = '16pt Courier New';
+   
+   plot2 = $.jqplot('chart2',[],{
+       axes: {
+           xaxis: {
+               renderer: $.jqplot.BarRenderer.js
+           }
+       }
+   });
+   
+   // The third plot will not display any errors, error will be rethrown as normal.
+   $.jqplot.config.catchErrors = false;
+   
+   plot2 = $.jqplot('chart2',[],{
+       axes: {
+           xaxis: {
+               renderer: $.jqplot.BarRenderer.js
+           }
+       }
+   });
+   
+ });
+</script>
+  </head>
+  <body>
+<?php include "nav.inc"; ?>
+<div id="chart1" class="plot" style="width:500px;height:300px;"></div>
+<div id="chart2" class="plot" style="width:500px;height:300px;"></div>
+  </body>
+</html>
