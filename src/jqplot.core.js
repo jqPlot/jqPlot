@@ -1383,7 +1383,7 @@
                     message: "No data to plot."
                 };
             }
-            if (data.constructor == Array && data.length == 0 || data[0].constructor != Array) {
+            if (data.constructor != Array || data.length == 0 || data[0].constructor != Array || data[0].length == 0) {
                 throw{
                     name: "DataError",
                     message: "No data to plot."
