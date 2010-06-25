@@ -1008,6 +1008,9 @@
         // prop: borderWidth
         // width of the border in pixels.
         this.borderWidth = 2.0;
+        // prop: drawBorder
+        // True to draw border around grid.
+        this.drawBorder = true;
         // prop: shadow
         // wether to show a shadow behind the grid.
         this.shadow = true;

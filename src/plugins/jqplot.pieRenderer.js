@@ -390,7 +390,6 @@
                     y -= labelelem.height()/2;
                 }
                 else {
-                    console.log('here now');
                     x -= labelelem.width() * Math.sin(avgang/2);
                     y -= labelelem.height()/2;
                 }

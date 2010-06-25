@@ -293,12 +293,14 @@
         function drawLine(bx, by, ex, ey, opts) {
             ctx.save();
             opts = opts || {};
-            $.extend(true, ctx, opts);
-            ctx.beginPath();
-            ctx.moveTo(bx, by);
-            ctx.lineTo(ex, ey);
-            ctx.stroke();
-            ctx.restore();
+            if (opts.lineWidth == null || opts.lineWidth != 0){
+                $.extend(true, ctx, opts);
+                ctx.beginPath();
+                ctx.moveTo(bx, by);
+                ctx.lineTo(ex, ey);
+                ctx.stroke();
+                ctx.restore();
+            }
         }
         
         if (this.shadow) {
@@ -307,10 +309,12 @@
         }
         // Now draw border around grid.  Use axis border definitions. start at
         // upper left and go clockwise.
-        drawLine (this._left, this._top, this._right, this._top, {lineCap:'round', strokeStyle:axes.x2axis.borderColor, lineWidth:axes.x2axis.borderWidth});
-        drawLine (this._right, this._top, this._right, this._bottom, {lineCap:'round', strokeStyle:axes.y2axis.borderColor, lineWidth:axes.y2axis.borderWidth});
-        drawLine (this._right, this._bottom, this._left, this._bottom, {lineCap:'round', strokeStyle:axes.xaxis.borderColor, lineWidth:axes.xaxis.borderWidth});
-        drawLine (this._left, this._bottom, this._left, this._top, {lineCap:'round', strokeStyle:axes.yaxis.borderColor, lineWidth:axes.yaxis.borderWidth});
+        if (this.borderWidth != 0 && this.drawBorder) {
+            drawLine (this._left, this._top, this._right, this._top, {lineCap:'round', strokeStyle:axes.x2axis.borderColor, lineWidth:axes.x2axis.borderWidth});
+            drawLine (this._right, this._top, this._right, this._bottom, {lineCap:'round', strokeStyle:axes.y2axis.borderColor, lineWidth:axes.y2axis.borderWidth});
+            drawLine (this._right, this._bottom, this._left, this._bottom, {lineCap:'round', strokeStyle:axes.xaxis.borderColor, lineWidth:axes.xaxis.borderWidth});
+            drawLine (this._left, this._bottom, this._left, this._top, {lineCap:'round', strokeStyle:axes.yaxis.borderColor, lineWidth:axes.yaxis.borderWidth});
+        }
         // ctx.lineWidth = this.borderWidth;
         // ctx.strokeStyle = this.borderColor;
         // ctx.strokeRect(this._left, this._top, this._width, this._height);

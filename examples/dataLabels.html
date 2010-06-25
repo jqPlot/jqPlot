@@ -50,6 +50,15 @@
     s1 = [['Sony',7], ['Samsumg',13.3], ['LG',14.7], ['Vizio',5.2], ['Insignia', 1.2]];
         
     plot1 = $.jqplot('chart1', [s1], {
+        grid: {
+            drawBorder: false, 
+            drawGridlines: false,
+            background: '#ffffff',
+            shadow:false
+        },
+        axesDefaults: {
+            
+        },
         seriesDefaults:{
             renderer:$.jqplot.PieRenderer,
             rendererOptions: {
