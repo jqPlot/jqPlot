@@ -120,6 +120,10 @@
         // prop: dataLabelNudge
         // Number of pixels to slide the label away from (+) or toward (-) the center of the pie.
         this.dataLabelNudge = 2;
+        // prop: dataLabelCenterOn
+        // True to center the data label at its position.
+        // False to set the inside facing edge of the label at its position.
+        this.dataLabelCenterOn = true;
         // prop: startAngle
         // Angle to start drawing pie in degrees.  
         // According to orientation of canvas coordinate system:
@@ -380,9 +384,16 @@
                 var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
                 var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
                 
-                var labelelem = $('<span class="jqplot-pie-series jqplot-data-label" style="position:absolute;">' + label + '</span>').insertBefore(plot.eventCanvas._elem);
-                x -= labelelem.width()/2;
-                y -= labelelem.height()/2;
+                var labelelem = $('<div class="jqplot-pie-series jqplot-data-label" style="position:absolute;">' + label + '</div>').insertBefore(plot.eventCanvas._elem);
+                if (this.dataLabelCenterOn) {
+                    x -= labelelem.width()/2;
+                    y -= labelelem.height()/2;
+                }
+                else {
+                    console.log('here now');
+                    x -= labelelem.width() * Math.sin(avgang/2);
+                    y -= labelelem.height()/2;
+                }
                 x = Math.round(x);
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
