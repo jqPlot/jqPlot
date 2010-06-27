@@ -102,8 +102,7 @@ $(document).ready(function(){
                numberRows:1
            },
            placement:'outside',
-           location:'s',
-           yoffset: 35
+           location:'s'
 		},
 		axes: {
 		    xaxis:{min:1, max:4},
@@ -122,6 +121,9 @@ $(document).ready(function(){
           }
       }      
     });
+    
+    // Another way to position the legend below the chart.
+    $('#chart3 .jqplot-table-legend').css({top: String($('#chart3').height()+15)+'px'});
    
  });
 </script>
