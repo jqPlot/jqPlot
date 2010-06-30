@@ -2103,37 +2103,33 @@
                     legendElem = legendElem.detach();
                 }
                 
-                for (var name in this.axes) {
-                    this.target.append(this.axes[name].draw(this.baseCanvas._ctx));
-                    this.axes[name].set();
+                var ax = this.axes;
+                for (var name in ax) {
+                    this.target.append(ax[name].draw(this.baseCanvas._ctx));
+                    ax[name].set();
                 }
-                if (this.axes.yaxis.show) {
-                    gridPadding.left = this.axes.yaxis.getWidth();
+                if (ax.yaxis.show) {
+                    gridPadding.left += ax.yaxis.getWidth();
                 }
                 var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
-                var rapad = [0, 0, 0, 0];
+                var rapad = [0, 0, 0, 0, 0, 0, 0, 0];
                 var gpr = 0;
                 var n;
-                for (n=8; n>0; n--) {
-                    if (this.axes[ra[n-1]].show) {
-                        rapad[n-1] = gpr;
-                        gpr += this.axes[ra[n-1]].getWidth();
+                for (n=0; n<8; n++) {
+                    if (ax[ra[n]].show) {
+                        gpr += ax[ra[n]].getWidth();
+                        rapad[n] = gpr;
                     }
                 }
-                if (gpr > gridPadding.right) {
-                    gridPadding.right = gpr;
+                gridPadding.right += gpr;
+                if (ax.x2axis.show) {
+                    gridPadding.top += ax.x2axis.getHeight();
                 }
-                if (this.title.show && this.axes.x2axis.show) {
-                    gridPadding.top = this.title.getHeight() + this.axes.x2axis.getHeight();
+                if (this.title.show) {
+                    gridPadding.top += this.title.getHeight();
                 }
-                else if (this.title.show) {
-                    gridPadding.top = this.title.getHeight();
-                }
-                else if (this.axes.x2axis.show) {
-                    gridPadding.top = this.axes.x2axis.getHeight();
-                }
-                if (this.axes.xaxis.show) {
-                    gridPadding.bottom = this.axes.xaxis.getHeight();
+                if (ax.xaxis.show) {
+                    gridPadding.bottom += ax.xaxis.getHeight();
                 }
                 
                 // end of gridPadding adjustments.
@@ -2144,15 +2140,15 @@
                     }
                 }
                 
-                // var legendPadding = (false) ? {top:this.title.getHeight(), left: 0, right: 0, bottom: 0} : this._gridPadding;
+                var legendPadding = (this.legend.placement == 'outsideGrid') ? {top:this.title.getHeight(), left: 0, right: 0, bottom: 0} : this._gridPadding;
             
-                this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
-                this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
-                this.axes.x2axis.pack({position:'absolute', top:this.title.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
+                ax.xaxis.pack({position:'absolute', bottom:this._gridPadding.bottom - ax.xaxis.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
+                ax.yaxis.pack({position:'absolute', top:0, left:this._gridPadding.left - ax.yaxis.getWidth(), height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+                ax.x2axis.pack({position:'absolute', top:this._gridPadding.top - ax.x2axis.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
                 for (i=8; i>0; i--) {
-                    this.axes[ra[i-1]].pack({position:'absolute', top:0, right:rapad[i-1]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+                    ax[ra[i-1]].pack({position:'absolute', top:0, right:this._gridPadding.right - rapad[i-1]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
                 }
-                // this.axes.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+                // ax.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
                 this.target.append(this.grid.createElement(this._gridPadding));
                 this.grid.draw();
@@ -2188,7 +2184,7 @@
                 // draw legend before series if the series needs to know the legend dimensions.
                 if (this.legend.preDraw) {  
                     this.eventCanvas._elem.before(legendElem);
-                    this.legend.pack(this._gridPadding);
+                    this.legend.pack(legendPadding);
                     if (this.legend._elem) {
                         this.drawSeries({legendInfo:{location:this.legend.location, placement:this.legend.placement, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
                     }
@@ -2199,7 +2195,7 @@
                 else {  // draw series before legend
                     this.drawSeries();
                     $(this.series[this.series.length-1].canvas._elem).after(legendElem);
-                    this.legend.pack(this._gridPadding);                
+                    this.legend.pack(legendPadding);                
                 }
             
                 // register event listeners on the overlay canvas
