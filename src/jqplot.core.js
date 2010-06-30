@@ -137,6 +137,8 @@
             _options = options;
         }
         var plot = new jqPlot();
+        // remove any error class that may be stuck on target.
+        $('#'+target).removeClass('jqplot-error');
         
         if ($.jqplot.config.catchErrors) {
             try {
@@ -147,8 +149,14 @@
             }
             catch(e) {
                 var msg = $.jqplot.config.errorMessage || e.message;
-                $('#'+target).append('<div style="text-align:center;position:relative;top:50%;">'+msg+'</div>');
-                $('#'+target).css({background: $.jqplot.config.errorBackground, border: $.jqplot.config.errorBorder, font: $.jqplot.config.errorFont});
+                $('#'+target).append('<div class="jqplot-error-message">'+msg+'</div>');
+                $('#'+target).addClass('jqplot-error');
+                document.getElementById(target).style.background = $.jqplot.config.errorBackground;
+                document.getElementById(target).style.border = $.jqplot.config.errorBorder;
+                document.getElementById(target).style.fontFamily = $.jqplot.config.errorFontFamily;
+                document.getElementById(target).style.fontSize = $.jqplot.config.errorFontSize;
+                document.getElementById(target).style.fontStyle = $.jqplot.config.errorFontStyle;
+                document.getElementById(target).style.fontWeight = $.jqplot.config.errorFontWeight;
             }
         }
         else {        
@@ -157,7 +165,6 @@
             plot.themeEngine.init.call(plot);
             return plot;
         }
-        
     };
         
     $.jqplot.debug = 1;
@@ -171,7 +178,10 @@
         errorMessage: '',
         errorBackground: '',
         errorBorder: '',
-        errorFont: '',
+        errorFontFamily: '',
+        errorFontSize: '',
+        errorFontStyle: '',
+        errorFontWeight: '',
         catchErrors: false
     };
     
@@ -537,15 +547,21 @@
         // true to show the color swatches on the legend.
         this.showSwatches = true;
         // prop: placement
-        // "inside" places the legend inside of the grid, 
-        // '"outside" places it ouside of the grid.
-        this.placement = "inside";
+        // "insideGrid" places legend inside the grid area of the plot.
+        // "outsideGrid" places the legend outside the grid but inside the plot container, 
+        // shrinking the grid to accomodate the legend.
+        // "inside" synonym for "insideGrid", 
+        // "outside" places the legend ouside the grid area, but does not shrink the grid which
+        // can cause the legend to overflow the plot container.
+        this.placement = "insideGrid";
         // prop: xoffset
-        // offset from the inside edge of the plot in the x direction in pixels.
-        this.xoffset = 12;
+        // DEPRECATED.  Set the margins on the legend using the marginTop, marginLeft, etc. 
+        // properties or via CSS margin styling of the .jqplot-table-legend class.
+        this.xoffset = 0;
         // prop: yoffset
-        // offset from the inside edge of the plot in the y direction in pixels.
-        this.yoffset = 12;
+        // DEPRECATED.  Set the margins on the legend using the marginTop, marginLeft, etc. 
+        // properties or via CSS margin styling of the .jqplot-table-legend class.
+        this.yoffset = 0;
         // prop: border
         // css spec for the border around the legend box.
         this.border;
@@ -573,7 +589,29 @@
         this.rendererOptions = {};
         // prop: predraw
         // Wether to draw the legend before the series or not.
+        // Used with series specific legend renderers for pie, donut, mekko charts, etc.
         this.preDraw = false;
+        // prop: marginTop
+        // CSS margin for the legend DOM element. This will set an element 
+        // CSS style for the margin which will override any style sheet setting.
+        // The default will be taken from the stylesheet.
+        this.marginTop = null;
+        // prop: marginRight
+        // CSS margin for the legend DOM element. This will set an element 
+        // CSS style for the margin which will override any style sheet setting.
+        // The default will be taken from the stylesheet.
+        this.marginRight = null;
+        // prop: marginBottom
+        // CSS margin for the legend DOM element. This will set an element 
+        // CSS style for the margin which will override any style sheet setting.
+        // The default will be taken from the stylesheet.
+        this.marginBottom = null;
+        // prop: marginLeft
+        // CSS margin for the legend DOM element. This will set an element 
+        // CSS style for the margin which will override any style sheet setting.
+        // The default will be taken from the stylesheet.
+        this.marginLeft = null;
+        
         this.escapeHtml = false;
         this._series = [];
         
@@ -582,6 +620,112 @@
     
     Legend.prototype = new $.jqplot.ElemContainer();
     Legend.prototype.constructor = Legend;
+    
+    Legend.prototype.setOptions = function(options) {
+        $.extend(true, this, options);
+        
+        // Try to emulate deprecated behaviour
+        // if user has specified xoffset or yoffset, copy these to
+        // the margin properties.
+        
+        if (this.placement ==  'inside') this.placement = 'insideGrid';
+        
+        if (this.xoffset >0) {
+            if (this.placement == 'insideGrid') {
+                switch (this.location) {
+                    case 'nw':
+                    case 'w':
+                    case 'sw':
+                        if (this.marginLeft == null) {
+                            this.marginLeft = this.xoffset + 'px';
+                        }
+                        this.marginRight = '0px';
+                        break;
+                    case 'ne':
+                    case 'e':
+                    case 'se':
+                    default:
+                        if (this.marginRight == null) {
+                            this.marginRight = this.xoffset + 'px';
+                        }
+                        this.marginLeft = '0px';
+                        break;
+                }
+            }
+            else if (this.placement == 'outside') {
+                switch (this.location) {
+                    case 'nw':
+                    case 'w':
+                    case 'sw':
+                        if (this.marginRight == null) {
+                            this.marginRight = this.xoffset + 'px';
+                        }
+                        this.marginLeft = '0px';
+                        break;
+                    case 'ne':
+                    case 'e':
+                    case 'se':
+                    default:
+                        if (this.marginLeft == null) {
+                            this.marginLeft = this.xoffset + 'px';
+                        }
+                        this.marginRight = '0px';
+                        break;
+                }
+            }
+            this.xoffset = 0;
+        }
+        
+        if (this.yoffset >0) {
+            if (this.placement == 'outside') {
+                switch (this.location) {
+                    case 'sw':
+                    case 's':
+                    case 'se':
+                        if (this.marginTop == null) {
+                            this.marginTop = this.yoffset + 'px';
+                        }
+                        this.marginBottom = '0px';
+                        break;
+                    case 'ne':
+                    case 'n':
+                    case 'nw':
+                    default:
+                        if (this.marginBottom == null) {
+                            this.marginBottom = this.yoffset + 'px';
+                        }
+                        this.marginTop = '0px';
+                        break;
+                }
+            }
+            else if (this.placement == 'insideGrid') {
+                switch (this.location) {
+                    case 'sw':
+                    case 's':
+                    case 'se':
+                        if (this.marginBottom == null) {
+                            this.marginBottom = this.yoffset + 'px';
+                        }
+                        this.marginTop = '0px';
+                        break;
+                    case 'ne':
+                    case 'n':
+                    case 'nw':
+                    default:
+                        if (this.marginTop == null) {
+                            this.marginTop = this.yoffset + 'px';
+                        }
+                        this.marginBottom = '0px';
+                        break;
+                }
+            }
+            this.yoffset = 0;
+        }
+        
+        // TO-DO:
+        // Handle case where offsets are < 0.
+        //
+    };
     
     Legend.prototype.init = function() {
         this.renderer = new this.renderer();
@@ -1321,6 +1465,8 @@
             
             this.targetId = '#'+target;
             this.target = $('#'+target);
+            // remove any error class that may be stuck on target.
+            this.target.removeClass('jqplot-error');
             if (!this.target.get(0)) {
                 throw "No plot target specified";
             }
@@ -1835,7 +1981,7 @@
                 $.extend(true, this.title, this.options.title);
             }
             this.title._plotWidth = this._width;
-            $.extend(true, this.legend, this.options.legend);
+            this.legend.setOptions(this.options.legend);
             
             for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
                 $.jqplot.postParseOptionsHooks[i].call(this, options);
@@ -1924,12 +2070,45 @@
                 this.baseCanvas.setContext();
                 this.target.append(this.title.draw());
                 this.title.pack({top:0, left:0});
+                
+                // make room  for the legend between the grid and the edge.
+                var legendElem = this.legend.draw();
+                
+                var gridPadding = {top:0, left:0, bottom:0, right:0};
+                
+                if (this.legend.placement == "outsideGrid") {
+                    // temporarily append the legend to get dimensions
+                    this.target.append(legendElem);
+                    switch (this.legend.location) {
+                        case 'n':
+                            gridPadding.top += this.legend.getHeight();
+                            break;
+                        case 's':
+                            gridPadding.bottom += this.legend.getHeight();
+                            break;
+                        case 'ne':
+                        case 'e':
+                        case 'se':
+                            gridPadding.right += this.legend.getWidth();
+                            break;
+                        case 'nw':
+                        case 'w':
+                        case 'sw':
+                            gridPadding.left += this.legend.getWidth();
+                            break;
+                        default:  // same as 'ne'
+                            gridPadding.right += this.legend.getWidth();
+                            break;
+                    }
+                    legendElem = legendElem.detach();
+                }
+                
                 for (var name in this.axes) {
                     this.target.append(this.axes[name].draw(this.baseCanvas._ctx));
                     this.axes[name].set();
                 }
                 if (this.axes.yaxis.show) {
-                    this._gridPadding.left = this.axes.yaxis.getWidth();
+                    gridPadding.left = this.axes.yaxis.getWidth();
                 }
                 var ra = ['y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
                 var rapad = [0, 0, 0, 0];
@@ -1941,21 +2120,31 @@
                         gpr += this.axes[ra[n-1]].getWidth();
                     }
                 }
-                if (gpr > this._gridPadding.right) {
-                    this._gridPadding.right = gpr;
+                if (gpr > gridPadding.right) {
+                    gridPadding.right = gpr;
                 }
                 if (this.title.show && this.axes.x2axis.show) {
-                    this._gridPadding.top = this.title.getHeight() + this.axes.x2axis.getHeight();
+                    gridPadding.top = this.title.getHeight() + this.axes.x2axis.getHeight();
                 }
                 else if (this.title.show) {
-                    this._gridPadding.top = this.title.getHeight();
+                    gridPadding.top = this.title.getHeight();
                 }
                 else if (this.axes.x2axis.show) {
-                    this._gridPadding.top = this.axes.x2axis.getHeight();
+                    gridPadding.top = this.axes.x2axis.getHeight();
                 }
                 if (this.axes.xaxis.show) {
-                    this._gridPadding.bottom = this.axes.xaxis.getHeight();
+                    gridPadding.bottom = this.axes.xaxis.getHeight();
                 }
+                
+                // end of gridPadding adjustments.
+                var arr = ['top', 'bottom', 'left', 'right'];
+                for (var n in arr) {
+                    if (gridPadding[arr[n]]) {
+                        this._gridPadding[arr[n]] = gridPadding[arr[n]];
+                    }
+                }
+                
+                // var legendPadding = (false) ? {top:this.title.getHeight(), left: 0, right: 0, bottom: 0} : this._gridPadding;
             
                 this.axes.xaxis.pack({position:'absolute', bottom:0, left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
                 this.axes.yaxis.pack({position:'absolute', top:0, left:0, height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
@@ -1998,8 +2187,7 @@
             
                 // draw legend before series if the series needs to know the legend dimensions.
                 if (this.legend.preDraw) {  
-                    // this.target.append(this.legend.draw());
-                    this.eventCanvas._elem.before(this.legend.draw());
+                    this.eventCanvas._elem.before(legendElem);
                     this.legend.pack(this._gridPadding);
                     if (this.legend._elem) {
                         this.drawSeries({legendInfo:{location:this.legend.location, placement:this.legend.placement, width:this.legend.getWidth(), height:this.legend.getHeight(), xoffset:this.legend.xoffset, yoffset:this.legend.yoffset}});
@@ -2010,8 +2198,7 @@
                 }
                 else {  // draw series before legend
                     this.drawSeries();
-                    $(this.series[this.series.length-1].canvas._elem).after(this.legend.draw());
-                    // this.target.append(this.legend.draw());
+                    $(this.series[this.series.length-1].canvas._elem).after(legendElem);
                     this.legend.pack(this._gridPadding);                
                 }
             

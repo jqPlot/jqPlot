@@ -27,22 +27,12 @@ $(document).ready(function(){
 
    plot1 = $.jqplot('chart1',[[]],{});
    
-   // Second plot will use these customizations to error display.
+   // Second plot will use these customizations to the plot target for error display.
    $.jqplot.config.errorMessage = 'A Plot Error has Occurred';
    $.jqplot.config.errorBackground = '#fbeddf';
    $.jqplot.config.errorBorder = '2px solid #aaaaaa';
-   $.jqplot.config.errorFont = '16pt Courier New';
-   
-   plot2 = $.jqplot('chart2',[],{
-       axes: {
-           xaxis: {
-               renderer: $.jqplot.BarRenderer.js
-           }
-       }
-   });
-   
-   // The third plot will not display any errors, error will be rethrown as normal.
-   $.jqplot.config.catchErrors = false;
+   $.jqplot.config.errorFontFamily = 'Courier New';
+   $.jqplot.config.errorFontSize = '16pt';
    
    plot2 = $.jqplot('chart2',[],{
        axes: {

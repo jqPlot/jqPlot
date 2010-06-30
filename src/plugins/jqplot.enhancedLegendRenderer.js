@@ -19,8 +19,11 @@
     // class $.jqplot.EnhancedLegendRenderer
     // Legend renderer which can specify the number of rows and/or columns in the legend.
     $.jqplot.EnhancedLegendRenderer = function(){
-        //
+        $.jqplot.TableLegendRenderer.call(this);
     };
+    
+    $.jqplot.EnhancedLegendRenderer.prototype = new $.jqplot.TableLegendRenderer();
+    $.jqplot.EnhancedLegendRenderer.prototype.constructor = $.jqplot.EnhancedLegendRenderer;
     
     // called with scope of legend.
     $.jqplot.EnhancedLegendRenderer.prototype.init = function(options) {
@@ -57,6 +60,10 @@
             ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
             ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
             ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
+            ss += (this.marginTop != null) ? 'margin-top:'+this.marginTop+';' : '';
+            ss += (this.marginBottom != null) ? 'margin-bottom:'+this.marginBottom+';' : '';
+            ss += (this.marginLeft != null) ? 'margin-left:'+this.marginLeft+';' : '';
+            ss += (this.marginRight != null) ? 'margin-right:'+this.marginRight+';' : '';
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
             if (this.seriesToggle) {
                 this._elem.css('z-index', '3');
@@ -175,115 +182,5 @@
             var e = this.legend._elem.detach();
             this.eventCanvas._elem.after(e);
         }
-    };
-    
-    $.jqplot.EnhancedLegendRenderer.prototype.pack = function(offsets) {
-        if (this.show) {
-            // fake a grid for positioning
-            var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom};        
-            if (this.placement == 'inside') {
-                switch (this.location) {
-                    case 'nw':
-                        var a = grid._left + this.xoffset;
-                        var b = grid._top + this.yoffset;
-                        this._elem.css('left', a);
-                        this._elem.css('top', b);
-                        break;
-                    case 'n':
-                        var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-                        var b = grid._top + this.yoffset;
-                        this._elem.css('left', a);
-                        this._elem.css('top', b);
-                        break;
-                    case 'ne':
-                        var a = offsets.right + this.xoffset;
-                        var b = grid._top + this.yoffset;
-                        this._elem.css({right:a, top:b});
-                        break;
-                    case 'e':
-                        var a = offsets.right + this.xoffset;
-                        var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-                        this._elem.css({right:a, top:b});
-                        break;
-                    case 'se':
-                        var a = offsets.right + this.xoffset;
-                        var b = offsets.bottom + this.yoffset;
-                        this._elem.css({right:a, bottom:b});
-                        break;
-                    case 's':
-                        var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-                        var b = offsets.bottom + this.yoffset;
-                        this._elem.css({left:a, bottom:b});
-                        break;
-                    case 'sw':
-                        var a = grid._left + this.xoffset;
-                        var b = offsets.bottom + this.yoffset;
-                        this._elem.css({left:a, bottom:b});
-                        break;
-                    case 'w':
-                        var a = grid._left + this.xoffset;
-                        var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-                        this._elem.css({left:a, top:b});
-                        break;
-                    default:  // same as 'se'
-                        var a = grid._right - this.xoffset;
-                        var b = grid._bottom + this.yoffset;
-                        this._elem.css({right:a, bottom:b});
-                        break;
-                }
-                
-            }
-            else {
-                switch (this.location) {
-                    case 'nw':
-                        var a = this._plotDimensions.width - grid._left + this.xoffset;
-                        var b = grid._top + this.yoffset;
-                        this._elem.css('right', a);
-                        this._elem.css('top', b);
-                        break;
-                    case 'n':
-                        var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-                        var b = this._plotDimensions.height - grid._top + this.yoffset;
-                        this._elem.css('left', a);
-                        this._elem.css('bottom', b);
-                        break;
-                    case 'ne':
-                        var a = this._plotDimensions.width - offsets.right + this.xoffset;
-                        var b = grid._top + this.yoffset;
-                        this._elem.css({left:a, top:b});
-                        break;
-                    case 'e':
-                        var a = this._plotDimensions.width - offsets.right + this.xoffset;
-                        var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-                        this._elem.css({left:a, top:b});
-                        break;
-                    case 'se':
-                        var a = this._plotDimensions.width - offsets.right + this.xoffset;
-                        var b = offsets.bottom + this.yoffset;
-                        this._elem.css({left:a, bottom:b});
-                        break;
-                    case 's':
-                        var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-                        var b = this._plotDimensions.height - offsets.bottom + this.yoffset;
-                        this._elem.css({left:a, top:b});
-                        break;
-                    case 'sw':
-                        var a = this._plotDimensions.width - grid._left + this.xoffset;
-                        var b = offsets.bottom + this.yoffset;
-                        this._elem.css({right:a, bottom:b});
-                        break;
-                    case 'w':
-                        var a = this._plotDimensions.width - grid._left + this.xoffset;
-                        var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-                        this._elem.css({right:a, top:b});
-                        break;
-                    default:  // same as 'se'
-                        var a = grid._right - this.xoffset;
-                        var b = grid._bottom + this.yoffset;
-                        this._elem.css({right:a, bottom:b});
-                        break;
-                }
-            }
-        } 
     };
 })(jQuery);

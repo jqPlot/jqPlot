@@ -63,10 +63,10 @@
             renderer:$.jqplot.PieRenderer,
             rendererOptions: {
                 showDataLabels: true,
-                dataLabelCenterOn: false,
-                dataLabelPositionFactor: 1.1,
+                // dataLabelCenterOn: false,   // This is an expreimental feature.
+                dataLabelPositionFactor: 0.6,
                 dataLabelNudge: 0,
-                dataLabels: ['Longer', 'B', 'C', 'Longerest', 'None']
+                dataLabels: ['Longer', 'B', 'C', 'Longer', 'None']
             }
         },
         legend: {
@@ -134,10 +134,10 @@
 <script type="text/javascript">
     $(document).ready(function(){
         
-        $('#code_1').html($('#example_1').text());
-        $('#code_2').html($('#example_2').text());
-        $('#code_3').html($('#example_3').text());
-        $('#code_4').html($('#example_4').text());
+        $('#code_1').html($('#example_1').html());
+        $('#code_2').html($('#example_2').html());
+        $('#code_3').html($('#example_3').html());
+        $('#code_4').html($('#example_4').html());
         $(document).unload(function() {$('*').unbind(); });
 
     });
@@ -146,7 +146,6 @@
   </head>
   <body>
 <?php include "nav.inc"; ?>
-<div id="code"></div>
 
     <p>Data labels can be automatically added to pie chart and donut chart slices as well as funnel chart areas.  what labels are displayed is controlled by the series "dataLabel" option.  There are 4 types of data labels to display:<p>
     <ul>

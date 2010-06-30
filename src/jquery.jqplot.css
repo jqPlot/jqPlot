@@ -103,6 +103,13 @@
     position: absolute;
 }
 
+table.jqplot-table-legend {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
 table.jqplot-table-legend, table.jqplot-cursor-legend {
     background-color: rgba(255,255,255,0.6);
     border: 1px solid #cccccc;
@@ -178,4 +185,16 @@ text-align:center;
 div.jqplot-cursor-legend-swatch {
 width:1.2em;
 height:0.7em;
+}
+
+.jqplot-error {
+/*   Styles added to the plot target container when there is an error go here.*/
+    text-align: center;
+}
+
+.jqplot-error-message {
+/*    Styling of the custom error message div goes here.*/
+    position: relative;
+    top: 46%;
+    display: inline-block;
 }

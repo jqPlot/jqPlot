@@ -289,7 +289,7 @@
         var offy = 0;
         var trans = 1;
         // var colorGenerator = new this.colorGenerator(this.seriesColors);
-        if (options.legendInfo && options.legendInfo.placement == 'inside') {
+        if (options.legendInfo && options.legendInfo.placement == 'insideGrid') {
             var li = options.legendInfo;
             switch (li.location) {
                 case 'nw':
@@ -559,7 +559,7 @@
         if (this.show) {
             // fake a grid for positioning
             var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom};        
-            if (this.placement == 'inside') {
+            if (this.placement == 'insideGrid') {
                 switch (this.location) {
                     case 'nw':
                         var a = grid._left + this.xoffset;
