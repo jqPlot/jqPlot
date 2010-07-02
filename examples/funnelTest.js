@@ -39,7 +39,8 @@ $(document).ready(function(){
         },
         legend: {
             show:true,
-            location: 'e'
+            location: 'e',
+            placement: 'outside'
         }
     });
     

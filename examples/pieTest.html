@@ -19,7 +19,12 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
   <!-- END: load jqplot -->
 
+  <style type="text/css">
+  div.jqplot-target { margin-bottom: 45px; }
+  </style>
+  
   <script type="text/javascript" language="javascript">
+  
   
   $(document).ready(function(){
     
@@ -27,12 +32,20 @@
 
     plot1 = $.jqplot('pie1', [[['a',25],['b',14],['c',7]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{show:true}      
+      legend:{
+          show:true, 
+          placement: 'outside', 
+          rendererOptions: {
+              numberRows: 1
+          }, 
+          location:'s',
+          marginTop: '15px'
+      }       
     });
 
     plot2 = $.jqplot('pie2', [[['a',25],['b',0],['c',0]]], {
       seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{show:true}      
+      legend:{show:true}    
     });
 
     plot3 = $.jqplot('pie3', [[['a',5],['b',0],['c',7]]], {
