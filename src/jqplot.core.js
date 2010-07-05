@@ -182,7 +182,8 @@
         errorFontSize: '',
         errorFontStyle: '',
         errorFontWeight: '',
-        catchErrors: false
+        catchErrors: false,
+        defaultTickFormatString: "%.1f"
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
