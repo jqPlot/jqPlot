@@ -175,6 +175,11 @@
         var min, max;
         var pos1, pos2;
         var tt, i;
+        // get a copy of user's settings for min/max.
+        var userMin = this.min;
+        var userMax = this.max;
+        var userNT = this.numberTicks;
+        var userTI = this.tickInterval;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
@@ -320,6 +325,11 @@
                         else if (vmin < 0) {
                             forceMinZero = false;
                         }
+                        
+                        // for mixed line w/bar or filled charts, let forceMinZero be applied if appropriate
+                        else if (vmin >= 0){
+                            forceMinZero = true;
+                        }
                     }
                 }
                 
@@ -328,6 +338,7 @@
                     // compute number of ticks
                     this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
                     this.min = 0;
+                    userMin = 0;
                     // what order is this range?
                     // what tick interval does that give us?
                     ti = max/(this.numberTicks-1);
@@ -422,6 +433,64 @@
                     this.tickInterval = range / (this.numberTicks-1);
                 }
             }
+            
+            if (this.renderer.constructor == $.jqplot.LinearAxisRenderer) {
+                // fix for misleading tick display with small range and low precision.
+                range = this.max - this.min;
+                // figure out precision
+                var temptick = new this.tickRenderer(this.tickOptions);
+                // use the tick formatString or, the default.
+                var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
+                var fs = fs.match($.jqplot.sprintf.regex)[0];
+                var precision = 0;
+                var temp = String(this.tickInterval).split('.');
+                var tickPrecision = 0;
+                if (temp.length > 1) {
+                    tickPrecision = temp[1].length;
+                }
+                if (fs) {
+                    if (fs.search(/[fFeEgGpP]/) > -1) {
+                        var m = fs.match(/\%\.(\d{0,})?[eEfFgGpP]/);
+                        if (m) precision = parseInt(m[1], 10);
+                        else precision = 6;
+                    }
+                    else if (fs.search(/[di]/) > -1) {
+                        precision = 0;
+                    }
+                    // fact will be <= 1;
+                    var fact = Math.pow(10, -precision);
+                    console.log('tickPrecision: %s, precision: %s, fact: %s', tickPrecision, precision, fact);
+                    // if (this.tickInterval < fact) {
+                    if (tickPrecision < precision) {
+                        console.log('low precision: ', tickPrecision, precision);
+                        // need to correct underrange
+                        if (userNT == null && userTI == null) {
+                            this.tickInterval = Math.ceil(this.tickInterval*fact)/fact;
+                            if (userMax == null && userMin == null) {
+                                // this.min = Math.floor((this._dataBounds.min - this.tickInterval)/fact) * fact;
+                                this.min = Math.floor(this._dataBounds.min/fact) * fact;
+                                if (this.min == this._dataBounds.min) {
+                                    this.min = this._dataBounds.min - this.tickInterval;
+                                }
+                                // this.max = Math.ceil((this._dataBounds.max + this.tickInterval)/fact) * fact;
+                                this.max = Math.ceil(this._dataBounds.max/fact) * fact;
+                                if (this.max == this._dataBounds.max) {
+                                    this.max = this._dataBounds.max + this.tickInterval;
+                                }
+                                this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval) + 1;
+                            }
+                            else if (userMax == null) {
+                                // add one tick for top of range.
+                                this.numberTicks = Math.ceil((this._dataBounds.max - this.min) / this.tickInterval) + 2;
+                                this.max = this.min + this.tickInterval * (this.numberTicks-1);
+                            }
+                            console.log('now have: ', this.min, this.max, this.tickInterval);
+                        }
+                    }
+                }
+            }
+            
+            
 
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
