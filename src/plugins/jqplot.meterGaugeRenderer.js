@@ -147,6 +147,10 @@
         // prop: needlePad
         // Padding between needle and inner edge of the ring when the needle is at the min or max gauge value.
         this.needlePad = 6;
+        // prop: pegNeedle
+        // True will stop needle just below/above the  min/max values if data is below/above min/max,
+        // as if the meter is "pegged".
+        this.pegNeedle = true;
         
         $.extend(true, this, options);
         this.type = null;
@@ -747,7 +751,19 @@
             ctx.restore();
             
             // draw the needle
-            var dataang = this.data[0][1]/(this.max - this.min) * this.span * Math.PI/180 + this.startAngle;
+            var datapoint = this.data[0][1];
+            var dataspan = this.max - this.min;
+            if (this.pegNeedle) {
+                if (this.data[0][1] > this.max + dataspan*3/this.span) {
+                    datapoint = this.max + dataspan*3/this.span;
+                }
+                if (this.data[0][1] < this.min - dataspan*3/this.span) {
+                    datapoint = this.min - dataspan*3/this.span;
+                }
+            }
+            console.log(this.data[0][1], datapoint);
+            var dataang = (datapoint - this.min)/dataspan * this.span * Math.PI/180 + this.startAngle;
+            
             
             ctx.save();
             ctx.beginPath();
