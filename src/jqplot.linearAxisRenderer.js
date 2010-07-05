@@ -325,11 +325,6 @@
                         else if (vmin < 0) {
                             forceMinZero = false;
                         }
-                        
-                        // for mixed line w/bar or filled charts, let forceMinZero be applied if appropriate
-                        else if (vmin >= 0){
-                            forceMinZero = true;
-                        }
                     }
                 }
                 
