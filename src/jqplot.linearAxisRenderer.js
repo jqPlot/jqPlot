@@ -442,12 +442,8 @@
                 // use the tick formatString or, the default.
                 var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
                 var fs = fs.match($.jqplot.sprintf.regex)[0];
+                console.log('fs is: ', fs);
                 var precision = 0;
-                var temp = String(this.tickInterval).split('.');
-                var tickPrecision = 0;
-                if (temp.length > 1) {
-                    tickPrecision = temp[1].length;
-                }
                 if (fs) {
                     if (fs.search(/[fFeEgGpP]/) > -1) {
                         var m = fs.match(/\%\.(\d{0,})?[eEfFgGpP]/);
@@ -459,13 +455,11 @@
                     }
                     // fact will be <= 1;
                     var fact = Math.pow(10, -precision);
-                    console.log('tickPrecision: %s, precision: %s, fact: %s', tickPrecision, precision, fact);
-                    // if (this.tickInterval < fact) {
-                    if (tickPrecision < precision) {
-                        console.log('low precision: ', tickPrecision, precision);
+                    if (this.tickInterval < fact) {
+                        console.log('low precision: ', this.tickInterval, fact);
                         // need to correct underrange
                         if (userNT == null && userTI == null) {
-                            this.tickInterval = Math.ceil(this.tickInterval*fact)/fact;
+                            this.tickInterval = fact;
                             if (userMax == null && userMin == null) {
                                 // this.min = Math.floor((this._dataBounds.min - this.tickInterval)/fact) * fact;
                                 this.min = Math.floor(this._dataBounds.min/fact) * fact;
