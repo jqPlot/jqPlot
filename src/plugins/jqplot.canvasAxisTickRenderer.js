@@ -72,6 +72,9 @@
         // prop: formatString
         // string passed to the formatter.
         this.formatString = '';
+        // prop: prefix
+        // string appended to the tick label if no formatString is specified.
+        this.prefix = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
         this.fontFamily = '"Trebuchet MS", Arial, Helvetica, sans-serif';
@@ -186,6 +189,10 @@
     $.jqplot.CanvasAxisTickRenderer.prototype.draw = function(ctx) {
         if (!this.label) {
             this.label = this.formatter(this.formatString, this.value);
+        }
+        // add prefix if needed
+        if (this.prefix && !this.formatString) {
+            this.label = this.prefix + this.label;
         }
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.

@@ -57,6 +57,9 @@
         // prop: formatter
         // A class of a formatter for the tick text.  sprintf by default.
         this.formatter = $.jqplot.DefaultTickFormatter;
+        // prop: prefix
+        // string appended to the tick label if no formatString is specified.
+        this.prefix = '';
         // prop: formatString
         // string passed to the formatter.
         this.formatString = '';
@@ -94,6 +97,10 @@
         if (!this.label) {
             this.label = this.formatter(this.formatString, this.value);
         }
+        // add prefix if needed
+        if (this.prefix && !this.formatString) {
+            this.label = this.prefix + this.label;
+        }
         style ='style="position:absolute;';
         if (Number(this.label)) {
             style +='white-space:nowrap;';
@@ -118,7 +125,7 @@
     $.jqplot.DefaultTickFormatter = function (format, val) {
         if (typeof val == 'number') {
             if (!format) {
-                format = '%.1f';
+                format = $.jqplot.config.defaultTickFormatString;
             }
             return $.jqplot.sprintf(format, val);
         }
