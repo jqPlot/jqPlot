@@ -442,7 +442,6 @@
                 // use the tick formatString or, the default.
                 var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
                 var fs = fs.match($.jqplot.sprintf.regex)[0];
-                console.log('fs is: ', fs);
                 var precision = 0;
                 if (fs) {
                     if (fs.search(/[fFeEgGpP]/) > -1) {
@@ -456,7 +455,6 @@
                     // fact will be <= 1;
                     var fact = Math.pow(10, -precision);
                     if (this.tickInterval < fact) {
-                        console.log('low precision: ', this.tickInterval, fact);
                         // need to correct underrange
                         if (userNT == null && userTI == null) {
                             this.tickInterval = fact;
@@ -478,7 +476,11 @@
                                 this.numberTicks = Math.ceil((this._dataBounds.max - this.min) / this.tickInterval) + 2;
                                 this.max = this.min + this.tickInterval * (this.numberTicks-1);
                             }
-                            console.log('now have: ', this.min, this.max, this.tickInterval);
+                            else if (userMin == null) {
+                                // add one tick for bottom of range.
+                                this.numberTicks = Math.ceil((this._dataBounds.max - this.min) / this.tickInterval) + 2;
+                                this.min = this.max - this.tickInterval * (this.numberTicks-1);
+                            }
                         }
                     }
                 }
