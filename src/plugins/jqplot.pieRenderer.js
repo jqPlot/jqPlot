@@ -165,6 +165,8 @@
             }
         }
         
+        this.highlightColorGenerator = new $.jqplot.ColorGenerator(this.highlightColors);
+        
         plot.postParseOptionsHooks.addOnce(postParseOptions);
         plot.postInitHooks.addOnce(postInit);
         plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
@@ -288,7 +290,7 @@
         var offx = 0;
         var offy = 0;
         var trans = 1;
-        // var colorGenerator = new this.colorGenerator(this.seriesColors);
+        var colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
         if (options.legendInfo && options.legendInfo.placement == 'insideGrid') {
             var li = options.legendInfo;
             switch (li.location) {
@@ -357,7 +359,8 @@
             ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
-            this.renderer.drawSlice.call (this, ctx, ang1, ang2, this.seriesColors[i], false);
+            
+            this.renderer.drawSlice.call (this, ctx, ang1, ang2, colorGenerator.next(), false);
             
             if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
                 var fstr, avgang = (ang1+ang2)/2, label;
@@ -562,116 +565,6 @@
         return this._elem;                
     };
     
-    // $.jqplot.PieLegendRenderer.prototype.pack = function(offsets) {
-    //     if (this.show) {
-    //         // fake a grid for positioning
-    //         var grid = {_top:offsets.top, _left:offsets.left, _right:offsets.right, _bottom:this._plotDimensions.height - offsets.bottom};        
-    //         if (this.placement == 'insideGrid') {
-    //             switch (this.location) {
-    //                 case 'nw':
-    //                     var a = grid._left + this.xoffset;
-    //                     var b = grid._top + this.yoffset;
-    //                     this._elem.css('left', a);
-    //                     this._elem.css('top', b);
-    //                     break;
-    //                 case 'n':
-    //                     var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-    //                     var b = grid._top + this.yoffset;
-    //                     this._elem.css('left', a);
-    //                     this._elem.css('top', b);
-    //                     break;
-    //                 case 'ne':
-    //                     var a = offsets.right + this.xoffset;
-    //                     var b = grid._top + this.yoffset;
-    //                     this._elem.css({right:a, top:b});
-    //                     break;
-    //                 case 'e':
-    //                     var a = offsets.right + this.xoffset;
-    //                     var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-    //                     this._elem.css({right:a, top:b});
-    //                     break;
-    //                 case 'se':
-    //                     var a = offsets.right + this.xoffset;
-    //                     var b = offsets.bottom + this.yoffset;
-    //                     this._elem.css({right:a, bottom:b});
-    //                     break;
-    //                 case 's':
-    //                     var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-    //                     var b = offsets.bottom + this.yoffset;
-    //                     this._elem.css({left:a, bottom:b});
-    //                     break;
-    //                 case 'sw':
-    //                     var a = grid._left + this.xoffset;
-    //                     var b = offsets.bottom + this.yoffset;
-    //                     this._elem.css({left:a, bottom:b});
-    //                     break;
-    //                 case 'w':
-    //                     var a = grid._left + this.xoffset;
-    //                     var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-    //                     this._elem.css({left:a, top:b});
-    //                     break;
-    //                 default:  // same as 'se'
-    //                     var a = grid._right - this.xoffset;
-    //                     var b = grid._bottom + this.yoffset;
-    //                     this._elem.css({right:a, bottom:b});
-    //                     break;
-    //             }
-    //             
-    //         }
-    //         else {
-    //             switch (this.location) {
-    //                 case 'nw':
-    //                     var a = this._plotDimensions.width - grid._left + this.xoffset;
-    //                     var b = grid._top + this.yoffset;
-    //                     this._elem.css('right', a);
-    //                     this._elem.css('top', b);
-    //                     break;
-    //                 case 'n':
-    //                     var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-    //                     var b = this._plotDimensions.height - grid._top + this.yoffset;
-    //                     this._elem.css('left', a);
-    //                     this._elem.css('bottom', b);
-    //                     break;
-    //                 case 'ne':
-    //                     var a = this._plotDimensions.width - offsets.right + this.xoffset;
-    //                     var b = grid._top + this.yoffset;
-    //                     this._elem.css({left:a, top:b});
-    //                     break;
-    //                 case 'e':
-    //                     var a = this._plotDimensions.width - offsets.right + this.xoffset;
-    //                     var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-    //                     this._elem.css({left:a, top:b});
-    //                     break;
-    //                 case 'se':
-    //                     var a = this._plotDimensions.width - offsets.right + this.xoffset;
-    //                     var b = offsets.bottom + this.yoffset;
-    //                     this._elem.css({left:a, bottom:b});
-    //                     break;
-    //                 case 's':
-    //                     var a = (offsets.left + (this._plotDimensions.width - offsets.right))/2 - this.getWidth()/2;
-    //                     var b = this._plotDimensions.height - offsets.bottom + this.yoffset;
-    //                     this._elem.css({left:a, top:b});
-    //                     break;
-    //                 case 'sw':
-    //                     var a = this._plotDimensions.width - grid._left + this.xoffset;
-    //                     var b = offsets.bottom + this.yoffset;
-    //                     this._elem.css({right:a, bottom:b});
-    //                     break;
-    //                 case 'w':
-    //                     var a = this._plotDimensions.width - grid._left + this.xoffset;
-    //                     var b = (offsets.top + (this._plotDimensions.height - offsets.bottom))/2 - this.getHeight()/2;
-    //                     this._elem.css({right:a, top:b});
-    //                     break;
-    //                 default:  // same as 'se'
-    //                     var a = grid._right - this.xoffset;
-    //                     var b = grid._bottom + this.yoffset;
-    //                     this._elem.css({right:a, bottom:b});
-    //                     break;
-    //             }
-    //         }
-    //     } 
-    // };
-    
     $.jqplot.PieRenderer.prototype.handleMove = function(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
             var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
@@ -742,7 +635,7 @@
         canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         s._highlightedPoint = pidx;
         plot.plugins.pieRenderer.highlightedSeriesIndex = sidx;
-        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColors[pidx], false);
+        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColorGenerator.get(pidx), false);
     }
     
     function unhighlight (plot) {

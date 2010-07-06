@@ -2881,7 +2881,8 @@
         
         // get a color by index without advancing pointer.
         this.get = function(i) {
-            return colors[i];
+            var idx = i - colors.length * Math.floor(i/colors.length);
+            return colors[idx];
         };
         
         this.setColors = function(c) {
