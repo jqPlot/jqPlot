@@ -23,11 +23,15 @@
     .jqplot-axis {
       font-size: 0.85em;
     }
-  </style>
-  <script type="text/javascript" language="javascript">
-  
-  $(document).ready(function(){
-      $.jqplot.config.enablePlugins = true;
+    div.plot {
+        margin-bottom: 70px;
+    }
+    
+    p {
+        margin: 2em 0;
+    }
+</style>
+  <script id="example_1" type="text/javascript" language="javascript">$(document).ready(function(){
       $.jqplot.config.defaultTickFormatString = '%d';
     
 			data = [ [25,100], [26,0], [27,100], [28,0], [29,0], [30,300], [31,300]];
@@ -37,7 +41,6 @@
 					xaxis: {renderer: $.jqplot.CategoryAxisRenderer},
 					yaxis: {min:0, tickOptions:{prefix: '$'}}
 				},
-				grid: { borderWidth: 0.5 },
 				seriesDefaults: {
 					color: '#F90',
 					renderer: $.jqplot.BarRenderer,
@@ -46,9 +49,19 @@
 			});
   });
   </script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+        $('#code_1').html($('#example_1').html());
+        $(document).unload(function() {$('*').unbind(); });
+
+    });
+</script> 
   </head>
   <body>
 <?php include "nav.inc"; ?>
+<p>Example of "prefix" axis tick option.  This option adds a prefix to the tick label if and only if no formatString option is specified.  Note that, when no user formatString is specified, linear axes will use the default format string as configured in the $.jqplot.config.defaultTickFormatString property.  By default, this is '%.1f'.  This can be changed and will affect all plots on the page after the point at which it is set.</p>
     <div id="chartdiv" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
+    <pre id="code_1" class="code-block"></pre>
   </body>
 </html>
