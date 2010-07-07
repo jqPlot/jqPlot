@@ -32,27 +32,46 @@
     }
 </style>
   <script id="example_1" type="text/javascript" language="javascript">$(document).ready(function(){
-      $.jqplot.config.defaultTickFormatString = '%d';
+    data = [ [25,100], [26,0], [27,100], [28,0], [29,0], [30,300], [31,300]];
+    plot1 = $.jqplot('chartdiv', [data], {
+        title: 'test',
+    	axes: {
+    		xaxis: {renderer: $.jqplot.CategoryAxisRenderer},
+    		yaxis: {min:0, tickOptions:{prefix: '$'}}
+    	},
+    	seriesDefaults: {
+    		color: '#F90',
+    		renderer: $.jqplot.BarRenderer,
+    		shadow: false
+    	}
+    });
+  });
+  </script>
+  
+  <script id="example_2" type="text/javascript" language="javascript">$(document).ready(function(){
+    $.jqplot.config.defaultTickFormatString = '$%d';
     
-			data = [ [25,100], [26,0], [27,100], [28,0], [29,0], [30,300], [31,300]];
-			plot1 = $.jqplot('chartdiv', [data], {
-			    title: 'test',
-				axes: {
-					xaxis: {renderer: $.jqplot.CategoryAxisRenderer},
-					yaxis: {min:0, tickOptions:{prefix: '$'}}
-				},
-				seriesDefaults: {
-					color: '#F90',
-					renderer: $.jqplot.BarRenderer,
-					shadow: false
-				}
-			});
+    data = [ [25,100], [26,0], [27,100], [28,0], [29,0], [30,300], [31,300]];
+    ticks = [0, 100, 200, 300, 400];
+    plot1 = $.jqplot('chartdiv2', [data], {
+        title: 'test',
+    	axes: {
+    		xaxis: {renderer: $.jqplot.CategoryAxisRenderer},
+    		yaxis: {min:0, ticks: ticks}
+    	},
+    	seriesDefaults: {
+    		color: '#F90',
+    		renderer: $.jqplot.BarRenderer,
+    		shadow: false
+    	}
+    });
   });
   </script>
 <script type="text/javascript">
     $(document).ready(function(){
         
         $('#code_1').html($('#example_1').html());
+        $('#code_2').html($('#example_2').html());
         $(document).unload(function() {$('*').unbind(); });
 
     });
@@ -60,8 +79,12 @@
   </head>
   <body>
 <?php include "nav.inc"; ?>
-<p>Example of the "prefix" axis tick option.  This option adds a prefix to the tick label if and only if no formatString option is specified.  Note that, when no user formatString is specified, linear axes will use the default format string as configured in the $.jqplot.config.defaultTickFormatString property.  By default, this is '%.1f'.  This can be changed and will affect all plots on the page after the point at which it is set.</p>
+<p>Example of the "prefix" axis tick option.  This option adds a prefix to the tick label if and only if no formatString option is specified.</p>
     <div id="chartdiv" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
     <pre id="code_1" class="code-block"></pre>
+    
+    <p>A new configuration option, $.jqplot.config.defaultTickFormatString, has been added as well.  When no user formatString is specified, linear axes previously used a hard coded '%.1f' default format string.  The config option controls this default format string.  This allows an alternative way to format tick labels, with or without a prefix, if no formatString option is specified.</p>
+    <div id="chartdiv2" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
+    <pre id="code_2" class="code-block"></pre>
   </body>
 </html>
