@@ -47,11 +47,11 @@
 }
 
 #chart5 .jqplot-meterGauge-tick, #chart5 .jqplot-meterGauge-label {
-    font-size: 12pt;
+    font-size: 9pt;
 }
 </style>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 $(document).ready(function(){
       $.jqplot.config.enablePlugins = true;
 
@@ -111,23 +111,22 @@ $(document).ready(function(){
        }
    });  
  });
-</script>
+</script> -->
 
 
  
 <script id = "example_5" type="text/javascript">$(document).ready(function(){
-   s1 = [1000];
+   s1 = [0];
    plot5 = $.jqplot('chart5',[s1],{
        seriesDefaults: {
            renderer: $.jqplot.MeterGaugeRenderer,
            rendererOptions: {
-               label: 'Linear Chart',
+               label: 'Line Chart',
                labelPosition: 'bottom',
-               labelHeightAdjust: -5,
-               // intervalOuterRadius: 85,
-               ticks: [10000, 20000, 30000, 40000, 50000],
-               intervals:[20000, 40000, 50000],
-               intervalColors:['#66cc66', '#E7E658', '#cc6666']
+               intervalOuterRadius: 120,
+               ticks: [0, 10000, 20000, 30000, 40000, 50000],
+               intervals:[10000, 40000, 50000],
+               intervalColors:['#cc6666', '#E7E658', '#66cc66']
            }
        }
    });
@@ -144,15 +143,15 @@ $(document).ready(function(){
   <body>
 <?php include "nav.inc"; ?>
 
-<div id="chart0" class="plot" style="width:250px;height:170px;"></div>
+<!-- <div id="chart0" class="plot" style="width:250px;height:170px;"></div>
 
 <div id="chart1" class="plot" style="width:120px;height:70px;"></div>
 
 <div id="chart3" class="plot" style="width:300px;height:180px;"></div>
 
-<div id="chart4" class="plot" style="width:500px;height:300px;"></div>
+<div id="chart4" class="plot" style="width:500px;height:300px;"></div> -->
 
-<div id="chart5" class="plot" style="width:500px;height:300px;"></div>
+<div id="chart5" class="plot" style="width:372px;height:225px;"></div>
 
     <pre id="code_5" class="code-block"></pre>
   </body>
