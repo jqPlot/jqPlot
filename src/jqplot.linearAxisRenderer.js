@@ -464,16 +464,23 @@
                                 if (this.max == this._dataBounds.max) {
                                     this.max = this._dataBounds.max + this.tickInterval;
                                 }
-                                this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval) + 1;
+                                var n = (this.max - this.min)/this.tickInterval;
+                                n = n.toFixed(11);
+                                n = Math.ceil(n);
+                                this.numberTicks = n + 1;
                             }
                             else if (userMax == null) {
                                 // add one tick for top of range.
-                                this.numberTicks = Math.ceil((this._dataBounds.max - this.min) / this.tickInterval) + 2;
+                                var n = (this._dataBounds.max - this.min) / this.tickInterval;
+                                n = n.toFixed(11);
+                                this.numberTicks = Math.ceil(n) + 2;
                                 this.max = this.min + this.tickInterval * (this.numberTicks-1);
                             }
                             else if (userMin == null) {
                                 // add one tick for bottom of range.
-                                this.numberTicks = Math.ceil((this._dataBounds.max - this.min) / this.tickInterval) + 2;
+                                var n = (this.max - this._dataBounds.min) / this.tickInterval;
+                                n = n.toFixed(11);
+                                this.numberTicks = Math.ceil(n) + 2;
                                 this.min = this.max - this.tickInterval * (this.numberTicks-1);
                             }
                         }
