@@ -131,7 +131,7 @@
                             rs = (pad) ? this.rowSpacing : '0';
                     
                             td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
-                                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
+                                '<div><div class="jqplot-table-legend-swatch" style="background-color:'+color+';border-color:'+color+';"></div>'+
                                 '</div></td>');
                             td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
                             if (this.escapeHtml){

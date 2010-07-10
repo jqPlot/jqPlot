@@ -36,7 +36,7 @@
         }
         if (this.showSwatches) {
             $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
-            '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
+            '<div><div class="jqplot-table-legend-swatch" style="background-color:'+color+';border-color:'+color+';"></div>'+
             '</div></td>').appendTo(tr);
         }
         if (this.showLabels) {
