@@ -198,3 +198,7 @@ height:0.7em;
     top: 46%;
     display: inline-block;
 }
+
+div.jqplot-bubble-label {
+    font-size: 0.8em;
+}

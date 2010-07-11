@@ -62,20 +62,23 @@
         // prop: autoscaleFactor
         // Scaling factor applied if autoscaleBubbles is true to make the bubbles smaller or larger.
         this.autoscaleFactor = 1.0;
+        // prop: escapeHtml
+        // True to escape html in bubble label text.
+        this.escapeHtml = true;
         // array of [point index, radius] which will be sorted in descending order to plot 
         // largest points below smaller points.
         this.radii = [];
+        // prop: bubbleAlpha
+        // Alpha transparency to apply to all bubbles in this series.
+        this.bubbleAlpha;
         $.extend(true, this, options);
+        
+        var sopts = {fill:true, isarc:true, angle:this.shadowAngle, alpha:this.shadowAlpha, closePath:true};
+        
+        this.renderer.shadowRenderer.init(sopts);
+        
         this.canvas = new $.jqplot.DivCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
-        
-        this.renderer.shadowRenderer.isarc = true;
-        this.renderer.shadowRenderer.fill = true;
-        this.renderer.shadowRenderer.closePath = true;
-        this.renderer.shadowRenderer.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        this.renderer.shadowRenderer.offset = 1.5;
-        
-        // plot.postSeriesInitHooks.addOnce(postInit);
     };
     
     // Need to get the radius values into the grid data so can adjust the 
@@ -169,7 +172,7 @@
             var idx = this.radii[i][0];
             var t=null;
             var color = null;
-            var el = null;
+            var el = tel = null;
             var d = this.data[idx];
             var gd = this.gridData[idx];
             if (d[3]) {
@@ -190,6 +193,13 @@
                     color = this.color;
                 }
             }
+            
+            if (this.bubbleAlpha != null) {
+                comps = $.jqplot.getColorComponents(color);
+                color = 'rgba('+comps[0]+', '+comps[1]+', '+comps[2]+', '+this.bubbleAlpha+')';
+            }
+            
+            // If we're drawing a shadow, expand the canvas dimensions to accomodate.
             var canvasRadius = gd[2];
             var offset, depth;
             if (this.shadow) {
@@ -206,6 +216,23 @@
             }
             el.draw(gd[2], color);
             this.canvas._elem.append(el._elem);
+            
+            // now draw label.
+            if (t) {
+                tel = $('<div style="position:absolute;" class="jqplot-bubble-label"></div>');
+                if (this.escapeHtml) {
+                    tel.text(t);
+                }
+                else {
+                    tel.html(t);
+                }
+                this.canvas._elem.append(tel);
+                var h = $(tel).outerHeight();
+                var w = $(tel).outerWidth();
+                var top = gd[1] - 0.5*h;
+                var left = gd[0] - 0.5*w;
+                tel.css({top: top, left: left});
+            }
         }
     };
     
