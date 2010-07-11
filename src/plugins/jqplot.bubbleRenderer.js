@@ -59,9 +59,16 @@
         // False will use the radius value as provided as a raw pixel value for
         // bubble radius.
         this.autoscaleBubbles = true;
-        // prop: autoscaleFactor
-        // Scaling factor applied if autoscaleBubbles is true to make the bubbles smaller or larger.
-        this.autoscaleFactor = 1.0;
+        // prop: autoscaleMultiplier
+        // Multiplier applied to the bubble autoscaling factor if autoscaleBubbles is true.
+        this.autoscaleMultiplier = 1.0;
+        // prop: autoscaleCoefficient
+        // Coefficient for the exponent of the autoscaling equation.
+        // This how the number of bubbles in the series affects the scale of the bubbles.
+        // This should be a negative number.  The smaller the coefficient, the more the bubbles
+        // will shrink as more points are added to the series. A value of 0 disables bubble scaling
+        // based on number of points in the series.
+        this.autoscaleCoefficient = 0;
         // prop: escapeHtml
         // True to escape html in bubble label text.
         this.escapeHtml = true;
@@ -117,7 +124,7 @@
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
-                r = this.autoscaleFactor * dim/ 3 / Math.pow(l, 0.5);
+                r = this.autoscaleMultiplier * dim / 6 * Math.pow(l*3, this.autoscaleCoefficient);
                 this.gridData[i][2] = r * val;
             }
         }
@@ -151,7 +158,7 @@
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
-                r = this.autoscaleFactor * dim / 3 / Math.pow(l, 0.5);
+                r = this.autoscaleMultiplier * dim / 6 * Math.pow(l*3, this.autoscaleCoefficient);
                 gd[i][2] = r * val;
             }
         }
@@ -396,10 +403,6 @@
         var span = db.max - db.min;
         var dim = (this.name == 'xaxis' || this.name == 'x2axis') ? this._plotDimensions.width : this._plotDimensions.height;
         var adjust = [];
-        // var fact = Math.pow(dim, 0.6)/20;
-        var fact = 50/Math.sqrt(dim/10);
-        var fact = 0.2 * Math.pow(dim, 0.2);
-        var fact = .001;
         var fact = 1.3*Math.pow(Math.E, -.002928*dim);
 
         for (var i=0; i<this._series.length; i++) {
@@ -419,10 +422,10 @@
                 var r, val, maxr = arrayMax(radii);
                 var l = s.data.length;
                 for (var j=0; j<l; j++) {
-                    val = radii[j]/maxr;
-                    ad[j] = s.autoscaleFactor / Math.sqrt(l) * val * span * fact;
+                    ad[j] = s.autoscaleMultiplier / 300 * Math.pow(dim, 0.6) * Math.pow(l*3, s.autoscaleCoefficient) * Math.pow(span, 2.3);
                 }
             }
+            
         }
         
         
