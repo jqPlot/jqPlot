@@ -45,7 +45,7 @@
     $.jqplot.BubbleRenderer.prototype.constructor = $.jqplot.BubbleRenderer;
     
     // called with scope of a series
-    $.jqplot.BubbleRenderer.prototype.init = function(options) {
+    $.jqplot.BubbleRenderer.prototype.init = function(options, plot) {
         // Group: Properties
         //
         // prop: varyBubbleColors
@@ -62,17 +62,30 @@
         // prop: autoscaleFactor
         // Scaling factor applied if autoscaleBubbles is true to make the bubbles smaller or larger.
         this.autoscaleFactor = 1.0;
+        this.pointDimensions = [];
         $.extend(true, this, options);
         this.canvas = new $.jqplot.DivCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
+        
+        // plot.postSeriesInitHooks.addOnce(postInit);
     };
+    
+    // Need to get the radius values into the grid data so can adjust the 
+    // axis min/max accordingly.
+    // called with scope of a series, but not necessarily this series, any
+    // series in the plot.
+    // Note going to work b/c need u2p funciton to do this.
+    // function postInit (target, data, seriesDefaults, seriesOptions, plot) {
+    //     if (this.renderer.constructor == $.jqplot.BubbleRenderer) {
+    //         this.setGridData(plot);
+    //     }
+    // }
     
     // Method: setGridData
     // converts the user data values to grid coordinates and stores them
     // in the gridData array.
     // Called with scope of a series.
     $.jqplot.BubbleRenderer.prototype.setGridData = function(plot) {
-        console.log('in setGridData');
         // recalculate the grid data
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
@@ -83,18 +96,18 @@
             if (data[i] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1]), data[i][2]]);
                 radii.push(data[i][2]);
+                this.pointDimensions.push([[this.gridData[i][0] - this.gridData[i][2], this.gridData[i][1] - this.gridData[i][2]], [this.gridData[i][0] + this.gridData[i][2], this.gridData[i][1] + this.gridData[i][2]]]);
             }
         }
         var r, val, maxr = arrayMax(radii);
         var l = this.gridData.length;
-        console.log('radii: ', radii, 'maxr: ', maxr);
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
                 r = Math.min(plot._height, plot._width);
                 r = this.autoscaleFactor * r/ 3 / Math.pow(l, 0.5);
-                console.log('val: %s, r: %s', val, r);
                 this.gridData[i][2] = r * val;
+                this.pointDimensions[i] = [[this.gridData[i][0] - this.gridData[i][2], this.gridData[i][1] - this.gridData[i][2]], [this.gridData[i][0] + this.gridData[i][2], this.gridData[i][1] + this.gridData[i][2]]];
             }
         }
     };
@@ -132,14 +145,12 @@
     
     // called with scope of series
     $.jqplot.BubbleRenderer.prototype.draw = function (ctx, gd, options) {
-        console.log('in draw');
         if (this.plugins.pointLabels) {
             this.plugins.pointLabels.show = false;
         }
         var i, el, d, gd, t, color;
         var opts = (options != undefined) ? options : {};
         var colorGenerator = (this.varyBubbleColors && this.seriesColors.length) ? new $.jqplot.ColorGenerator(this.seriesColors) : null;
-        console.log('color generator: ', colorGenerator);
         this.canvas._elem.empty();
         for (i=0; i<this.gridData.length; i++) {
             d = this.data[i];
@@ -157,7 +168,6 @@
                     color = this.color;
                 }
             }
-            console.log(color);
             el = new $.jqplot.BubbleCanvas(gd[0], gd[1], gd[2], color);
             this.canvas._elem.append(el);
             
@@ -275,6 +285,145 @@
         this._ctx = this._elem.get(0).getContext("2d");
         return this._ctx;
     };
+    
+    $.jqplot.BubbleAxisRenderer = function() {
+        $.jqplot.LinearAxisRenderer.call(this);
+    };
+    
+    $.jqplot.BubbleAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
+    $.jqplot.BubbleAxisRenderer.prototype.constructor = $.jqplot.BubbleAxisRenderer;
+        
+    // called with scope of axis object.
+    $.jqplot.BubbleAxisRenderer.prototype.init = function(options){
+        $.extend(true, this, options);
+        var db = this._dataBounds;
+        var minsidx=minpidx=maxsids=maxpidx=0;
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s._plotData;
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[j][0] < db.min || db.min == null) {
+                        db.min = d[j][0];
+                        minsidx=i;
+                        minpidx=j;
+                    }
+                    if (d[j][0] > db.max || db.max == null) {
+                        db.max = d[j][0];
+                        maxsidx=i;
+                        maxpidx=j;
+                    }
+                }              
+                else {
+                    if (d[j][1] < db.min || db.min == null) {
+                        db.min = d[j][1];
+                        minsidx=i;
+                        minpidx=j;
+                    }
+                    if (d[j][1] > db.max || db.max == null) {
+                        db.max = d[j][1];
+                        maxsidx=i;
+                        maxpidx=j;
+                    }
+                }              
+            }
+        }
+        
+        // need to estimate the effect of the radius on total axis span and adjust axis accordingly.
+        var span = db.max - db.min;
+        var dim = (this.name == 'xaxis' || this.name == 'x2axis') ? this._plotDimensions.width : this._plotDimensions.height;
+        var adjust = [];
+        // var fact = Math.pow(dim, 0.6)/20;
+        var fact = 50/Math.sqrt(dim/10);
+        var fact = 0.2 * Math.pow(dim, 0.2);
+        var fact = .001;
+        var fact = 1.3*Math.pow(Math.E, -.002928*dim);
+
+        for (var i=0; i<this._series.length; i++) {
+            adjust.push([]);
+            var ad = adjust[i];
+            var s = this._series[i];
+            var d = [];
+            var data = s._plotData;
+            var radii = [];
+            for (var i=0; i<s.data.length; i++) {
+                if (data[i] != null) {
+                    radii.push(data[i][2]);
+                    ad.push(data[i][2]/dim * span);
+                }
+            }
+            if (s.autoscaleBubbles) {
+                var r, val, maxr = arrayMax(radii);
+                var l = s.data.length;
+                for (var j=0; j<l; j++) {
+                        
+                // val = radii[i]/maxr;
+                // r = Math.min(plot._height, plot._width);
+                // r = this.autoscaleFactor * r/ 3 / Math.pow(l, 0.5);
+                // this.gridData[i][2] = r * val;
+                    
+                    
+                    val = radii[j]/maxr;
+                    ad[j] = s.autoscaleFactor / Math.sqrt(l) * val * span * fact;
+                }
+            }
+        }
+        
+        
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s._plotData;
+            var ad = adjust[i];
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[j][0] - ad[j] < db.min) {
+                        db.min = d[j][0] -  ad[j];
+                    }
+                    if (d[j][0] + ad[j] > db.max) {
+                        db.max = d[j][0] + ad[j];
+                    }
+                }              
+                else {
+                    if (d[j][1] - ad[j] < db.min) {
+                        db.min = d[j][1] - ad[j];
+                    }
+                    if (d[j][1] + ad[j]> db.max) {
+                        db.max = d[j][1] + ad[j];
+                    }
+                }              
+            }
+        }
+    };
+    
+    // setup default renderers for axes and legend so user doesn't have to
+    // called with scope of plot
+    function preInit(target, data, options) {
+        options = options || {};
+        options.axesDefaults = options.axesDefaults || {};
+        options.seriesDefaults = options.seriesDefaults || {};
+        // only set these if there is a Bubble series
+        var setopts = false;
+        if (options.seriesDefaults.renderer == $.jqplot.BubbleRenderer) {
+            setopts = true;
+        }
+        else if (options.series) {
+            for (var i=0; i < options.series.length; i++) {
+                if (options.series[i].renderer == $.jqplot.BubbleRenderer) {
+                    setopts = true;
+                }
+            }
+        }
+        
+        if (setopts) {
+            options.axesDefaults.renderer = $.jqplot.BubbleAxisRenderer;
+        }
+    }
+    
+    $.jqplot.preInitHooks.push(preInit);
     
 })(jQuery);
     

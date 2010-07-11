@@ -1565,19 +1565,19 @@
                 this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
-                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
+                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
-                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
+                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
-                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
+                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 for (var j=0; j<this.postSeriesInitHooks.hooks.length; j++) {
-                    plot.postSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i]);
+                    this.postSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
