@@ -168,6 +168,7 @@
                 initDragPoint(plot, neighbor);
                 drag.markerRenderer.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], dc._ctx);
                 ev.target.style.cursor = "move";
+                plot.target.trigger('jqlotDragStart', [neighbor.seriesIndex, neighbor.pointIndex, gridpos, datapos]);
             }
         }
         // Just in case of a hickup, we'll clear the drag canvas and reset.
@@ -199,6 +200,7 @@
             plot.drawSeries({preventJqPlotSeriesDrawTrigger:true}, dp.seriesIndex);
             dc._neighbor = null;
             ev.target.style.cursor = dc._cursors.pop();
+            plot.target.trigger('jqlotDragStop', [neighbor.seriesIndex, neighbor.pointIndex, gridpos, datapos]);
         }
     }
 })(jQuery);
