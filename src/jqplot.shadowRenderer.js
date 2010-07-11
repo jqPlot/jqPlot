@@ -73,6 +73,7 @@
         var offset = (opts.offset != null) ? opts.offset : this.offset;
         var alpha = (opts.alpha != null) ? opts.alpha : this.alpha;
         var depth = (opts.depth != null) ? opts.depth : this.depth;
+        var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
         ctx.lineWidth = (opts.lineWidth != null) ? opts.lineWidth : this.lineWidth;
         ctx.lineJoin = (opts.lineJoin != null) ? opts.lineJoin : this.lineJoin;
         ctx.lineCap = (opts.lineCap != null) ? opts.lineCap : this.lineCap;
@@ -81,7 +82,7 @@
         for (var j=0; j<depth; j++) {
             ctx.translate(Math.cos(this.angle*Math.PI/180)*offset, Math.sin(this.angle*Math.PI/180)*offset);
             ctx.beginPath();
-            if (this.isarc) {
+            if (isarc) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                
             }
             else {

@@ -62,10 +62,18 @@
         // prop: autoscaleFactor
         // Scaling factor applied if autoscaleBubbles is true to make the bubbles smaller or larger.
         this.autoscaleFactor = 1.0;
-        this.pointDimensions = [];
+        // array of [point index, radius] which will be sorted in descending order to plot 
+        // largest points below smaller points.
+        this.radii = [];
         $.extend(true, this, options);
         this.canvas = new $.jqplot.DivCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
+        
+        this.renderer.shadowRenderer.isarc = true;
+        this.renderer.shadowRenderer.fill = true;
+        this.renderer.shadowRenderer.closePath = true;
+        this.renderer.shadowRenderer.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        this.renderer.shadowRenderer.offset = 1.5;
         
         // plot.postSeriesInitHooks.addOnce(postInit);
     };
@@ -92,11 +100,13 @@
         var data = this._plotData;
         this.gridData = [];
         var radii = [];
+        this.radii = [];
+        var dim = Math.min(plot._height, plot._width);
         for (var i=0; i<this.data.length; i++) {
             if (data[i] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1]), data[i][2]]);
+                this.radii.push([i, data[i][2]]);
                 radii.push(data[i][2]);
-                this.pointDimensions.push([[this.gridData[i][0] - this.gridData[i][2], this.gridData[i][1] - this.gridData[i][2]], [this.gridData[i][0] + this.gridData[i][2], this.gridData[i][1] + this.gridData[i][2]]]);
             }
         }
         var r, val, maxr = arrayMax(radii);
@@ -104,12 +114,12 @@
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
-                r = Math.min(plot._height, plot._width);
-                r = this.autoscaleFactor * r/ 3 / Math.pow(l, 0.5);
+                r = this.autoscaleFactor * dim/ 3 / Math.pow(l, 0.5);
                 this.gridData[i][2] = r * val;
-                this.pointDimensions[i] = [[this.gridData[i][0] - this.gridData[i][2], this.gridData[i][1] - this.gridData[i][2]], [this.gridData[i][0] + this.gridData[i][2], this.gridData[i][1] + this.gridData[i][2]]];
             }
         }
+        
+        this.radii.sort(function(a, b) { return b[1] - a[1]; });
     };
     
     // Method: makeGridData
@@ -124,10 +134,13 @@
         var yp = this._yaxis.series_u2p;
         var gd = [];
         var radii = [];
+        this.radii = [];
+        var dim = Math.min(plot._height, plot._width);
         for (var i=0; i<data.length; i++) {
             if (data[i] != null) {
                 gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1]), data[i][2]]);
                 radii.push(data[i][2]);
+                this.radii.push([i, data[i][2]]);
             }
         }
         var r, val, maxr = arrayMax(radii);
@@ -135,11 +148,11 @@
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
-                r = Math.min(plot._height, plot._width);
-                r = this.autoscaleFactor * r/ 3 / Math.pow(l, 0.5);
+                r = this.autoscaleFactor * dim / 3 / Math.pow(l, 0.5);
                 gd[i][2] = r * val;
             }
         }
+        this.radii.sort(function(a, b) { return b[1] - a[1]; });
         return gd;
     };
     
@@ -148,16 +161,25 @@
         if (this.plugins.pointLabels) {
             this.plugins.pointLabels.show = false;
         }
-        var i, el, d, gd, t, color;
         var opts = (options != undefined) ? options : {};
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var colorGenerator = (this.varyBubbleColors && this.seriesColors.length) ? new $.jqplot.ColorGenerator(this.seriesColors) : null;
         this.canvas._elem.empty();
-        for (i=0; i<this.gridData.length; i++) {
-            d = this.data[i];
-            gd = this.gridData[i];
-            if (d[3] && typeof(d[3]) == 'object') {
-                t = d[3]['label'];
-                color = d[3]['color'];
+        for (var i=0; i<this.radii.length; i++) {
+            var idx = this.radii[i][0];
+            var t=null;
+            var color = null;
+            var el = null;
+            var d = this.data[idx];
+            var gd = this.gridData[idx];
+            if (d[3]) {
+                if (typeof(d[3]) == 'object') {
+                    t = d[3]['label'];
+                    color = d[3]['color'];
+                }
+                else if (typeof(d[3]) == 'string') {
+                    t = d[3];
+                }
             }
             
             if (color == null) {
@@ -168,10 +190,22 @@
                     color = this.color;
                 }
             }
-            el = new $.jqplot.BubbleCanvas(gd[0], gd[1], gd[2], color);
-            this.canvas._elem.append(el);
-            
-            el = null;
+            var canvasRadius = gd[2];
+            var offset, depth;
+            if (this.shadow) {
+                offset = (0.6 + gd[2]/40).toFixed(1);
+                depth = Math.ceil(gd[2]/12);
+                canvasRadius += offset*depth;
+            }
+            el = new $.jqplot.BubbleCanvas(gd[0], gd[1], canvasRadius);
+            var ctx = el._ctx;
+            var x = ctx.canvas.width/2;
+            var y = ctx.canvas.height/2;
+            if (this.shadow) {
+                this.renderer.shadowRenderer.draw(ctx, [x, y, gd[2], 0, 2*Math.PI], {offset: offset, depth: depth});
+            }
+            el.draw(gd[2], color);
+            this.canvas._elem.append(el._elem);
         }
     };
     
@@ -222,7 +256,7 @@
         return this._ctx;
     };
     
-    $.jqplot.BubbleCanvas = function(x, y, r, color) {
+    $.jqplot.BubbleCanvas = function(x, y, r, rr, color) {
         $.jqplot.ElemContainer.call(this);
         this._ctx;
         var el;
@@ -230,11 +264,10 @@
             el = this.createElement(x, y, r);
             if (!this._ctx) this._ctx = this.setContext();
         }
-        if (color != null) {
+        if (color != null && rr != null) {
             if (!this._ctx) this._ctx = this.setContext();
-            this.draw(r, color);
+            this.draw(rr, color);
         }
-        return el;
     };
     
     $.jqplot.BubbleCanvas.prototype = new $.jqplot.ElemContainer();
@@ -359,13 +392,6 @@
                 var r, val, maxr = arrayMax(radii);
                 var l = s.data.length;
                 for (var j=0; j<l; j++) {
-                        
-                // val = radii[i]/maxr;
-                // r = Math.min(plot._height, plot._width);
-                // r = this.autoscaleFactor * r/ 3 / Math.pow(l, 0.5);
-                // this.gridData[i][2] = r * val;
-                    
-                    
                     val = radii[j]/maxr;
                     ad[j] = s.autoscaleFactor / Math.sqrt(l) * val * span * fact;
                 }
