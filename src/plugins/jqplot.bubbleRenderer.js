@@ -72,13 +72,85 @@
         // prop: escapeHtml
         // True to escape html in bubble label text.
         this.escapeHtml = true;
-        // array of [point index, radius] which will be sorted in descending order to plot 
-        // largest points below smaller points.
-        this.radii = [];
+        // prop: highlightMouseOver
+        // True to highlight bubbles when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
+        this.highlightMouseOver = true;
+        // prop: highlightMouseDown
+        // True to highlight when a mouse button is pressed over a bubble.
+        // This will be disabled if highlightMouseOver is true.
+        this.highlightMouseDown = false;
+        // prop: highlightColors
+        // an array of colors to use when highlighting a slice.
+        this.highlightColors = [];
         // prop: bubbleAlpha
         // Alpha transparency to apply to all bubbles in this series.
         this.bubbleAlpha;
+        // array of [point index, radius] which will be sorted in descending order to plot 
+        // largest points below smaller points.
+        this.radii = [];
+        this.maxRadius = 0;
+        // index of the currenty highlighted point, if any
+        this._highlightedPoint = null;
+        
+        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+        if (options.highlightMouseDown && options.highlightMouseOver == null) {
+            options.highlightMouseOver = false;
+        }
+        
         $.extend(true, this, options);
+        
+        // index of the currenty highlighted point, if any
+        this._highlightedPoint = null;
+        
+        // adjust the series colors for options colors passed in with data or for alpha.
+        // note, this can leave undefined holes in the seriesColors array.
+        for (var i=0; i<this.data.length; i++) {
+            var color = null;
+            var d = this.data[i];
+            this.maxRadius = Math.max(this.maxRadius, d[2]);
+            if (d[3]) {
+                if (typeof(d[3]) == 'object') {
+                    color = d[3]['color'];
+                }
+            }
+            
+            if (color == null) {
+                if (this.seriesColors[i] != null) {
+                    color = this.seriesColors[i];
+                }
+            }
+            
+            if (color && this.bubbleAlpha != null) {
+                comps = $.jqplot.getColorComponents(color);
+                color = 'rgba('+comps[0]+', '+comps[1]+', '+comps[2]+', '+this.bubbleAlpha+')';
+            }
+            
+            if (color) {
+                this.seriesColors[i] = color;
+            }
+        }
+        
+        this.colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
+        
+        
+        
+        // set highlight colors if none provided
+        if (this.highlightColors.length == 0) {
+            for (var i=0; i<this.seriesColors.length; i++){
+                var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
+                var newrgb = [rgba[0], rgba[1], rgba[2]];
+                var sum = newrgb[0] + newrgb[1] + newrgb[2];
+                for (var j=0; j<3; j++) {
+                    // when darkening, lowest color component can be is 60.
+                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                    newrgb[j] = parseInt(newrgb[j], 10);
+                }
+                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+            }
+        }
+        
+        this.highlightColorGenerator = new $.jqplot.ColorGenerator(this.highlightColors);
         
         var sopts = {fill:true, isarc:true, angle:this.shadowAngle, alpha:this.shadowAlpha, closePath:true};
         
@@ -86,6 +158,11 @@
         
         this.canvas = new $.jqplot.DivCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
+        this.bubbleCanvases = [];
+        
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.postDrawHooks.addOnce(postPlotDraw);
+        
     };
     
     // Need to get the radius values into the grid data so can adjust the 
@@ -119,7 +196,7 @@
                 radii.push(data[i][2]);
             }
         }
-        var r, val, maxr = arrayMax(radii);
+        var r, val, maxr = this.maxRadius = arrayMax(radii);
         var l = this.gridData.length;
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
@@ -153,7 +230,7 @@
                 this.radii.push([i, data[i][2]]);
             }
         }
-        var r, val, maxr = arrayMax(radii);
+        var r, val, maxr = this.maxRadius = arrayMax(radii);
         var l = this.gridData.length;
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
@@ -185,36 +262,23 @@
             if (d[3]) {
                 if (typeof(d[3]) == 'object') {
                     t = d[3]['label'];
-                    color = d[3]['color'];
                 }
                 else if (typeof(d[3]) == 'string') {
                     t = d[3];
                 }
             }
             
-            if (color == null) {
-                if (colorGenerator != null) {
-                    color = colorGenerator.next();
-                }
-                else {
-                    color = this.color;
-                }
-            }
-            
-            if (this.bubbleAlpha != null) {
-                comps = $.jqplot.getColorComponents(color);
-                color = 'rgba('+comps[0]+', '+comps[1]+', '+comps[2]+', '+this.bubbleAlpha+')';
-            }
+            color = this.colorGenerator.get(idx);
             
             // If we're drawing a shadow, expand the canvas dimensions to accomodate.
             var canvasRadius = gd[2];
             var offset, depth;
             if (this.shadow) {
-                offset = (0.6 + gd[2]/40).toFixed(1);
-                depth = Math.ceil(gd[2]/12);
+                offset = (0.7 + gd[2]/40).toFixed(1);
+                depth = 1 + Math.ceil(gd[2]/15);
                 canvasRadius += offset*depth;
             }
-            el = new $.jqplot.BubbleCanvas(gd[0], gd[1], canvasRadius);
+            this.bubbleCanvases[idx] = el = new $.jqplot.BubbleCanvas(gd[0], gd[1], canvasRadius);
             var ctx = el._ctx;
             var x = ctx.canvas.width/2;
             var y = ctx.canvas.height/2;
@@ -242,6 +306,7 @@
             }
         }
     };
+
     
     $.jqplot.DivCanvas = function() {
         $.jqplot.ElemContainer.call(this);
@@ -332,6 +397,7 @@
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
+        
         return this._elem;
     };
     
@@ -364,7 +430,7 @@
     $.jqplot.BubbleAxisRenderer.prototype.init = function(options){
         $.extend(true, this, options);
         var db = this._dataBounds;
-        var minsidx=minpidx=maxsids=maxpidx=0;
+        var minsidx=minpidx=maxsids=maxpidx=maxr=minr=minMaxRadius=maxMaxRadius=maxMult=minMult=0;
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
         for (var i=0; i<this._series.length; i++) {
@@ -377,11 +443,17 @@
                         db.min = d[j][0];
                         minsidx=i;
                         minpidx=j;
+                        minr = d[j][2];
+                        minMaxRadius = s.maxRadius;
+                        minMult = s.autoscaleMultiplier;
                     }
                     if (d[j][0] > db.max || db.max == null) {
                         db.max = d[j][0];
                         maxsidx=i;
                         maxpidx=j;
+                        maxr = d[j][2];
+                        maxMaxRadius = s.maxRadius;
+                        maxMult = s.autoscaleMultiplier;
                     }
                 }              
                 else {
@@ -389,71 +461,155 @@
                         db.min = d[j][1];
                         minsidx=i;
                         minpidx=j;
+                        minr = d[j][2];
+                        minMaxRadius = s.maxRadius;
+                        minMult = s.autoscaleMultiplier;
                     }
                     if (d[j][1] > db.max || db.max == null) {
                         db.max = d[j][1];
                         maxsidx=i;
                         maxpidx=j;
+                        maxr = d[j][2];
+                        maxMaxRadius = s.maxRadius;
+                        maxMult = s.autoscaleMultiplier;
                     }
                 }              
             }
         }
+        
+        var minRatio = minr/minMaxRadius;
+        var maxRatio = maxr/maxMaxRadius;
         
         // need to estimate the effect of the radius on total axis span and adjust axis accordingly.
         var span = db.max - db.min;
-        var dim = (this.name == 'xaxis' || this.name == 'x2axis') ? this._plotDimensions.width : this._plotDimensions.height;
-        var adjust = [];
-        var fact = 1.3*Math.pow(Math.E, -.002928*dim);
-
-        for (var i=0; i<this._series.length; i++) {
-            adjust.push([]);
-            var ad = adjust[i];
-            var s = this._series[i];
-            var d = [];
-            var data = s._plotData;
-            var radii = [];
-            for (var i=0; i<s.data.length; i++) {
-                if (data[i] != null) {
-                    radii.push(data[i][2]);
-                    ad.push(data[i][2]/dim * span);
-                }
-            }
-            if (s.autoscaleBubbles) {
-                var r, val, maxr = arrayMax(radii);
-                var l = s.data.length;
-                for (var j=0; j<l; j++) {
-                    ad[j] = s.autoscaleMultiplier / 300 * Math.pow(dim, 0.6) * Math.pow(l*3, s.autoscaleCoefficient) * Math.pow(span, 2.3);
-                }
-            }
-            
-        }
+        // var dim = (this.name == 'xaxis' || this.name == 'x2axis') ? this._plotDimensions.width : this._plotDimensions.height;
+        var dim = Math.min(this._plotDimensions.width, this._plotDimensions.height);
         
+        var minfact = minRatio * minMult/4 * span;
+        var maxfact = maxRatio * maxMult/4 * span;
+        console.log(this.name, db.min, db.max);
+        console.log(minr, minMaxRadius, minMult, minfact);
+        console.log(maxr, maxMaxRadius, maxMult, maxfact);
+        db.max += maxfact;
+        db.min -= minfact;
+        console.log(db.min, db.max);
         
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            var ad = adjust[i];
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] - ad[j] < db.min) {
-                        db.min = d[j][0] -  ad[j];
-                    }
-                    if (d[j][0] + ad[j] > db.max) {
-                        db.max = d[j][0] + ad[j];
-                    }
-                }              
-                else {
-                    if (d[j][1] - ad[j] < db.min) {
-                        db.min = d[j][1] - ad[j];
-                    }
-                    if (d[j][1] + ad[j]> db.max) {
-                        db.max = d[j][1] + ad[j];
-                    }
-                }              
-            }
-        }
+        // var adjust = [];
+        // var fact = 1.3*Math.pow(Math.E, -.002928*dim);
+        // 
+        // for (var i=0; i<this._series.length; i++) {
+        //     adjust.push([]);
+        //     var ad = adjust[i];
+        //     var s = this._series[i];
+        //     var d = [];
+        //     var data = s._plotData;
+        //     var radii = [];
+        //     for (var i=0; i<s.data.length; i++) {
+        //         if (data[i] != null) {
+        //             radii.push(data[i][2]);
+        //             ad.push(data[i][2]/dim * span);
+        //         }
+        //     }
+        //     if (s.autoscaleBubbles) {
+        //         var r, val, maxr = arrayMax(radii);
+        //         var l = s.data.length;
+        //         for (var j=0; j<l; j++) {
+        //             // ad[j] = s.autoscaleMultiplier / 2 * Math.pow(dim, 0) * Math.pow(l*3, s.autoscaleCoefficient) * Math.pow(span, -2);
+        //             ad[j] = s.autoscaleMultiplier * 
+        //         }
+        //     }
+        //     
+        // }
+        // 
+        // 
+        // for (var i=0; i<this._series.length; i++) {
+        //     var s = this._series[i];
+        //     var d = s._plotData;
+        //     var ad = adjust[i];
+        //     
+        //     for (var j=0; j<d.length; j++) { 
+        //         if (this.name == 'xaxis' || this.name == 'x2axis') {
+        //             if (d[j][0] - ad[j] < db.min) {
+        //                 db.min = d[j][0] -  ad[j];
+        //             }
+        //             if (d[j][0] + ad[j] > db.max) {
+        //                 db.max = d[j][0] + ad[j];
+        //             }
+        //         }              
+        //         else {
+        //             if (d[j][1] - ad[j] < db.min) {
+        //                 db.min = d[j][1] - ad[j];
+        //             }
+        //             if (d[j][1] + ad[j]> db.max) {
+        //                 db.max = d[j][1] + ad[j];
+        //             }
+        //         }              
+        //     }
+        // }
     };
+    
+    function highlight (plot, sidx, pidx) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.bubbleRenderer.highlightCanvas;
+        var ctx = canvas._ctx;
+        ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.bubbleRenderer.highlightedSeriesIndex = sidx;
+        
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();        
+        
+        // s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColorGenerator.get(pidx), false);
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.bubbleRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.bubbleRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+    }
+    
+ 
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt1 = jQuery.Event('jqplotDataMouseOver');
+            evt1.pageX = ev.pageX;
+            evt1.pageY = ev.pageY;
+            plot.target.trigger(evt1, ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.BubbleRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    } 
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        this.plugins.bubbleRenderer = {highlightedSeriesIndex:null};
+        this.plugins.bubbleRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+
+        this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-bubbleRenderer-highlight-canvas', this._plotDimensions));
+        
+        var hctx = this.plugins.bubbleRenderer.highlightCanvas.setContext();
+    }
+
     
     // setup default renderers for axes and legend so user doesn't have to
     // called with scope of plot
