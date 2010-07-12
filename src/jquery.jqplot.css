@@ -201,5 +201,8 @@ height:0.7em;
 
 div.jqplot-bubble-label {
     font-size: 0.8em;
-    background: rgba(85%, 85%, 85%, 0.6);
+    background: rgba(85%, 85%, 85%, 0.5);
+    padding-left: 2px;
+    padding-right: 2px;
+    color: rgb(20%, 20%, 20%);
 }

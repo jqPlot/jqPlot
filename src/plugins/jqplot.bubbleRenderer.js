@@ -86,6 +86,9 @@
         // prop: bubbleAlpha
         // Alpha transparency to apply to all bubbles in this series.
         this.bubbleAlpha;
+        // prop: bubbleGradients
+        // True to color the bubbles with gradient fills instead of flat colors.
+        this.bubbleGradients = false;
         // array of [point index, radius] which will be sorted in descending order to plot 
         // largest points below smaller points.
         this.radii = [];
@@ -147,7 +150,7 @@
                     newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
                     newrgb[j] = parseInt(newrgb[j], 10);
                 }
-                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+                this.highlightColors.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+', 0.6)');
             }
         }
         
@@ -161,6 +164,10 @@
         this.canvas._plotDimensions = this._plotDimensions;
         
         plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
         plot.postDrawHooks.addOnce(postPlotDraw);
         
     };
@@ -285,7 +292,7 @@
             if (this.shadow) {
                 this.renderer.shadowRenderer.draw(ctx, [x, y, gd[2], 0, 2*Math.PI], {offset: offset, depth: depth});
             }
-            el.draw(gd[2], color);
+            el.draw(gd[2], color, this.bubbleGradients, this.shadowAngle/180*Math.PI);
             this.canvas._elem.append(el._elem);
             
             // now draw label.
@@ -364,10 +371,6 @@
             el = this.createElement(x, y, r);
             if (!this._ctx) this._ctx = this.setContext();
         }
-        if (color != null && rr != null) {
-            if (!this._ctx) this._ctx = this.setContext();
-            this.draw(rr, color);
-        }
     };
     
     $.jqplot.BubbleCanvas.prototype = new $.jqplot.ElemContainer();
@@ -402,16 +405,42 @@
         return this._elem;
     };
     
-    $.jqplot.BubbleCanvas.prototype.draw = function(r, color) {
+    $.jqplot.BubbleCanvas.prototype.draw = function(r, color, gradients, angle) {
         var ctx = this._ctx;
+        // r = Math.floor(r*1.04);
+        // var x = Math.round(ctx.canvas.width/2);
+        // var y = Math.round(ctx.canvas.height/2);
         var x = ctx.canvas.width/2;
         var y = ctx.canvas.height/2;
         ctx.save();
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, 2*Math.PI);
-        ctx.closePath();
-        ctx.fill();
+        if (gradients) {
+            r = r*1.04;
+            var comps = $.jqplot.getColorComponents(color);
+            var colorinner = 'rgba('+Math.round(comps[0]+0.8*(255-comps[0]))+', '+Math.round(comps[1]+0.8*(255-comps[1]))+', '+Math.round(comps[2]+0.8*(255-comps[2]))+', '+comps[3]+')';
+            var colorend = 'rgba('+comps[0]+', '+comps[1]+', '+comps[2]+', 0)';
+            // var rinner = Math.round(0.35 * r);
+            // var xinner = Math.round(x - Math.cos(angle) * 0.33 * r);
+            // var yinner = Math.round(y - Math.sin(angle) * 0.33 * r);
+            var rinner = 0.35 * r;
+            var xinner = x - Math.cos(angle) * 0.33 * r;
+            var yinner = y - Math.sin(angle) * 0.33 * r;
+            var radgrad = ctx.createRadialGradient(xinner, yinner, rinner, x, y, r);
+            radgrad.addColorStop(0, colorinner);
+            radgrad.addColorStop(0.93, color);
+            radgrad.addColorStop(0.96, 'rgba(0, 0, 0, 0)');
+            radgrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            // radgrad.addColorStop(.98, colorend);
+            ctx.fillStyle = radgrad;
+            ctx.fillRect(0,0, ctx.canvas.width, ctx.canvas.height);
+        }
+        else {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            var ang = 2*Math.PI
+            ctx.arc(x, y, r, 0, ang, true);
+            ctx.closePath();
+            ctx.fill();
+        }
         ctx.restore();
     };
     
@@ -507,33 +536,23 @@
         ctx.save();
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(x, y, r, 0, 2*Math.PI);
+        ctx.arc(x, y, r, 0, 2*Math.PI, true);
         ctx.closePath();
         ctx.fill();
         ctx.restore();        
+        // bring label to front
         if (s.labels[pidx]) {
-            var l = s.labels[pidx].detach();
-            l.insertAfter(canvas._elem);
-            var left = l.position().left + plot._gridPadding.left;
-            var top = l.position().top + plot._gridPadding.top;
-            l.css({top: top, left: left});
-            
+            plot.plugins.bubbleRenderer.highlightLabel = s.labels[pidx].clone();
+            plot.plugins.bubbleRenderer.highlightCanvas._elem.after(plot.plugins.bubbleRenderer.highlightLabel);
         }
     }
     
     function unhighlight (plot) {
         var canvas = plot.plugins.bubbleRenderer.highlightCanvas;
         var sidx = plot.plugins.bubbleRenderer.highlightedSeriesIndex;
-        if (sidx != null) {
-            var s = plot.series[sidx];   
-            var pidx = s._highlightedPoint;     
-            if (s.labels[pidx]) {
-                var l = s.labels[pidx].detach();
-                l.insertAfter(s.bubbleCanvases[pidx]._elem);
-                var left = l.position().left - plot._gridPadding.left;
-                var top = l.position().top - plot._gridPadding.top;
-                l.css({top: top, left: left});
-            }
+        if (plot.plugins.bubbleRenderer.highlightLabel != null) {
+            plot.plugins.bubbleRenderer.highlightLabel.remove();
+            plot.plugins.bubbleRenderer.highlightLabel = null;
         }
         canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         for (var i=0; i<plot.series.length; i++) {
@@ -564,12 +583,65 @@
         }
     } 
     
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.bubbleRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+        var idx = plot.plugins.bubbleRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt = jQuery.Event('jqplotDataClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
+        }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.bubbleRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
+            }
+            var evt = jQuery.Event('jqplotDataRightClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
+        }
+    }
+    
     // called within context of plot
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
         this.plugins.bubbleRenderer = {highlightedSeriesIndex:null};
         this.plugins.bubbleRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        this.plugins.bubbleRenderer.highlightLabel = null;
+        this.plugins.bubbleRenderer.highlightLabelCanvas = $('<div style="position:absolute;"></div>');
+        var top = this._gridPadding.top;
+        var left = this._gridPadding.left;
+        var width = this._plotDimensions.width - this._gridPadding.left - this._gridPadding.right;
+            var height = this._plotDimensions.height - this._gridPadding.top - this._gridPadding.bottom;
 
         this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-bubbleRenderer-highlight-canvas', this._plotDimensions));
         
