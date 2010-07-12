@@ -53,7 +53,7 @@
         // the seriesColors array.  False to set each bubble to the color
         // specified on this series.  This has no effect if a css background color
         // option is specified in the renderer css options.
-        this.varyBubbleColors = false;
+        this.varyBubbleColors = true;
         // prop: autoScaleBubbles
         // True to scale the bubble radius based on plot size.
         // False will use the radius value as provided as a raw pixel value for
@@ -137,6 +137,10 @@
             }
         }
         
+        if (!this.varyBubbleColors) {
+            this.seriesColors = [this.color];
+        }
+        
         this.colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
         
         // set highlight colors if none provided
@@ -150,7 +154,7 @@
                     newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
                     newrgb[j] = parseInt(newrgb[j], 10);
                 }
-                this.highlightColors.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+', 0.6)');
+                this.highlightColors.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+', 0.7)');
             }
         }
         
@@ -257,7 +261,6 @@
         }
         var opts = (options != undefined) ? options : {};
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
-        var colorGenerator = (this.varyBubbleColors && this.seriesColors.length) ? new $.jqplot.ColorGenerator(this.seriesColors) : null;
         this.canvas._elem.empty();
         for (var i=0; i<this.radii.length; i++) {
             var idx = this.radii[i][0];
@@ -275,6 +278,7 @@
                 }
             }
             
+            // color = (this.varyBubbleColors) ? this.colorGenerator.get(idx) : this.color;
             color = this.colorGenerator.get(idx);
             
             // If we're drawing a shadow, expand the canvas dimensions to accomodate.
@@ -522,6 +526,7 @@
     };
     
     function highlight (plot, sidx, pidx) {
+        plot.plugins.bubbleRenderer.highlightLabelCanvas.empty();
         var s = plot.series[sidx];
         var canvas = plot.plugins.bubbleRenderer.highlightCanvas;
         var ctx = canvas._ctx;
@@ -543,17 +548,15 @@
         // bring label to front
         if (s.labels[pidx]) {
             plot.plugins.bubbleRenderer.highlightLabel = s.labels[pidx].clone();
-            plot.plugins.bubbleRenderer.highlightCanvas._elem.after(plot.plugins.bubbleRenderer.highlightLabel);
+            plot.plugins.bubbleRenderer.highlightLabel.appendTo(plot.plugins.bubbleRenderer.highlightLabelCanvas);
+            plot.plugins.bubbleRenderer.highlightLabel.addClass('jqplot-bubble-label-highlight');
         }
     }
     
     function unhighlight (plot) {
         var canvas = plot.plugins.bubbleRenderer.highlightCanvas;
         var sidx = plot.plugins.bubbleRenderer.highlightedSeriesIndex;
-        if (plot.plugins.bubbleRenderer.highlightLabel != null) {
-            plot.plugins.bubbleRenderer.highlightLabel.remove();
-            plot.plugins.bubbleRenderer.highlightLabel = null;
-        }
+        plot.plugins.bubbleRenderer.highlightLabelCanvas.empty();
         canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         for (var i=0; i<plot.series.length; i++) {
             plot.series[i]._highlightedPoint = null;
@@ -641,9 +644,11 @@
         var top = this._gridPadding.top;
         var left = this._gridPadding.left;
         var width = this._plotDimensions.width - this._gridPadding.left - this._gridPadding.right;
-            var height = this._plotDimensions.height - this._gridPadding.top - this._gridPadding.bottom;
+        var height = this._plotDimensions.height - this._gridPadding.top - this._gridPadding.bottom;
+        this.plugins.bubbleRenderer.highlightLabelCanvas.css({top:top, left:left, width:width+'px', height:height+'px'});
 
         this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-bubbleRenderer-highlight-canvas', this._plotDimensions));
+        this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightLabelCanvas);
         
         var hctx = this.plugins.bubbleRenderer.highlightCanvas.setContext();
     }
