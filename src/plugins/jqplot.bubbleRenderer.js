@@ -92,6 +92,9 @@
         this.maxRadius = 0;
         // index of the currenty highlighted point, if any
         this._highlightedPoint = null;
+        // array of jQuery labels.
+        this.labels = [];
+        this.bubbleCanvases = [];
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -133,8 +136,6 @@
         
         this.colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
         
-        
-        
         // set highlight colors if none provided
         if (this.highlightColors.length == 0) {
             for (var i=0; i<this.seriesColors.length; i++){
@@ -158,7 +159,6 @@
         
         this.canvas = new $.jqplot.DivCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
-        this.bubbleCanvases = [];
         
         plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
         plot.postDrawHooks.addOnce(postPlotDraw);
@@ -303,6 +303,7 @@
                 var top = gd[1] - 0.5*h;
                 var left = gd[0] - 0.5*w;
                 tel.css({top: top, left: left});
+                this.labels[idx] = $(tel);
             }
         }
     };
@@ -487,65 +488,8 @@
         
         var minfact = minRatio * minMult/4 * span;
         var maxfact = maxRatio * maxMult/4 * span;
-        console.log(this.name, db.min, db.max);
-        console.log(minr, minMaxRadius, minMult, minfact);
-        console.log(maxr, maxMaxRadius, maxMult, maxfact);
         db.max += maxfact;
         db.min -= minfact;
-        console.log(db.min, db.max);
-        
-        // var adjust = [];
-        // var fact = 1.3*Math.pow(Math.E, -.002928*dim);
-        // 
-        // for (var i=0; i<this._series.length; i++) {
-        //     adjust.push([]);
-        //     var ad = adjust[i];
-        //     var s = this._series[i];
-        //     var d = [];
-        //     var data = s._plotData;
-        //     var radii = [];
-        //     for (var i=0; i<s.data.length; i++) {
-        //         if (data[i] != null) {
-        //             radii.push(data[i][2]);
-        //             ad.push(data[i][2]/dim * span);
-        //         }
-        //     }
-        //     if (s.autoscaleBubbles) {
-        //         var r, val, maxr = arrayMax(radii);
-        //         var l = s.data.length;
-        //         for (var j=0; j<l; j++) {
-        //             // ad[j] = s.autoscaleMultiplier / 2 * Math.pow(dim, 0) * Math.pow(l*3, s.autoscaleCoefficient) * Math.pow(span, -2);
-        //             ad[j] = s.autoscaleMultiplier * 
-        //         }
-        //     }
-        //     
-        // }
-        // 
-        // 
-        // for (var i=0; i<this._series.length; i++) {
-        //     var s = this._series[i];
-        //     var d = s._plotData;
-        //     var ad = adjust[i];
-        //     
-        //     for (var j=0; j<d.length; j++) { 
-        //         if (this.name == 'xaxis' || this.name == 'x2axis') {
-        //             if (d[j][0] - ad[j] < db.min) {
-        //                 db.min = d[j][0] -  ad[j];
-        //             }
-        //             if (d[j][0] + ad[j] > db.max) {
-        //                 db.max = d[j][0] + ad[j];
-        //             }
-        //         }              
-        //         else {
-        //             if (d[j][1] - ad[j] < db.min) {
-        //                 db.min = d[j][1] - ad[j];
-        //             }
-        //             if (d[j][1] + ad[j]> db.max) {
-        //                 db.max = d[j][1] + ad[j];
-        //             }
-        //         }              
-        //     }
-        // }
     };
     
     function highlight (plot, sidx, pidx) {
@@ -556,6 +500,10 @@
         s._highlightedPoint = pidx;
         plot.plugins.bubbleRenderer.highlightedSeriesIndex = sidx;
         
+        var color = s.highlightColorGenerator.get(pidx);
+        var x = s.gridData[pidx][0],
+            y = s.gridData[pidx][1],
+            r = s.gridData[pidx][2];
         ctx.save();
         ctx.fillStyle = color;
         ctx.beginPath();
@@ -563,12 +511,30 @@
         ctx.closePath();
         ctx.fill();
         ctx.restore();        
-        
-        // s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColorGenerator.get(pidx), false);
+        if (s.labels[pidx]) {
+            var l = s.labels[pidx].detach();
+            l.insertAfter(canvas._elem);
+            var left = l.position().left + plot._gridPadding.left;
+            var top = l.position().top + plot._gridPadding.top;
+            l.css({top: top, left: left});
+            
+        }
     }
     
     function unhighlight (plot) {
         var canvas = plot.plugins.bubbleRenderer.highlightCanvas;
+        var sidx = plot.plugins.bubbleRenderer.highlightedSeriesIndex;
+        if (sidx != null) {
+            var s = plot.series[sidx];   
+            var pidx = s._highlightedPoint;     
+            if (s.labels[pidx]) {
+                var l = s.labels[pidx].detach();
+                l.insertAfter(s.bubbleCanvases[pidx]._elem);
+                var left = l.position().left - plot._gridPadding.left;
+                var top = l.position().top - plot._gridPadding.top;
+                l.css({top: top, left: left});
+            }
+        }
         canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         for (var i=0; i<plot.series.length; i++) {
             plot.series[i]._highlightedPoint = null;
@@ -585,7 +551,7 @@
             evt1.pageX = ev.pageX;
             evt1.pageY = ev.pageY;
             plot.target.trigger(evt1, ins);
-            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.BubbleRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.bubbleRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 var evt = jQuery.Event('jqplotDataHighlight');
                 evt.pageX = ev.pageX;
                 evt.pageY = ev.pageY;
