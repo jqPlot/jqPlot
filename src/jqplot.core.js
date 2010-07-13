@@ -2430,6 +2430,7 @@
                     case $.jqplot.BubbleRenderer:
                         x = gridpos.x;
                         y = gridpos.y;
+                        var ret = null;
                         
                         if (s.show) {
                             for (var j=0; j<s.gridData.length; j++) {
@@ -2437,9 +2438,10 @@
                                 d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
                                 if (d <= p[2] && (d <= d0 || d0 == null)) {
                                    d0 = d;
-                                   return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+                                   ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
+                            if (ret != null) return ret;
                         }
                         break;
                         

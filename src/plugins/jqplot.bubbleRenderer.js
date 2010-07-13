@@ -63,12 +63,11 @@
         // Multiplier applied to the bubble autoscaling factor if autoscaleBubbles is true.
         this.autoscaleMultiplier = 1.0;
         // prop: autoscaleCoefficient
-        // Coefficient for the exponent of the autoscaling equation.
-        // This how the number of bubbles in the series affects the scale of the bubbles.
-        // This should be a negative number.  The smaller the coefficient, the more the bubbles
-        // will shrink as more points are added to the series. A value of 0 disables bubble scaling
-        // based on number of points in the series.
-        this.autoscaleCoefficient = 0;
+        // Factor which decreases bubble size based on how many bubbles on on the chart.
+        // 0 means no adjustment for number of bubbles.  Negative values will decrease
+        // size of bubbles as more bubbles are added.  Values between 0 and -0.2
+        // should work well.
+        this.autoscalePointsFactor = -0.07;
         // prop: escapeHtml
         // True to escape html in bubble label text.
         this.escapeHtml = true;
@@ -85,7 +84,11 @@
         this.highlightColors = [];
         // prop: bubbleAlpha
         // Alpha transparency to apply to all bubbles in this series.
-        this.bubbleAlpha;
+        this.bubbleAlpha = 1.0;
+        // prop: highlightAlpha
+        // Alpha transparency to apply when highlighting bubble.
+        // Set to value of bubbleAlpha by default.
+        this.highlightAlpha = null;
         // prop: bubbleGradients
         // True to color the bubbles with gradient fills instead of flat colors.
         this.bubbleGradients = false;
@@ -105,6 +108,15 @@
         }
         
         $.extend(true, this, options);
+        
+        if (this.highlightAlpha == null) {
+            this.highlightAlpha = this.bubbleAlpha;
+            if (this.bubbleGradients) {
+                this.highlightAlpha = 0.35;
+            }
+        }
+        
+        this.autoscaleMultiplier = this.autoscaleMultiplier * Math.pow(this.data.length, this.autoscalePointsFactor);
         
         // index of the currenty highlighted point, if any
         this._highlightedPoint = null;
@@ -127,7 +139,7 @@
                 }
             }
             
-            if (color && this.bubbleAlpha != null) {
+            if (color && this.bubbleAlpha < 1.0) {
                 comps = $.jqplot.getColorComponents(color);
                 color = 'rgba('+comps[0]+', '+comps[1]+', '+comps[2]+', '+this.bubbleAlpha+')';
             }
@@ -154,7 +166,7 @@
                     newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
                     newrgb[j] = parseInt(newrgb[j], 10);
                 }
-                this.highlightColors.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+', 0.7)');
+                this.highlightColors.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+', '+this.highlightAlpha+')');
             }
         }
         
@@ -212,7 +224,7 @@
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
-                r = this.autoscaleMultiplier * dim / 6 * Math.pow(l*3, this.autoscaleCoefficient);
+                r = this.autoscaleMultiplier * dim / 6;
                 this.gridData[i][2] = r * val;
             }
         }
@@ -246,7 +258,7 @@
         if (this.autoscaleBubbles) {
             for (var i=0; i<l; i++) {
                 val = radii[i]/maxr;
-                r = this.autoscaleMultiplier * dim / 6 * Math.pow(l*3, this.autoscaleCoefficient);
+                r = this.autoscaleMultiplier * dim / 6;
                 gd[i][2] = r * val;
             }
         }
@@ -289,15 +301,16 @@
                 depth = 1 + Math.ceil(gd[2]/15);
                 canvasRadius += offset*depth;
             }
-            this.bubbleCanvases[idx] = el = new $.jqplot.BubbleCanvas(gd[0], gd[1], canvasRadius);
-            var ctx = el._ctx;
+            this.bubbleCanvases[idx] = new $.jqplot.BubbleCanvas();
+            this.canvas._elem.append(this.bubbleCanvases[idx].createElement(gd[0], gd[1], canvasRadius));
+            this.bubbleCanvases[idx].setContext();
+            var ctx = this.bubbleCanvases[idx]._ctx;
             var x = ctx.canvas.width/2;
             var y = ctx.canvas.height/2;
             if (this.shadow) {
                 this.renderer.shadowRenderer.draw(ctx, [x, y, gd[2], 0, 2*Math.PI], {offset: offset, depth: depth});
             }
-            el.draw(gd[2], color, this.bubbleGradients, this.shadowAngle/180*Math.PI);
-            this.canvas._elem.append(el._elem);
+            this.bubbleCanvases[idx].draw(gd[2], color, this.bubbleGradients, this.shadowAngle/180*Math.PI);
             
             // now draw label.
             if (t) {
@@ -367,14 +380,9 @@
         return this._ctx;
     };
     
-    $.jqplot.BubbleCanvas = function(x, y, r, rr, color) {
+    $.jqplot.BubbleCanvas = function() {
         $.jqplot.ElemContainer.call(this);
         this._ctx;
-        var el;
-        if (x != null && y != null && r != null) {
-            el = this.createElement(x, y, r);
-            if (!this._ctx) this._ctx = this.setContext();
-        }
     };
     
     $.jqplot.BubbleCanvas.prototype = new $.jqplot.ElemContainer();
@@ -417,7 +425,7 @@
         var x = ctx.canvas.width/2;
         var y = ctx.canvas.height/2;
         ctx.save();
-        if (gradients) {
+        if (gradients && !$.browser.msie) {
             r = r*1.04;
             var comps = $.jqplot.getColorComponents(color);
             var colorinner = 'rgba('+Math.round(comps[0]+0.8*(255-comps[0]))+', '+Math.round(comps[1]+0.8*(255-comps[1]))+', '+Math.round(comps[2]+0.8*(255-comps[2]))+', '+comps[3]+')';
@@ -431,17 +439,19 @@
             var radgrad = ctx.createRadialGradient(xinner, yinner, rinner, x, y, r);
             radgrad.addColorStop(0, colorinner);
             radgrad.addColorStop(0.93, color);
-            radgrad.addColorStop(0.96, 'rgba(0, 0, 0, 0)');
-            radgrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            radgrad.addColorStop(0.96, colorend);
+            radgrad.addColorStop(1, colorend);
             // radgrad.addColorStop(.98, colorend);
             ctx.fillStyle = radgrad;
             ctx.fillRect(0,0, ctx.canvas.width, ctx.canvas.height);
         }
         else {
             ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
             ctx.beginPath();
             var ang = 2*Math.PI
-            ctx.arc(x, y, r, 0, ang, true);
+            ctx.arc(x, y, r, 0, ang, 0);
             ctx.closePath();
             ctx.fill();
         }
@@ -519,8 +529,8 @@
         // var dim = (this.name == 'xaxis' || this.name == 'x2axis') ? this._plotDimensions.width : this._plotDimensions.height;
         var dim = Math.min(this._plotDimensions.width, this._plotDimensions.height);
         
-        var minfact = minRatio * minMult/4 * span;
-        var maxfact = maxRatio * maxMult/4 * span;
+        var minfact = minRatio * minMult/3 * span;
+        var maxfact = maxRatio * maxMult/3 * span;
         db.max += maxfact;
         db.min -= minfact;
     };
@@ -540,8 +550,10 @@
             r = s.gridData[pidx][2];
         ctx.save();
         ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(x, y, r, 0, 2*Math.PI, true);
+        ctx.arc(x, y, r, 0, 2*Math.PI, 0);
         ctx.closePath();
         ctx.fill();
         ctx.restore();        
@@ -675,6 +687,7 @@
         
         if (setopts) {
             options.axesDefaults.renderer = $.jqplot.BubbleAxisRenderer;
+            options.sortData = false;
         }
     }
     
