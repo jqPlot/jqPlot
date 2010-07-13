@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Bubble Chart Examples</title>
-  <!--[if IE]><script language="javascript" type="text/javascript" src="../../explorercanvas/excanvas.js"></script><![endif]-->
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="examples.css" />
@@ -81,7 +81,7 @@
 });</script>
 
 <script class="code" language="javascript" type="text/javascript">$(document).ready(function(){
-    
+
     var arr = [[11, 123, 1236, "Acura"], [45, 92, 1067, "Alfa Romeo"], 
     [24, 104, 1176, "AM General"], [50, 23, 610, "Aston Martin Lagonda"], 
     [18, 17, 539, "Audi"], [7, 89, 864, "BMW"], [2, 13, 1026, "Bugatti"]];
@@ -160,7 +160,7 @@
 
 <div id="chart2" class="plot" style="width:460px;height:340px;"></div>
 
-<p class="note"><sup>*</sup>Radial gradients are not supported in IE becuase they are not supported in the excanvas emulation layer used by jqPlot to render charts in IE.  jqPlot renders charts using the HTML canvas element which is supported by nearly every browser except IE.  Excanvas translates the canvas rendering to VML rendering for IE, but unfortunately does not properly handle radial gradients.</p>
+<p class="note"><sup>*</sup>Radial gradients are not supported in IE because they are not supported in the excanvas emulation layer used by jqPlot to render charts in IE.  jqPlot renders charts using the HTML canvas element which is supported by nearly every browser except IE.  Excanvas translates the canvas rendering to VML rendering for IE, but unfortunately does not properly handle radial gradients.</p>
 
 <pre class="code"></pre>
 
