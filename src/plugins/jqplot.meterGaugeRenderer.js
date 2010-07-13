@@ -761,7 +761,6 @@
                     datapoint = this.min - dataspan*3/this.span;
                 }
             }
-            console.log(this.data[0][1], datapoint);
             var dataang = (datapoint - this.min)/dataspan * this.span * Math.PI/180 + this.startAngle;
             
             

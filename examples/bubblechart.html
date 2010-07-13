@@ -26,13 +26,10 @@ $(document).ready(function(){
 var makes = ['Acura', 'Alfa Romeo', 'AM General', 'Aston Martin Lagonda Ltd.', 'Audi', 'BMW', 'Bugatti', 'Buick', 'Cadillac', 'Chevrolet', 'Citroen', 'DaimlerChrysler Corporation', 'Daewoo Motor Co.', 'Delorean Motor Company', 'Dodge', 'Ferrari', 'Fiat', 'Ford Motor Company', 'General Motors', 'GMC', 'Holden', 'Honda', 'Hummer', 'Hyundai', 'Infiniti', 'Isuzu', 'Jaguar Cars', 'Jeep', 'Jensen Motors', 'Kia', 'Laforza', 'Lamborghini', 'Lancia', 'Land Rover', 'Lincoln', 'Lotus Cars', 'Lexus', 'Maserati', 'Mazda', 'Mercedes-Benz', 'Mercury', 'MG', 'Minelli', 'The Mini Cooper', 'Mistubishi', 'Morgan Motor Co.', 'Mosler Automotive', 'Nissan', 'NUMMI ', 'Oldsmobile', 'Opel', 'Packard', 'Panoz', 'Peugeot', 'Pontiac', 'Porsche', 'Proton', 'PSA Peugeot Citroen', 'Renault', 'Rolls-Royce', 'Rover Cars', 'Saab', 'Saturn', 'Shelby American', 'Skoda', 'Spectre Cars', 'Studebaker Motor Company', 'Subaru', 'Suzuki', 'Th!nk', 'Toyota', 'Toyota Motor Manufacturing - Georgetown, KY', 'TVR', 'Vauxhall', 'Volkswagen', 'Volvo', 'Zimmer Motor Cars'];
 
 var arr = []
-console.log(makes.length);
 var l = 3 + Math.ceil(Math.random()*(makes.length-20));
 for (var i=0; i<7; i++) {
     arr.push([Math.round(Math.random() * 50), Math.round(Math.random() * 150), Math.round(400 + Math.random() * 900), makes[i]]);
 }
-
-// console.log(arr);
 
 
    s1 = [[0.6, 2.6, 12, 'Ford'], [0.5, 3, 16, 'GM'], [1.3, 2, 17, 'VW'], [1.2, 1.2, 13, 'Mini'], [2.7, 1.5, 5], [1.7, 1.2, 4], [1.6, 2.9, 3], [0.3, 0.6, 2], [1.3, 2.2, 10, 'Franklin'], [1.1, 1.3, 13, 'Nissan'], [1, 1, 12, 'Chrysler'], [2, 2.5, 11, 'Audi']];
