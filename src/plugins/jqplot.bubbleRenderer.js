@@ -26,15 +26,39 @@
     /**
      * Class: $.jqplot.BubbleRenderer
      * Plugin renderer to draw a bubble chart.  A Bubble chart has data points displayed as
-     * colored circles with an optional text label inside.  Data must be supplied in the form:
+     * colored circles with an optional text label inside.  To use
+     * the bubble renderer, you must include the bubble renderer like:
      * 
-     * > [[x1, y1, r1, {options}], [x2, y2, r2, {options}], ...]
+     * > <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.bubbleRenderer.js"></script>
      * 
-     * The options object is optional and of the form:
-     * >   {
-     * >     label: 'label',
-     * >     color: css color
-     * >   }
+     * Data must be supplied in 
+     * the form:
+     * 
+     * > [[x1, y1, r1, <label or {label:'text', color:color}>], ...]
+     * 
+     * where the label or options 
+     * object is optional.  
+     * 
+     * Note that all bubble colors will be the same
+     * unless the "varyBubbleColors" option is set to true.  Colors can be specified in the data array
+     * or in the seriesColors array option on the series.  If no colors are defined, the default jqPlot
+     * series of 16 colors are used.  Colors are automatically cycled around again if there are more
+     * bubbles than colors.
+     * 
+     * Bubbles are autoscaled by default to fit within the chart area while maintaining 
+     * relative sizes.  If the "autoscaleBubbles" option is set to false, the r(adius) values
+     * in the data array a treated as literal pixel values for the radii of the bubbles.
+     * 
+     * Properties are passed into the bubble renderer in the rendererOptions object of
+     * the series options like:
+     * 
+     * > seriesDefaults: {
+     * >     renderer: $.jqplot.BubbleRenderer,
+     * >     rendererOptions: {
+     * >         bubbleAlpha: 0.7,
+     * >         varyBubbleColors: false
+     * >     }
+     * > }
      * 
      */
     $.jqplot.BubbleRenderer = function(){
@@ -49,20 +73,20 @@
         // Group: Properties
         //
         // prop: varyBubbleColors
-        // true to vary the color of each bubble in this series according to
+        // True to vary the color of each bubble in this series according to
         // the seriesColors array.  False to set each bubble to the color
         // specified on this series.  This has no effect if a css background color
         // option is specified in the renderer css options.
         this.varyBubbleColors = true;
-        // prop: autoScaleBubbles
+        // prop: autoscaleBubbles
         // True to scale the bubble radius based on plot size.
         // False will use the radius value as provided as a raw pixel value for
         // bubble radius.
         this.autoscaleBubbles = true;
         // prop: autoscaleMultiplier
-        // Multiplier applied to the bubble autoscaling factor if autoscaleBubbles is true.
+        // Multiplier the bubble size if autoscaleBubbles is true.
         this.autoscaleMultiplier = 1.0;
-        // prop: autoscaleCoefficient
+        // prop: autoscalePointsFactor
         // Factor which decreases bubble size based on how many bubbles on on the chart.
         // 0 means no adjustment for number of bubbles.  Negative values will decrease
         // size of bubbles as more bubbles are added.  Values between 0 and -0.2
@@ -80,7 +104,8 @@
         // This will be disabled if highlightMouseOver is true.
         this.highlightMouseDown = false;
         // prop: highlightColors
-        // an array of colors to use when highlighting a slice.
+        // An array of colors to use when highlighting a slice.  Calculated automatically
+        // if not supplied.
         this.highlightColors = [];
         // prop: bubbleAlpha
         // Alpha transparency to apply to all bubbles in this series.
@@ -91,6 +116,8 @@
         this.highlightAlpha = null;
         // prop: bubbleGradients
         // True to color the bubbles with gradient fills instead of flat colors.
+        // NOT AVAILABLE IN IE due to lack of excanvas support for radial gradient fills.
+        // will be ignored in IE.
         this.bubbleGradients = false;
         // array of [point index, radius] which will be sorted in descending order to plot 
         // largest points below smaller points.
@@ -188,18 +215,7 @@
         
     };
     
-    // Need to get the radius values into the grid data so can adjust the 
-    // axis min/max accordingly.
-    // called with scope of a series, but not necessarily this series, any
-    // series in the plot.
-    // Note going to work b/c need u2p funciton to do this.
-    // function postInit (target, data, seriesDefaults, seriesOptions, plot) {
-    //     if (this.renderer.constructor == $.jqplot.BubbleRenderer) {
-    //         this.setGridData(plot);
-    //     }
-    // }
-    
-    // Method: setGridData
+
     // converts the user data values to grid coordinates and stores them
     // in the gridData array.
     // Called with scope of a series.
@@ -232,7 +248,6 @@
         this.radii.sort(function(a, b) { return b[1] - a[1]; });
     };
     
-    // Method: makeGridData
     // converts any arbitrary data values to grid coordinates and
     // returns them.  This method exists so that plugins can use a series'
     // linerenderer to generate grid data points without overwriting the
@@ -450,7 +465,7 @@
             ctx.strokeStyle = color;
             ctx.lineWidth = 1;
             ctx.beginPath();
-            var ang = 2*Math.PI
+            var ang = 2*Math.PI;
             ctx.arc(x, y, r, 0, ang, 0);
             ctx.closePath();
             ctx.fill();
