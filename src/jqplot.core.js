@@ -1399,6 +1399,12 @@
         // true or false, creates a stack or "mountain" plot.
         // Not all series renderers may implement this option.
         this.stackSeries = false;
+        // prop: defaultAxisStart
+        // 1-D data series are internally converted into 2-D [x,y] data point arrays
+        // by jqPlot.  This is the default starting value for the missing x or y value.
+        // The added data will be a monotonically increasing series (e.g. [1, 2, 3, ...])
+        // starting at this value.
+        this.defaultAxisStart = 1;
         // array to hold the cumulative stacked series data.
         // used to ajust the individual series data, which won't have access to other
         // series data.
@@ -1864,6 +1870,7 @@
             if (this.options.captureRightClick) {
                 this.captureRightClick = this.options.captureRightClick;
             }
+            this.defaultAxisStart = options.defaultAxisStart;
             var cg = new this.colorGenerator(this.seriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
@@ -1881,7 +1888,7 @@
                 }    
             }
                 
-            var normalizeData = function(data, dir) {
+            var normalizeData = function(data, dir, start) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
@@ -1893,10 +1900,10 @@
                     // [[1, data[0]], [2, data[1]], ...]
                     for (i=0; i<data.length; i++) {
                         if (dir == 'vertical') {
-                            temp.push([i+1, data[i]]);   
+                            temp.push([start + i, data[i]]);   
                         }
                         else {
-                            temp.push([data[i], i+1]);
+                            temp.push([data[i], start+i]);
                         }
                     }
                 }            
@@ -1920,7 +1927,7 @@
                 if (temp.renderer.constructor == $.jqplot.barRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
                     dir = 'horizontal';
                 }
-                temp.data = normalizeData(this.data[i], dir);
+                temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
                 switch (temp.xaxis) {
                     case 'xaxis':
                         temp._xaxis = this.axes.xaxis;
