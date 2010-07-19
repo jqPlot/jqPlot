@@ -77,7 +77,7 @@
         this.labelsFromSeries = false;
         // prop: seriesLabelIndex
         // array index for location of labels within data point arrays.
-        // if null, will use the last element of teh data point array.
+        // if null, will use the last element of the data point array.
         this.seriesLabelIndex = null;
         // prop: labels
         // array of arrays of labels, one array for each series.
@@ -141,10 +141,12 @@
         if (p.seriesLabelIndex != null) {
             labelIdx = p.seriesLabelIndex;
         }
-        else if (this.renderer.constuctor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+        else if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+            console.log('* bar is: ', this.barDirection);
             labelIdx = 0;
         }
         else {
+            console.log('# bar is: ', this.barDirection);
             labelIdx = this._plotData[0].length -1;
         }
         p._labels = [];
