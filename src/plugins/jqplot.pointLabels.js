@@ -142,11 +142,9 @@
             labelIdx = p.seriesLabelIndex;
         }
         else if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
-            console.log('* bar is: ', this.barDirection);
             labelIdx = 0;
         }
         else {
-            console.log('# bar is: ', this.barDirection);
             labelIdx = this._plotData[0].length -1;
         }
         p._labels = [];
