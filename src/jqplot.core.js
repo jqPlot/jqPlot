@@ -1870,7 +1870,7 @@
             if (this.options.captureRightClick) {
                 this.captureRightClick = this.options.captureRightClick;
             }
-            this.defaultAxisStart = options.defaultAxisStart;
+            this.defaultAxisStart = (options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
             var cg = new this.colorGenerator(this.seriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
