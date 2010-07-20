@@ -108,7 +108,7 @@
      * 
      * attributes:
      * enablePlugins - False to disable plugins by default.  Plugins must then be explicitly 
-     *   enabled in the individual plot options.  Default: true.
+     *   enabled in the individual plot options.  Default: false.
      *   This property sets the "show" property of certain plugins to true or false.
      *   Only plugins that can be immediately active upon loading are affected.  This includes
      *   non-renderer plugins like cursor, dragable, highlighter, and trendline.

@@ -24,13 +24,37 @@
  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
 
 
-  <!-- END: load jqplot -->
-<script language="javascript" type="text/javascript">
-  
-$(document).ready(function(){
-      $.jqplot.config.enablePlugins = true;
+  <style type="text/css">
+    .jqplot-target {
+        margin-bottom: 2em;
+    }
     
-    var ohlc = [['07/06/09', 138.7, 139.68, 135.18, 135.4],
+    pre {
+        background: #D8F4DC;
+        border: 1px solid rgb(200, 200, 200);
+        padding-top: 1em;
+        padding-left: 3em;
+        padding-bottom: 1em;
+        margin-top: 1em;
+        margin-bottom: 4em;
+        
+    }
+    
+    p {
+        margin: 2em 0;
+    }
+    
+    .note {
+        font-size: 0.8em;
+    }
+  </style>
+
+  <!-- END: load jqplot -->
+    
+<script class="common" type="text/javascript">
+    $.jqplot.config.enablePlugins = true;
+    
+    ohlc = [['07/06/09', 138.7, 139.68, 135.18, 135.4],
     ['06/29/09', 143.46, 144.66, 139.79, 140.02],
     ['06/22/09', 140.67, 143.56, 132.88, 142.44],
     ['06/15/09', 136.01, 139.5, 134.53, 139.48],
@@ -75,8 +99,23 @@ $(document).ready(function(){
     ['09/15/08', 142.03, 147.69, 120.68, 140.91],
     ['09/08/08', 164.57, 164.89, 146, 148.94]
     ];
-     
-    var hlc = [['07/06/09', 139.68, 135.18, 135.4],
+    
+    ohlc_b = [['07/06/09', 138.7, 139.68, 135.18, 135.4, 'j'],
+    ['06/29/09', 143.46, 144.66, 139.79, 140.02, 'q'],
+    ['06/22/09', 140.67, 143.56, 132.88, 142.44, 'p'],
+    ['06/15/09', 136.01, 139.5, 134.53, 139.48, 'l'],
+    ['06/08/09', 143.82, 144.56, 136.04, 136.97, 'o'],
+    ['06/01/09', 136.47, 146.4, 136, 144.67, 't'],
+    ['05/26/09', 124.76, 135.9, 124.55, 135.81, '_'],
+    ['05/18/09', 123.73, 129.31, 121.57, 122.5, 'c'],
+    ['05/11/09', 127.37, 130.96, 119.38, 122.42, 'h'],
+    ['05/04/09', 128.24, 133.5, 126.26, 129.19, 'a'],
+    ['04/27/09', 122.9, 127.95, 122.66, 127.24, 'r'],
+    ['04/20/09', 121.73, 127.2, 118.6, 123.9, 't'],
+    ['04/13/09', 120.01, 124.25, 115.76, 123.42, 's']
+    ];     
+    
+    hlc = [['07/06/09', 139.68, 135.18, 135.4],
     ['06/29/09', 144.66, 139.79, 140.02],
     ['06/22/09', 143.56, 132.88, 142.44],
     ['06/15/09', 139.5, 134.53, 139.48],
@@ -121,7 +160,10 @@ $(document).ready(function(){
     ['09/15/08', 147.69, 120.68, 140.91],
     ['09/08/08', 164.89, 146, 148.94]
     ];
-       
+    
+</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){       
     plot1 = $.jqplot('chart1',[ohlc],{
       title: 'Chart',
       axesDefaults:{},
@@ -141,7 +183,9 @@ $(document).ready(function(){
           tooltipLocation: 'nw'
       }
     });
-        
+});</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){  
     plot2 = $.jqplot('chart2',[ohlc],{
       title: 'Chart',
       axesDefaults:{},
@@ -167,7 +211,42 @@ $(document).ready(function(){
           formatString:'<table class="jqplot-highlighter"><tr><td>date:</td><td>%s</td></tr><tr><td>open:</td><td>%s</td></tr><tr><td>hi:</td><td>%s</td></tr><tr><td>low:</td><td>%s</td></tr><tr><td>close:</td><td>%s</td></tr></table>'
       }
     });
-    
+});</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){  
+    plot2b = $.jqplot('chart2b',[ohlc_b],{
+      title: 'Chart',
+      axesDefaults:{},
+      axes: {
+          xaxis: {
+              renderer:$.jqplot.DateAxisRenderer,
+              tickOptions:{formatString:'%y.%m'}
+          },
+          yaxis: {
+              tickOptions:{formatString:'%.2f'}
+          }
+      },
+      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
+      cursor:{
+          zoom:true,
+          tooltipOffset: 10,
+          tooltipLocation: 'nw'
+      },
+      highlighter: {
+          showMarker:false,
+          tooltipAxes: 'xy',
+          yvalues: 5,
+          formatString:'<table class="jqplot-highlighter"> \
+          <tr><td>date:</td><td>%s</td></tr> \
+          <tr><td>open:</td><td>%s</td></tr> \ <tr><td>hi:</td><td>%s</td></tr> \
+          <tr><td>low:</td><td>%s</td></tr> \
+          <tr><td>close:</td><td>%s</td></tr> \
+          <tr><td>letter:</td><td>%s</td></tr></table>'
+      }
+    });
+});</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){ 
     plot3 = $.jqplot('chart3',[hlc],{
       title: 'Chart',
       axesDefaults:{},
@@ -187,7 +266,9 @@ $(document).ready(function(){
           tooltipLocation: 'nw'
       }
     });
-    
+});</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){ 
     var catOHLC = [[1, 138.7, 139.68, 135.18, 135.4],
     [2, 143.46, 144.66, 139.79, 140.02],
     [3, 140.67, 143.56, 132.88, 142.44],
@@ -211,18 +292,36 @@ $(document).ready(function(){
       },
       series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}]
     });
-    
-});
+});</script>
 
 
-</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+        $('script.code').each(function(index) {
+            $('pre.code').eq(index).text($(this).html());
+        });
+        $('script.common').each(function(index) {
+            $('pre.common').eq(index).html($(this).html());
+        });
+        $(document).unload(function() {$('*').unbind(); });
+    });
+</script> 
 
   </head>
   <body>
 <?php include "nav.inc"; ?>
-<div id="chart1" style="margin:20px;height:240px; width:640px;"></div>
-<div id="chart2" style="margin:20px;height:240px; width:640px;"></div>
-<div id="chart3" style="margin:20px;height:240px; width:640px;"></div>
-<div id="chart4" style="margin:20px;height:320px; width:500px;"></div>
+<div id="chart1" class="code" style="margin:20px;height:240px; width:640px;"></div>
+<pre class="code"></pre>
+<div id="chart2" class="code" style="margin:20px;height:240px; width:640px;"></div>
+<pre class="code"></pre>
+<div id="chart2b" class="code" style="margin:20px;height:240px; width:640px;"></div>
+<pre class="code"></pre>
+<div id="chart3" class="code" style="margin:20px;height:240px; width:640px;"></div>
+<pre class="code"></pre>
+<div id="chart4" class="code" style="margin:20px;height:320px; width:500px;"></div>
+<pre class="code"></pre>
+<p>The examples below use the folowing code:</p>
+<pre class="common"></pre>
   </body>
 </html>
