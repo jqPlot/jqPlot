@@ -200,7 +200,7 @@
             plot.drawSeries({preventJqPlotSeriesDrawTrigger:true}, dp.seriesIndex);
             dc._neighbor = null;
             ev.target.style.cursor = dc._cursors.pop();
-            plot.target.trigger('jqlotDragStop', [neighbor.seriesIndex, neighbor.pointIndex, gridpos, datapos]);
+            plot.target.trigger('jqlotDragStop', [gridpos, datapos]);
         }
     }
 })(jQuery);
