@@ -89,7 +89,7 @@
     }
 
     // called within scope of a series
-    function parseTrendLineOptions (seriesDefaults, options) {
+    function parseTrendLineOptions (target, data, seriesDefaults, options, plot) {
         if (this.renderer.constructor == $.jqplot.LineRenderer) {
             this.trendline = new $.jqplot.Trendline();
             options = options || {};
