@@ -34,18 +34,18 @@
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) {
+                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
                         db.min = d[j][0];
                     }
-                    if (d[j][0] > db.max || db.max == null) {
+                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
                         db.max = d[j][0];
                     }
                 }              
                 else {
-                    if (d[j][1] < db.min || db.min == null) {
+                    if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
                         db.min = d[j][1];
                     }
-                    if (d[j][1] > db.max || db.max == null) {
+                    if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
                         db.max = d[j][1];
                     }
                 }              

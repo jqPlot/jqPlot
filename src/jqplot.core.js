@@ -2272,55 +2272,55 @@
             return {offsets:go, gridPos:gridPos, dataPos:dataPos};
         }
         
-        function getNeighborPoint(plot, x, y) {
-            var ret = null;
-            var s, i, d0, d, j, r, k;
-            var threshold, t;
-            for (var k=plot.seriesStack.length-1; k>-1; k--) {
-                i = plot.seriesStack[k];
-                s = plot.series[i];
-                r = s.renderer;
-                if (s.show) {
-                    t = s.markerRenderer.size/2+s.neighborThreshold;
-                    threshold = (t > 0) ? t : 0;
-                    for (var j=0; j<s.gridData.length; j++) {
-                        p = s.gridData[j];
-                        // neighbor looks different to OHLC chart.
-                        if (r.constructor == $.jqplot.OHLCRenderer) {
-                            if (r.candleStick) {
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            // if an open hi low close chart
-                            else if (!r.hlc){
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            // a hi low close chart
-                            else {
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            
-                        }
-                        else {
-                            d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
-                            if (d <= threshold && (d <= d0 || d0 == null)) {
-                               d0 = d;
-                               return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                            }
-                        }
-                    } 
-                }
-            }
-            return ret;
-        }
+        // function getNeighborPoint(plot, x, y) {
+        //     var ret = null;
+        //     var s, i, d0, d, j, r, k;
+        //     var threshold, t;
+        //     for (var k=plot.seriesStack.length-1; k>-1; k--) {
+        //         i = plot.seriesStack[k];
+        //         s = plot.series[i];
+        //         r = s.renderer;
+        //         if (s.show) {
+        //             t = s.markerRenderer.size/2+s.neighborThreshold;
+        //             threshold = (t > 0) ? t : 0;
+        //             for (var j=0; j<s.gridData.length; j++) {
+        //                 p = s.gridData[j];
+        //                 // neighbor looks different to OHLC chart.
+        //                 if (r.constructor == $.jqplot.OHLCRenderer) {
+        //                     if (r.candleStick) {
+        //                         var yp = s._yaxis.series_u2p;
+        //                         if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+        //                             return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+        //                         }
+        //                     }
+        //                     // if an open hi low close chart
+        //                     else if (!r.hlc){
+        //                         var yp = s._yaxis.series_u2p;
+        //                         if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+        //                             return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+        //                         }
+        //                     }
+        //                     // a hi low close chart
+        //                     else {
+        //                         var yp = s._yaxis.series_u2p;
+        //                         if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
+        //                             return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+        //                         }
+        //                     }
+        //                     
+        //                 }
+        //                 else {
+        //                     d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
+        //                     if (d <= threshold && (d <= d0 || d0 == null)) {
+        //                        d0 = d;
+        //                        return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
+        //                     }
+        //                 }
+        //             } 
+        //         }
+        //     }
+        //     return ret;
+        // }
         
         
         // function to check if event location is over a area area
@@ -2488,8 +2488,6 @@
                         r = s.renderer;
                         if (s.show) {
                             if (s.fill) {
-                                x = gridpos.x;
-                                y = gridpos.y;
                                 // first check if it is in bounding box
                                 var inside = false;
                                 if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
@@ -2547,7 +2545,7 @@
                                         }
                             
                                     }
-                                    else {
+                                    else if (p[0] != null && p[1] != null){
                                         d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
                                         if (d <= threshold && (d <= d0 || d0 == null)) {
                                            d0 = d;

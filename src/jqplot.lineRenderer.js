@@ -103,11 +103,27 @@
         this.gridData = [];
         this._prevGridData = [];
         for (var i=0; i<this.data.length; i++) {
-            if (data[i] != null) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
             }
-            if (pdata[i] != null) {
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                this.gridData.push([null, yp.call(this._yaxis, data[i][1])]);
+            }
+            else if (data[i][1] == null) {
+                this.gridData.push([xp.call(this._xaxis, data[i][0]), null]);
+            }
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (pdata[i] && pdata[i][0] != null && pdata[i][1] != null) {
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
+            }
+            // else if there is a null, preserve it.
+            else if (pdata[i] && pdata[i][0] == null) {
+                this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
+            }  
+            else if (pdata[i] && pdata[i][0] != null && pdata[i][1] != null) {
+                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
             }
         }
     };
@@ -125,8 +141,16 @@
         var gd = [];
         var pgd = [];
         for (var i=0; i<data.length; i++) {
-            if (data[i] != null) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
                 gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+            }
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                gd.push([null, yp.call(this._yaxis, data[i][1])]);
+            }
+            else if (data[i][1] == null) {
+                gd.push([xp.call(this._xaxis, data[i][0]), null]);
             }
         }
         return gd;
@@ -240,6 +264,9 @@
                             this.renderer.shapeRenderer.draw(ctx, gd, opts);
                         }
                     }
+                    /////////////////////////
+                    // Not filled to zero
+                    ////////////////////////
                     else {                    
                         // if stoking line as well as filling, get a copy of line data.
                         if (fillAndStroke) {
@@ -315,7 +342,9 @@
             // now draw the markers
             if (this.markerRenderer.show && !fill) {
                 for (i=0; i<gd.length; i++) {
-                    this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                    if (gd[i][0] != null && gd[i][1] != null) {
+                        this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                    }
                 }
             }
         }

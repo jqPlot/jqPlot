@@ -116,7 +116,16 @@
         else {
             ctx.moveTo(points[0][0], points[0][1]);
             for (var i=1; i<points.length; i++) {
-                ctx.lineTo(points[i][0], points[i][1]);
+                if (points[i][0] != null && points[i][1] != null) {
+                    ctx.lineTo(points[i][0], points[i][1]);                        
+                }
+                // if null value, skip ahead a point and move to it
+                else {
+                    i++;
+                    if (i < points.length) {
+                        ctx.moveTo(points[i][0], points[i][1]);
+                    }
+                }
             }
             if (closePath) {
                 ctx.closePath();
