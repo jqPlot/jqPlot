@@ -119,6 +119,9 @@
         // NOT AVAILABLE IN IE due to lack of excanvas support for radial gradient fills.
         // will be ignored in IE.
         this.bubbleGradients = false;
+        // prop: showLabels
+        // True to show labels on bubbles (if any), false to not show.
+        this.showLabels = true;
         // array of [point index, radius] which will be sorted in descending order to plot 
         // largest points below smaller points.
         this.radii = [];
@@ -328,7 +331,7 @@
             this.bubbleCanvases[idx].draw(gd[2], color, this.bubbleGradients, this.shadowAngle/180*Math.PI);
             
             // now draw label.
-            if (t) {
+            if (t && this.showLabels) {
                 tel = $('<div style="position:absolute;" class="jqplot-bubble-label"></div>');
                 if (this.escapeHtml) {
                     tel.text(t);
@@ -595,7 +598,9 @@
  
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var si = neighbor.seriesIndex;
+            var pi = neighbor.pointIndex;
+            var ins = [si, pi, neighbor.data, plot.series[si].gridData[pi][2]];
             var evt1 = jQuery.Event('jqplotDataMouseOver');
             evt1.pageX = ev.pageX;
             evt1.pageY = ev.pageY;
@@ -615,7 +620,9 @@
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var si = neighbor.seriesIndex;
+            var pi = neighbor.pointIndex;
+            var ins = [si, pi, neighbor.data, plot.series[si].gridData[pi][2]];
             if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.bubbleRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 var evt = jQuery.Event('jqplotDataHighlight');
                 evt.pageX = ev.pageX;
@@ -638,7 +645,9 @@
     
     function handleClick(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var si = neighbor.seriesIndex;
+            var pi = neighbor.pointIndex;
+            var ins = [si, pi, neighbor.data, plot.series[si].gridData[pi][2]];
             var evt = jQuery.Event('jqplotDataClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -648,7 +657,9 @@
     
     function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
         if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var si = neighbor.seriesIndex;
+            var pi = neighbor.pointIndex;
+            var ins = [si, pi, neighbor.data, plot.series[si].gridData[pi][2]];
             var idx = plot.plugins.bubbleRenderer.highlightedSeriesIndex;
             if (idx != null && plot.series[idx].highlightMouseDown) {
                 unhighlight(plot);
