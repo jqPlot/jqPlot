@@ -115,14 +115,14 @@
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), null]);
             }
             // if not a line series or if no nulls in data, push the converted point onto the array.
-            if (pdata[i] && pdata[i][0] != null && pdata[i][1] != null) {
+            if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] != null) {
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
             }
             // else if there is a null, preserve it.
-            else if (pdata[i] && pdata[i][0] == null) {
+            else if (pdata[i] != null && pdata[i][0] == null) {
                 this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
             }  
-            else if (pdata[i] && pdata[i][0] != null && pdata[i][1] != null) {
+            else if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] == null) {
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
             }
         }
