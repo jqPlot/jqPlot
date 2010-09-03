@@ -483,6 +483,17 @@
                                 this.numberTicks = Math.ceil(n) + 2;
                                 this.min = this.max - this.tickInterval * (this.numberTicks-1);
                             }
+                            else {
+                                // calculate a number of ticks so max is within axis scale
+                                this.numberTicks = Math.ceil((userMax - userMin)/this.tickInterval) + 1;
+                                // if user's min and max don't fit evenly in ticks, adjust.
+                                // This takes care of cases such as user min set to 0, max set to 3.5 but tick
+                                // format string set to %d (integer ticks)
+                                this.min =  Math.floor(userMin*Math.pow(10, precision))/Math.pow(10, precision);
+                                this.max =  Math.ceil(userMax*Math.pow(10, precision))/Math.pow(10, precision);
+                                // this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                                this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval) + 1;
+                            }
                         }
                     }
                 }

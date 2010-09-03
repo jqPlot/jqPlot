@@ -28,103 +28,131 @@
 <script language="javascript" type="text/javascript">
 $(document).ready(function(){
 
-   s1 = [[0, 1], [1,3]];
-
-   plot1 = $.jqplot('chart1',[s1],{
-       seriesDefaults: {renderer: $.jqplot.BarRenderer},
-       axes: {
-           xaxis: {
-               renderer: $.jqplot.CategoryAxisRenderer
-           },
-           yaxis: {
-               // autoscale: true,
-               tickOptions: {
-                   formatString: '%d'
-               }
-           }
-       },
-       legend: {show: true}
-   });
-   
-   s1 = [[0, 1]];
-
-   plot2 = $.jqplot('chart2',[s1],{
-       seriesDefaults: {renderer: $.jqplot.BarRenderer},
-       axes: {
-           xaxis: {
-               renderer: $.jqplot.CategoryAxisRenderer
-           },
-           yaxis: {
-               // autoscale: true,
-               tickOptions: {
-                   formatString: '%d'
-               }
-           }
-       },
-       legend: {show: true}
-   });
-   
+   // s1 = [[0, 1], [1,3]];
+   // 
+   // plot1 = $.jqplot('chart1',[s1],{
+   //     seriesDefaults: {renderer: $.jqplot.BarRenderer},
+   //     axes: {
+   //         xaxis: {
+   //             renderer: $.jqplot.CategoryAxisRenderer
+   //         },
+   //         yaxis: {
+   //             // autoscale: true,
+   //             tickOptions: {
+   //                 formatString: '%d'
+   //             }
+   //         }
+   //     },
+   //     legend: {show: true}
+   // });
+   // 
+   // s1 = [[0, 1]];
+   // 
+   // plot2 = $.jqplot('chart2',[s1],{
+   //     seriesDefaults: {renderer: $.jqplot.BarRenderer},
+   //     axes: {
+   //         xaxis: {
+   //             renderer: $.jqplot.CategoryAxisRenderer
+   //         },
+   //         yaxis: {
+   //             // autoscale: true,
+   //             tickOptions: {
+   //                 formatString: '%d'
+   //             }
+   //         }
+   //     },
+   //     legend: {show: true}
+   // });
+   // 
+   // s1 = [3,1.5,2,0.5,2,1,2.5];
+   // 
+   // plot3 = $.jqplot('chart3',[s1],{
+   //     axes: {
+   //         yaxis: {
+   //             tickOptions: {
+   //                 formatString: '%d'
+   //             }
+   //         }
+   //     },
+   //     title: 'Default Tick Renderer',
+   //     legend: {show: true}
+   // });
+   // 
+   // s1 = [3,1.5,2,0.5,2,1,2.5];
+   // 
+   // plot4 = $.jqplot('chart4',[s1],{
+   //     axes: {
+   //         yaxis: {
+   //             tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+   //             tickOptions: {
+   //                 formatString: '%d',
+   //                 angle: -30
+   //             }
+   //         }
+   //     },
+   //     title: 'Canvas Tick Renderer',
+   //     legend: {show: true}
+   // });
+   // 
+   // s1 = [.4,.3,.5,.1,.6,.2];
+   // 
+   // plot5 = $.jqplot('chart5',[s1],{
+   //     axes: {
+   //         yaxis: {
+   //             tickOptions: {
+   //                 formatString: '%d'
+   //             }
+   //         }
+   //     },
+   //     legend: {show: true}
+   // });
+   // 
+   // s1 = [[0, 1]];
+   // 
+   // plot6 = $.jqplot('chart6',[s1],{
+   //     seriesDefaults: {renderer: $.jqplot.BarRenderer},
+   //     axes: {
+   //         xaxis: {
+   //             renderer: $.jqplot.CategoryAxisRenderer
+   //         },
+   //         yaxis: {
+   //             // autoscale: true,
+   //             tickOptions: {
+   //                 formatString: '%d'
+   //             },
+   //             tickInterval: 1,
+   //             min: 0
+   //         }
+   //     },
+   //     legend: {show: true}
+   // });
+   // 
    s1 = [3,1.5,2,0.5,2,1,2.5];
 
-   plot3 = $.jqplot('chart3',[s1],{
+   plot7 = $.jqplot('chart7',[s1],{
        axes: {
            yaxis: {
-               tickOptions: {
-                   formatString: '%d'
-               }
-           }
-       },
-       title: 'Default Tick Renderer',
-       legend: {show: true}
-   });
-   
-   s1 = [3,1.5,2,0.5,2,1,2.5];
-
-   plot4 = $.jqplot('chart4',[s1],{
-       axes: {
-           yaxis: {
-               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               min: 0,
                tickOptions: {
                    formatString: '%d',
-                   angle: -30
+                   numberTicks: 6
                }
            }
        },
-       title: 'Canvas Tick Renderer',
-       legend: {show: true}
    });
    
-   s1 = [.4,.3,.5,.1,.6,.2];
+   s1 = [3,1.5,2,0.5,2,1,2.5];
 
-   plot5 = $.jqplot('chart5',[s1],{
+   plot8 = $.jqplot('chart8',[s1],{
        axes: {
            yaxis: {
+               min: 0,
+               max: 4.4,
                tickOptions: {
                    formatString: '%d'
                }
            }
-       },
-       legend: {show: true}
-   });
-   
-   s1 = [[0, 1]];
-
-   plot6 = $.jqplot('chart6',[s1],{
-       seriesDefaults: {renderer: $.jqplot.BarRenderer},
-       axes: {
-           xaxis: {
-               renderer: $.jqplot.CategoryAxisRenderer
-           },
-           yaxis: {
-               // autoscale: true,
-               tickOptions: {
-                   formatString: '%d'
-               },
-               tickInterval: 1,
-               min: 0
-           }
-       },
-       legend: {show: true}
+       }
    });
    
  });
@@ -144,5 +172,7 @@ $(document).ready(function(){
 <div id="chart4" class="plot" style="width:400px;height:300px;"></div>
 <div id="chart5" class="plot" style="width:400px;height:300px;"></div>
 <div id="chart6" class="plot" style="width:400px;height:300px;"></div>
+<div id="chart7" class="plot" style="width:400px;height:300px;"></div>
+<div id="chart8" class="plot" style="width:400px;height:300px;"></div>
   </body>
 </html>
