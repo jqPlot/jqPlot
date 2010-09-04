@@ -304,7 +304,7 @@
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -317,7 +317,7 @@
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
@@ -369,7 +369,7 @@
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -379,7 +379,7 @@
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
