@@ -102,7 +102,7 @@
                 $('#info2').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
             }
         );
-    
+            
         $('#chart2').bind('jqplotDataUnhighlight', 
             function (ev) {
                 $('#info2').html('Nothing');
@@ -137,7 +137,7 @@
                 $('#info2c').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
             }
         );
-    
+            
         $('#chart2b').bind('jqplotDataUnhighlight', 
             function (ev) {
                 $('#info2b').html('Nothing');
@@ -225,7 +225,7 @@
     });</script>
 
   <script class="code" type="text/javascript">$(document).ready(function(){
-        plot6 = $.jqplot('chart6', [[1,2,3,4]], {seriesDefaults:{renderer:$.jqplot.PieRenderer}});
+        // plot6 = $.jqplot('chart6', [[1,2,3,4]], {seriesDefaults:{renderer:$.jqplot.PieRenderer}});
     });</script> 
   
     <script type="text/javascript">    

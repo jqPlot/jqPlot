@@ -10,13 +10,12 @@
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.js"></script>
   <!-- END: load jquery -->
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
   <!-- END: load jqplot -->
 
   <style type="text/css">
@@ -28,35 +27,35 @@
   
   $(document).ready(function(){
     
-    $.jqplot.config.enablePlugins = true;
+    $.jqplot.config.enablePlugins = false;
 
     plot1 = $.jqplot('pie1', [[['a',25],['b',14],['c',7]]], {
-      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{
-          show:true, 
-          placement: 'outside', 
-          rendererOptions: {
-              numberRows: 1
-          }, 
-          location:'s',
-          marginTop: '15px'
-      }       
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:false}}
+      // legend:{
+      //     show:true, 
+      //     placement: 'outside', 
+      //     rendererOptions: {
+      //         numberRows: 1
+      //     }, 
+      //     location:'s',
+      //     marginTop: '15px'
+      // }       
     });
 
-    plot2 = $.jqplot('pie2', [[['a',25],['b',0],['c',0]]], {
-      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{show:true}    
-    });
-
-    plot3 = $.jqplot('pie3', [[['a',5],['b',0],['c',7]]], {
-      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{show:true}      
-    });
-    
-    plot4 = $.jqplot('pie4', [[["a",0],["b",1],["c",.01]]], {
-      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-      legend:{show:true}      
-    });
+    // plot2 = $.jqplot('pie2', [[['a',25],['b',14],['c',7]]], {
+    //   seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+    //   legend:{show:true}    
+    // });
+    // 
+    // plot3 = $.jqplot('pie3', [[['a',5],['b',0],['c',7]]], {
+    //   seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+    //   legend:{show:true}      
+    // });
+    // 
+    // plot4 = $.jqplot('pie4', [[["a",0],["b",1],["c",.01]]], {
+    //   seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+    //   legend:{show:true}      
+    // });
     
   });
   </script>

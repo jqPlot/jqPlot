@@ -9,7 +9,7 @@ choose the license that best suits your project and use it accordingly.
 
 Although not required, the author would appreciate an email letting him 
 know of any substantial use of jqPlot.  You can reach the author at: 
-chris dot leonello at gmail dot com or see http://www.jqplot.com/info.php .
+chris at jqplot  or see http://www.jqplot.com/info.php .
 
 If you are feeling kind and generous, consider supporting the project by
 making a donation at: http://www.jqplot.com/donate.php .
