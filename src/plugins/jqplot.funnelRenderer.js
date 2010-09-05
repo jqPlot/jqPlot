@@ -893,9 +893,9 @@
         this.plugins.funnelRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         // do we have any data labels?  if so, put highlight canvas before those
-        var labels = this.target.find('.jqplot-data-label:first');
+        var labels = $(this.targetId+' .jqplot-data-label');
         if (labels.length) {
-            labels.before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions));
+            $(labels[0]).before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions));
         }
         // else put highlight canvas before event canvas.
         else {

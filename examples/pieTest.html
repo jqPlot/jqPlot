@@ -30,16 +30,16 @@
     $.jqplot.config.enablePlugins = false;
 
     plot1 = $.jqplot('pie1', [[['a',25],['b',14],['c',7]]], {
-      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:false}}
-      // legend:{
-      //     show:true, 
-      //     placement: 'outside', 
-      //     rendererOptions: {
-      //         numberRows: 1
-      //     }, 
-      //     location:'s',
-      //     marginTop: '15px'
-      // }       
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:false}, rendererOptions: {showDataLabels: true}},
+                  legend:{
+                      show:true, 
+                      placement: 'outside', 
+                      rendererOptions: {
+                          numberRows: 1
+                      }, 
+                      location:'s',
+                      marginTop: '15px'
+                  }       
     });
 
     // plot2 = $.jqplot('pie2', [[['a',25],['b',14],['c',7]]], {
@@ -57,12 +57,18 @@
     //   legend:{show:true}      
     // });
     
+    var p = $('p');
+    p.css('color', 'red');
+    console.log(p.length);
+    $(plot1.targetid + ' .jqplot-data-label')
+    
+    
   });
   </script>
   </head>
   <body>
 <?php include "nav.inc"; ?>
-    This page tests for 3 conditions.  Plotting pies with a slice that begins at 0 and ends at and near 2*pi (360 degrees), disabling the trendline plugin on pies, and plotting a pie that has a 0 value (or a very small value relative to other values) in the data set.
+    <p>This page tests for 3 conditions.  Plotting pies with a slice that begins at 0 and ends at and near 2*pi (360 degrees), disabling the trendline plugin on pies, and plotting a pie that has a 0 value (or a very small value relative to other values) in the data set.</p>
     <div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie2" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie3" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
