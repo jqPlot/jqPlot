@@ -62,7 +62,12 @@
         // group bars into this many groups
         this.groups = 1;
         // prop: varyBarColor
-        // true to color each bar separately.
+        // true to color each bar of a series separately rather than
+        // have every bar of a given series the same color.
+        // If used for non-stacked multiple series bar plots, user should
+        // specify a separate 'seriesColors' array for each series.
+        // Otherwise, each series will set their bars to the same color array.
+        // This option has no Effect for stacked bar charts and is disabled.
         this.varyBarColor = false;
         // prop: highlightMouseOver
         // True to highlight slice when moused over.
