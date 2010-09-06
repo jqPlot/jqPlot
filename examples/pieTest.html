@@ -42,27 +42,25 @@
                   }       
     });
 
-    // plot2 = $.jqplot('pie2', [[['a',25],['b',14],['c',7]]], {
-    //   seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-    //   legend:{show:true}    
-    // });
-    // 
-    // plot3 = $.jqplot('pie3', [[['a',5],['b',0],['c',7]]], {
-    //   seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-    //   legend:{show:true}      
-    // });
-    // 
-    // plot4 = $.jqplot('pie4', [[["a",0],["b",1],["c",.01]]], {
-    //   seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
-    //   legend:{show:true}      
-    // });
+    plot2 = $.jqplot('pie2', [[['a',25],['b',14],['c',7]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+      legend:{show:true}    
+    });
     
-    var p = $('p');
-    p.css('color', 'red');
-    console.log(p.length);
-    $(plot1.targetid + ' .jqplot-data-label')
+    plot3 = $.jqplot('pie3', [[['a',5],['b',0],['c',7]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+      legend:{show:true}      
+    });
     
+    plot4 = $.jqplot('pie4', [[["a",0],["b",1],["c",.01]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:true}},
+      legend:{show:true}      
+    }); 
     
+    plot5 = $.jqplot('pie5', [[["none",23],["error",0],["click",5],["impression",25]]], {
+      seriesDefaults:{renderer:$.jqplot.PieRenderer},
+      legend:{show:true}      
+    });   
   });
   </script>
   </head>
@@ -73,5 +71,6 @@
     <div id="pie2" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie3" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
     <div id="pie4" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
+    <div id="pie5" style="margin-top:20px; margin-left:20px; width:400px; height:240px;"></div>
   </body>
 </html>

@@ -270,7 +270,7 @@
             }
             // Fix for IE, where it can't seem to handle 0 degree angles.  Also avoids
             // ugly line on unfilled donuts.
-            if (ang1 == ang2) {
+            if (ang1 >= ang2) {
                 return;
             }
             ctx.beginPath();  

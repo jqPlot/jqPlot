@@ -5,7 +5,7 @@
   <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.js"></script>
 
   <!-- END: load jquery -->
   
@@ -101,7 +101,10 @@
             // Going to post process the css position of the y2axis label so it appears on the left side of the grid.
             // Can't specify this in a css rule because jqPlot figures out the correct position of the label and then
             // sets the style attributes on the label itself.  This will override those element style attributes.
-            $('.jqplot-y2axis-label').css({top:'10px', right:plot1._width - plot1._gridPadding.left - 5 + 'px'});
+            // Note, this fails in IE for some reason, probably due to VML emulated canvas elements.
+            var r = plot1._width - plot1._gridPadding.left - 5;
+            r = r+'px';
+            $('.jqplot-y2axis-label').css({top:'10px', right:r});
         });
     -->
     </script>
