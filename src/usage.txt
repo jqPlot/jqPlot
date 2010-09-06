@@ -114,6 +114,6 @@ you would first include the plugin after jqPlot:
 Then you would create 
 a chart like:
 
-> $.jqplot('chartdiv',  [[34.53, 56.32, 25.1, 18.6]], series:[{renderer:$.jqplot.BarRenderer}]);
+> $.jqplot('chartdiv',  [[34.53, 56.32, 25.1, 18.6]], {series:[{renderer:$.jqplot.BarRenderer}]});
 
 Here the default LineRenderer is replaced by a BarRenderer to generate a bar graph for the first (an only) series.
