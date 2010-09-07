@@ -774,6 +774,7 @@
             options.legend.renderer = $.jqplot.FunnelLegendRenderer;
             options.legend.preDraw = true;
             options.sortData = false;
+            options.seriesDefaults.pointLabels = {show: false};
         }
     }
     

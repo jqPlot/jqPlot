@@ -606,6 +606,7 @@
             options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
             options.legend.renderer = $.jqplot.PieLegendRenderer;
             options.legend.preDraw = true;
+            options.seriesDefaults.pointLabels = {show: false};
         }
     }
     
