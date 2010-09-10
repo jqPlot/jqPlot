@@ -390,10 +390,12 @@
         // renderer specific options.  See <$.jqplot.LinearAxisRenderer> for options.
         this.rendererOptions = {};
         // prop: showTicks
-        // wether to show the ticks (both marks and labels) or not.
+        // Wether to show the ticks (both marks and labels) or not.
+        // Will not override showMark and showLabel options if specified on the ticks themselves.
         this.showTicks = true;
         // prop: showTickMarks
-        // wether to show the tick marks (line crossing grid) or not.
+        // Wether to show the tick marks (line crossing grid) or not.
+        // Overridden by showTicks and showMark option of tick itself.
         this.showTickMarks = true;
         // prop: showMinorTicks
         // Wether or not to show minor ticks.  This is renderer dependent.
@@ -442,6 +444,18 @@
         this.renderer = new this.renderer();
         // set the axis name
         this.tickOptions.axis = this.name;
+        // if showMark or showLabel tick options not specified, use value of axis option.
+        // showTicks overrides showTickMarks.
+        if (this.tickOptions.showMark == null) {
+            this.tickOptions.showMark = this.showTicks;
+        }
+        if (this.tickOptions.showMark == null) {
+            this.tickOptions.showMark = this.showTickMarks;
+        }
+        if (this.tickOptions.showLabel == null) {
+            this.tickOptions.showLabel = this.showTicks;
+        }
+        
         if (this.label == null || this.label == '') {
             this.showLabel = false;
         }
@@ -2271,56 +2285,6 @@
 
             return {offsets:go, gridPos:gridPos, dataPos:dataPos};
         }
-        
-        // function getNeighborPoint(plot, x, y) {
-        //     var ret = null;
-        //     var s, i, d0, d, j, r, k;
-        //     var threshold, t;
-        //     for (var k=plot.seriesStack.length-1; k>-1; k--) {
-        //         i = plot.seriesStack[k];
-        //         s = plot.series[i];
-        //         r = s.renderer;
-        //         if (s.show) {
-        //             t = s.markerRenderer.size/2+s.neighborThreshold;
-        //             threshold = (t > 0) ? t : 0;
-        //             for (var j=0; j<s.gridData.length; j++) {
-        //                 p = s.gridData[j];
-        //                 // neighbor looks different to OHLC chart.
-        //                 if (r.constructor == $.jqplot.OHLCRenderer) {
-        //                     if (r.candleStick) {
-        //                         var yp = s._yaxis.series_u2p;
-        //                         if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-        //                             return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-        //                         }
-        //                     }
-        //                     // if an open hi low close chart
-        //                     else if (!r.hlc){
-        //                         var yp = s._yaxis.series_u2p;
-        //                         if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-        //                             return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-        //                         }
-        //                     }
-        //                     // a hi low close chart
-        //                     else {
-        //                         var yp = s._yaxis.series_u2p;
-        //                         if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
-        //                             return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-        //                         }
-        //                     }
-        //                     
-        //                 }
-        //                 else {
-        //                     d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
-        //                     if (d <= threshold && (d <= d0 || d0 == null)) {
-        //                        d0 = d;
-        //                        return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-        //                     }
-        //                 }
-        //             } 
-        //         }
-        //     }
-        //     return ret;
-        // }
         
         
         // function to check if event location is over a area area

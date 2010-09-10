@@ -87,14 +87,12 @@
                 elem.appendTo(this._elem);
             }
     
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    var elem = tick.draw(ctx);
+                    elem.appendTo(this._elem);
                 }
             }
         }
@@ -117,7 +115,7 @@
         var w = 0;
         var h = 0;
         var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
+        if (this.show) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
@@ -192,26 +190,12 @@
                 if (ut.constructor == Array) {
                     t.value = ut[0];
                     t.label = ut[1];
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
                 
                 else {
                     t.value = ut;
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
                 }
@@ -505,13 +489,7 @@
                 tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
+
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }

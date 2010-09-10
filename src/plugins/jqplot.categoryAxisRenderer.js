@@ -133,12 +133,12 @@
                 // need a marker before and after the tick
                 var t = new this.tickRenderer(this.tickOptions);
                 t.showLabel = false;
-                t.showMark = true;
+                // t.showMark = true;
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
                 var t = new this.tickRenderer(this.tickOptions);
                 t.label = userTicks[i];
-                t.showLabel = true;
+                // t.showLabel = true;
                 t.showMark = false;
                 t.showGridline = false;
                 t.setTick(tt+0.5, this.name);
@@ -147,7 +147,7 @@
             // now add the last tick at the end
             var t = new this.tickRenderer(this.tickOptions);
             t.showLabel = false;
-            t.showMark = true;
+            // t.showMark = true;
             t.setTick(tt+1, this.name);
             this._ticks.push(t);
         }
@@ -277,13 +277,6 @@
                     t.showMark = false;
                     t.showGridline = false;
                 }
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
@@ -325,14 +318,12 @@
                 elem.appendTo(this._elem);
             }
     
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    var elem = tick.draw(ctx);
+                    elem.appendTo(this._elem);
                 }
             }
         
@@ -356,7 +347,7 @@
         var w = 0;
         var h = 0;
         var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
+        if (this.show) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
