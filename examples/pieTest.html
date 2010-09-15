@@ -20,6 +20,8 @@
 
   <style type="text/css">
   div.jqplot-target { margin-bottom: 45px; }
+  #pie1 .jqplot-base-canvas { border: 1px black solid }
+  #pie1 .jqplot-series-canvas { border: 1px red solid }
   </style>
   
   <script type="text/javascript" language="javascript">
@@ -30,7 +32,8 @@
     $.jqplot.config.enablePlugins = false;
 
     plot1 = $.jqplot('pie1', [[['a',25],['b',14],['c',7]]], {
-      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:false}, rendererOptions: {showDataLabels: true}},
+        gridPadding: {top:0, bottom:38, left:0, right:0},
+      seriesDefaults:{renderer:$.jqplot.PieRenderer, trendline:{show:false}, rendererOptions: { padding: 8, showDataLabels: true}},
                   legend:{
                       show:true, 
                       placement: 'outside', 

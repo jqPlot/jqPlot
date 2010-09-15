@@ -55,11 +55,11 @@
         if (!this.isTrendline && this.fill) {
         
             // prop: highlightMouseOver
-            // True to highlight slice when moused over.
+            // True to highlight area on a filled plot when moused over.
             // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
             this.highlightMouseOver = true;
             // prop: highlightMouseDown
-            // True to highlight when a mouse button is pressed over a area on a filled plot.
+            // True to highlight when a mouse button is pressed over an area on a filled plot.
             // This will be disabled if highlightMouseOver is true.
             this.highlightMouseDown = false;
             // prop: highlightColor
