@@ -538,9 +538,18 @@
             if (!setmax && !setmin) {
                 var range = this.max - this.min;
                 tf = Math.floor(parseFloat((Math.log(range)/Math.log(10)).toFixed(11))) - 1;
-                var nticks = [5,6,4,7,3], res, numticks;
+                var nticks = [5,6,4,7,3,8,9,10,2], res, numticks, nonSigDigits=0, sigRange;
+                // check to see how many zeros are at the end of the range
+                for (i=0; i<tf+1; i++) {
+                    fac = Math.pow(10, i);
+                    if (range/fac != parseInt(range/fac)) {
+                        nonSigDigits = i-1;
+                        break;
+                    }                  
+                }
+                sigRange = range/Math.pow(10, nonSigDigits);
                 for (i=0; i<nticks.length; i++) {
-                    res = range/(nticks[i]-1)/Math.pow(10, tf);
+                    res = sigRange/(nticks[i]-1);
                     if (res == parseInt(res, 10)) {
                         this.numberTicks = nticks[i];
                         this.tickInterval = range/(this.numberTicks-1);
