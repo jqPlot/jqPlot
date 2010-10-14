@@ -114,17 +114,20 @@
             }
         }
         else {
-            ctx.moveTo(points[0][0], points[0][1]);
-            for (var i=1; i<points.length; i++) {
+            var move = true;
+            for (var i=0; i<points.length; i++) {
+                // skip to the first non-null point and move to it.
                 if (points[i][0] != null && points[i][1] != null) {
-                    ctx.lineTo(points[i][0], points[i][1]);                        
-                }
-                // if null value, skip ahead a point and move to it
-                else {
-                    i++;
-                    if (i < points.length) {
+                    if (move) {
                         ctx.moveTo(points[i][0], points[i][1]);
+                        move = false;
                     }
+                    else {
+                        ctx.lineTo(points[i][0], points[i][1]);
+                    }
+                }
+                else {
+                    move = true;
                 }
             }
             if (closePath) {
