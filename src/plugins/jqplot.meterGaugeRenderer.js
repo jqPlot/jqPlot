@@ -540,7 +540,7 @@
                 tf = Math.floor(parseFloat((Math.log(range)/Math.log(10)).toFixed(11))) - 1;
                 var nticks = [5,6,4,7,3,8,9,10,2], res, numticks, nonSigDigits=0, sigRange;
                 // check to see how many zeros are at the end of the range
-                for (i=0; i<tf+1; i++) {
+                for (i=1; i<tf+1; i++) {
                     fac = Math.pow(10, i);
                     if (range/fac != parseInt(range/fac)) {
                         nonSigDigits = i-1;
@@ -570,7 +570,14 @@
                 }
                 
                 if (!this.numberMinorTicks) {
+                    var nums = [5, 4, 3, 6];
                     this.numberMinorTicks = 1;
+                    for (i=0; i<3; i++) {
+                        temp = this.tickInterval/nums[i];
+                        if (temp == parseInt(temp)) {
+                            this.numberMinorTicks = nums[i];
+                        }
+                    }
                 }
             }
         }
