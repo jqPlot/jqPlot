@@ -540,12 +540,12 @@
                 tf = Math.floor(parseFloat((Math.log(range)/Math.log(10)).toFixed(11))) - 1;
                 var nticks = [5,6,4,7,3,8,9,10,2], res, numticks, nonSigDigits=0, sigRange;
                 // check to see how many zeros are at the end of the range
-                for (i=1; i<tf+1; i++) {
-                    fac = Math.pow(10, i);
-                    if (range/fac != parseInt(range/fac)) {
-                        nonSigDigits = i-1;
-                        break;
-                    }                  
+                if (range > 1) {
+                    var rstr = String(range);
+                    if (rstr.search(/\./) == -1) {
+                         var pos = rstr.search(/0+$/);
+                         nonSigDigits = (pos > 0) ? rstr.length - pos - 1 : 0;
+                    }
                 }
                 sigRange = range/Math.pow(10, nonSigDigits);
                 for (i=0; i<nticks.length; i++) {
@@ -570,12 +570,13 @@
                 }
                 
                 if (!this.numberMinorTicks) {
-                    var nums = [5, 4, 3, 6];
                     this.numberMinorTicks = 1;
-                    for (i=0; i<3; i++) {
+                    var nums = [4, 5, 3, 6, 2];
+                    for (i=0; i<5; i++) {
                         temp = this.tickInterval/nums[i];
                         if (temp == parseInt(temp)) {
-                            this.numberMinorTicks = nums[i];
+                            this.numberMinorTicks = nums[i]-1;
+                            break;
                         }
                     }
                 }
