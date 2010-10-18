@@ -42,10 +42,10 @@
         this._elem = $(elem);
         this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
         }
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
         this._top = this._offsets.top;

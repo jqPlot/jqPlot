@@ -427,7 +427,7 @@
         this._elem.css({ position: 'absolute', left: l, top: t });
         
         this._elem.addClass(klass);
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }

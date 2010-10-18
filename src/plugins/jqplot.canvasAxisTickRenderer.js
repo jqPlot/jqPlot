@@ -215,7 +215,7 @@
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }

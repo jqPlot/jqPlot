@@ -188,6 +188,20 @@
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
+    // canvas related tests taken from modernizer:
+    // Copyright © 2009–2010 Faruk Ates.
+    // http://www.modernizr.com
+    
+    $.jqplot.support_canvas = function() {
+        return !!document.createElement('canvas').getContext;
+    };
+            
+    $.jqplot.support_canvas_text = function() {
+        return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+    }
+    
+    $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
+    
     /**
      * 
      * Hooks: jqPlot Pugin Hooks
@@ -1259,7 +1273,7 @@
         this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
         
         this._elem.addClass(klass);
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
