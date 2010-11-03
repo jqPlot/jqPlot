@@ -17,3 +17,18 @@ pre.code-block{
     margin-bottom: 3em;
     
 }
+    
+pre.code {
+    background: #D8F4DC;
+    border: 1px solid rgb(200, 200, 200);
+    padding-top: 1em;
+    padding-left: 3em;
+    padding-bottom: 1em;
+    margin-top: 1em;
+    margin-bottom: 4em;
+    
+}
+    
+p {
+    margin: 2em 0;
+}

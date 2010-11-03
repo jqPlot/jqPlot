@@ -70,6 +70,12 @@ after you include the jqPlot plugin.  Here is how to include the log axis plugin
 > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
 > <script language="javascript" type="text/javascript" src="jqplot.logAxisRenderer.js"></script>
 
+Important note:  For jqplot builds r529 and above (0.9.7r529 and higher), you must explicitly 
+enable plugins via either the { show: true } plugin option to the plot or by using 
+the $.jqplot.config.enablePlugins = true; config options set on the page before plot creation.
+Only plugins that can be immediately active upon loading are affected.  This includes 
+non-renderer plugins like cursor, dragable, highlighter, and trendline.
+
 Here is a the same $.jqplot call 
 but with a log y axis:
 
