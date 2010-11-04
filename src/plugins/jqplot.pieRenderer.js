@@ -133,6 +133,8 @@
         // 180 or - 180 = on the negative x axis.
         this.startAngle = 0;
         this.tickRenderer = $.jqplot.PieTickRenderer;
+        // Used as check for conditions where pie shouldn't be drawn.
+        this._drawData = true;
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -183,7 +185,13 @@
         var td = [];
         var sa = this.startAngle/180*Math.PI;
         var tot = 0;
+        // don't know if we have any valid data yet, so set plot to not draw.
+        this._drawData = false;
         for (var i=0; i<this.data.length; i++){
+            if (this.data[i][1] != 0) {
+                // we have data, O.K. to draw.
+                this._drawData = true;
+            }
             stack.push(this.data[i][1]);
             td.push([this.data[i][0]]);
             if (i>0) {
@@ -205,7 +213,13 @@
         var td = [];
         var tot = 0;
         var sa = this.startAngle/180*Math.PI;
+        // don't know if we have any valid data yet, so set plot to not draw.
+        this._drawData = false;
         for (var i=0; i<data.length; i++){
+            if (this.data[i][1] != 0) {
+                // we have data, O.K. to draw.
+                this._drawData = true;
+            }
             stack.push(data[i][1]);
             td.push([data[i][0]]);
             if (i>0) {
@@ -223,25 +237,27 @@
     };
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
-        var r = this._diameter / 2;
-        var fill = this.fill;
-        var lineWidth = this.lineWidth;
-        ctx.save();
-        ctx.translate(this._center[0], this._center[1]);
-        ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
-        
-        if (isShadow) {
-            for (var i=0; i<this.shadowDepth; i++) {
-                ctx.save();
-                ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
+        if (this._drawData) {
+            var r = this._diameter / 2;
+            var fill = this.fill;
+            var lineWidth = this.lineWidth;
+            ctx.save();
+            ctx.translate(this._center[0], this._center[1]);
+            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
+    
+            if (isShadow) {
+                for (var i=0; i<this.shadowDepth; i++) {
+                    ctx.save();
+                    ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
+                    doDraw();
+                }
+            }
+    
+            else {
                 doDraw();
             }
         }
-        
-        else {
-            doDraw();
-        }
-        
+    
         function doDraw () {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
@@ -256,7 +272,7 @@
             if (ang1 >= ang2) {
                 return;
             }            
-            
+        
             ctx.beginPath();  
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
@@ -264,7 +280,7 @@
             ctx.arc(0, 0, r, ang1, ang2, false);
             ctx.lineTo(0,0);
             ctx.closePath();
-            
+        
             if (fill) {
                 ctx.fill();
             }
@@ -359,12 +375,12 @@
             ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
-            
+                      
             this.renderer.drawSlice.call (this, ctx, ang1, ang2, colorGenerator.next(), false);
-            
+        
             if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
                 var fstr, avgang = (ang1+ang2)/2, label;
-                
+            
                 if (this.dataLabels == 'label') {
                     fstr = this.dataLabelFormatString || '%s';
                     label = $.jqplot.sprintf(fstr, gd[i][0]);
@@ -381,12 +397,12 @@
                     fstr = this.dataLabelFormatString || '%s';
                     label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
                 }
-                
+            
                 var fact = (this._radius ) * this.dataLabelPositionFactor + this.sliceMargin + this.dataLabelNudge;
-                
+            
                 var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
                 var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
-                
+            
                 var labelelem = $('<div class="jqplot-pie-series jqplot-data-label" style="position:absolute;">' + label + '</div>').insertBefore(plot.eventCanvas._elem);
                 if (this.dataLabelCenterOn) {
                     x -= labelelem.width()/2;

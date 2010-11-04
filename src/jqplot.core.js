@@ -198,7 +198,7 @@
             
     $.jqplot.support_canvas_text = function() {
         return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-    }
+    };
     
     $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
     

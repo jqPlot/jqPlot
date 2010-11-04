@@ -142,6 +142,8 @@
         // 180 or - 180 = on the negative x axis.
         this.startAngle = 0;
         this.tickRenderer = $.jqplot.DonutTickRenderer;
+        // Used as check for conditions where donut shouldn't be drawn.
+        this._drawData = true;
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -199,7 +201,13 @@
         var td = [];
         var sa = this.startAngle/180*Math.PI;
         var tot = 0;
+        // don't know if we have any valid data yet, so set plot to not draw.
+        this._drawData = false;
         for (var i=0; i<this.data.length; i++){
+            if (this.data[i][1] != 0) {
+                // we have data, O.K. to draw.
+                this._drawData = true;
+            }
             stack.push(this.data[i][1]);
             td.push([this.data[i][0]]);
             if (i>0) {
@@ -221,7 +229,13 @@
         var td = [];
         var tot = 0;
         var sa = this.startAngle/180*Math.PI;
+        // don't know if we have any valid data yet, so set plot to not draw.
+        this._drawData = false;
         for (var i=0; i<data.length; i++){
+            if (this.data[i][1] != 0) {
+                // we have data, O.K. to draw.
+                this._drawData = true;
+            }
             stack.push(data[i][1]);
             td.push([data[i][0]]);
             if (i>0) {
