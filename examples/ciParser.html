@@ -28,71 +28,9 @@
   </style>
 
   <!-- END: load jqplot -->
-<script language="javascript" type="text/javascript">
 
-var cos = function(data, plot) {
-    for (var i=0; i<data.length; i++) {
-        for (var j=0; j<data[i].length; j++) {
-            data[i][j] = Math.cos(data[i][j]);
-        }
-    }
-    return data;
-};
-
-var ajaxdata = function(url, plot, options) {
-    var ret = $.ajax({
-        async: false,
-        url: url
-    });
-    return $.parseJSON(ret.responseText);
-};
-</script>
-
-<script class="code" type="text/javascript">$(document).ready(function(){     
+<script class="code" type="text/javascript">$(document).ready(function(){  
     
-    var sineRenderer = function(data, plot) {
-        for (var i=0; i<data.length; i++) {
-            for (var j=0; j<data[i].length; j++) {
-                data[i][j] = Math.sin(data[i][j]);
-            }
-        }
-        return data;
-    };
-
-    var line1 = [-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5];
-
-    plo1t = $.jqplot('chart1',[line1],{
-        title: 'Sine Data Renderer',
-        dataRenderer: sineRenderer
-    });
-});</script>
-  
-<script class="code" type="text/javascript">$(document).ready(function(){
-    
-    var ajaxDataRenderer = function(url, plot) {
-        var ret = null;
-        $.ajax({
-            // have to use synchronous here, else returns before data is fetched
-            async: false,
-            url: url,
-            dataType:'json',
-            success: function(data) {
-                ret = data;
-            }
-        });
-        return ret;
-    };
- 
-    var jsonurl = "./jsondata.txt";
-
-    plo12 = $.jqplot('chart2', jsonurl,{
-        title: 'AJAX JSON Data Renderer',
-        dataRenderer: ajaxDataRenderer
-    });
-});</script>
-
-<script class="code" type="text/javascript">$(document).ready(function(){ 
-     
     var jsonstr = '{"PriceTicks": [{"Price":5.5,"TickDate":"\/Date(1283745600000)\/"}, \
             {"Price":6.8,"TickDate":"\/Date(1283832000000)\/"}, \
             {"Price":7.1,"TickDate":"\/Date(1283918400000)\/"}], \
@@ -159,21 +97,15 @@ var ajaxdata = function(url, plot, options) {
   </head>
   <body>
 <?php include "nav.inc"; ?>
-<p>The "dataRenderer" plot options allows you to specify a data preprocessor for your plot.  This enables jqPlot to accept data in any arbitrary format (e.g. AJAX data soruces, JSON strings, etc.).  Below are some examples illustrating how to use dataRenderers.</p>
+<p>JSON data formatted according the the City Index API spec can be read in directly by jqPlot thorugh the use of the dataRenderer option and a custom ciParser data renderer.  The ciParser data renderer will translate either a JSON encoded string or JSON object.</p>
 
-<p>In this simple example, we create a dataRenderer which takes an array of x values and returns an array of [x, sin(x)] value pairs. Data renderers are passes the plot data and a reference to the plot as arguments.</p>
-<div id="chart1" style="height:200px; width:400px;"></div>
-<pre class="code"></pre>
-<p>An example of how to use a dataRenderer to fetch data from a server via an AJAX callback.  Here the "data" passed into the plot is actually the url of the data source.</p>
-<div id="chart2" style="height:200px; width:400px;"></div>
-<pre class="code"></pre>
-<p>This example uses a more complicated dataRenderer that has been encapsulated as a jqplot plugin and loaded separately.  This plugin accepts JSON data objects or strings formatted according to the City Index data format and returns jqPlot formatted data.  This example uses a JSON encoded string.</p>
+<p>To use the the ciParser, include the <code>jqplot.json2.js</code> and <code>jqplot.ciParser.js</code> files.  Specify the <code>$.jqplot.ciParser</code> as the renderer in the plot's "dataRenderer" option.  The City Index JSON data can then be passed into the jqplot function as shown in the examples below:</p>
+
+<p>Here, a stringified JSON data objects is passed into the jqplot function.</p>
 <div id="chart3" style="height:200px; width:400px;"></div>
 <pre class="code"></pre>
 <p>This example uses the same City Index data format, but passes in a JSON object instead of a string.</p>
 <div id="chart4" style="height:200px; width:400px;"></div>
 <pre class="code"></pre>
-
-<p>There is a third argument passed to the data renderer, dataRendererOptions.  It was not used in these examples, but can be set as a separate option on the plot to pass additional arguments into the renderer if needed.</p>
   </body>
 </html>

@@ -153,27 +153,14 @@
     redistribute.
 */
 
-/*jslint evil: true, strict: false */
+(function($) {
 
-/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
-    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
-    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
-    lastIndex, length, parse, prototype, push, replace, slice, stringify,
-    test, toJSON, toString, valueOf
-*/
+    $.jqplot.JSON = window.JSON;
 
-
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-
-$.jqplot.JSON = window.JSON;
-
-if (!window.JSON) {
-    $.jqplot.JSON = {};
-}
-
-(function ($) {
-
+    if (!window.JSON) {
+        $.jqplot.JSON = {};
+    }
+    
     function f(n) {
         // Format integers to have at least two digits.
         return n < 10 ? '0' + n : n;
@@ -485,4 +472,4 @@ if (!window.JSON) {
             throw new SyntaxError('$.jqplot.JSON.parse');
         };
     }
-}(jQuery));
+})(jQuery);
