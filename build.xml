@@ -122,7 +122,7 @@
           <fileset dir="" includes="README.txt" />
           <fileset dir="" includes="copyright.txt" />
           <fileset dir="${SRC_DIR}" includes="*.txt" />
-          <fileset dir="tests" includes="jquery*.js" />
+          <fileset dir="${SRC_DIR}" includes="jquery-*.js" />
         </copy>
         
         <copy todir="${DIST_DIR}/examples">
@@ -209,7 +209,7 @@
         <echo message="Minified sources built." />
     </target>
     
-    <target name="web" depends="dist, min, docs, tests" description="Create jqPlot.com web site">
+    <target name="web" depends="dist, min, docs" description="Create jqPlot.com web site">
         <echo message="Building web site" />
         <mkdir dir="${WEB_DIR}" />
         <copy todir="${WEB_DIR}">
@@ -230,9 +230,29 @@
         <copy todir="${WEB_DIR}/docs">
           <fileset dir="${DIST_DIR}/docs"/>
         </copy>
-        <copy todir="${WEB_DIR}/tests">
-          <fileset dir="${DIST_DIR}/tests"/>
-        </copy>
+
+        <echo message="Creating test folder for web site" />
+            <mkdir dir="${WEB_DIR}/tests" />
+            <copy todir="${WEB_DIR}/tests">
+              <fileset dir="tests" />
+            </copy>
+            <copy todir="${WEB_DIR}/tests/images">
+              <fileset dir="tests/images" includes="*" />
+            </copy>
+            <replaceregexp match="\.\./src/" replace="\.\./" flags="g">
+              <fileset dir="${WEB_DIR}/tests">
+                <include name="*.php" />
+                <include name="*.html" />
+              </fileset>
+            </replaceregexp>
+            <replaceregexp match="jqplot\.(\w+)\.js" replace="jqplot.\1.min.js" flags="g">
+              <fileset dir="${WEB_DIR}/tests" includes="*.php" />
+            </replaceregexp>
+            <replaceregexp match="jquery.jqplot.js" replace="jquery.jqplot.min.js">
+              <fileset dir="${WEB_DIR}/tests" includes="opener.php" />
+            </replaceregexp>
+        <echo message="Test folder finished" />
+
         <copy todir="${WEB_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins"/>
         </copy>
@@ -241,7 +261,7 @@
   <target name="compress" depends="dist, min, docs" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"
        basedir=""
-       includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/images/* ${DIST_DIR}/examples/jquery-ui/js/* ${DIST_DIR}/docs/* ${DIST_DIR}/docs/files/* ${DIST_DIR}/docs/files/examples/* ${DIST_DIR}/docs/files/images/* ${DIST_DIR}/docs/files/plugins/* ${DIST_DIR}/docs/index/* ${DIST_DIR}/docs/javascript/* ${DIST_DIR}/docs/search/* ${DIST_DIR}/docs/styles/*"
+       includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery-*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/images/* ${DIST_DIR}/examples/jquery-ui/js/* ${DIST_DIR}/docs/* ${DIST_DIR}/docs/files/* ${DIST_DIR}/docs/files/examples/* ${DIST_DIR}/docs/files/images/* ${DIST_DIR}/docs/files/plugins/* ${DIST_DIR}/docs/index/* ${DIST_DIR}/docs/javascript/* ${DIST_DIR}/docs/search/* ${DIST_DIR}/docs/styles/*"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.tar.gz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"/>
@@ -249,30 +269,6 @@
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.tar.bz2" compression="bzip2">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"/>
       </tar>
-  </target>
-
-  <target name="tests" depends="dist" description="Create test suite for distribution.">
-    <echo message="Creating test suite for distribtion" />
-        <mkdir dir="${DIST_DIR}/tests" />
-        <copy todir="${DIST_DIR}/tests">
-          <fileset dir="tests" />
-        </copy>
-        <copy todir="${DIST_DIR}/tests/images">
-          <fileset dir="tests/images" includes="*" />
-        </copy>
-        <replaceregexp match="\.\./src/" replace="\.\./" flags="g">
-          <fileset dir="${DIST_DIR}/tests">
-            <include name="*.php" />
-            <include name="*.html" />
-          </fileset>
-        </replaceregexp>
-        <replaceregexp match="jqplot\.(\w+)\.js" replace="jqplot.\1.min.js" flags="g">
-          <fileset dir="${DIST_DIR}/tests" includes="*.php" />
-        </replaceregexp>
-        <replaceregexp match="jquery.jqplot.js" replace="jquery.jqplot.min.js">
-          <fileset dir="${DIST_DIR}/tests" includes="opener.php" />
-        </replaceregexp>
-    <echo message="Test Suite Finished" />
   </target>
 
   <target name="docs" depends="dist" description="Create documentation for distribution.">
@@ -321,8 +317,8 @@
         <delete dir="${WEB_DIR}" />
     </target>
 
-    <target name="all" depends="clean, build, dist, min, tests, docs, compress, web" description="Clean then build everything (distribution, minify, tests and docs).">
-        <echo message="Build complete distribution, docs and tests" />
+    <target name="all" depends="clean, build, dist" description="Clean the build distributable files.">
+        <echo message="clean then build distributable files" />
     </target>
 
 </project>

@@ -1,7 +1,7 @@
 # use glob syntax.
 syntax: glob
 
-NDdata*
+NDdata/Data*
 .DS_Store*
 *.pyc
 *~
@@ -11,7 +11,7 @@ myconfig.xml
 build
 dist
 web
-extras
+# extras
 images
 style.css
 tests
