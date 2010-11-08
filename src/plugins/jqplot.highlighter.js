@@ -251,10 +251,7 @@
                         str = xstr;
                         break;
                     case 'y':
-                        str = '';
-                        for (var i=0; i<ystrs.length; i++) {
-                            str += ystrs[i] + hl.tooltipSeparator;
-                        }
+                        str = ystrs.join(hl.tooltipSeparator);
                         break;
                     default: // same as 'xy'
                         str = xstr;

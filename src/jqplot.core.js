@@ -1370,7 +1370,6 @@
             // default options that will be applied to all series.
             // see <Series> for series options.
             seriesDefaults: {},
-            gridPadding: {top:10, right:10, bottom:23, left:10},
             series:[]
         };
         // prop: series
@@ -1398,6 +1397,7 @@
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
         this._gridPadding = {top:null, right:null, bottom:null, left:null};
+        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10},
         // a shortcut for axis syncTicks options.  Not implemented yet.
         this.syncXTicks = true;
         // a shortcut for axis syncTicks options.  Not implemented yet.
@@ -2188,12 +2188,15 @@
                 // end of gridPadding adjustments.
                 var arr = ['top', 'bottom', 'left', 'right'];
                 for (var n in arr) {
+                    console.log(arr[n], this._gridPadding[arr[n]]);
                     if (this._gridPadding[arr[n]] == null && gridPadding[arr[n]] > 0) {
                         this._gridPadding[arr[n]] = gridPadding[arr[n]];
                     }
                     else if (this._gridPadding[arr[n]] == null) {
-                        this._gridPadding[arr[n]] == this.defaults.gridPadding[arr[n]];
+                        console.log('is null');
+                        this._gridPadding[arr[n]] = this._defaultGridPadding[arr[n]];
                     }
+                    console.log(arr[n], this._gridPadding[arr[n]]);
                 }
                 
                 var legendPadding = (this.legend.placement == 'outsideGrid') ? {top:this.title.getHeight(), left: 0, right: 0, bottom: 0} : this._gridPadding;
