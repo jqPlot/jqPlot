@@ -139,10 +139,6 @@
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
         </copy>
         
-        <copy todir="${DIST_DIR}/images">
-          <fileset dir="./images" includes="*.jpg *.png *.gif" />
-        </copy>
-        
         <echo message="jqPlot built." />
     </target>
 
@@ -317,8 +313,8 @@
         <delete dir="${WEB_DIR}" />
     </target>
 
-    <target name="all" depends="clean, build, dist" description="Clean the build distributable files.">
-        <echo message="clean then build distributable files" />
+    <target name="all" depends="clean, build, dist, min, docs" description="Clean the build distributable files and documentation.">
+        <echo message="clean then build distributable files and documentation." />
     </target>
 
 </project>
