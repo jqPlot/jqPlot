@@ -1,0 +1,111 @@
+Format: 1.4
+
+
+# You can add a title and sub-title to your menu like this:
+# Title: [project name]
+# SubTitle: [subtitle]
+
+Footer: Copyright (c) 2009 - 2010 Chris Leonello
+Timestamp: Updated month day, year
+#   m     - One or two digit month.  January is "1"
+#   mm    - Always two digit month.  January is "01"
+#   mon   - Short month word.  January is "Jan"
+#   month - Long month word.  January is "January"
+#   d     - One or two digit day.  1 is "1"
+#   dd    - Always two digit day.  1 is "01"
+#   day   - Day with letter extension.  1 is "1st"
+#   yy    - Two digit year.  2006 is "06"
+#   yyyy  - Four digit year.  2006 is "2006"
+#   year  - Four digit year.  2006 is "2006"
+
+
+# --------------------------------------------------------------------------
+# 
+# Cut and paste the lines below to change the order in which your files
+# appear on the menu.  Don't worry about adding or removing files, Natural
+# Docs will take care of that.
+# 
+# You can further organize the menu by grouping the entries.  Add a
+# "Group: [name] {" line to start a group, and add a "}" to end it.
+# 
+# You can add text and web links to the menu by adding "Text: [text]" and
+# "Link: [name] ([URL])" lines, respectively.
+# 
+# The formatting and comments are auto-generated, so don't worry about
+# neatness when editing the file.  Natural Docs will clean it up the next
+# time it is run.  When working with groups, just deal with the braces and
+# forget about the indentation and comments.
+# 
+# --------------------------------------------------------------------------
+
+
+Group: Usage and Options  {
+
+   File: Usage  (no auto-title, usage.txt)
+   File: jqPlot Options  (no auto-title, jqPlotOptions.txt)
+   File: Options Tutorial  (no auto-title, optionsTutorial.txt)
+   File: jqPlot CSS Customization  (jqPlotCssStyling.txt)
+   File: Change Log  (changes.txt)
+   Link: Examples  (../../tests/)
+   }  # Group: Usage and Options
+
+Group: API Documentation  {
+
+   File: jqPlot Charts  (no auto-title, jqplot.core.js)
+
+   Group: Core Renderers  {
+
+      File: AxisTickRenderer  (no auto-title, jqplot.axisTickRenderer.js)
+      File: CanvasGridRenderer  (no auto-title, jqplot.canvasGridRenderer.js)
+      File: DivTitleRenderer  (no auto-title, jqplot.divTitleRenderer.js)
+      File: LinearAxisRenderer  (no auto-title, jqplot.linearAxisRenderer.js)
+      File: MarkerRenderer  (no auto-title, jqplot.markerRenderer.js)
+      File: ShapeRenderer  (no auto-title, jqplot.shapeRenderer.js)
+      File: ShadowRenderer  (no auto-title, jqplot.shadowRenderer.js)
+      File: Line Renderer  (no auto-title, jqplot.lineRenderer.js)
+      File: AxisLabelRenderer  (jqplot.axisLabelRenderer.js)
+      File: ThemeEngine  (jqplot.themeEngine.js)
+      }  # Group: Core Renderers
+
+   Group: Plugins  {
+
+      File: BarRenderer  (no auto-title, plugins/jqplot.barRenderer.js)
+      File: BezierCurveRenderer  (no auto-title, plugins/jqplot.BezierCurveRenderer.js)
+      File: BlockRenderer  (no auto-title, plugins/jqplot.blockRenderer.js)
+      File: BubbleRenderer  (plugins/jqplot.bubbleRenderer.js)
+      File: CanvasAxisLabelRenderer  (no auto-title, plugins/jqplot.canvasAxisLabelRenderer.js)
+      File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
+      File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
+      File: ciParser  (plugins/jqplot.ciParser.js)
+      File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
+      File: DateAxisRenderer  (no auto-title, plugins/jqplot.dateAxisRenderer.js)
+      File: DonutRenderer  (plugins/jqplot.donutRenderer.js)
+      File: Dragable  (no auto-title, plugins/jqplot.dragable.js)
+      File: EnhancedLegendRenderer  (no auto-title, plugins/jqplot.enhancedLegendRenderer.js)
+      File: FunnelRenderer  (plugins/jqplot.funnelRenderer.js)
+      File: Highlighter  (no auto-title, plugins/jqplot.highlighter.js)
+      File: LogAxisRenderer  (no auto-title, plugins/jqplot.logAxisRenderer.js)
+      File: MekkoAxisRenderer  (no auto-title, plugins/jqplot.mekkoAxisRenderer.js)
+      File: MekkoRenderer  (no auto-title, plugins/jqplot.mekkoRenderer.js)
+      File: MeterGaugeRenderer  (plugins/jqplot.meterGaugeRenderer.js)
+      File: OHLCRenderer  (no auto-title, plugins/jqplot.ohlcRenderer.js)
+      File: PieRenderer  (no auto-title, plugins/jqplot.pieRenderer.js)
+      File: PointLabels  (no auto-title, plugins/jqplot.pointLabels.js)
+      File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
+      }  # Group: Plugins
+
+   }  # Group: API Documentation
+
+File: GPL License  (no auto-title, gpl-2.0.txt)
+File: MIT License  (no auto-title, MIT-LICENSE.txt)
+
+Group: Index  {
+
+   Index: Everything
+   Class Index: Classes
+   Property Index: Properties
+   Function Index: Functions
+   Hook Index: Hooks
+   File Index: Files
+   }  # Group: Index
+
