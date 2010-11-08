@@ -18,7 +18,17 @@
 (function($) {
     /**
      * Class: $.jqplot.ciParser
-     * Data Renderer which converts a custom JSON data object into jqPlot data format.
+     * Data Renderer function which converts a custom JSON data object into jqPlot data format.
+     * Set this as a callable on the jqplot dataRenderer plot option:
+     * 
+     * > plot = $.jqplot('mychart', [data], { dataRenderer: $.jqplot.ciParser, ... });
+     * 
+     * Where data is an object in JSON format or a JSON encoded string conforming to the
+     * City Index API spec.
+     * 
+     * Note that calling the renderer function is handled internally by jqPlot.  The
+     * user does not have to call the function.  The parameters described below will
+     * automatically be passed to the ciParser function.
      * 
      * Parameters:
      * data - JSON encoded string or object.
