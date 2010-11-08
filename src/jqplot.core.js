@@ -1397,7 +1397,7 @@
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
-        this._gridPadding = {top:10, right:10, bottom:10, left:10};
+        this._gridPadding = {top:null, right:null, bottom:null, left:null};
         // a shortcut for axis syncTicks options.  Not implemented yet.
         this.syncXTicks = true;
         // a shortcut for axis syncTicks options.  Not implemented yet.
@@ -2188,8 +2188,11 @@
                 // end of gridPadding adjustments.
                 var arr = ['top', 'bottom', 'left', 'right'];
                 for (var n in arr) {
-                    if (gridPadding[arr[n]]) {
+                    if (this._gridPadding[arr[n]] == null && gridPadding[arr[n]] > 0) {
                         this._gridPadding[arr[n]] = gridPadding[arr[n]];
+                    }
+                    else if (this._gridPadding[arr[n]] == null) {
+                        this._gridPadding[arr[n]] == this.defaults.gridPadding[arr[n]];
                     }
                 }
                 
