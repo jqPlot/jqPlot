@@ -44,7 +44,7 @@
  * 
  * About: Introduction
  * 
- * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.1 is included in the distribution.  
+ * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.2 is included in the distribution.  
  * To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally 
  * the excanvas script for IE support in your web page:
  * 
@@ -122,12 +122,12 @@
         var _data, _options;
         
         if (options == null) {
-            if (data instanceof Array) {
+            if (jQuery.isArray(data)) {
                 _data = data;
                 _options = null;   
             }
             
-            else if (data.constructor == Object) {
+            else if (typeof(data) === 'object') {
                 _data = null;
                 _options = data;
             }
@@ -1569,7 +1569,7 @@
                 throw "Canvas dimension not set";
             }
             
-            if (options.dataRenderer && typeof(options.dataRenderer) == "function") {
+            if (options.dataRenderer && jQuery.isFunction(options.dataRenderer)) {
                 if (options.dataRendererOptions) {
                     this.dataRendererOptions = options.dataRendererOptions;
                 }
@@ -1584,7 +1584,7 @@
                 };
             }
             
-            if (data.constructor != Array || data.length == 0 || data[0].constructor != Array || data[0].length == 0) {
+            if (jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
                 throw{
                     name: "DataError",
                     message: "No data to plot."
@@ -1667,12 +1667,12 @@
             if (ax === true) {
                 ax = this.axes;
             }
-            if (ax.constructor === Array) {
+            if (jQuery.isArray(ax)) {
                 for (var i = 0; i < ax.length; i++) {
                     this.axes[ax[i]].resetScale();
                 }
             }
-            else if (ax.constructor === Object) {
+            else if (typeof(ax) === 'object') {
                 for (var name in ax) {
                     this.axes[name].resetScale();
                 }
@@ -1939,7 +1939,7 @@
                 var temp = [];
                 var i;
                 dir = dir || 'vertical';
-                if (!(data[0] instanceof Array)) {
+                if (!jQuery.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
@@ -2702,8 +2702,8 @@
         this.drawSeries = function(options, idx){
             var i, series, ctx;
             // if only one argument passed in and it is a number, use it ad idx.
-            idx = (typeof(options) == "number" && idx == null) ? options : idx;
-            options = (typeof(options) == "object") ? options : {};
+            idx = (typeof(options) === "number" && idx == null) ? options : idx;
+            options = (typeof(options) === "object") ? options : {};
             // draw specified series
             if (idx != undefined) {
                 series = this.series[idx];
@@ -2846,7 +2846,7 @@
     // conpute a highlight color or array of highlight colors from given colors.
     $.jqplot.computeHighlightColors  = function(colors) {
         var ret;
-        if (typeof(colors) == "array") {
+        if (jQuery.isArray(colors)) {
             ret = [];
             for (var i=0; i<colors.length; i++){
                 var rgba = $.jqplot.getColorComponents(colors[i]);

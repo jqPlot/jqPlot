@@ -15,8 +15,15 @@
     <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.2.jar" />
     <loadfile description="Version to build" property="version" srcfile="version.txt" />
     <loadfile description="Copyright and license" property="copyright" srcfile="copyright.txt" />
-    <property description="NaturalDocs" name="ND" value="extras/NaturalDocs/NaturalDocs" />
-    
+    <condition property="ND" value="${basedir}/extras/NaturalDocs/NaturalDocs.bat" else="${basedir}/extras/NaturalDocs/NaturalDocs">
+      <and>
+        <os family="windows" />
+      </and>
+    </condition>
+    <!-->
+    <property description="NaturalDocs" name="ND" value="${basedir}/extras/NaturalDocs/NaturalDocs" />
+    <property description="NaturalDocs" value="${basedir}/extras/NaturalDocs/NaturalDocs.bat" dir="${basedir}/extras/NaturalDocs">
+    -->
     <exec executable="hg" outputproperty="HG_ID">
       <arg value="id"/>
       <arg value="-n"/>
@@ -274,7 +281,7 @@
         <mkdir dir="${DIST_DIR}/docs" />
         <!-- rename files we don't used for docs -->
         <move file="${BUILD_DIR}/jquery.jqplot.js" tofile="${BUILD_DIR}/jquery.jqplot.js.bak"/>
-        <exec executable="${ND}">
+        <exec executable="${ND}" dir="${basedir}/extras/NaturalDocs/" >
           <arg value="-r" />
           <arg value="-i" />
           <arg path="${BUILD_DIR}" />
