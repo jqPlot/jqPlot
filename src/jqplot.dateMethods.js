@@ -560,8 +560,4 @@
             }
         }        
     ];
-    
-    if ($.jqplot.config.debug) {
-        $.date = Date.create;
-    }
 })(jQuery);
