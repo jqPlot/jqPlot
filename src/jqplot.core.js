@@ -2188,15 +2188,12 @@
                 // end of gridPadding adjustments.
                 var arr = ['top', 'bottom', 'left', 'right'];
                 for (var n in arr) {
-                    console.log(arr[n], this._gridPadding[arr[n]]);
                     if (this._gridPadding[arr[n]] == null && gridPadding[arr[n]] > 0) {
                         this._gridPadding[arr[n]] = gridPadding[arr[n]];
                     }
                     else if (this._gridPadding[arr[n]] == null) {
-                        console.log('is null');
                         this._gridPadding[arr[n]] = this._defaultGridPadding[arr[n]];
                     }
-                    console.log(arr[n], this._gridPadding[arr[n]]);
                 }
                 
                 var legendPadding = (this.legend.placement == 'outsideGrid') ? {top:this.title.getHeight(), left: 0, right: 0, bottom: 0} : this._gridPadding;
