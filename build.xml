@@ -274,7 +274,7 @@
       </tar>
   </target>
 
-  <target name="docs" depends="dist" description="Create documentation for distribution.">
+  <target name="docs" depends="dist, min" description="Create documentation for distribution.">
     <echo message="Creating documentation" />
       <!-- don't want to process jquery itself -->
         <move file="${BUILD_DIR}/jquery-1.4.2.js" tofile="${BUILD_DIR}/jquery-1.4.2.js.bak" />
