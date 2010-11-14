@@ -54,6 +54,8 @@
         this._right = w - this._offsets.right;
         this._width = this._right - this._left;
         this._height = this._bottom - this._top;
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     
@@ -92,7 +94,7 @@
                                     }
                                     
                                     // draw the mark
-                                    if (t.showMark && t.mark) {
+	                                    if (t.showMark && t.mark) {
                                         s = t.markSize;
                                         m = t.mark;
                                         var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -232,7 +234,10 @@
                             }
                         }
                     }
+                    t = null;
                 }
+                axis = null;
+                ticks = null;
             }
             // Now draw grid lines for additional y axes
             ax = ['y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
@@ -283,8 +288,12 @@
                             // draw the line
                             drawLine(b, pos, e, pos, {strokeStyle:axis.borderColor});
                         }
+                        t = null;
                     }
+                    t0 = null;
                 }
+                axis = null;
+                ticks =  null;
             }
             
             ctx.restore();
@@ -319,7 +328,8 @@
         // ctx.strokeStyle = this.borderColor;
         // ctx.strokeRect(this._left, this._top, this._width, this._height);
         
-    
         ctx.restore();
+        ctx =  null;
+        axes = null;
     };
 })(jQuery); 

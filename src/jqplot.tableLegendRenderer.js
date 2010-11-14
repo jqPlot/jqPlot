@@ -28,11 +28,13 @@
         
     $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad, reverse) {
         var rs = (pad) ? this.rowSpacing : '0';
+        var tr,
+        	elem;
         if (reverse){
-            var tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+            tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
         }
         else{
-            var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+            tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
         }
         if (this.showSwatches) {
             $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
@@ -40,7 +42,7 @@
             '</div></td>').appendTo(tr);
         }
         if (this.showLabels) {
-            var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+            elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
             elem.appendTo(tr);
             if (this.escapeHtml) {
                 elem.text(label);
@@ -49,6 +51,8 @@
                 elem.html(label);
             }
         }
+        tr = null;
+        elem = null;
     };
     
     // called with scope of legend
@@ -97,6 +101,7 @@
                             pad = true;
                         } 
                     }
+                    lt = null;
                 }
             }
         }

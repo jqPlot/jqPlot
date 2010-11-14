@@ -82,8 +82,9 @@
             // create a _label object.
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
+            var elem;
             if (this._label.show) {
-                var elem = this._label.draw(ctx);
+                elem = this._label.draw(ctx);
                 elem.appendTo(this._elem);
             }
     
@@ -91,10 +92,11 @@
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
                 if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    var elem = tick.draw(ctx);
+                    elem = tick.draw(ctx);
                     elem.appendTo(this._elem);
                 }
             }
+            elem = null;
         }
         return this._elem;
     };

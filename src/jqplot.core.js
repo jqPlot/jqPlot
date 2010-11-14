@@ -195,7 +195,7 @@
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
     // canvas related tests taken from modernizer:
-    // Copyright © 2009–2010 Faruk Ates.
+    // Copyright Â© 2009Ã±2010 Faruk Ates.
     // http://www.modernizr.com
     
     $.jqplot.support_canvas = function() {
@@ -270,6 +270,8 @@
         this._elem.addClass(klass);
         this._elem.css(cssopts);
         this._elem.attr(attrib);
+        // avoid memory leak;
+        elem = null;
         return this._elem;
     };
     
@@ -1283,6 +1285,8 @@
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     

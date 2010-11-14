@@ -55,6 +55,8 @@
             var script = document.createElement("script");
             script.src = pp;
             document.getElementsByTagName("head")[0].appendChild(script);
+            // avoid memory leak
+            script = null;
         }
     }
     
