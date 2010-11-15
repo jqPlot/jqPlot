@@ -23,7 +23,7 @@ Basic Usage Instructions:
 
 jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.2 is included in 
 the distribution.  To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and 
-optionally the excanvas script for IE support in your web page...
+optionally the excanvas script for IE support (not required for IE 9) in your web page...
 
 > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
 > <script language="javascript" type="text/javascript" src="jquery-1.4.2.min.js"></script>
