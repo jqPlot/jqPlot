@@ -160,7 +160,7 @@
         this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.highlighter.highlightCanvas.setContext();
+        this.plugins.highlighter.highlightCanvas.setContext();
         
         var p = this.plugins.highlighter;
         p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
@@ -332,6 +332,7 @@
         else {
             elem.show();
         }
+        elem = null;
         
     }
     
@@ -352,6 +353,7 @@
                     plot.restorePreviousSeriesOrder();
                 }
                hl.isHighlighting = false;
+        	  ctx = null;
             
             }
             if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
