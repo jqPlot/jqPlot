@@ -2072,6 +2072,10 @@
             var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
             this.target.trigger('jqplotPreReplot');
             if (clear) {
+            	// Couple of posts on Stack Overflow indicate that empty() doesn't
+	            // always cear up the dom and release memory.  Sometimes setting
+	            // innerHTML property to null is needed.  Particularly on IE, may 
+	            // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
             if (resetAxes) {
@@ -2097,6 +2101,10 @@
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
+            	// Couple of posts on Stack Overflow indicate that empty() doesn't
+	            // always cear up the dom and release memory.  Sometimes setting
+	            // innerHTML property to null is needed.  Particularly on IE, may 
+	            // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
              for (var ax in this.axes) {

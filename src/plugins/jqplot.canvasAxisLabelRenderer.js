@@ -172,6 +172,7 @@
         this._elem = $(domelem);
         this._elem.addClass('jqplot-'+this.axis+'-label');
         
+        domelem = null;
         return this._elem;
     };
     
@@ -180,8 +181,7 @@
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
+        this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     
 })(jQuery);

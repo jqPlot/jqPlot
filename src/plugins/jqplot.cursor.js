@@ -175,6 +175,7 @@
                 else {
                     var ctx = this.plugins.cursor.zoomCanvas._ctx;
                     ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+                    ctx = null;
                 }
                 this.plugins.cursor._zoom.isZoomed = false;
                 this.target.trigger('jqplotResetZoom', [this, this.plugins.cursor]);
@@ -197,14 +198,14 @@
         // if (c.zoom) {
         c.zoomCanvas = new $.jqplot.GenericCanvas();
         this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions));
-        var zctx = c.zoomCanvas.setContext();
+        c.zoomCanvas.setContext();
         // }
         c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
         c.zoomCanvas._elem.before(c._tooltipElem);
         if (c.showVerticalLine || c.showHorizontalLine) {
             c.cursorCanvas = new $.jqplot.GenericCanvas();
             this.eventCanvas._elem.before(c.cursorCanvas.createElement(this._gridPadding, 'jqplot-cursor-canvas', this._plotDimensions));
-            var zctx = c.cursorCanvas.setContext();
+            c.cursorCanvas.setContext();
         }
 
         // if we are showing the positions in unit coordinates, and no axes groups
@@ -277,6 +278,7 @@
         else {
             var ctx = cursor.zoomCanvas._ctx;
             ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+            ctx = null;
         }
         plot.target.trigger('jqplotResetZoom', [plot, cursor]);
     };
@@ -337,6 +339,7 @@
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
                 plot.redraw();
                 c._zoom.isZoomed = true;
+                ctx = null;
             }
             plot.target.trigger('jqplotZoom', [gridpos, datapos, plot, cursor]);
         }
@@ -456,6 +459,7 @@
                 }
             }        
         }
+        ctx = null;
     }
         
     function getIntersectingPoints(plot, x, y) {
@@ -528,8 +532,9 @@
                 break;
         }
             
-        c._tooltipElem.css('left', x);
-        c._tooltipElem.css('top', y);
+        elem.css('left', x);
+        elem.css('top', y);
+	    elem = null;
     }
     
     function positionTooltip(plot) { 
@@ -586,6 +591,7 @@
                 elem.css({right:a, bottom:b});
                 break;
         }
+        elem = null;
     }
     
     function handleClick (ev, gridpos, datapos, neighbor, plot) {
@@ -639,6 +645,7 @@
             if (c.showVerticalLine || c.showHorizontalLine) {
                 var ctx = c.cursorCanvas._ctx;
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+                ctx = null;
             }
             if (c.showCursorLegend) {
                 var cells = $(plot.targetId + ' td.jqplot-cursor-legend-label');
@@ -695,6 +702,7 @@
                 moveLine(gridpos, plot);
             }
         }
+        ctx = null;
     }
             
     function getEventPosition(ev) {
@@ -755,6 +763,7 @@
                 sel().collapse();
             }
             drawZoomBox.call(c);
+            ctx = null;
         }
     }
     
@@ -778,6 +787,7 @@
             if (!c.zoomProxy) {
                 var ctx = c.zoomCanvas._ctx;
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+                ctx = null;
             }
             if (c.constrainZoomTo == 'x') {
                 c._zoom.start = [gridpos.x, 0];
@@ -886,6 +896,7 @@
         ctx.clearRect(l, t, w, h);
         // IE won't show transparent fill rect, so stroke a rect also.
         ctx.strokeRect(l,t,w,h);
+        ctx = null;
     }
     
     $.jqplot.CursorLegendRenderer = function(options) {
@@ -945,6 +956,8 @@
             else {
                 td.html(label);
             }
+            tr = null;
+            td = null;
         }
         return this._elem;
     };
