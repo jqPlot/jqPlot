@@ -359,6 +359,10 @@
         var sa = this.startAngle / 180 * Math.PI;
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
+        // Fixes issue #272.  Thanks hugwijst!
+        // reset slice angles array.
+        this._sliceAngles = [];
+        
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
