@@ -2353,7 +2353,7 @@
                     case $.jqplot.BarRenderer:
                         x = gridpos.x;
                         y = gridpos.y;
-                        for (j=s.gridData.length-1; j>=0; j--) {
+                        for (j=0; j<s._barPoints.length; j++) {
                             points = s._barPoints[j];
                             if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
                                 return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
