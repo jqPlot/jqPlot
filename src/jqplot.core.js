@@ -1508,6 +1508,7 @@
         // sets the plot target, checks data and applies user
         // options to plot.
         this.init = function(target, data, options) {
+            options = options || {};
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
             }
