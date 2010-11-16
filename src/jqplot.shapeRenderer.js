@@ -113,7 +113,7 @@
                 return;
             }
         }
-        else {
+        else if (points && points.length){
             var move = true;
             for (var i=0; i<points.length; i++) {
                 // skip to the first non-null point and move to it.
