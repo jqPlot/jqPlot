@@ -2,10 +2,10 @@
 <head>
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="examples.css" />
-  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.min.js"></script><![endif]-->
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.2.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.4.min.js"></script>
 
   <!-- END: load jquery -->
   
@@ -101,7 +101,9 @@ line3 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp Marketing Gimmick', 9]
 	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
 	      tickRenderer: $.jqplot.CanvasAxisTickRenderer,
 	      tickOptions: {
-          angle: -30
+          angle: -30,
+          fontFamily: 'Times',
+          fontSize: '12pt'
 	      }
 	      
 	    },
