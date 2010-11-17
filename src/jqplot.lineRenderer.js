@@ -79,14 +79,15 @@
             if (this.highlighter) {
                 this.highlighter.show = false;
             }
-            plot.postInitHooks.addOnce(postInit);
-            plot.postDrawHooks.addOnce(postPlotDraw);
-            plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
-            plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
-            plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
-            plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
-            plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
         }
+        plot.plugins.lineRenderer = {};
+        plot.postInitHooks.addOnce(postInit);
+        plot.postDrawHooks.addOnce(postPlotDraw);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
 
     };
     
@@ -374,11 +375,11 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
-        this.plugins.lineRenderer = {highlightedSeriesIndex:null};
+        this.plugins.lineRenderer.highlightedSeriesIndex = null;
         this.plugins.lineRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.lineRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-lineRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.lineRenderer.highlightCanvas.setContext();
+        this.plugins.lineRenderer.highlightCanvas.setContext();
     } 
     
     function highlight (plot, sidx, pidx, points) {
