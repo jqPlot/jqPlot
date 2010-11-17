@@ -75,19 +75,22 @@
             if (!this.highlightColor) {
                 this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
             }
-            // turn off traditional highlighter
+            // turn off (disable) the highlighter plugin
             if (this.highlighter) {
                 this.highlighter.show = false;
             }
         }
-        plot.plugins.lineRenderer = {};
-        plot.postInitHooks.addOnce(postInit);
-        plot.postDrawHooks.addOnce(postPlotDraw);
-        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
-        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
-        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
-        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
-        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+        
+        if (!this.isTrendline) {
+            plot.plugins.lineRenderer = {};
+            plot.postInitHooks.addOnce(postInit);
+            plot.postDrawHooks.addOnce(postPlotDraw);
+            plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+            plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+            plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+            plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+            plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+        }
 
     };
     
