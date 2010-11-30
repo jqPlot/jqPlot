@@ -49,7 +49,7 @@
  * the excanvas script for IE support in your web page:
  * 
  * > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
- * > <script language="javascript" type="text/javascript" src="jquery-1.4.2.min.js"></script>
+ * > <script language="javascript" type="text/javascript" src="jquery-latest.min.js"></script>
  * > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
  * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
  * 

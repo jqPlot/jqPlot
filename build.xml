@@ -320,7 +320,7 @@
         <delete dir="${WEB_DIR}" />
     </target>
 
-    <target name="everything" depends="all, docs" description="Clean and build distributable files and documentation.">
+    <target name="everything" depends="all, docs, compress" description="Clean and build distributable files and documentation.">
         <echo message="clean then build distributable files and documentation." />
     </target>
 
