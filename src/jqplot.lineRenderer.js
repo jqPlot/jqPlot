@@ -26,7 +26,6 @@
     
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
-        console.log('plot is: ', plot);
         options = options || {};
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
@@ -82,7 +81,7 @@
             }
         }
         
-        if (!this.isTrendline) {
+        if (!this.isTrendline && plot) {
             plot.plugins.lineRenderer = {};
             plot.postInitHooks.addOnce(postInit);
             plot.postDrawHooks.addOnce(postPlotDraw);

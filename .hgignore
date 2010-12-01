@@ -12,15 +12,14 @@ build
 dist
 web
 # extras
-images
 style.css
 tests
-examples/jquery-ui*
 examples/bug*
 examples/_*
 
 
 
 # switch to regexp syntax.
-# syntax: regexp
+syntax: regexp
 # ^\.pc/
+^images

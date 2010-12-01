@@ -26,7 +26,7 @@ the distribution.  To use jqPlot include jQuery, the jqPlot jQuery plugin, the j
 optionally the excanvas script to support IE version prior to IE 9 in your web page:
 
 > <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
-> <script language="javascript" type="text/javascript" src="jquery-latest.min.js"></script>
+> <script language="javascript" type="text/javascript" src="jquery-1.4.4.min.js"></script>
 > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
 > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
 

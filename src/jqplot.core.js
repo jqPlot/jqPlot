@@ -49,7 +49,7 @@
  * the excanvas script for IE support in your web page:
  * 
  * > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
- * > <script language="javascript" type="text/javascript" src="jquery-latest.min.js"></script>
+ * > <script language="javascript" type="text/javascript" src="jquery-1.4.4.min.js"></script>
  * > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
  * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
  * 
@@ -1549,7 +1549,7 @@
                 this.target.css('height', h+'px');
             }
             else {
-                this._height = this.target.height();
+                this._height = h = this.target.height();
             }
             if (!this.target.width()) {
                 var w;
@@ -1566,7 +1566,7 @@
                 this.target.css('width', w+'px');
             }
             else {
-                this._width = this.target.width();
+                this._width = w = this.target.width();
             }
             
             this._plotDimensions.height = this._height;
