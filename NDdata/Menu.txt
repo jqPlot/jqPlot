@@ -65,6 +65,7 @@ Group: API Documentation  {
       File: Line Renderer  (no auto-title, jqplot.lineRenderer.js)
       File: AxisLabelRenderer  (jqplot.axisLabelRenderer.js)
       File: ThemeEngine  (jqplot.themeEngine.js)
+      File: jquery-latest.js  (jquery-latest.js)
       }  # Group: Core Renderers
 
    Group: Plugins  {
@@ -107,5 +108,6 @@ Group: Index  {
    Function Index: Functions
    Hook Index: Hooks
    File Index: Files
+   Variable Index: Variables
    }  # Group: Index
 
