@@ -102,6 +102,12 @@
         // prop; tooltipSeparator
         // String to use to separate x and y axes in tooltip.
         this.tooltipSeparator = ', ';
+        // prop; tooltipContentEditor
+        // Function used to edit/augment/replace the formatted tooltip contents.
+        // Called as str = tooltipContentEditor(str, seriesIndex, pointIndex)
+        // where str is the generated tooltip html and seriesIndex and pointIndex identify
+        // the data point being highlighted. Should return the html for the tooltip contents.
+        this.tooltipContentEditor = null;
         // prop: useAxesFormatters
         // Use the x and y axes formatters to format the text in the tooltip.
         this.useAxesFormatters = true;
@@ -277,6 +283,11 @@
             else if (hl.tooltipAxes == 'y') {
                 str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
             } 
+        }
+        if ($.isFunction(hl.tooltipContentEditor)) {
+            // args str, seriesIndex, pointIndex are essential so the hook can look up
+            // extra data for the point.
+            str = hl.tooltipContentEditor(str, neighbor.seriesIndex, neighbor.pointIndex, plot);
         }
         elem.html(str);
         var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
