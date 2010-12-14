@@ -314,6 +314,7 @@
     
     // called with scope of series
     $.jqplot.DonutRenderer.prototype.draw = function (ctx, gd, options, plot) {
+		console.log(gd);
         var i;
         var opts = (options != undefined) ? options : {};
         // offset and direction of offset due to legend placement
@@ -412,7 +413,7 @@
                 }
                 else if (this.dataLabels == 'value') {
                     fstr = this.dataLabelFormatString || '%d';
-                    label = $.jqplot.sprintf(fstr, gd[i][1]);
+                    label = $.jqplot.sprintf(fstr, this.data[i][1]);
                 }
                 else if (this.dataLabels == 'percent') {
                     fstr = this.dataLabelFormatString || '%d%%';
