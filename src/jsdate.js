@@ -6,7 +6,7 @@
  * @date #DATE#
  */
  
-(function() {
+(function($) {
 
 	/** 
 	 * @description
@@ -1425,18 +1425,7 @@
 		if(thing===null)return "[object Null]"; // special case
 		return Object.prototype.toString.call(thing);
 	}
+	
+	$.jsDate = jsDate;
 
-    
-    // Make sure window is defined for headless operations like 
-    // jsdoc-toolkit and some unit testing frameworks.
-    window = window || {};
-    
-    if (window.jQuery !== undefined) {
-    	window.jQuery.jsDate = jsDate;
-    }
-    
-    else {
-    	window.jsDate = jsDate;
-    }
-
-})();
+})(jQuery);
