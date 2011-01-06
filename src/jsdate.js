@@ -449,7 +449,7 @@
 	 */
 	 
 	jsDate.prototype.next = function(unit) {
-		unit = unit || 'day'
+		unit = unit || 'day';
 		return this.clone().add(1, unit);
 	};
 	
@@ -465,6 +465,7 @@
         switch ( arguments.length ) {
             case 0:
                 this.proxy = new Date();
+				break;
             case 1:
 				// other objects either won't have a _type property or,
 				// if they do, it shouldn't be set to "jsDate", so
@@ -1147,7 +1148,7 @@
 			s: 'Unix',
 			O: 'TimezoneOffset',
 			z: 'GmtOffset',
-			Z: 'TimezoneAbbr',
+			Z: 'TimezoneAbbr'
 		},
 		
 		shortcuts: {
@@ -1422,7 +1423,7 @@
 	// Thanks to Kangax, Christian Sciberras and Stack Overflow for this method.
 	//
 	function get_type(thing){
-		if(thing===null)return "[object Null]"; // special case
+		if(thing===null) return "[object Null]"; // special case
 		return Object.prototype.toString.call(thing);
 	}
 	

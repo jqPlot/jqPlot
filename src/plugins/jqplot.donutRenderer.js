@@ -314,7 +314,6 @@
     
     // called with scope of series
     $.jqplot.DonutRenderer.prototype.draw = function (ctx, gd, options, plot) {
-		console.log(gd);
         var i;
         var opts = (options != undefined) ? options : {};
         // offset and direction of offset due to legend placement
