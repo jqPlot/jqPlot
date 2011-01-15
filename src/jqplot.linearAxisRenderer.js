@@ -25,32 +25,7 @@
     // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
         $.extend(true, this, options);
-        var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
-                        db.min = d[j][1];
-                    }
-                    if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
-                        db.max = d[j][1];
-                    }
-                }              
-            }
-        }
+		this.resetDataBounds();
     };
     
     // called with scope of axis
