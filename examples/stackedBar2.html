@@ -25,7 +25,7 @@
       $.jqplot.config.enablePlugins = true;
 
 		
-var line1 = [6.75, 14, 10.75, 5.125, 10];
+var line1 = [6.75, 14, 10.75, 0, 10];
 var line2 = [4.88, 9.63, 7.25, 15.5, 11.75];
 
 var tickers = ['2008-03-01', '2008-04-01', '2008-05-01', '2008-06-01', '2008-07-01'];
@@ -44,6 +44,9 @@ var tickers = ['2008-03-01', '2008-04-01', '2008-05-01', '2008-06-01', '2008-07-
                     // barPadding: 6,
           // barMargin: 15,
           barWidth: 20
+				},
+				pointLabels: {
+					hideZeros: true
 				}
         // shadowAngle: 135
 			},
