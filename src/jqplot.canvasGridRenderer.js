@@ -69,7 +69,7 @@
         ctx.fillStyle = this.backgroundColor || this.background;
         ctx.fillRect(this._left, this._top, this._width, this._height);
         
-        if (this.drawGridlines) {
+        if (true) {
             ctx.save();
             ctx.lineJoin = 'miter';
             ctx.lineCap = 'butt';
@@ -89,12 +89,12 @@
                             switch (name) {
                                 case 'xaxis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._top, pos, this._bottom);
                                     }
                                     
                                     // draw the mark
-	                                    if (t.showMark && t.mark) {
+	                                if (t.showMark && t.mark) {
                                         s = t.markSize;
                                         m = t.mark;
                                         var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -126,7 +126,7 @@
                                     break;
                                 case 'yaxis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._right, pos, this._left, pos);
                                     }
                                     // draw the mark
@@ -161,7 +161,7 @@
                                     break;
                                 case 'x2axis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._bottom, pos, this._top);
                                     }
                                     // draw the mark
@@ -196,7 +196,7 @@
                                     break;
                                 case 'y2axis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._left, pos, this._right, pos);
                                     }
                                     // draw the mark

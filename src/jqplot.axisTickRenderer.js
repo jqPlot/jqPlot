@@ -73,6 +73,7 @@
         // css spec for the color attribute.
         this.textColor;
         this._elem;
+		this._breakTick = false;
         
         $.extend(true, this, options);
     };
@@ -119,6 +120,9 @@
         if (this.textColor) {
             this._elem.css('color', this.textColor);
         }
+		if (this._breakTick) {
+			this._elem.addClass('jqplot-breakTick');
+		}
         return this._elem;
     };
         

@@ -24,7 +24,27 @@
     
     // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
+		// prop: breakPoints
+		// EXPERIMENTAL!! Use at your own risk!
+		// Works only with linear axes and the default tick renderer.
+		// Array of [start, stop] points to create a broken axis.
+		// Broken axes have a "jump" in them, which is an immediate 
+		// transition from a smaller value to a larger value.
+		// Currently, axis ticks MUST be manually assigned if using breakPoints
+		// by using the axis ticks array option.
+		this.breakPoints = null;
+		// prop: breakTickLabel
+		// Label to use at the axis break if breakPoints are specified.
+		this.breakTickLabel = "&asymp;";
         $.extend(true, this, options);
+		if (this.breakPoints) {
+			if (!$.isArray(this.breakPoints)) {
+				this.breakPoints = null;
+			}
+			else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
+				this.breakPoints = null;
+			}
+		}
 		this.resetDataBounds();
     };
     
@@ -66,7 +86,7 @@
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
-                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
                     elem = tick.draw(ctx);
                     elem.appendTo(this._elem);
                 }
@@ -96,7 +116,7 @@
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
-                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
                     if (this.name == 'xaxis' || this.name == 'x2axis') {
                         temp = tick._elem.outerHeight(true);
                     }
@@ -165,14 +185,44 @@
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
                 if (ut.constructor == Array) {
-                    t.value = ut[0];
-                    t.label = ut[1];
+	                t.value = ut[0];
+					if (this.breakPoints) {
+						if (ut[0] == this.breakPoints[0]) {
+							t.label = this.breakTickLabel;
+							t._breakTick = true;
+							t.showGridline = false;
+							t.showMark = false;
+						}
+						else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
+							t.show = false;
+							t.showGridline = false;
+		                    t.label = ut[1];
+						}
+						else {
+		                    t.label = ut[1];
+						}
+					}
+					else {
+	                    t.label = ut[1];
+					}
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
                 
                 else {
-                    t.value = ut;
+	                t.value = ut;
+					if (this.breakPoints) {
+						if (ut == this.breakPoints[0]) {
+							t.label = this.breakTickLabel;
+							t._breakTick = true;
+							t.showGridline = false;
+							t.showMark = false;
+						}
+						else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
+							t.show = false;
+							t.showGridline = false;
+						}
+					}
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
                 }
@@ -492,31 +542,86 @@
         var unitlength = max - min;
         
         // point to unit and unit to point conversions references to Plot DOM element top left corner.
-        this.p2u = function(p){
-            return (p - offmin) * unitlength / pixellength + min;
-        };
+		if (this.breakPoints) {
+			unitlength = unitlength - this.breakPoints[1] + this.breakPoints[0];
+			
+	        this.p2u = function(p){
+	            return (p - offmin) * unitlength / pixellength + min;
+	        };
         
-        this.u2p = function(u){
-            return (u - min) * pixellength / unitlength + offmin;
-        };
+	        this.u2p = function(u){
+				if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+					u = this.breakPoints[0];
+				}
+				if (u <= this.breakPoints[0]) {
+	            	return (u - min) * pixellength / unitlength + offmin;
+				}
+				else {
+					return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength + offmin;
+				}
+	        };
                 
-        if (this.name == 'xaxis' || this.name == 'x2axis'){
-            this.series_u2p = function(u){
-                return (u - min) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + min;
-            };
-        }
+	        if (this.name.charAt(0) == 'x'){
+	            this.series_u2p = function(u){
+					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+						u = this.breakPoints[0];
+					}
+					if (u <= this.breakPoints[0]) {
+		            	return (u - min) * pixellength / unitlength;
+					}
+					else {
+						return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength;
+					}
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + min;
+	            };
+	        }
         
-        else {
-            this.series_u2p = function(u){
-                return (u - max) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + max;
-            };
-        }
+	        else {
+	            this.series_u2p = function(u){
+					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+						u = this.breakPoints[0];
+					}
+					if (u >= this.breakPoints[1]) {
+		            	return (u - max) * pixellength / unitlength;
+					}
+					else {
+						return (u + this.breakPoints[1] - this.breakPoints[0] - max) * pixellength / unitlength;
+					}
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + max;
+	            };
+	        }
+		}
+		else {
+	        this.p2u = function(p){
+	            return (p - offmin) * unitlength / pixellength + min;
+	        };
+        
+	        this.u2p = function(u){
+	            return (u - min) * pixellength / unitlength + offmin;
+	        };
+                
+	        if (this.name == 'xaxis' || this.name == 'x2axis'){
+	            this.series_u2p = function(u){
+	                return (u - min) * pixellength / unitlength;
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + min;
+	            };
+	        }
+        
+	        else {
+	            this.series_u2p = function(u){
+	                return (u - max) * pixellength / unitlength;
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + max;
+	            };
+	        }
+		}
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
