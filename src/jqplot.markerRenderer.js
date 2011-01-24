@@ -93,8 +93,6 @@
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawPlus = function(x, y, ctx, fill, options) {
@@ -110,8 +108,6 @@
         }
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawX = function(x, y, ctx, fill, options) {
@@ -127,8 +123,6 @@
         }
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawDash = function(x, y, ctx, fill, options) {
@@ -140,8 +134,14 @@
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
+    };
+    
+    $.jqplot.MarkerRenderer.prototype.drawLine = function(p1, p2, ctx, fill, options) {
+        var points = [p1, p2];
+        if (this.shadow) {
+            this.shadowRenderer.draw(ctx, points);
+        }
+        this.shapeRenderer.draw(ctx, points, options);
     };
     
     $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill, options) {
@@ -153,8 +153,6 @@
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill, options) {
@@ -165,8 +163,6 @@
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-        
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
@@ -207,6 +203,9 @@
                     break;
                 case 'dash':
                     this.drawDash(x,y,ctx, true, options);
+                    break;
+                case 'line':
+                    this.drawLine(x, y, ctx, false, options);
                     break;
                 default:
                     this.drawDiamond(x,y,ctx, false, options);
