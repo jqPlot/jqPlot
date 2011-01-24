@@ -41,6 +41,10 @@
 					switch (n) {
 						case 'line':
 							this.addLine(obj[n]);
+							break;
+						case 'horizontalLine':
+							this.addHorizontalLine(obj[n]);
+							break;
 					}
 				}	
 			}
@@ -86,15 +90,88 @@
 		$.extend(true, this.options, options);
 	};
 	
+	function HorizontalLine(options) {
+		this.type = 'horizontalLine';
+		this.options = {
+			name: null,
+			show: true,
+			lineWidth: 2,
+			lineCap: 'round',
+			color: '#666666',
+	        // prop: shadow
+	        // wether or not to draw a shadow on the line
+	        shadow: true,
+	        // prop: shadowAngle
+	        // Shadow angle in degrees
+	        shadowAngle: 45,
+	        // prop: shadowOffset
+	        // Shadow offset from line in pixels
+	        shadowOffset: 1,
+	        // prop: shadowDepth
+	        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
+	        shadowDepth: 3,
+	        // prop: shadowAlpha
+	        // Alpha channel transparency of shadow.  0 = transparent.
+	        shadowAlpha: '0.07',
+			xaxis: 'xaxis',
+			yaxis: 'yaxis',
+			y: null,
+			xmin: null,
+			xmax: null,
+			xOffset: '6px',	// number or string.  Number interpreted as units, string as pixels.
+			xminOffset: null,
+			xmaxOffset: null
+		};
+		$.extend(true, this.options, options);
+	};
+	
 	$.jqplot.CanvasOverlay.prototype.addLine = function(opts) {
 		var line = new Line(opts);
 		this.objects.push(line);
 		this.objectNames.push(line.options.name);
 	};
 	
+	$.jqplot.CanvasOverlay.prototype.addHorizontalLine = function(opts) {
+		var line = new HorizontalLine(opts);
+		this.objects.push(line);
+		this.objectNames.push(line.options.name);
+	};
+	
 	$.jqplot.CanvasOverlay.prototype.removeObject = function(idx) {
 		// check if integer, remove by index
+		if ($.type(idx) == 'number') {
+			this.objects.splice(idx, 1);
+			this.objectNames.splice(idx, 1);
+		}
 		// if string, remove by name
+		else {
+			var id = $.inArray(idx, this.objectNames);
+			if (id != -1) {
+				this.objects.splice(id, 1);
+				this.objectNames.splice(id, 1);
+			}
+		}
+	};
+	
+	$.jqplot.CanvasOverlay.prototype.getObject = function(idx) {
+		// check if integer, remove by index
+		if ($.type(idx) == 'number') {
+			return this.objects[idx];
+		}
+		// if string, remove by name
+		else {
+			var id = $.inArray(idx, this.objectNames);
+			if (id != -1) {
+				return this.objects[id];
+			}
+		}
+	};
+	
+	// Set get as alias for getObject.
+	$.jqplot.CanvasOverlay.prototype.get = $.jqplot.CanvasOverlay.prototype.getObject;
+	
+	$.jqplot.CanvasOverlay.prototype.clear = function(plot) {
+		this.canvas._ctx.clearRect(0,0,this.canvas.getWidth(), this.canvas.getHeight());
 	};
 	
 	$.jqplot.CanvasOverlay.prototype.draw = function(plot) {
@@ -107,6 +184,7 @@
 			this.canvas._ctx.clearRect(0,0,this.canvas.getWidth(), this.canvas.getHeight());
 			for (var i=0; i<objs.length; i++) {
 				obj = objs[i];
+				var opts = $.extend(true, {}, obj.options);
 				if (obj.options.show) {
 					// style and shadow properties should be set before
 					// every draw of marker renderer.
@@ -116,9 +194,51 @@
 							// style and shadow properties should be set before
 							// every draw of marker renderer.
 							mr.style = 'line';
+							opts.closePath = false;
 							start = [plot.axes[obj.options.xaxis].u2p(obj.options.start[0]), plot.axes[obj.options.yaxis].u2p(obj.options.start[1])];
 							stop = [plot.axes[obj.options.xaxis].u2p(obj.options.stop[0]), plot.axes[obj.options.yaxis].u2p(obj.options.stop[1])];
-							mr.draw(start, stop, this.canvas._ctx, obj.options);
+							mr.draw(start, stop, this.canvas._ctx, opts);
+							break;
+						case 'horizontalLine':
+							
+							// style and shadow properties should be set before
+							// every draw of marker renderer.
+							if (obj.options.y != null) {
+								mr.style = 'line';
+								opts.closePath = false;
+								var xaxis = plot.axes[obj.options.xaxis],
+									xstart,
+									xstop,
+									y = plot.axes[obj.options.yaxis].u2p(obj.options.y),
+									xminoff = obj.options.xminOffset || obj.options.xOffset,
+									xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
+								if (obj.options.xmin != null) {
+									xstart = xaxis.u2p(obj.options.xmin);
+								}
+								else if (xminoff != null) {
+									if ($.type(xminoff) == "number") {
+										xstart = xaxis.u2p(xaxis.min + xminoff);
+									}
+									else if ($.type(xminoff) == "string") {
+										xstart = xaxis.u2p(xaxis.min) + parseFloat(xminoff);
+									}
+								}
+								if (obj.options.xmax != null) {
+									xstop = xaxis.u2p(obj.options.xmax);
+								}
+								else if (xmaxoff != null) {
+									if ($.type(xmaxoff) == "number") {
+										xstop = xaxis.u2p(xaxis.max - xmaxoff);
+									}
+									else if ($.type(xmaxoff) == "string") {
+										xstop = xaxis.u2p(xaxis.max) - parseFloat(xmaxoff);
+									}
+								}
+								if (xstop != null && xstart != null) {
+									mr.draw([xstart, y], [xstop, y], this.canvas._ctx, opts);
+								}
+							}
+							break;
 					}
 				}
 			}
