@@ -84,14 +84,14 @@
 				objects: [
 					{horizontalLine: {
 						name: 'barney',
-						y: 4,
+						y: 14,
 						lineWidth: 6,
 						color: 'rgb(100, 55, 124)',
 						shadow: false
 					}},
 					{horizontalLine: {
 						name: 'fred',
-						y: 8,
+						y: 10,
 						lineWidth: 12,
 						xminOffset: '8px',
 						xmaxOffset: '29px',
@@ -100,9 +100,9 @@
 					}},
 					{horizontalLine: {
 						name: 'wilma',
-						y: 11,
+						y: 7,
 						lineWidth: 2,
-						xOffset: '44',
+						xOffset: '54',
 						color: 'rgb(133, 120, 24)',
 						shadow: false
 					}},
@@ -130,7 +130,13 @@
 		var co = plot1.plugins.canvasOverlay;
 		var line = co.get('barney');
 		line.options.y += 0.5;
-		co.draw(plot1);
+		if (line.options.y >= plot1.axes.yaxis.max) {
+			var newmax = plot1.axes.yaxis.max + 4;
+			plot1.replot({resetAxes:['yaxis'], axes:{yaxis:{max:newmax}}});
+		}
+		else {
+			co.draw(plot1);
+		}
 	}
 	
 	function linedown() {

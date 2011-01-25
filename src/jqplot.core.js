@@ -550,13 +550,8 @@
         this.renderer.reset.call(this);
     };
     
-    Axis.prototype.resetScale = function() {
-        this.min = null;
-        this.max = null;
-        this.numberTicks = null;
-        this.tickInterval = null;
-		this._ticks = [];
-		this.ticks = [];
+    Axis.prototype.resetScale = function(opts) {
+		$.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
 		this.resetDataBounds();
     };
 	
@@ -1707,19 +1702,20 @@
         //
         // Parameters:
         // axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
-        this.resetAxesScale = function(axes) {
-            var ax = (axes != undefined) ? axes : this.axes;
+        this.resetAxesScale = function(axes, options) {
+			var opts = options || {};
+            var ax = axes || this.axes;
             if (ax === true) {
                 ax = this.axes;
             }
             if (jQuery.isArray(ax)) {
                 for (var i = 0; i < ax.length; i++) {
-                    this.axes[ax[i]].resetScale();
+                    this.axes[ax[i]].resetScale(opts[ax[i]]);
                 }
             }
             else if (typeof(ax) === 'object') {
                 for (var name in ax) {
-                    this.axes[name].resetScale();
+                    this.axes[name].resetScale(opts[name]);
                 }
             }
         };
@@ -2102,9 +2098,9 @@
         // resetAxes - true to reset all axes min, max, numberTicks and tickInterval setting so axes will rescale themselves.
         //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
         this.replot = function(options) {
-            var opts = (options != undefined) ? options : {};
-            var clear = (opts.clear != undefined) ? opts.clear : true;
-            var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
+            var opts =  options || {};
+            var clear = opts.clear || true;
+            var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
             if (clear) {
             	// Couple of posts on Stack Overflow indicate that empty() doesn't
@@ -2114,7 +2110,7 @@
                 this.target.empty();
             }
             if (resetAxes) {
-                this.resetAxesScale(resetAxes);
+                this.resetAxesScale(resetAxes, opts.axes);
             }
             this.reInitialize();
             this.draw();
