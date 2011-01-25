@@ -498,7 +498,7 @@
 	 * @param {Integer} dayValue An integer from 1 to 31, representing the day of the month. 
 	 */
 	jsDate.prototype.setDate = function(n) {
-		this.proxy.setDate(n);
+		return this.proxy.setDate(n);
 	};
 	
 	/**
@@ -508,7 +508,7 @@
 	 * @param {Integer} dayValue Optional, between 1 and 31 representing the day of the month. If you specify the dayValue parameter, you must also specify the monthValue. 
 	 */
 	jsDate.prototype.setFullYear = function() {
-		this.proxy.setFullYear.apply(this.proxy, arguments);
+		return this.proxy.setFullYear.apply(this.proxy, arguments);
 	};
 	
 	/**
@@ -522,49 +522,49 @@
 	 * If you specify the msValue parameter, you must also specify the minutesValue and secondsValue. 
 	 */
 	jsDate.prototype.setHours = function() {
-		this.proxy.setHours.apply(this.proxy, arguments);
+		return this.proxy.setHours.apply(this.proxy, arguments);
 	};
 	
 	/**
 	 * Implements Date functionality
 	 */	
 	jsDate.prototype.setMilliseconds = function(n) {
-		this.proxy.setMilliseconds(n);
+		return this.proxy.setMilliseconds(n);
 	};
 	
 	/**
 	 * Implements Date functionality
 	 */	
 	jsDate.prototype.setMinutes = function() {
-		this.proxy.setMinutes.apply(this.proxy, arguments);
+		return this.proxy.setMinutes.apply(this.proxy, arguments);
 	};
 	
 	/**
 	 * Implements Date functionality
 	 */	
 	jsDate.prototype.setMonth = function() {
-		this.proxy.setMonth.apply(this.proxy, arguments);
+		return this.proxy.setMonth.apply(this.proxy, arguments);
 	};
 	
 	/**
 	 * Implements Date functionality
 	 */	
 	jsDate.prototype.setSeconds = function() {
-		this.proxy.setSeconds.apply(this.proxy, arguments);
+		return this.proxy.setSeconds.apply(this.proxy, arguments);
 	};
 	
 	/**
 	 * Implements Date functionality
 	 */	
 	jsDate.prototype.setTime = function(n) {
-		this.proxy.setTime(n);
+		return this.proxy.setTime(n);
 	};
 	
 	/**
 	 * Implements Date functionality
 	 */	
 	jsDate.prototype.setYear = function() {
-		this.proxy.setYear.apply(this.proxy, arguments);
+		return this.proxy.setYear.apply(this.proxy, arguments);
 	};
 	
 	/**
