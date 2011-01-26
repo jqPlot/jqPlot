@@ -191,6 +191,15 @@
         catchErrors: false,
         defaultTickFormatString: "%.1f"
     };
+	
+	
+    $.jqplot.arrayMax = function( array ){
+        return Math.max.apply( Math, array );
+    };
+	
+    $.jqplot.arrayMin = function( array ){
+        return Math.min.apply( Math, array );
+    };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
@@ -436,6 +445,9 @@
         this.borderColor = null;
         // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
+		// statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
+		// holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
+		this._intervalStats = [];
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
         this._ticks=[];
@@ -1078,9 +1090,12 @@
     Series.prototype.draw = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
+		
+		var j, data, gridData;
+		
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
+        for (j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
             $.jqplot.preDrawSeriesHooks[j].call(this, sctx, options);
         }
         if (this.show) {
@@ -1088,7 +1103,7 @@
             if (!options.preventJqPlotSeriesDrawTrigger) {
                 $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
             }
-            var data = [];
+            data = [];
             if (options.data) {
                 data = options.data;
             }
@@ -1098,27 +1113,32 @@
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+            gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
             this.renderer.draw.call(this, sctx, gridData, options, plot);
         }
         
-        for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+        for (j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
         }
+		
+		sctx = opts = plot = j = data = gridData = null;
     };
     
     Series.prototype.drawShadow = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
+		
+		var j, data, gridData;
+		
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (var j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
+        for (j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
             $.jqplot.preDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         if (this.shadow) {
             this.renderer.setGridData.call(this, plot);
 
-            var data = [];
+            data = [];
             if (options.data) {
                 data = options.data;
             }
@@ -1128,14 +1148,16 @@
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+            gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
             this.renderer.drawShadow.call(this, sctx, gridData, options);
         }
         
-        for (var j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
+        for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
+		
+		sctx = opts = plot = j = data = gridData = null;
         
     };
     
@@ -2787,6 +2809,7 @@
                     series.draw(ctx, options, this);
                 }
             }
+			options = idx = i = series = ctx = null;
         };
         
         // method: moveSeriesToFront
