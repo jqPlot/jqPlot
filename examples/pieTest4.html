@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Simple Test</title>
+  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.4.4.min.js"></script>
+  <!-- END: load jquery -->  
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
+  <!-- END: load jqplot -->
+
+  <style type="text/css">
+    #code {
+        font: 10pt "Andale Mono", Monaco, "Courier New", sans-serif ;
+        white-space: pre;
+    }
+    
+    pre {
+        background: #D8F4DC;
+        border: 1px solid rgb(200, 200, 200);
+        padding-top: 1em;
+        padding-left: 3em;
+        padding-bottom: 1em;
+        margin-top: 1em;
+        margin-bottom: 3em;
+        
+    }
+    
+    p {
+        margin: 2em 0;
+    }
+  </style>
+  
+<script id="example_1" type="text/javascript">$(document).ready(function(){
+	jQuery.jqplot.config.enablePlugins = true;
+	plot1 = jQuery.jqplot('chart1', 
+		[[['Verwerkende industrie', 9],['Retail', 0], ['Primaire producent', 38], 
+		['Out of home', 0],['Groothandel', 0], ['Grondstof', 9], ['Consument', 3], ['Bewerkende industrie', 0]]], 
+		{
+			title: ' ', 
+			seriesDefaults: {renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin:2 } }, 
+			legend: { show:true }
+		}
+	);
+});
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+        $('#code_1').html($('#example_1').html());
+        $(document).unload(function() {$('*').unbind(); });
+
+    });
+</script> 
+    
+  </head>
+  <body>
+<?php include "nav.inc"; ?>
+
+
+               
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    
+    <pre id="code_1"></pre>
+ 
+    
+ 
+  </body>
+</html>
