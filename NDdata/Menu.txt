@@ -75,6 +75,7 @@ Group: API Documentation  {
       File: BubbleRenderer  (no auto-title, plugins/jqplot.bubbleRenderer.js)
       File: CanvasAxisLabelRenderer  (no auto-title, plugins/jqplot.canvasAxisLabelRenderer.js)
       File: CanvasAxisTickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
+      File: CanvasOverlay  (plugins/jqplot.canvasOverlay.js)
       File: CategoryAxisRenderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
       File: ciParser  (no auto-title, plugins/jqplot.ciParser.js)
       File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
