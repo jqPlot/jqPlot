@@ -1417,6 +1417,26 @@
         // Options that will be passed to the dataRenderer.
         // Can be of any type.
         this.dataRendererOptions;
+        // prop noDataIndicator
+        // Options to set up a mock plot with a data loading indicator if no data is specified.
+        this.noDataIndicator = {	
+			show: false,
+			indicator: 'Loading Data...',
+			axes: {
+				xaxis: {
+					min: 0,
+					max: 10,
+					tickInterval: 2,
+					show: true
+				},
+				yaxis: {
+					min: 0,
+					max: 12,
+					tickInterval: 3,
+					show: true
+				}
+			}
+		};
         // The id of the dom element to render the plot into
         this.targetId = null;
         // the jquery object for the dom target.
@@ -1639,6 +1659,10 @@
                 data = this.dataRenderer(data, this, this.dataRendererOptions);
             }
             
+            if (options.noDataIndicator && jQuery.isPlainObject(options.noDataIndicator)) {
+				$.extend(true, this.noDataIndicator, options.noDataIndicator);
+            }
+            
             if (data == null) {
                 throw{
                     name: "DataError",
@@ -1647,10 +1671,44 @@
             }
             
             if (jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
-                throw{
-                    name: "DataError",
-                    message: "No data to plot."
-                };
+                
+				if (this.noDataIndicator.show == false) {
+					throw{
+						name: "DataError",
+						message: "No data to plot."
+					};
+				}
+				
+				else {
+					
+					for (ax in this.noDataIndicator.axes) {
+						for (prop in this.noDataIndicator.axes[ax]) {
+							this.axes[ax][prop] = this.noDataIndicator.axes[ax][prop];
+						}
+					}
+					
+					this.postDrawHooks.add(function() {
+						var eh = this.eventCanvas.getHeight();
+						var ew = this.eventCanvas.getWidth();
+						var temp = $('<div class="jqplot-noData-container" style="position:absolute;"></div>');
+						this.target.append(temp);
+						temp.height(eh);
+						temp.width(ew);
+						temp.css('top', this.eventCanvas._offsets.top);
+						temp.css('left', this.eventCanvas._offsets.left);
+						//temp.css('lineHeight', eh+'px');
+						
+						temp2 = $('<div class="jqplot-noData-contents" style="text-align:center; position:relative; margin-left:auto; margin-right:auto;"></div>');
+						temp.append(temp2);
+						temp2.html(this.noDataIndicator.indicator);
+						var th = temp2.height();
+						var tw = temp2.width();
+						temp2.height(th);
+						temp2.width(tw);
+						temp2.css('top', (eh - th)/2 + 'px');
+					});
+
+				}
             }
             
             this.data = data;
@@ -2321,7 +2379,9 @@
                 }
                 else {  // draw series before legend
                     this.drawSeries();
-                    $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+					if (this.series.length) {
+						$(this.series[this.series.length-1].canvas._elem).after(legendElem);
+					}
                     this.legend.pack(legendPadding);                
                 }
             

@@ -219,3 +219,8 @@ div.jqplot-bubble-label {
 div.jqplot-bubble-label.jqplot-bubble-label-highlight {
     background: rgba(90%, 90%, 90%, 0.7);
 }
+
+div.jqplot-noData-container {
+	text-align: center;
+	background-color: rgba(96%, 96%, 96%, 0.3);
+}
