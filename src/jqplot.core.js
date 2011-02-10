@@ -1696,7 +1696,6 @@
 						temp.width(ew);
 						temp.css('top', this.eventCanvas._offsets.top);
 						temp.css('left', this.eventCanvas._offsets.left);
-						//temp.css('lineHeight', eh+'px');
 						
 						temp2 = $('<div class="jqplot-noData-contents" style="text-align:center; position:relative; margin-left:auto; margin-right:auto;"></div>');
 						temp.append(temp2);

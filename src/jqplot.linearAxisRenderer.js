@@ -522,9 +522,43 @@
             }
         }
     };
+	
+	// Used to reset just the values of the ticks and then repack, which will
+	// recalculate the positioning functions.  It is assuemd that the 
+	// number of ticks is the same and the values of the new array are at the
+	// proper interval.
+	// This method needs to be called with the scope of an axis object, like:
+	//
+	// > plot.axes.yaxis.renderer.resetTickValues.call(plot.axes.yaxis, yarr);
+	//
+	$.jqplot.LinearAxisRenderer.prototype.resetTickValues = function(opts) {
+		if ($.isArray(opts) && opts.length == this._ticks.length) {
+			var t
+			for (var i=0; i<opts.length; i++) {
+				t = this._ticks[i];
+				t.value = opts[i];
+				t.label = t.formatter(t.formatString, opts[i]);
+				// add prefix if needed
+				if (t.prefix && !t.formatString) {
+					t.label = t.prefix + t.label;
+				}
+				t._elem.html(t.label);
+			}
+			this.min = $.jqplot.arrayMin(opts);
+			this.max = $.jqplot.arrayMax(opts);
+			this.pack();
+		}
+		else if ($.isPlainObject(opts)) {
+		
+		}
+	};
     
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
+		// Add defaults for repacking from resetTickValues function.
+		pos = pos || {};
+		offsets = offsets || this._offsets;
+		
         var ticks = this._ticks;
         var max = this.max;
         var min = this.min;
