@@ -62,6 +62,12 @@
 
         }
 
+		function thousand_separate(value) {
+			value_str = new String(value);
+			while(value_str != (value_str = value_str.replace(/^(\d+)(\d{3})/, "$1,$2"))); 
+			return value_str; 
+		}
+
         function justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace) {
             var diff = minWidth - value.length;
             if (diff > 0) {
@@ -97,7 +103,7 @@
             if (substring == '%%') { return '%'; }
 
             // parse flags
-            var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false;
+            var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false, thousandSeparation = false;
                 for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
                 case ' ': positivePrefix = ' '; break;
                 case '+': positivePrefix = '+'; break;
@@ -105,6 +111,7 @@
                 case '0': zeroPad = true; break;
                 case '#': prefixBaseX = true; break;
                 case '&': htmlSpace = true; break;
+				case '\'': thousandSeparation = true; break;
             }
 
             // parameters may be null, undefined, empty-string or real valued
@@ -177,7 +184,8 @@
                 return '';
               }
               var prefix = number < 0 ? '-' : positivePrefix;
-              value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+              number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
+			  value = prefix + pad(number_str, precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
             case 'e':
@@ -194,7 +202,9 @@
                       var prefix = number < 0 ? '-' : positivePrefix;
                       var method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
                       var textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
-                      value = prefix + Math.abs(number)[method](precision);
+                      number_str = Math.abs(number)[method](precision);
+                      number_str = thousandSeparation ? thousand_separate(number_str): number_str;
+                      value = prefix + number_str;value = prefix + Math.abs(number)[method](precision);
                       return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
                   }
             case 'p':
@@ -237,6 +247,6 @@
         });
     };
     
-    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0& ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
+    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0&\' ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
 })(jQuery);  
