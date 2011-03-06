@@ -18,6 +18,8 @@
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.mekkoRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.mekkoAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
   <!-- END: load jqplot -->
   <style type="text/css" media="screen">
     body {
@@ -95,6 +97,12 @@
         axes:{
             xaxis:{
                 barLabels:barLabels,
+				rendererOptions: {
+				    barLabelOptions: {
+				      angle: -35
+				    },
+    				barLabelRenderer: $.jqplot.CanvasAxisLabelRenderer
+				}, 
                 max: 175,
                 tickOptions:{formatString:'$%dM'}
             }, 
