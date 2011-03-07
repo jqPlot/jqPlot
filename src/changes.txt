@@ -1,5 +1,87 @@
 Title: Change Log
 
+1.0.0a:
+
+* Series can now be moved forward or backward in stack to e.g. bring a line
+  forward when mousing over a point.
+* Can now move outside of grid area while zooming.  Can have zoom
+  constrained to grid area or allow zooming outside.
+* Fixed issue #142 with tooltip drawn on top of event canvas, hiding
+  mouse events.
+* Fixed #147 where pie slices with 0 value not rendering properly in IE.
+* Fixed #130 where stack data not sorted properly.
+* Fixed bug with null values not handled properly in category axes.
+* Fixed #156 where pie charts not rendering on QTWebKit.
+* Now using feature detection for canvas and canvas text capability
+  rather than browser version.
+* Added enahncedLegendRenderer plugin to allow multi row/column legends
+  and clickable labels to show/hide series.
+* Added fillToValue option to allow filled line plot to fill to an
+  arbitrary value.
+* Added block plot plugin.
+* Added funnel type charts.
+* Added meter gauge type charts.
+* Added plot theming support.
+* $.jqplot.config.enablePlugins now false by default.
+* Implemented highlighting on bar, pie, donut, funnel, etc. charts.
+* Fix to pointlabels plugin to align labels properly on multi series plots.
+* Added custom error handling to display error message in plot area.
+* Fixed issue where would call to draw grid border of 0 width would
+  result in a default border being drawn.
+* Added options to place legend outside of grid and shrink grid so everything
+  stays within plot div.
+* Fixed bug in color generator so now calls to get() continually cycle
+  through colors just like next().
+* Added defaultAxisStart option.
+* Added gradient fills to bubbles.
+* Added bubble charts.
+* Added showLabels option to bubble charts.
+* Pass bubble radius to event callback in bubble charts.
+* Fixed #207, typo in docs.
+* Fixed #206 where "value" pie slice data labels were displaying wrong
+  value.
+* Fixed #147 with 0 value slices in IE6.
+* Fixed issue #241, disabled varyBarColor option in stacked charts.
+* Added dataRenderer option to allow custom processors for JSON, AJAX
+  and anywhere else you might want to get data.
+* Fixed null value handling so plot now properly skip or join over nulls.
+* Fixed showTicks and showTickMarks option conflicts.
+* Fixed issue #185 where pointLabels plugin incompatibility could crash
+  pie, donut and other plots.
+* Fixed #23 and #143 to obey gridPadding option.
+* Fixed #233 with highlighter tooltip separator.
+* Fixed #224 where type checking failing on GWT.
+* Fixed #272 with pie highlighting not working on replot.
+* Memory performance improvements.
+* Changes to build script so everything should build when pulled from repo.
+* Fixed issue #275, IE 6/7 don't support array indexing of strings.
+* Added event listener hooks for mouseUp, mouseDown, etc. to all line plots.
+* Fixed bug with highlighter not working when null in data.
+* Updated to jQuery 1.4.4
+* Fixed bug where donut plots showed value of radians of slice instead
+  of actual data.
+* Reverted to excanvas r3 so IE8 no longer has to emulate IE7.
+* Added tooltipContentEditor option to highlighter, allowing callback
+  to manipulate tooltip content at run time (thanks Tim Bunce!).
+* Fixed bug where axes scale not resetting.
+* Fixed bug with date axes where data bounds not properly set.
+* Fixed issue where tick marks disappear if grid lines turned off.
+* Updated replot method to allow passing in axes options for more control.
+* Added experimental support for "broken" axes.
+* Fixed bug with pies where pies with 0 valued slices did not draw correctly.
+* Added canvasOverlay plugin to allow drawing of arbitrary shapes on a canvas
+  over the plot.
+* Added option to display arbitrary text/html (message, animated gif, etc.) if
+  plot is constructed without data.  Allow a "data loading" indicator to be shown.
+* Added resetAxisValues method to manually update axis ticks without
+  redrawing the plot.
+* Fix to labels on negative bars so label postiion of 'n' will be below a negative bar,
+  just as it is above a positive bar (thanks guigod!).
+* Added thousands separator character (') to sprintf formatting (thanks yuichi1004!).
+* Refactored date parsing/formatting to use new jsDate module which does not
+  extend the Date prototype.
+
+
 0.9.7:
 
 * Added Mekko chart plot type with enhanced legend and axes support.
@@ -11,7 +93,7 @@ Title: Change Log
 * Refactored series drawing so that each series and series shadow drawn
   on it's own canvas.  Allows series to be redrawn independently of each other.
 * Added additional default series colors.
-* Aded useNegativeColors option to turn off negative color array and use 
+* Added useNegativeColors option to turn off negative color array and use 
   only seriesColors array to define all bar/filled line colors.
 * Fix css for cursor legend.
 * Modified shape renderer so rectangles can be stroked and filled.
