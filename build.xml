@@ -73,11 +73,17 @@
         <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="}}}" value="(end)" />
         <replace file="${BUILD_DIR}/jqPlotOptions.txt" token="**" value="*" />
         
-        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}" file="${BUILD_DIR}/jqplot.core.js" />
-        
         <copy todir="${BUILD_DIR}/plugins">
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
         </copy>
+        
+        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+			<fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
+		</replaceregexp>
+        
+        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+			<fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
+		</replaceregexp>
                 
         <!-- remove appropriate opening and closing of closures -->
         <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s">
@@ -206,6 +212,22 @@
             <concatfilter prepend="copyright.txt"/>
           </filterchain>
         </copy>
+        
+        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+			<fileset dir="${DIST_DIR}">
+				<include name="jquery.jqplot.js"/>
+				<include name="jquery.jqplot.min.js"/>
+				<include name="jqplot.*.js"/>
+				<include name="jqplot.*.min.js" />
+			</fileset>
+		</replaceregexp>
+        
+        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+			<fileset dir="${DIST_DIR}/plugins">
+				<include name="jqplot.*.js"/>
+				<include name="jqplot.*.min.js" />
+			</fileset>
+		</replaceregexp>
         
         <delete dir="${DIST_DIR}/plugins/temp" />
         

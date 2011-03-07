@@ -9,7 +9,7 @@
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009-2010 Chris Leonello
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly.
@@ -22,18 +22,9 @@
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php.
+ *
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
  * 
- * jqPlot includes `date instance methods and printf/sprintf functions by other authors:
- * 
- * Date instance methods:
- *
- *     author Ken Snyder (ken d snyder at gmail dot com)
- *     date 2008-09-10
- *     version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
- *     license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
- *
- * JavaScript printf/sprintf functions:
- *
  *     version 2007.04.27
  *     author Ash Searle
  *     http://hexmen.com/blog/2007/03/printf-sprintf/
@@ -706,7 +697,9 @@
         // if user has specified xoffset or yoffset, copy these to
         // the margin properties.
         
-        if (this.placement ==  'inside') this.placement = 'insideGrid';
+        if (this.placement ==  'inside') {
+            this.placement = 'insideGrid';
+        }
         
         if (this.xoffset >0) {
             if (this.placement == 'insideGrid') {
@@ -1478,7 +1471,7 @@
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
         this._gridPadding = {top:null, right:null, bottom:null, left:null};
-        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10},
+        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10};
         // a shortcut for axis syncTicks options.  Not implemented yet.
         this.syncXTicks = true;
         // a shortcut for axis syncTicks options.  Not implemented yet.
@@ -2576,7 +2569,9 @@
                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
-                            if (ret != null) return ret;
+                            if (ret != null) {
+                                return ret;
+                            }
                         }
                         break;
                         
