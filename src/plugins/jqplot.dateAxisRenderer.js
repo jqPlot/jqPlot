@@ -156,10 +156,10 @@
                     d[j][0] = new $.jsDate(d[j][0]).getTime();
                     pd[j][0] = new $.jsDate(d[j][0]).getTime();
                     sd[j][0] = new $.jsDate(d[j][0]).getTime();
-                    if (db.min == null || d[j][1] < db.min) {
+                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
                         db.min = d[j][0];
                     }
-                    if (db.max == null || d[j][1] > db.max) {
+                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
                         db.max = d[j][0];
                     }
 					if (j>0) {
@@ -179,10 +179,10 @@
                     d[j][1] = new $.jsDate(d[j][1]).getTime();
                     pd[j][1] = new $.jsDate(d[j][1]).getTime();
                     sd[j][1] = new $.jsDate(d[j][1]).getTime();
-                    if (db.min == null || d[j][1] < db.min) {
+                    if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
                         db.min = d[j][1];
                     }
-                    if (db.max == null || d[j][1] > db.max) {
+                    if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
                         db.max = d[j][1];
                     }
 					if (j>0) {

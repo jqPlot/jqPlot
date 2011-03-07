@@ -50,6 +50,7 @@
 		this.options = {};
 		this.locale = jsDate.regional.getLocale();
 		this.formatString = '';
+		this.defaultCentury = jsDate.config.defaultCentury;
 
         switch ( arguments.length ) {
             case 0:
@@ -60,7 +61,8 @@
 				// assume it is an options argument.
 				if (get_type(arguments[0]) == "[object Object]" && arguments[0]._type != "jsDate") {
 					var opts = this.options = arguments[0];
-					this.syntax= opts.syntax;
+					this.syntax = opts.syntax || this.syntax;
+					this.defaultCentury = opts.defaultCentury || this.defaultCentury;
 					this.proxy = jsDate.createDate(opts.date);
 				}
 				else {
@@ -88,7 +90,8 @@
 	 */
 	jsDate.config = {
 		defaultLocale: 'en',
-		syntax: 'perl'
+		syntax: 'perl',
+		defaultCentury: 1900
 	};
 		
 	/**
@@ -472,7 +475,8 @@
 				// assume it is an options argument.
 				if (get_type(arguments[0]) == "[object Object]" && arguments[0]._type != "jsDate") {
 					var opts = this.options = arguments[0];
-					this.syntax= opts.syntax;
+					this.syntax = opts.syntax || this.syntax;
+					this.defaultCentury = opts.defaultCentury || this.defaultCentury;
 					this.proxy = jsDate.createDate(opts.date);
 				}
 				else {
@@ -1210,11 +1214,11 @@
         // first check for 'dd-mmm-yyyy' or 'dd/mmm/yyyy' like '15-Dec-2010'
         parsable = parsable.replace(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{4})/i, "$1 $2 $3");
         
-        // Now check for 'dd-mmm-yy' or 'dd/mmm/yy' and normalize years to 1900.
+        // Now check for 'dd-mmm-yy' or 'dd/mmm/yy' and normalize years to default century.
         var match = parsable.match(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{2})\D*/i);
         if (match && match.length > 3) {
             var m3 = parseFloat(match[3]);
-            var ny = 1900 + m3;
+            var ny = jsDate.config.defaultCentury + m3;
             ny = String(ny);
             
             // now replace 2 digit year with 4 digit year
@@ -1224,7 +1228,7 @@
         
         // Check for '1/19/70 8:14PM'
         // where starts with mm/dd/yy or yy/mm/dd and have something after
-        // Check if 1st postiion is greater than 12, assume it is year.
+        // Check if 1st postiion is greater than 31, assume it is year.
         // Assme all 2 digit years are 1900's.
         // Finally, change them into US style mm/dd/yyyy representations.
         match = parsable.match(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})[^0-9]/);
@@ -1233,7 +1237,7 @@
             var m1 = parseFloat(match[1]);
             var m2 = parseFloat(match[2]);
             var m3 = parseFloat(match[3]);
-            var cent = 1900;
+            var cent = jsDate.config.defaultCentury;
             var ny, nd, nm, str;
             
             if (m1 > 31) { // first number is a year
@@ -1371,7 +1375,7 @@
             var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
             if (match) {
                 var d = new Date();
-                var cent = 1900;
+                var cent = jsDate.config.defaultCentury;
                 var m1 = parseFloat(match[1]);
                 var m3 = parseFloat(match[3]);
                 var ny, nd, nm;
