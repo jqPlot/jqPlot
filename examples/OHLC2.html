@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -123,6 +122,8 @@ $(document).ready(function(){
        
 
     var ticks = ['08/01/08', '12/01/08', '04/01/09', '08/01/09'];
+
+	$.jsDate.config.defaultCentury = 2000;
     
     plot1 = $.jqplot('chart1',[ohlc],{
       title: 'Chart',
@@ -159,7 +160,7 @@ $(document).ready(function(){
       axes: {
           xaxis: {
               renderer:$.jqplot.DateAxisRenderer,
-              tickOptions:{formatString:'%y.%m'}
+              tickOptions:{formatString:'%Y.%m'}
           },
           yaxis: {
               tickOptions:{formatString:'%.2f'}
