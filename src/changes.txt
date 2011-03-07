@@ -78,7 +78,7 @@ Title: Change Log
 * Fix to labels on negative bars so label postiion of 'n' will be below a negative bar,
   just as it is above a positive bar (thanks guigod!).
 * Added thousands separator character (') to sprintf formatting (thanks yuichi1004!).
-* Refactored date parsing/formatting to use new jsDate module which does not
+* Re-factored date parsing/formatting to use new jsDate module which does not
   extend the Date prototype.
 
 
@@ -90,14 +90,14 @@ Title: Change Log
 * Enhanced plot labels for waterfall style.
 * Enhanced bar plots so you can now color each bar of a series 
   independently with the "varyBarColor" option.
-* Refactored series drawing so that each series and series shadow drawn
+* Re-factored series drawing so that each series and series shadow drawn
   on it's own canvas.  Allows series to be redrawn independently of each other.
 * Added additional default series colors.
 * Added useNegativeColors option to turn off negative color array and use 
   only seriesColors array to define all bar/filled line colors.
 * Fix css for cursor legend.
 * Modified shape renderer so rectangles can be stroked and filled.
-* Refactored date methods out of dateAxisRenderer so that date formatter 
+* Re-factored date methods out of dateAxisRenderer so that date formatter 
   and methods can be accesses outside of dateAxisRenderer plugin.
 * Fixed #132, now trigger series change event on plot target instead of drag canvas.
 * Fixes issue #116 where some source files had mix of tabs and spaces 
@@ -145,10 +145,10 @@ Title: Change Log
   at the cursor location with a readout of data points at the line location
   which are displayed in the chart legend.
 * Changed cursor tooltip format string.  Now one format string is used for
-  entire tooptip.
+  entire tooltip.
 * Added mechanisms to specify plot size when plot target is hidden or plot
   height/width otherwise cannot be determined from markup.
-* Added $.jqplot.config object to specify jqplot wide configuraiton options.
+* Added $.jqplot.config object to specify jqplot wide configuration options.
   These include enablePlugins to globally set the default plugin state on/off
   and defaultHeight/defaultWidth to specify default plot height/width.
 * Added fillToZero option which forces filled charts to fill to zero as opposed
@@ -187,7 +187,7 @@ Title: Change Log
 0.9.3:
 
 * Preliminary support for axis labels.  Currently rendered into DIV tags,
-  so no ratated label support.  This feature is currently expreimental.
+  so no rotated label support.  This feature is currently experimental.
 * Fixed bug #52, needed space in tick div tag between style and class declarations 
   or plot failed in certain application doctypes.
 * Fixed issue #54, miter style line join for chart lines causing spikes at steep 
@@ -337,7 +337,7 @@ Title: Change Log
 * Removed lots of lint in js code.
 * Moved tick css from js code into css file.
 * Fix to tick positioning css.  y axis ticks were positioned to wrong side of axis div.
-* Refactored axis tick renderer instantiation into the axes renderers themselves.
+* Re-factored axis tick renderer instantiation into the axes renderers themselves.
 
 
-For chnages prior to 0.6.0 release, please see change log at http://bitbucket.org/cleonello/jqplot/changesets/
+For changes prior to 0.6.0 release, please see change log at http://bitbucket.org/cleonello/jqplot/changesets/
