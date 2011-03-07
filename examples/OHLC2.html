@@ -5,7 +5,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Open Hi Low Close and Canclestick Charts</title>
-  <!--[if IE]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="examples.css" />
@@ -130,7 +130,7 @@ $(document).ready(function(){
       axes: {
           xaxis: {
               renderer:$.jqplot.DateAxisRenderer,
-              tickOptions:{formatString:'%y.%m.%d'}, 
+              tickOptions:{formatString:'%Y.%m.%d'}, 
               min: "08-01-1908",
               tickInterval: "60 days",
               ticks: ticks
