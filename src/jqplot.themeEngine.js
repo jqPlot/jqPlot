@@ -417,7 +417,7 @@
                 }
             }
             
-            for (axname in plot.axes) {
+            for (var axname in plot.axes) {
                 var axis = plot.axes[axname];
                 if (axis.show) {
                     var thaxis = th.axes[axname] || {};
@@ -434,7 +434,7 @@
                         redrawPlot = true;
                     }
                     if (axis._ticks && axis._ticks[0]) {
-                        for (nn in thax.ticks) {
+                        for (var nn in thax.ticks) {
                             // val = null;
                             // if (th.axesStyles.ticks && th.axesStyles.ticks[nn] != null) {
                             //     val = th.axesStyles.ticks[nn];
@@ -451,7 +451,7 @@
                         }
                     }
                     if (axis._label && axis._label.show) {
-                        for (nn in thax.label) {
+                        for (var nn in thax.label) {
                             // val = null;
                             // if (th.axesStyles.label && th.axesStyles.label[nn] != null) {
                             //     val = th.axesStyles.label[nn];
@@ -649,50 +649,50 @@
     
         // Use the jQuery 1.3.2 extend function since behaviour in jQuery 1.4 seems problematic
     $.jqplot.extend = function() {
-    	// copy reference to target object
-    	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
+        // copy reference to target object
+        var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
-    	// Handle a deep copy situation
-    	if ( typeof target === "boolean" ) {
-    		deep = target;
-    		target = arguments[1] || {};
-    		// skip the boolean and the target
-    		i = 2;
-    	}
-
-    	// Handle case when target is a string or something (possible in deep copy)
-    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
-    	    target = {};
-    	}
-
-    	for ( ; i < length; i++ ){
-    		// Only deal with non-null/undefined values
-    		if ( (options = arguments[ i ]) != null ) {
-    			// Extend the base object
-    			for ( var name in options ) {
-    				var src = target[ name ], copy = options[ name ];
-
-    				// Prevent never-ending loop
-    				if ( target === copy ) {
-    					continue;
-    				}
-
-    				// Recurse if we're merging object values
-    				if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
-    					target[ name ] = $.jqplot.extend( deep, 
-    						// Never move original objects, clone them
-    						src || ( copy.length != null ? [ ] : { } )
-    					, copy );
-                    }
-    				// Don't bring in undefined values
-    				else if ( copy !== undefined ) {
-    					target[ name ] = copy;
-    				}
-    			}
-    		}
+        // Handle a deep copy situation
+        if ( typeof target === "boolean" ) {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
         }
-    	// Return the modified object
-    	return target;
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
+            target = {};
+        }
+
+        for ( ; i < length; i++ ){
+            // Only deal with non-null/undefined values
+            if ( (options = arguments[ i ]) != null ) {
+                // Extend the base object
+                for ( var name in options ) {
+                    var src = target[ name ], copy = options[ name ];
+
+                    // Prevent never-ending loop
+                    if ( target === copy ) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging object values
+                    if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
+                        target[ name ] = $.jqplot.extend( deep, 
+                            // Never move original objects, clone them
+                            src || ( copy.length != null ? [ ] : { } )
+                        , copy );
+                    }
+                    // Don't bring in undefined values
+                    else if ( copy !== undefined ) {
+                        target[ name ] = copy;
+                    }
+                }
+            }
+        }
+        // Return the modified object
+        return target;
     };
 
     /**

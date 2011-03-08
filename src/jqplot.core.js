@@ -182,12 +182,12 @@
         catchErrors: false,
         defaultTickFormatString: "%.1f"
     };
-	
-	
+    
+    
     $.jqplot.arrayMax = function( array ){
         return Math.max.apply( Math, array );
     };
-	
+    
     $.jqplot.arrayMin = function( array ){
         return Math.min.apply( Math, array );
     };
@@ -436,9 +436,9 @@
         this.borderColor = null;
         // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
-		// statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
-		// holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
-		this._intervalStats = [];
+        // statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
+        // holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
+        this._intervalStats = [];
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
         this._ticks=[];
@@ -554,16 +554,16 @@
     };
     
     Axis.prototype.resetScale = function(opts) {
-		$.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
-		this.resetDataBounds();
+        $.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
+        this.resetDataBounds();
     };
-	
-	Axis.prototype.resetDataBounds = function() {
+    
+    Axis.prototype.resetDataBounds = function() {
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
-		var db = this._dataBounds;
-		db.min = null;
-		db.max = null;
+        var db = this._dataBounds;
+        db.min = null;
+        db.max = null;
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
             var d = s._plotData;
@@ -587,7 +587,7 @@
                 }              
             }
         }
-	};
+    };
 
     /**
      * Class: Legend
@@ -1083,9 +1083,9 @@
     Series.prototype.draw = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
-		
-		var j, data, gridData;
-		
+        
+        var j, data, gridData;
+        
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
         for (j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
@@ -1113,16 +1113,16 @@
         for (j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
         }
-		
-		sctx = opts = plot = j = data = gridData = null;
+        
+        sctx = opts = plot = j = data = gridData = null;
     };
     
     Series.prototype.drawShadow = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
-		
-		var j, data, gridData;
-		
+        
+        var j, data, gridData;
+        
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
         for (j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
@@ -1149,8 +1149,8 @@
         for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
-		
-		sctx = opts = plot = j = data = gridData = null;
+        
+        sctx = opts = plot = j = data = gridData = null;
         
     };
     
@@ -1412,24 +1412,24 @@
         this.dataRendererOptions;
         // prop noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
-        this.noDataIndicator = {	
-			show: false,
-			indicator: 'Loading Data...',
-			axes: {
-				xaxis: {
-					min: 0,
-					max: 10,
-					tickInterval: 2,
-					show: true
-				},
-				yaxis: {
-					min: 0,
-					max: 12,
-					tickInterval: 3,
-					show: true
-				}
-			}
-		};
+        this.noDataIndicator = {    
+            show: false,
+            indicator: 'Loading Data...',
+            axes: {
+                xaxis: {
+                    min: 0,
+                    max: 10,
+                    tickInterval: 2,
+                    show: true
+                },
+                yaxis: {
+                    min: 0,
+                    max: 12,
+                    tickInterval: 3,
+                    show: true
+                }
+            }
+        };
         // The id of the dom element to render the plot into
         this.targetId = null;
         // the jquery object for the dom target.
@@ -1653,7 +1653,7 @@
             }
             
             if (options.noDataIndicator && jQuery.isPlainObject(options.noDataIndicator)) {
-				$.extend(true, this.noDataIndicator, options.noDataIndicator);
+                $.extend(true, this.noDataIndicator, options.noDataIndicator);
             }
             
             if (data == null) {
@@ -1665,42 +1665,42 @@
             
             if (jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
                 
-				if (this.noDataIndicator.show == false) {
-					throw{
-						name: "DataError",
-						message: "No data to plot."
-					};
-				}
-				
-				else {
-					
-					for (ax in this.noDataIndicator.axes) {
-						for (prop in this.noDataIndicator.axes[ax]) {
-							this.axes[ax][prop] = this.noDataIndicator.axes[ax][prop];
-						}
-					}
-					
-					this.postDrawHooks.add(function() {
-						var eh = this.eventCanvas.getHeight();
-						var ew = this.eventCanvas.getWidth();
-						var temp = $('<div class="jqplot-noData-container" style="position:absolute;"></div>');
-						this.target.append(temp);
-						temp.height(eh);
-						temp.width(ew);
-						temp.css('top', this.eventCanvas._offsets.top);
-						temp.css('left', this.eventCanvas._offsets.left);
-						
-						temp2 = $('<div class="jqplot-noData-contents" style="text-align:center; position:relative; margin-left:auto; margin-right:auto;"></div>');
-						temp.append(temp2);
-						temp2.html(this.noDataIndicator.indicator);
-						var th = temp2.height();
-						var tw = temp2.width();
-						temp2.height(th);
-						temp2.width(tw);
-						temp2.css('top', (eh - th)/2 + 'px');
-					});
+                if (this.noDataIndicator.show == false) {
+                    throw{
+                        name: "DataError",
+                        message: "No data to plot."
+                    };
+                }
+                
+                else {
+                    
+                    for (var ax in this.noDataIndicator.axes) {
+                        for (var prop in this.noDataIndicator.axes[ax]) {
+                            this.axes[ax][prop] = this.noDataIndicator.axes[ax][prop];
+                        }
+                    }
+                    
+                    this.postDrawHooks.add(function() {
+                        var eh = this.eventCanvas.getHeight();
+                        var ew = this.eventCanvas.getWidth();
+                        var temp = $('<div class="jqplot-noData-container" style="position:absolute;"></div>');
+                        this.target.append(temp);
+                        temp.height(eh);
+                        temp.width(ew);
+                        temp.css('top', this.eventCanvas._offsets.top);
+                        temp.css('left', this.eventCanvas._offsets.left);
+                        
+                        var temp2 = $('<div class="jqplot-noData-contents" style="text-align:center; position:relative; margin-left:auto; margin-right:auto;"></div>');
+                        temp.append(temp2);
+                        temp2.html(this.noDataIndicator.indicator);
+                        var th = temp2.height();
+                        var tw = temp2.width();
+                        temp2.height(th);
+                        temp2.width(tw);
+                        temp2.css('top', (eh - th)/2 + 'px');
+                    });
 
-				}
+                }
             }
             
             this.data = data;
@@ -1775,7 +1775,7 @@
         // Parameters:
         // axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
         this.resetAxesScale = function(axes, options) {
-			var opts = options || {};
+            var opts = options || {};
             var ax = axes || this.axes;
             if (ax === true) {
                 ax = this.axes;
@@ -1799,6 +1799,10 @@
             // If plot doesn't have height and width for some
             // reason, set it by other means.  Plot must not have
             // a display:none attribute, however.
+            
+            //
+            // Wont have options here
+            /*
             if (!this.target.height()) {
                 var h;
                 if (options && options.height) {
@@ -1833,6 +1837,10 @@
             else {
                 this._width = this.target.width();
             }
+            */
+            
+            this._height = this.target.height();
+            this._width = this.target.width();
             
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
                 throw "Target dimension not set";
@@ -2175,10 +2183,10 @@
             var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
             if (clear) {
-            	// Couple of posts on Stack Overflow indicate that empty() doesn't
-	            // always cear up the dom and release memory.  Sometimes setting
-	            // innerHTML property to null is needed.  Particularly on IE, may 
-	            // have to directly set it to null, bypassing jQuery.
+                // Couple of posts on Stack Overflow indicate that empty() doesn't
+                // always cear up the dom and release memory.  Sometimes setting
+                // innerHTML property to null is needed.  Particularly on IE, may 
+                // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
             if (resetAxes) {
@@ -2204,10 +2212,10 @@
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
-            	// Couple of posts on Stack Overflow indicate that empty() doesn't
-	            // always cear up the dom and release memory.  Sometimes setting
-	            // innerHTML property to null is needed.  Particularly on IE, may 
-	            // have to directly set it to null, bypassing jQuery.
+                // Couple of posts on Stack Overflow indicate that empty() doesn't
+                // always cear up the dom and release memory.  Sometimes setting
+                // innerHTML property to null is needed.  Particularly on IE, may 
+                // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
              for (var ax in this.axes) {
@@ -2371,9 +2379,9 @@
                 }
                 else {  // draw series before legend
                     this.drawSeries();
-					if (this.series.length) {
-						$(this.series[this.series.length-1].canvas._elem).after(legendElem);
-					}
+                    if (this.series.length) {
+                        $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+                    }
                     this.legend.pack(legendPadding);                
                 }
             
@@ -2417,8 +2425,8 @@
             if (this.captureRightClick) {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onRightClick);
                 this.eventCanvas._elem.get(0).oncontextmenu = function() {
-					return false;
-				};
+                    return false;
+                };
             }
             else {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
@@ -2459,7 +2467,7 @@
                         y = gridpos.y;
                         for (j=0; j<s._barPoints.length; j++) {
                             points = s._barPoints[j];
-							p = s.gridData[j];
+                            p = s.gridData[j];
                             if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
                                 return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
                             }
@@ -2583,7 +2591,8 @@
                             vfirst = v[0],
                             vlast = v[v.length-1],
                             lex,
-                            rex;
+                            rex,
+                            cv;
     
                         // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
     
@@ -2622,16 +2631,16 @@
                                     var j = numPoints-1;
 
                                     for(var ii=0; ii < numPoints; ii++) { 
-                                    	var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    	var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+                                        var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                        var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
-                                    	if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)	 {
-                                    		if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
-                                    			inside = !inside;
-                                    		}
-                                    	}
+                                        if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)     {
+                                            if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                                inside = !inside;
+                                            }
+                                        }
 
-                                    	j = ii;
+                                        j = ii;
                                     }        
                                 }
                                 if (inside) {
@@ -2864,7 +2873,7 @@
                     series.draw(ctx, options, this);
                 }
             }
-			options = idx = i = series = ctx = null;
+            options = idx = i = series = ctx = null;
         };
         
         // method: moveSeriesToFront
@@ -2927,7 +2936,7 @@
         // Useful to put a series back where it belongs after moving
         // it to the front.
         this.restorePreviousSeriesOrder = function () {
-            var i, j, serelem, shadelem, temp;
+            var i, j, serelem, shadelem, temp, move, keep;
             // if no change, return.
             if (this.seriesStack == this.previousSeriesStack) {
                 return;
@@ -2950,7 +2959,7 @@
         // Restore the series canvas order to its original order
         // when the plot was created.
         this.restoreOriginalSeriesOrder = function () {
-            var i, j, arr=[];
+            var i, j, arr=[], serelem, shadelem;
             for (i=0; i<this.series.length; i++) {
                 arr.push(i);
             }
@@ -3064,7 +3073,7 @@
         var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *(?:, *[0-9.]*)?\)/;
         var m = s.match(pat);
         var h = '#';
-        for (i=1; i<4; i++) {
+        for (var i=1; i<4; i++) {
             var temp;
             if (m[i].search(/%/) != -1) {
                 temp = parseInt(255*m[i]/100, 10).toString(16);
@@ -3104,7 +3113,7 @@
         var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *,? *([0-9.]* *)?\)/;
         var m = rgb.match(pat);
         var ret = [];
-        for (i=1; i<4; i++) {
+        for (var i=1; i<4; i++) {
             if (m[i].search(/%/) != -1) {
                 ret[i-1] = parseInt(255*m[i]/100, 10);
             }

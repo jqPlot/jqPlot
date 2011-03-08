@@ -427,7 +427,8 @@
         var offmax = offsets.max;
         var offmin = offsets.min;
         var lshow = (this._label == null) ? false : this._label.show;
-        
+        var i;
+		
         for (var p in pos) {
             this._elem.css(p, pos[p]);
         }

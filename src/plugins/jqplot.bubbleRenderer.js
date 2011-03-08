@@ -165,6 +165,7 @@
         
         // adjust the series colors for options colors passed in with data or for alpha.
         // note, this can leave undefined holes in the seriesColors array.
+        var comps;
         for (var i=0; i<this.data.length; i++) {
             var color = null;
             var d = this.data[i];
@@ -308,7 +309,8 @@
             var idx = this.radii[i][0];
             var t=null;
             var color = null;
-            var el = tel = null;
+            var el = null;
+            var tel = null;
             var d = this.data[idx];
             var gd = this.gridData[idx];
             if (d[3]) {
@@ -504,7 +506,16 @@
     $.jqplot.BubbleAxisRenderer.prototype.init = function(options){
         $.extend(true, this, options);
         var db = this._dataBounds;
-        var minsidx=minpidx=maxsids=maxpidx=maxr=minr=minMaxRadius=maxMaxRadius=maxMult=minMult=0;
+        var minsidx = 0,
+            minpidx = 0,
+            maxsidx = 0,
+            maxpidx = 0,
+            maxr = 0,
+            minr = 0,
+            minMaxRadius = 0,
+            maxMaxRadius = 0,
+            maxMult = 0,
+            minMult = 0;
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
         for (var i=0; i<this._series.length; i++) {

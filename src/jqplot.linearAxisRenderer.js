@@ -676,7 +676,7 @@
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
                         var shim;
@@ -730,7 +730,7 @@
                 }
             }
             else {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {                        
                         var shim;

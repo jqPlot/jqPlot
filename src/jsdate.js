@@ -1283,7 +1283,7 @@
             }
             pattern = jsDate.matchers[i];
             if (typeof pattern == 'function') {
-                obj = pattern.call(jsDate, current);
+                var obj = pattern.call(jsDate, current);
                 if (obj instanceof Date) {
                     return obj;
                 }

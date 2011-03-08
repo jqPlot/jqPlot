@@ -305,7 +305,7 @@
         var zaxes = c._zoom.axes;
         var start = zaxes.start;
         var end = zaxes.end;
-        var min, max;
+        var min, max, dp, span;
         var ctx = plot.plugins.cursor.zoomCanvas._ctx;
         // don't zoom is zoom area is too small (in pixels)
         if ((c.constrainZoomTo == 'none' && Math.abs(gridpos.x - c._zoom.start[0]) > 6 && Math.abs(gridpos.y - c._zoom.start[1]) > 6) || (c.constrainZoomTo == 'x' && Math.abs(gridpos.x - c._zoom.start[0]) > 6) ||  (c.constrainZoomTo == 'y' && Math.abs(gridpos.y - c._zoom.start[1]) > 6)) {
@@ -476,7 +476,7 @@
         
     function getIntersectingPoints(plot, x, y) {
         var ret = {indices:[], data:[]};
-        var s, i, d0, d, j, r;
+        var s, i, d0, d, j, r, p;
         var threshold;
         var c = plot.plugins.cursor;
         for (var i=0; i<plot.series.length; i++) {
@@ -922,7 +922,7 @@
     // called in context of a Legend
     $.jqplot.CursorLegendRenderer.prototype.draw = function() {
         if (this.show) {
-            var series = this._series;
+            var series = this._series, s;
             // make a table.  one line label per row.
             this._elem = $('<table class="jqplot-legend jqplot-cursor-legend" style="position:absolute"></table>');
         

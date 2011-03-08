@@ -479,7 +479,7 @@
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
                         var shim;
@@ -534,7 +534,7 @@
                 }
                 // now show the labels under the bars.
                 var b, l, r;
-                for (i=0; i<this.barLabels.length; i++) {
+                for (var i=0; i<this.barLabels.length; i++) {
                     b = this._barLabels[i];
                     if (b.show) {
                         w = b.getWidth();
@@ -547,7 +547,7 @@
                 }
             }
             else {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {                        
                         var shim;

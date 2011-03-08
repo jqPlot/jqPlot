@@ -793,7 +793,7 @@
     function postInit(target, data, options) {
         // if multiple series, add a reference to the previous one so that
         // funnel rings can nest.
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.FunnelRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {

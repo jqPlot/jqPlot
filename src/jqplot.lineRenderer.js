@@ -294,7 +294,7 @@
                             var gridymin = ctx.canvas.height;
                             // IE doesn't return new length on unshift
                             gd.unshift([gd[0][0], gridymin]);
-                            len = gd.length;
+                            var len = gd.length;
                             gd.push([gd[len - 1][0], gridymin]);                   
                         }
                         // if stacked, fill to line below 
@@ -375,7 +375,7 @@
     // called with scope of plot.
     // make sure to not leave anything highlighted.
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.LineRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {

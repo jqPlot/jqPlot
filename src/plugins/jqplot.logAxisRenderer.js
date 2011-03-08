@@ -285,8 +285,8 @@
         var ticks = this._ticks;
         var trans = function (v) { return Math.log(v)/Math.log(lb); };
         var invtrans = function (v) { return Math.pow(Math.E, (Math.log(lb)*v)); };
-        max = trans(this.max);
-        min = trans(this.min);
+        var max = trans(this.max);
+        var min = trans(this.min);
         var offmax = offsets.max;
         var offmin = offsets.min;
         var lshow = (this._label == null) ? false : this._label.show;
@@ -329,7 +329,7 @@
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
                         var shim;
@@ -382,7 +382,7 @@
                 }
             }
             else {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {                        
                         var shim;

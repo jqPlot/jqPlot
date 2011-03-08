@@ -199,8 +199,9 @@
 				sum += intv;              
             }
 			
-			var tempf=tempn=0;
-			for (n in stats.frequencies) {
+			var tempf = 0,
+				tempn=0;
+			for (var n in stats.frequencies) {
 				stats.sortedIntervals.push({interval:n, frequency:stats.frequencies[n]});
 			}
 			stats.sortedIntervals.sort(function(a, b){

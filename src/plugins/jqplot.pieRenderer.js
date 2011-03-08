@@ -513,7 +513,8 @@
             
             var pad = false, 
                 reverse = false,
-                nr, nc;
+                nr, 
+				nc;
             var s = series[0];
             var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
             
@@ -643,7 +644,7 @@
     }
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {

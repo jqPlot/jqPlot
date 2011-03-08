@@ -266,7 +266,7 @@
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, pointy;
         // clear out data colors.
         this._dataColors = [];
         this._barPoints = [];
@@ -276,9 +276,10 @@
         }
         
         var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-        nvals = temp[0];
-        nseries = temp[1];
-        pos = temp[2];
+        var nvals = temp[0];
+        var nseries = temp[1];
+        var pos = temp[2];
+		var points = [];
         
         if (this._stack) {
             this._barNudge = 0;
@@ -294,6 +295,9 @@
                 negativeColor = opts.fillStyle;
             }
             var positiveColor = opts.fillStyle;
+			var base;
+			var xstart; 
+			var ystart;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -301,8 +305,8 @@
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][0] + this._barNudge;
-                    var ystart;
+                    base = gridData[i][0] + this._barNudge;
+                    ystart;
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
@@ -376,8 +380,8 @@
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][1] - this._barNudge;
-                    var xstart;
+                    base = gridData[i][1] - this._barNudge;
+                    xstart;
                     
                     if (this._stack && this._prevGridData.length) {
                         xstart = this._prevGridData[i][0];
@@ -458,7 +462,7 @@
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, points, pointy, nvals, nseries, pos;
         
         if (this._stack && this.shadow) {
             if (this.barWidth == null) {
@@ -536,7 +540,7 @@
     };
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.BarRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
