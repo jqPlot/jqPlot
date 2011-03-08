@@ -114,7 +114,7 @@
         if (this.prefix && !this.formatString) {
             this.label = this.prefix + this.label;
         }
-        style ='style="position:absolute;';
+        var style ='style="position:absolute;';
         if (Number(this.label)) {
             style +='white-space:nowrap;';
         }

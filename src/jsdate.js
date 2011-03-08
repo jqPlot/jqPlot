@@ -1273,8 +1273,9 @@
         
         var i = 0;
         var length = jsDate.matchers.length;
-        var pattern;
-        var current = parsable;
+        var pattern,
+			ms,
+			current = parsable;
         while (i < length) {
             ms = Date.parse(current);
             if (!isNaN(ms)) {

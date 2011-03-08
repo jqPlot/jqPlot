@@ -215,7 +215,7 @@
     $.jqplot.ThemeEngine.prototype.init = function() {
         // get the Default theme from the current plot settings.
         var th = new $.jqplot.Theme({_name:'Default'});
-        var n, i;
+        var n, i, nn;
         
         for (n in th.target) {
             if (n == "textColor") {

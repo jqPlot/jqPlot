@@ -86,7 +86,8 @@
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
             var pad = false, 
-                reverse = false;
+                reverse = false,
+				s;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
                 if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer){

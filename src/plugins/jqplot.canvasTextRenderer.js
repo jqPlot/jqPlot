@@ -64,7 +64,7 @@
     // returns float
     $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
         sz = String(sz);
-        n = parseFloat(sz);
+        var n = parseFloat(sz);
         if (sz.indexOf('px') > -1) {
             return n/this.pt2px;
         }

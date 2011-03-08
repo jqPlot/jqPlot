@@ -87,7 +87,7 @@
             ctx.lineCap = 'butt';
             ctx.lineWidth = this.gridLineWidth;
             ctx.strokeStyle = this.gridLineColor;
-            var b, e;
+            var b, e, s, m;
             var ax = ['xaxis', 'yaxis', 'x2axis', 'y2axis'];
             for (var i=4; i>0; i--) {
                 var name = ax[i-1];
