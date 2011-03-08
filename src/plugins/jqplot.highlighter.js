@@ -155,6 +155,10 @@
         $.extend(true, this, options);
     };
     
+    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
+    
     // axis.renderer.tickrenderer.formatter
     
     // called with scope of plot
@@ -308,7 +312,13 @@
         if (series.markerRenderer.show == true) { 
             ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
         }
-        switch (hl.tooltipLocation) {
+		
+		var loc = locations;
+		if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+			loc = oppositeLocations;
+		}
+		
+        switch (loc[locationIndicies[hl.tooltipLocation]]) {
             case 'nw':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
                 var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
@@ -379,7 +389,7 @@
         	  ctx = null;
             
             }
-            if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
+            else if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
                 hl.isHighlighting = true;
                 if (hl.showMarker) {
                     draw(plot, neighbor);

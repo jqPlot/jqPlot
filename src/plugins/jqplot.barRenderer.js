@@ -341,11 +341,20 @@
                             opts.fillStyle = positiveColor;
                         }
                     }
-                    
-                    points.push([base-this.barWidth/2, ystart]);
-                    points.push([base-this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, ystart]);
+					
+					if (!this.fillToZero || this._plotData[i][1] >= 0) { 
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, ystart]);
+					}
+					// for negative bars make sure points are always ordered clockwise
+					else {              
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+					}
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
