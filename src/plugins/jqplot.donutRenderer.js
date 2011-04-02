@@ -156,6 +156,7 @@
         this.tickRenderer = $.jqplot.DonutTickRenderer;
         // Used as check for conditions where donut shouldn't be drawn.
         this._drawData = true;
+        this._type = 'donut';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {

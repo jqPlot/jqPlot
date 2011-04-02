@@ -163,6 +163,7 @@
         // True will stop needle just below/above the  min/max values if data is below/above min/max,
         // as if the meter is "pegged".
         this.pegNeedle = true;
+        this._type = 'meterGauge';
         
         $.extend(true, this, options);
         this.type = null;

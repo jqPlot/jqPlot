@@ -126,6 +126,7 @@
         // if no renderer option for lineWidth is specified.
         this.lineWidth = options.lineWidth || 1.5;
         $.jqplot.LineRenderer.prototype.init.call(this, options);
+        this._type = 'ohlc';
         // set the yaxis data bounds here to account for hi and low values
         var db = this._yaxis._dataBounds;
         var d = this._plotData;

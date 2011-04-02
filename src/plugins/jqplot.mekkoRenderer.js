@@ -77,6 +77,7 @@
         var opts = {lineJoin:'miter', lineCap:'butt', isarc:false, fillRect:this.fillRect, strokeRect:this.strokeRect};
         this.renderer.shapeRenderer.init(opts);
         plot.axes.x2axis._series.push(this);
+        this._type = 'mekko';
     };
     
     // Method: setGridData

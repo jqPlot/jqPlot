@@ -567,6 +567,12 @@
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
             var d = s._plotData;
+            var minyidx = 1, maxyidx = 1;
+
+            if (s._type != null && s._type == 'ohlc') {
+                minyidx = 3;
+                maxyidx = 2;
+            }
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -578,11 +584,11 @@
                     }
                 }              
                 else {
-                    if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
-                        db.min = d[j][1];
+                    if ((d[j][minyidx] != null && d[j][minyidx] < db.min) || db.min == null) {
+                        db.min = d[j][minyidx];
                     }
-                    if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
-                        db.max = d[j][1];
+                    if ((d[j][maxyidx] != null && d[j][maxyidx] > db.max) || db.max == null) {
+                        db.max = d[j][maxyidx];
                     }
                 }              
             }
@@ -1025,6 +1031,7 @@
         // sum of y values in this series.
         this._sumy = 0;
         this._sumx = 0;
+        this._type = '';
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
@@ -1656,14 +1663,7 @@
                 $.extend(true, this.noDataIndicator, options.noDataIndicator);
             }
             
-            if (data == null) {
-                throw{
-                    name: "DataError",
-                    message: "No data to plot."
-                };
-            }
-            
-            if (jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
+            if (data == null || jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
                 
                 if (this.noDataIndicator.show == false) {
                     throw{
@@ -1673,6 +1673,9 @@
                 }
                 
                 else {
+                    // have to be descructive here in order for plot to not try and render series.
+                    // This means that $.jqplot() will have to be called again when there is data.
+                    //delete options.series;
                     
                     for (var ax in this.noDataIndicator.axes) {
                         for (var prop in this.noDataIndicator.axes[ax]) {
@@ -2001,6 +2004,13 @@
                 series._sumx += series.data[i][0];
             }
         };
+
+        // this.setData = function(seriesIndex, newdata) {
+        //     // if newdata is null, assume all data is passed in as first argument
+        //     if (newdata == null) {
+                
+        //     }
+        // };
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -2047,12 +2057,12 @@
                 axis._plotWidth = this._width;
                 axis._plotHeight = this._height;
             }
-            if (this.data.length == 0) {
-                this.data = [];
-                for (var i=0; i<this.options.series.length; i++) {
-                    this.data.push(this.options.series.data);
-                }    
-            }
+            // if (this.data.length == 0) {
+            //     this.data = [];
+            //     for (var i=0; i<this.options.series.length; i++) {
+            //         this.data.push(this.options.series.data);
+            //     }    
+            // }
                 
             var normalizeData = function(data, dir, start) {
                 // return data as an array of point arrays,
@@ -2080,7 +2090,7 @@
                 return temp;
             };
 
-            for (var i=0; i<this.data.length; i++) { 
+            for (var i=0; i<this.data.length; i++) {
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
@@ -2189,10 +2199,10 @@
                 // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
+            this.reInitialize();
             if (resetAxes) {
                 this.resetAxesScale(resetAxes, opts.axes);
             }
-            this.reInitialize();
             this.draw();
             this.target.trigger('jqplotPostReplot');
         };

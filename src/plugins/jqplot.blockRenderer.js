@@ -89,6 +89,7 @@
         this.shadowCanvas =  new $.jqplot.BlockCanvas();
         this.canvas._plotDimensions = this._plotDimensions;
         this.shadowCanvas._plotDimensions = this._plotDimensions;
+        this._type = 'block';
         
         // group: Methods 
         //

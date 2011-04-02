@@ -39,6 +39,7 @@
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
+        this._type='line';
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);

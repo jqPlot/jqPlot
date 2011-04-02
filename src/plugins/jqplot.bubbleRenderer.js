@@ -143,6 +143,7 @@
         // array of jQuery labels.
         this.labels = [];
         this.bubbleCanvases = [];
+        this._type = 'bubble';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {

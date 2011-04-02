@@ -146,6 +146,7 @@
         // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
         // This applies to all label types, not just to percentage labels.
         this.dataLabelThreshold = 3;
+        this._type = 'funnel';
         
         this.tickRenderer = $.jqplot.FunnelTickRenderer;
         

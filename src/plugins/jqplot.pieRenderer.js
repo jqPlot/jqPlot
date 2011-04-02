@@ -147,6 +147,7 @@
         this.tickRenderer = $.jqplot.PieTickRenderer;
         // Used as check for conditions where pie shouldn't be drawn.
         this._drawData = true;
+        this._type = 'pie';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
