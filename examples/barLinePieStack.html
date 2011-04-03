@@ -31,7 +31,7 @@
       font-size: 1.1em;
     }
   </style>
-  <script type="text/javascript" language="javascript">
+  <script class="code" type="text/javascript" language="javascript">
   
   $(document).ready(function(){
       $.jqplot.config.enablePlugins = true;
@@ -48,6 +48,11 @@
         axes:{xaxis:{pad:1.0, numberTicks:5, autoscale:false}, yaxis:{min:0, max:12, numberTicks:5}},
         series:[{color:'rgba(68, 124, 147, 0.7)'}, {color:'rgba(150, 35, 90, 0.7)'}]
     });
+  });
+  </script>
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
     
     
     
@@ -67,6 +72,11 @@
         },
         series:[{lineWidth:4, markerOptions:{style:'square'}}]
     });
+  });
+  </script>
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
     
      line1 = [[4, 1], [4, 2], [3, 3], [16, 4]];
      line2 = [[3, 1], [7, 2], [4, 3], [3.125, 4]];
@@ -96,9 +106,13 @@
                  renderer: $.jqplot.CategoryAxisRenderer,
                  ticks: ['Q1', 'Q2', 'Q3', 'Q4']
              },
-             xaxis: {min: 0, max: 20, numberTicks:5}
          }
      });
+  });
+  </script>
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
      
      line1 = [4, 2, 9, 16];
      line2 = [3, 7, 6.25, 3.125];
@@ -127,9 +141,13 @@
                  renderer: $.jqplot.CategoryAxisRenderer,
                  ticks: ['Q1', 'Q2', 'Q3', 'Q4']
              },
-             yaxis: {min: 0, max: 20, numberTicks:5}
          }
-     });  
+     }); 
+  });
+  </script> 
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
      
      line1 = [4, 2, 9, 16];
      line2 = [3, 7, 6.25, 3.125];
@@ -157,9 +175,13 @@
                  renderer: $.jqplot.CategoryAxisRenderer,
                  ticks: ['Q1', 'Q2', 'Q3', 'Q4']
              },
-             yaxis: {min: 0, max: 20, numberTicks:5}
          }
-     });   
+     }); 
+  });
+  </script>  
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
    
    line1 = [['frogs', 3], ['buzzards', 7], ['deer', 2.5], ['turkeys', 6], ['moles', 5], ['ground hogs', 4]];
    line2 = [3, 7, 2.5, 6, 5, 4];
@@ -169,6 +191,11 @@
      seriesDefaults:{renderer:$.jqplot.PieRenderer, rendererOptions:{sliceMargin:8}}, 
      legend:{show:true}
    });
+  });
+  </script>
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
    
      l1 = [2.2, 3, .6, 4.8, 3];
      l2 = [1, 4, 3, 2, 5.7];
@@ -176,13 +203,18 @@
   
     plot5 = $.jqplot('chart5', [l1, l2]);
 
+  });
+  </script>
+  <script class="code" type="text/javascript" language="javascript">
+  
+  $(document).ready(function(){
   
     plot6 = $.jqplot('chart6', [[3,7,3,2,9,11,8]], {
-      axes:{xaxis:{numberTicks:5}}
     });
 
   });
   </script>
+<script type="text/javascript" src="example.js"></script>
   </head>
   <body>
 <?php include "nav.inc"; ?>

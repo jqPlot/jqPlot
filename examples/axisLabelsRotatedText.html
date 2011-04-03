@@ -28,17 +28,15 @@
 	</style>
 	
 	
-		<script type="text/javascript" language="javascript"><!--
+		<script class="code" type="text/javascript" language="javascript">
 $(document).ready(function(){
       $.jqplot.config.enablePlugins = true;
 	line1 = [6.5, 9.2, 14, 19.65, 26.4, 35, 51];
-	line2 = [['1/1/2008', 42], ['2/14/2008', 56], ['3/7/2008', 39], ['4/22/2008', 81]];
 
 	plot1 = $.jqplot('chart1', [line1], {
 	    legend: {show:false},
 	    axes:{
 	      xaxis:{
-	        autoscale: true,
           tickOptions:{
             // formatString:'%.4f', 
             angle: -30
@@ -52,7 +50,6 @@ $(document).ready(function(){
           labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 	      }, 
 	      yaxis:{
-          autoscale: true,
           renderer:$.jqplot.LogAxisRenderer,
           tickOptions:{
             formatString:'%.2f', 
@@ -69,11 +66,16 @@ $(document).ready(function(){
 	      }
 	    }
 	});
-	
+
+});
+</script>
+<script class="code" type="text/javascript" language="javascript">
+$(document).ready(function(){	
+      $.jqplot.config.enablePlugins = true;
+    line2 = [['1/1/2008', 42], ['2/14/2008', 56], ['3/7/2008', 39], ['4/22/2008', 81]];
 	plot2 = $.jqplot('chart2', [line2], {
 	  axes: {
 	    xaxis: {
-	      autoscale: true,
 	      renderer: $.jqplot.DateAxisRenderer,
 	      label: 'Incliment Occurrance',
 	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
@@ -91,6 +93,11 @@ $(document).ready(function(){
 	  }
 	});
 
+});
+</script>
+<script class="code" type="text/javascript" language="javascript">
+$(document).ready(function(){   
+      $.jqplot.config.enablePlugins = true;
 line3 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp Marketing Gimmick', 9], ['HDTV Receiver', 15], ['8 Track Control Module', 12], ['SSPFM (Sealed Sludge Pump Fourier Modulator)', 3], ['Transcender/Spice Rack', 6], ['Hair Spray Rear View Mirror Danger Indicator', 18]];
 
 	plot3 = $.jqplot('chart3', [line3], {
@@ -109,7 +116,6 @@ line3 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp Marketing Gimmick', 9]
 	      
 	    },
 	    yaxis: {
-	      autoscale:true,
 	      label: 'Occurance',
 	      labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 	    }
@@ -118,16 +124,17 @@ line3 = [['Cup Holder Pinion Bob', 7], ['Generic Fog Lamp Marketing Gimmick', 9]
 	
 	
 });
-			-->
 		</script>
+    
+<script type="text/javascript" src="example.js"></script>
 		
 </head>
 <body>
 <?php include "nav.inc"; ?>
-		<div class="jqplot" id="chart1"></div>
-		<div class="jqplot" id="chart2"></div>
-		<div class="jqplot" id="chart3"></div>
- 
+		<div class="jqplot code" id="chart1"></div>
+		<div class="jqplot code" id="chart2"></div>
+		<div class="jqplot code" id="chart3"></div>
+
 </body>
 
 
