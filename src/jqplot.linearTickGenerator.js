@@ -93,8 +93,10 @@
         var r = [];
         r[0] = Math.floor(axis_min / ss) * ss;
         r[1] = Math.ceil(axis_max / ss) * ss;
-        r[2] = (r[1]-r[0])/ss+1;
+        r[2] = Math.round((r[1]-r[0])/ss+1);
         r[3] = bestFormatString(ss);
+        r[4] = ss;
+        //console.log('min: %s, max: %s, numTicks: %s, rawNumTicks: %s, tickInterval: %s', r[0], r[1], r[2], (r[1]-r[0])/ss+1, r[4]);
         return r;
     }
 

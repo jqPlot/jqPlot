@@ -291,7 +291,8 @@
                 this.min = ret[0];
                 this.max = ret[1];
                 this.numberTicks = ret[2];
-                this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
+                //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
+                this.tickInterval = ret[4];
             }
 
             // User has specified some axis scale related option, can use auto algorithm
