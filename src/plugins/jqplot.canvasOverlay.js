@@ -57,6 +57,9 @@
 						case 'horizontalLine':
 							this.addHorizontalLine(obj[n]);
 							break;
+						case 'dashedHorizontalLine':
+							this.addDashedHorizontalLine(obj[n]);
+							break;
 					}
 				}	
 			}
@@ -137,6 +140,46 @@
 		$.extend(true, this.options, options);
 	}
 	
+	function DashedHorizontalLine(options) {
+		this.type = 'dashedHorizontalLine';
+		this.options = {
+			name: null,
+			show: true,
+			lineWidth: 2,
+			lineCap: 'butt',
+			color: '#666666',
+	        // prop: shadow
+	        // wether or not to draw a shadow on the line
+	        shadow: true,
+	        // prop: shadowAngle
+	        // Shadow angle in degrees
+	        shadowAngle: 45,
+	        // prop: shadowOffset
+	        // Shadow offset from line in pixels
+	        shadowOffset: 1,
+	        // prop: shadowDepth
+	        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
+	        shadowDepth: 3,
+	        // prop: shadowAlpha
+	        // Alpha channel transparency of shadow.  0 = transparent.
+	        shadowAlpha: '0.07',
+			xaxis: 'xaxis',
+			yaxis: 'yaxis',
+			y: null,
+			xmin: null,
+			xmax: null,
+			xOffset: '6px',	// number or string.  Number interpreted as units, string as pixels.
+			xminOffset: null,
+			xmaxOffset: null,
+			// prop: dashPattern
+			// Array of line, space settings in pixels.
+			// Default is 8 pixel of line, 8 pixel of space.
+			// Note, limit to a 2 element array b/c of bug with higher order arrays.
+			dashPattern: [8,8]
+		};
+		$.extend(true, this.options, options);
+	}
+	
 	$.jqplot.CanvasOverlay.prototype.addLine = function(opts) {
 		var line = new Line(opts);
 		this.objects.push(line);
@@ -145,6 +188,12 @@
 	
 	$.jqplot.CanvasOverlay.prototype.addHorizontalLine = function(opts) {
 		var line = new HorizontalLine(opts);
+		this.objects.push(line);
+		this.objectNames.push(line.options.name);
+	};
+	
+	$.jqplot.CanvasOverlay.prototype.addDashedHorizontalLine = function(opts) {
+		var line = new DashedHorizontalLine(opts);
 		this.objects.push(line);
 		this.objectNames.push(line.options.name);
 	};
@@ -251,6 +300,63 @@
 								}
 							}
 							break;
+						case 'dashedHorizontalLine':
+							
+							var dashPat = obj.options.dashPattern;
+							var dashPatLen = 0;
+							for (var i=0; i<dashPat.length; i++) {
+								dashPatLen += dashPat[i];
+							}
+
+							// style and shadow properties should be set before
+							// every draw of marker renderer.
+							if (obj.options.y != null) {
+								mr.style = 'line';
+								opts.closePath = false;
+								var xaxis = plot.axes[obj.options.xaxis],
+									xstart,
+									xstop,
+									y = plot.axes[obj.options.yaxis].u2p(obj.options.y),
+									xminoff = obj.options.xminOffset || obj.options.xOffset,
+									xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
+								if (obj.options.xmin != null) {
+									xstart = xaxis.u2p(obj.options.xmin);
+								}
+								else if (xminoff != null) {
+									if ($.type(xminoff) == "number") {
+										xstart = xaxis.u2p(xaxis.min + xminoff);
+									}
+									else if ($.type(xminoff) == "string") {
+										xstart = xaxis.u2p(xaxis.min) + parseFloat(xminoff);
+									}
+								}
+								if (obj.options.xmax != null) {
+									xstop = xaxis.u2p(obj.options.xmax);
+								}
+								else if (xmaxoff != null) {
+									if ($.type(xmaxoff) == "number") {
+										xstop = xaxis.u2p(xaxis.max - xmaxoff);
+									}
+									else if ($.type(xmaxoff) == "string") {
+										xstop = xaxis.u2p(xaxis.max) - parseFloat(xmaxoff);
+									}
+								}
+								if (xstop != null && xstart != null) {
+									var numDash = Math.ceil((xstop - xstart)/dashPatLen);
+									var b=xstart, e;
+									for (var i=0; i<numDash; i++) {
+										for (var j=0; j<dashPat.length; j+=2) {
+											e = b+dashPat[j];
+											mr.draw([b, y], [e, y], this.canvas._ctx, opts);
+											b += dashPat[j];
+											if (j < dashPat.length-1) {
+												b += dashPat[j+1];
+											}
+										}
+									}
+								}
+							break;
+						}
 					}
 				}
 			}
