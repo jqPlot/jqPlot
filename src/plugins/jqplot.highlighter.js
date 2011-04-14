@@ -179,6 +179,13 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     $.jqplot.Highlighter.postPlotDraw = function() {
+        // Memory Leaks patch    
+        if (this.plugins.highlighter &&
+        this.plugins.highlighter.highlightCanvas) {
+            this.plugins.highlighter.highlightCanvas.resetCanvas();
+            this.plugins.highlighter.highlightCanvas = null;
+        }
+
         this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));

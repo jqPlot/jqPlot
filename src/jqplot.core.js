@@ -84,6 +84,60 @@
 (function($) {
     // make sure undefined is undefined
     var undefined;
+    
+    $.fn.emptyForce = function() {
+      for ( var i = 0, elem; (elem = $(this)[i]) != null; i++ ) {
+        // Remove element nodes and prevent memory leaks
+        if ( elem.nodeType === 1 ) {
+          jQuery.cleanData( elem.getElementsByTagName("*") );
+        }
+  
+        // Remove any remaining nodes
+        if ($.browser.msie) {
+          elem.outerHTML = "";
+        } else {
+          while ( elem.firstChild ) {
+            elem.removeChild( elem.firstChild );
+          }
+        }
+
+        elem = null;
+      }
+  
+      return $(this);
+    };
+  
+    $.fn.removeChildForce = function(parent) {
+      while ( parent.firstChild ) {
+        this.removeChildForce( parent.firstChild );
+        parent.removeChild( parent.firstChild );
+      }
+    };
+    
+    // Memory Leaks patch : garbage collector
+    $.gcInit = function() {
+      var gc = $("<div id='gc_jqPlotSalsaGarbage' style='display:none;visibility:hidden;'></div>");
+      $("body").append(gc)
+      $._gc = gc;
+    };
+
+    $.gcCollect = function(elem) {
+      $._gc.append(elem);
+    };
+    
+    $.gcClear = function() {
+      if ($.browser.msie) {
+        $._gc.children().each(function() {
+          this.outerHTML = "";
+        });
+      }
+      
+      $._gc.empty();
+    };
+    
+    $(document).ready(function() {
+      $.gcInit();
+    });
 
     /**
      * Class: $.jqplot
@@ -526,6 +580,11 @@
     };
     
     Axis.prototype.draw = function(ctx) {
+        // Memory Leaks patch
+        if (this.__ticks) {
+          this.__ticks = null;
+        }
+
         return this.renderer.draw.call(this, ctx);
         
     };
@@ -1317,6 +1376,10 @@
         // if this canvas already has a dom element, don't make a new one.
         if (this._elem) {
             elem = this._elem.get(0);
+            // Memory Leaks patch
+            if ($.jqplot.use_excanvas) {
+                window.G_vmlCanvasManager.uninitElement(elem);
+            }
         }
         else {
             elem = document.createElement('canvas');
@@ -1333,7 +1396,7 @@
         
         this._elem.addClass(klass);
         if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.init_(document);
+            // useless ?? window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
         // avoid memory leak
@@ -1344,6 +1407,20 @@
     $.jqplot.GenericCanvas.prototype.setContext = function() {
         this._ctx = this._elem.get(0).getContext("2d");
         return this._ctx;
+    };
+    
+    // Memory Leaks patch
+    $.jqplot.GenericCanvas.prototype.resetCanvas = function() {
+      if (this._elem) {
+        if ($.jqplot.use_excanvas) {
+           window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
+        }
+        
+        //this._elem.remove();
+        this._elem.emptyForce();
+      }
+      
+      this._ctx = null;
     };
     
     $.jqplot.HooksManager = function () {
@@ -1886,6 +1963,22 @@
             }
             
             for (var name in this.axes) {
+                // Memory Leaks patch : clear ticks elements
+                var t = this.axes[name]._ticks;
+                for (var i = 0; i < t.length; i++) {
+                  var el = t[i]._elem;
+                  if (el) {
+                    // if canvas renderer
+                    if ($.jqplot.use_excanvas) {
+                      window.G_vmlCanvasManager.uninitElement(el.get(0));
+                    }
+                    el.emptyForce();
+                    el = null;
+                    t._elem = null;
+                  }
+                }
+                t = null;
+                
                 this.axes[name]._plotDimensions = this._plotDimensions;
                 this.axes[name]._ticks = [];
                 this.axes[name].renderer.init.call(this.axes[name], {});
@@ -2192,7 +2285,19 @@
             var clear = opts.clear || true;
             var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
+            
             if (clear) {
+                // Memory Leaks patch
+                this.target.find("table.jqplot-table-legend,table.jqplot-legend").each( function() {
+                    $(this).unbind();
+
+                    $(this).find(".jqplot-seriesToggle").each( function() {
+                        $(this).unbind();
+                    });
+                    $.gcCollect(this)
+                });
+                $.gcClear();
+
                 // Couple of posts on Stack Overflow indicate that empty() doesn't
                 // always cear up the dom and release memory.  Sometimes setting
                 // innerHTML property to null is needed.  Particularly on IE, may 

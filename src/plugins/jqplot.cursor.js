@@ -207,6 +207,24 @@
     // called with context of plot
     $.jqplot.Cursor.postDraw = function() {
         var c = this.plugins.cursor;
+        
+        // Memory Leaks patch
+        if (c.zoomCanvas) {
+            c.zoomCanvas.resetCanvas();
+            c.zoomCanvas = null;
+        }
+        
+        if (c.cursorCanvas) {
+            c.cursorCanvas.resetCanvas();
+            c.cursorCanvas = null;
+        }
+        
+        if (c._tooltipElem) {
+            c._tooltipElem.emptyForce();
+            c._tooltipElem = null;
+        }
+
+        
         // if (c.zoom) {
         c.zoomCanvas = new $.jqplot.GenericCanvas();
         this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions));

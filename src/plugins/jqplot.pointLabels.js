@@ -268,8 +268,12 @@
         p.setLabels.call(this);
         // remove any previous labels
         for (var i=0; i<p._elems.length; i++) {
-            p._elems[i].remove();
+            // Memory Leaks patch
+            // p._elems[i].remove();
+            p._elems[i].emptyForce();
         }
+        p._elems.splice(0, p._elems.length);
+
         if (p.show) {
             var ax = '_'+this._stackAxis+'axis';
         

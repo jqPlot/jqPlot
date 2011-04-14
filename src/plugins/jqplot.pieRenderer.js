@@ -754,6 +754,13 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
+        // Memory Leaks patch    
+        if (this.plugins.pieRenderer &&
+        this.plugins.pieRenderer.highlightCanvas) {
+            this.plugins.pieRenderer.highlightCanvas.resetCanvas();
+            this.plugins.pieRenderer.highlightCanvas = null;
+        }
+
         this.plugins.pieRenderer = {highlightedSeriesIndex:null};
         this.plugins.pieRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         

@@ -60,6 +60,12 @@
     };
     
     $.jqplot.AxisLabelRenderer.prototype.draw = function() {
+        // Memory Leaks patch
+        if (this._elem) {
+            this._elem.emptyForce();
+            this._elem = null;
+        }
+
         this._elem = $('<div style="position:absolute;" class="jqplot-'+this.axis+'-label"></div>');
         
         if (Number(this.label)) {
