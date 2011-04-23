@@ -48,7 +48,7 @@
         
         $.extend(true, this.renderer, options);
         // set the shape renderer options
-        var opts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
+        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
@@ -60,7 +60,7 @@
         else {
             var shadow_offset = this.shadowOffset*Math.atan((this.lineWidth/2.5))/0.785398163;
         }
-        var sopts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        var sopts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
         this._boundingBox = [[],[]];

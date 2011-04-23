@@ -930,6 +930,12 @@
         // prop: lineWidth
         // width of the line in pixels.  May have different meanings depending on renderer.
         this.lineWidth = 2.5;
+        // prop: lineJoin
+        // Canvas lineJoin style between segments of series.
+        this.lineJoin = 'round';
+        // prop: lineCap
+        // Canvas lineCap style at ends of line.
+        this.lineCap = 'round';
         // prop: shadow
         // wether or not to draw a shadow on the line
         this.shadow = true;

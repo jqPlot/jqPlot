@@ -91,7 +91,7 @@
         var clearRect = (opts.clearRect != null) ? opts.clearRect : this.clearRect;
         var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
         ctx.lineWidth = opts.lineWidth || this.lineWidth;
-        ctx.lineJoin = opts.lineJoing || this.lineJoin;
+        ctx.lineJoin = opts.lineJoin || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
         ctx.strokeStyle = (opts.strokeStyle || opts.color) || this.strokeStyle;
         ctx.fillStyle = opts.fillStyle || this.fillStyle;
