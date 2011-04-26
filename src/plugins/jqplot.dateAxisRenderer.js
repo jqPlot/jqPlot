@@ -244,6 +244,11 @@
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
         
+        min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
+        max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
+
+        var range = max - min;
+        
         if (userTicks.length) {
             // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
             for (i=0; i<userTicks.length; i++){
@@ -281,11 +286,6 @@
             this.max = this._ticks[this.numberTicks-1].value;
             this.daTickInterval = [(this.max - this.min) / (this.numberTicks - 1)/1000, 'seconds'];
         }
-        
-        min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
-        max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
-
-        var range = max - min;
 
         ////////
         // We don't have any ticks yet, let's make some!
@@ -310,7 +310,7 @@
             this.max = ret[1];
             this.numberTicks = ret[2];
             this.tickInterval = ret[4];
-            this.daTickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
+            this.daTickInterval = [this.tickInterval/1000, 'seconds'];
 
             for (var i=0; i<this.numberTicks; i++){
                 var min = new $.jsDate(this.min);
