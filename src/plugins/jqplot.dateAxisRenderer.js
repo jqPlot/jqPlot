@@ -282,7 +282,57 @@
             this.daTickInterval = [(this.max - this.min) / (this.numberTicks - 1)/1000, 'seconds'];
         }
         
-        // we don't have any ticks yet, let's make some!
+        min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
+        max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
+
+        var range = max - min;
+
+        ////////
+        // We don't have any ticks yet, let's make some!
+        // Doing complete autoscaling, no user options specified
+        ////////
+        
+        else if (this.tickInterval == null && this.min == null && this.max == null && this.numberTicks == null) {
+            var ret = $.jqplot.LinearTickGenerator(min, max); 
+            // calculate a padded max and min, points should be less than these
+            // so that they aren't too close to the edges of the plot.
+            // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
+            var tumin = min + range*(this.padMin - 1);
+            var tumax = max - range*(this.padMax - 1);
+
+            if (min <=tumin || max >= tumax) {
+                tumin = min - range*(this.padMin - 1);
+                tumax = max + range*(this.padMax - 1);
+                ret = $.jqplot.LinearTickGenerator(tumin, tumax);
+            }
+
+            this.min = ret[0];
+            this.max = ret[1];
+            this.numberTicks = ret[2];
+            this.tickInterval = ret[4];
+            this.daTickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
+
+            for (var i=0; i<this.numberTicks; i++){
+                var min = new $.jsDate(this.min);
+                tt = min.add(i*this.daTickInterval[0], this.daTickInterval[1]).getTime();
+                var t = new this.tickRenderer(this.tickOptions);
+                // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
+                if (!this.showTicks) {
+                    t.showLabel = false;
+                    t.showMark = false;
+                }
+                else if (!this.showTickMarks) {
+                    t.showMark = false;
+                }
+                t.setTick(tt, this.name);
+                this._ticks.push(t);
+            }           
+        }
+
+        ////////
+        // Some option(s) specified, work around that.
+        ////////
+        
         else {		
             if (name == 'xaxis' || name == 'x2axis') {
                 dim = this._plotDimensions.width;
@@ -315,9 +365,6 @@
                     }
                 }
             }
-        
-            min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
-            max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
             
             // if min and max are same, space them out a bit
             if (min == max) {
@@ -326,7 +373,7 @@
                 max += adj;
             }
 
-            var range = max - min;
+            range = max - min;
 			
 			var optNumTicks = 2 + parseInt(Math.max(0, dim-100)/100, 10);
 			
@@ -381,6 +428,8 @@
                 this._ticks.push(t);
             }
         }
+
+
         if (this._daTickInterval == null) {
             this._daTickInterval = this.daTickInterval;    
         }
