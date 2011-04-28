@@ -259,7 +259,8 @@
     
     $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;
-        var opts = (options != undefined) ? options : {};
+        // Ughhh, have to make a copy of options b/c it may be modified later.
+        var opts = $.extend({}, options);
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;

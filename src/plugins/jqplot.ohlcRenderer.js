@@ -190,13 +190,23 @@
                     xmaxidx = i+1;
                 }
             }
+
+            var dwidth = this.gridData[xmaxidx-1][0] - this.gridData[xminidx][0];
+            var nvisiblePoints = xmaxidx - xminidx;
+            try {
+                var dinterval = Math.abs(this._xaxis.series_u2p(parseInt(this._xaxis._intervalStats[0].sortedIntervals[0].interval)) - this._xaxis.series_u2p(0)); 
+            }
+
+            catch (e) {
+                var dinterval = dwidth / nvisiblePoints;
+            }
             
             if (r.candleStick) {
                 if (typeof(r.bodyWidth) == 'number') {
                     r._bodyWidth = r.bodyWidth;
                 }
                 else {
-                    r._bodyWidth = Math.min(20, ctx.canvas.width/(xmaxidx - xminidx)/2);
+                    r._bodyWidth = Math.min(20, dinterval/1.75);
                 }
             }
             else {
@@ -204,7 +214,7 @@
                     r._tickLength = r.tickLength;
                 }
                 else {
-                    r._tickLength = Math.min(10, ctx.canvas.width/(xmaxidx - xminidx)/4);
+                    r._tickLength = Math.min(10, dinterval/3.5);
                 }
             }
             
