@@ -92,6 +92,9 @@
         // They Will be set through call to zoomProxy method.
         this.zoomProxy = false;
         this.zoomTarget = false;
+        // prop: looseZoom
+        // Will expand zoom range to provide more rounded tick values
+        this.looseZoom = false;
         // prop: clickReset
         // Will reset plot zoom if single click on plot without drag.
         this.clickReset = false;
@@ -307,7 +310,7 @@
         var end = zaxes.end;
         var min, max, dp, span;
         var ctx = plot.plugins.cursor.zoomCanvas._ctx;
-        // don't zoom is zoom area is too small (in pixels)
+        // don't zoom if zoom area is too small (in pixels)
         if ((c.constrainZoomTo == 'none' && Math.abs(gridpos.x - c._zoom.start[0]) > 6 && Math.abs(gridpos.y - c._zoom.start[1]) > 6) || (c.constrainZoomTo == 'x' && Math.abs(gridpos.x - c._zoom.start[0]) > 6) ||  (c.constrainZoomTo == 'y' && Math.abs(gridpos.y - c._zoom.start[1]) > 6)) {
             if (!plot.plugins.cursor.zoomProxy) {
                 for (var ax in datapos) {
@@ -321,21 +324,39 @@
                         c._zoom.axes[ax].min = axes[ax].min;
                         c._zoom.axes[ax].max = axes[ax].max;
                     }
+
+
                     if ((c.constrainZoomTo == 'none') || (c.constrainZoomTo == 'x' && ax.charAt(0) == 'x') || (c.constrainZoomTo == 'y' && ax.charAt(0) == 'y')) {   
                         dp = datapos[ax];
-                        if (dp != null) {           
+                        if (dp != null) {  
+                            var newmin, newmax;         
                             if (dp > start[ax]) { 
-                                axes[ax].min = start[ax];
-                                axes[ax].max = dp;
+                                newmin = start[ax];
+                                newmax = dp;
                             }
                             else {
                                 span = start[ax] - dp;
-                                axes[ax].max = start[ax];
-                                axes[ax].min = dp;
+                                newmin = dp;
+                                newmax = start[ax];
                             }
-                            axes[ax].tickInterval = null;
-                            // for date axes...
-                            axes[ax].daTickInterval = null;
+                            
+                            if (this.looseZoom) {
+                                var ret = $.jqplot.LinearTickGenerator(newmin, newmax);
+                                axes[ax].min = ret[0];
+                                axes[ax].max = ret[1];
+                                axes[ax].numberTicks = ret[2];
+                                axes[ax].tickInterval = ret[4];
+                                // for date axes...
+                                axes[ax].daTickInterval = [ret[4]/1000, 'seconds'];
+                            }
+                            else {
+                                axes[ax].min = newmin;
+                                axes[ax].max = newmax;
+                                axes[ax].tickInterval = null;
+                                // for date axes...
+                                axes[ax].daTickInterval = null;
+                            }
+
                             axes[ax]._ticks = [];
                         }
                     }
