@@ -31,9 +31,6 @@
     // class: $.jqplot.CanvasOverlay
     $.jqplot.CanvasOverlay = function(opts){
 		var options = opts || {};
-        // Group: Properties
-        // prop: show
-        // wether or not to show the marker.
         this.options = {
 			show: $.jqplot.config.enablePlugins,
 			deferDraw: false
@@ -128,7 +125,13 @@
 	        // prop: shadowAlpha
 	        // Alpha channel transparency of shadow.  0 = transparent.
 	        shadowAlpha: '0.07',
+	        // prop: xaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired x axis here.
 			xaxis: 'xaxis',
+	        // prop: yaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired y axis here.
 			yaxis: 'yaxis',
 			y: null,
 			xmin: null,
@@ -163,7 +166,13 @@
 	        // prop: shadowAlpha
 	        // Alpha channel transparency of shadow.  0 = transparent.
 	        shadowAlpha: '0.07',
+	        // prop: xaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired x axis here.
 			xaxis: 'xaxis',
+	        // prop: yaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired y axis here.
 			yaxis: 'yaxis',
 			y: null,
 			xmin: null,

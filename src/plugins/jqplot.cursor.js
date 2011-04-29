@@ -93,7 +93,8 @@
         this.zoomProxy = false;
         this.zoomTarget = false;
         // prop: looseZoom
-        // Will expand zoom range to provide more rounded tick values
+        // Will expand zoom range to provide more rounded tick values.
+        // Works only with linear axes and date axes.
         this.looseZoom = false;
         // prop: clickReset
         // Will reset plot zoom if single click on plot without drag.
@@ -340,7 +341,7 @@
                                 newmax = start[ax];
                             }
                             
-                            if (this.looseZoom) {
+                            if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
                                 var ret = $.jqplot.LinearTickGenerator(newmin, newmax);
                                 axes[ax].min = ret[0];
                                 axes[ax].max = ret[1];
