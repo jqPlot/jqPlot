@@ -256,8 +256,8 @@
 							// every draw of marker renderer.
 							mr.style = 'line';
 							opts.closePath = false;
-							start = [plot.axes[obj.options.xaxis].u2p(obj.options.start[0]), plot.axes[obj.options.yaxis].u2p(obj.options.start[1])];
-							stop = [plot.axes[obj.options.xaxis].u2p(obj.options.stop[0]), plot.axes[obj.options.yaxis].u2p(obj.options.stop[1])];
+							start = [plot.axes[obj.options.xaxis].series_u2p(obj.options.start[0]), plot.axes[obj.options.yaxis].series_u2p(obj.options.start[1])];
+							stop = [plot.axes[obj.options.xaxis].series_u2p(obj.options.stop[0]), plot.axes[obj.options.yaxis].series_u2p(obj.options.stop[1])];
 							mr.draw(start, stop, this.canvas._ctx, opts);
 							break;
 						case 'horizontalLine':
@@ -270,29 +270,29 @@
 								var xaxis = plot.axes[obj.options.xaxis],
 									xstart,
 									xstop,
-									y = plot.axes[obj.options.yaxis].u2p(obj.options.y),
+									y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y),
 									xminoff = obj.options.xminOffset || obj.options.xOffset,
 									xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
 								if (obj.options.xmin != null) {
-									xstart = xaxis.u2p(obj.options.xmin);
+									xstart = xaxis.series_u2p(obj.options.xmin);
 								}
 								else if (xminoff != null) {
 									if ($.type(xminoff) == "number") {
-										xstart = xaxis.u2p(xaxis.min + xminoff);
+										xstart = xaxis.series_u2p(xaxis.min + xminoff);
 									}
 									else if ($.type(xminoff) == "string") {
-										xstart = xaxis.u2p(xaxis.min) + parseFloat(xminoff);
+										xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
 									}
 								}
 								if (obj.options.xmax != null) {
-									xstop = xaxis.u2p(obj.options.xmax);
+									xstop = xaxis.series_u2p(obj.options.xmax);
 								}
 								else if (xmaxoff != null) {
 									if ($.type(xmaxoff) == "number") {
-										xstop = xaxis.u2p(xaxis.max - xmaxoff);
+										xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
 									}
 									else if ($.type(xmaxoff) == "string") {
-										xstop = xaxis.u2p(xaxis.max) - parseFloat(xmaxoff);
+										xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
 									}
 								}
 								if (xstop != null && xstart != null) {
@@ -316,29 +316,29 @@
 								var xaxis = plot.axes[obj.options.xaxis],
 									xstart,
 									xstop,
-									y = plot.axes[obj.options.yaxis].u2p(obj.options.y),
+									y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y),
 									xminoff = obj.options.xminOffset || obj.options.xOffset,
 									xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
 								if (obj.options.xmin != null) {
-									xstart = xaxis.u2p(obj.options.xmin);
+									xstart = xaxis.series_u2p(obj.options.xmin);
 								}
 								else if (xminoff != null) {
 									if ($.type(xminoff) == "number") {
-										xstart = xaxis.u2p(xaxis.min + xminoff);
+										xstart = xaxis.series_u2p(xaxis.min + xminoff);
 									}
 									else if ($.type(xminoff) == "string") {
-										xstart = xaxis.u2p(xaxis.min) + parseFloat(xminoff);
+										xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
 									}
 								}
 								if (obj.options.xmax != null) {
-									xstop = xaxis.u2p(obj.options.xmax);
+									xstop = xaxis.series_u2p(obj.options.xmax);
 								}
 								else if (xmaxoff != null) {
 									if ($.type(xmaxoff) == "number") {
-										xstop = xaxis.u2p(xaxis.max - xmaxoff);
+										xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
 									}
 									else if ($.type(xmaxoff) == "string") {
-										xstop = xaxis.u2p(xaxis.max) - parseFloat(xmaxoff);
+										xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
 									}
 								}
 								if (xstop != null && xstart != null) {
@@ -369,7 +369,7 @@
     $.jqplot.CanvasOverlay.postPlotDraw = function() {
         this.plugins.canvasOverlay.canvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.canvasOverlay.canvas.createElement({top:0, right:0, bottom:0, left:0}, 'jqplot-overlayCanvas-canvas', this._plotDimensions));
+        this.eventCanvas._elem.before(this.plugins.canvasOverlay.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions));
         this.plugins.canvasOverlay.canvas.setContext();
 		if (!this.plugins.canvasOverlay.deferDraw) {
 			this.plugins.canvasOverlay.draw(this);
