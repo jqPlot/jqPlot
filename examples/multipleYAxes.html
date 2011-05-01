@@ -29,6 +29,11 @@
     .jqplot-y6axis-tick {
       padding-right: 0px;
     }
+
+/* Use this to hide an axis */
+/*    .jqplot-y3axis {
+      display: none;
+    }*/
   </style>
   <script type="text/javascript" language="javascript">
   
@@ -45,7 +50,15 @@
     plot1 = $.jqplot('chart', [l1, l3, l4, l5], {
       title:'Default Multiply y axes',
         series:[{}, {yaxis:'y2axis'}, {yaxis:'y3axis'}, {yaxis:'y4axis'}, {yaxis:'y5axis'}, {yaxis:'y6axis'}],
-      highlighter:{bringSeriesToFront:true}
+      highlighter:{bringSeriesToFront:true},
+      axes: {
+        yaxis: {autoscale: true},
+        y2axis: {autoscale: true},
+        y3axis: {autoscale: true},
+        y4axis: {autoscale: true},
+        y5axis: {autoscale: true},
+        y6axis: {autoscale: true}
+      }
     });
 
 
@@ -53,7 +66,14 @@
       title:'Customized Multiply y axes',
         series:[{}, {yaxis:'y2axis'}, {yaxis:'y3axis'}, {yaxis:'y4axis'}, {yaxis:'y5axis'}, {yaxis:'y6axis'}],
         axesDefaults:{useSeriesColor: true},
-        axes:{y2axis:{padMax:2}, y3axis:{padMax:2.5}, y4axis:{padMin:2}, y5axis:{padMin:2.3}},
+        axes:{
+          yaxis: {autoscale: true},
+          y2axis:{padMax:2,autoscale: true}, 
+          y3axis:{padMax:2.5, autoscale: true}, 
+          y4axis:{padMin:2, autoscale: true}, 
+          y5axis:{padMin:2.3, autoscale: true},
+          y6axis: {autoscale: true}
+        },
         grid:{gridLineWidth:1.0, borderWidth:2.5, shadow:false},
       highlighter:{bringSeriesToFront:true}
     });
