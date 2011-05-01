@@ -57,6 +57,14 @@
 						case 'dashedHorizontalLine':
 							this.addDashedHorizontalLine(obj[n]);
 							break;
+						case 'verticalLine':
+							this.addVerticalLine(obj[n]);
+							break;
+						case 'dashedVerticalLine':
+							this.addDashedVerticalLine(obj[n]);
+							break;
+						default:
+							break;
 					}
 				}	
 			}
@@ -189,6 +197,93 @@
 		$.extend(true, this.options, options);
 	}
 	
+	function VerticalLine(options) {
+		this.type = 'verticalLine';
+		this.options = {
+			name: null,
+			show: true,
+			lineWidth: 2,
+			lineCap: 'round',
+			color: '#666666',
+	        // prop: shadow
+	        // wether or not to draw a shadow on the line
+	        shadow: true,
+	        // prop: shadowAngle
+	        // Shadow angle in degrees
+	        shadowAngle: 45,
+	        // prop: shadowOffset
+	        // Shadow offset from line in pixels
+	        shadowOffset: 1,
+	        // prop: shadowDepth
+	        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
+	        shadowDepth: 3,
+	        // prop: shadowAlpha
+	        // Alpha channel transparency of shadow.  0 = transparent.
+	        shadowAlpha: '0.07',
+	        // prop: xaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired x axis here.
+			xaxis: 'xaxis',
+	        // prop: yaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired y axis here.
+			yaxis: 'yaxis',
+			x: null,
+			ymin: null,
+			ymax: null,
+			yOffset: '6px',	// number or string.  Number interpreted as units, string as pixels.
+			yminOffset: null,
+			ymaxOffset: null
+		};
+		$.extend(true, this.options, options);
+	}
+	
+	function DashedVerticalLine(options) {
+		this.type = 'dashedVerticalLine';
+		this.options = {
+			name: null,
+			show: true,
+			lineWidth: 2,
+			lineCap: 'butt',
+			color: '#666666',
+	        // prop: shadow
+	        // wether or not to draw a shadow on the line
+	        shadow: true,
+	        // prop: shadowAngle
+	        // Shadow angle in degrees
+	        shadowAngle: 45,
+	        // prop: shadowOffset
+	        // Shadow offset from line in pixels
+	        shadowOffset: 1,
+	        // prop: shadowDepth
+	        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
+	        shadowDepth: 3,
+	        // prop: shadowAlpha
+	        // Alpha channel transparency of shadow.  0 = transparent.
+	        shadowAlpha: '0.07',
+	        // prop: xaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired x axis here.
+			xaxis: 'xaxis',
+	        // prop: yaxis
+	        // For drawing, canvas has to know which x-y axes to scale to.
+	        // Specify the desired y axis here.
+			yaxis: 'yaxis',
+			x: null,
+			ymin: null,
+			ymax: null,
+			yOffset: '6px',	// number or string.  Number interpreted as units, string as pixels.
+			yminOffset: null,
+			ymaxOffset: null,
+			// prop: dashPattern
+			// Array of line, space settings in pixels.
+			// Default is 8 pixel of line, 8 pixel of space.
+			// Note, limit to a 2 element array b/c of bug with higher order arrays.
+			dashPattern: [8,8]
+		};
+		$.extend(true, this.options, options);
+	}
+	
 	$.jqplot.CanvasOverlay.prototype.addLine = function(opts) {
 		var line = new Line(opts);
 		this.objects.push(line);
@@ -203,6 +298,18 @@
 	
 	$.jqplot.CanvasOverlay.prototype.addDashedHorizontalLine = function(opts) {
 		var line = new DashedHorizontalLine(opts);
+		this.objects.push(line);
+		this.objectNames.push(line.options.name);
+	};
+	
+	$.jqplot.CanvasOverlay.prototype.addVerticalLine = function(opts) {
+		var line = new VerticalLine(opts);
+		this.objects.push(line);
+		this.objectNames.push(line.options.name);
+	};
+	
+	$.jqplot.CanvasOverlay.prototype.addDashedVerticalLine = function(opts) {
+		var line = new DashedVerticalLine(opts);
 		this.objects.push(line);
 		this.objectNames.push(line.options.name);
 	};
@@ -252,8 +359,8 @@
 			stop;
 		if (this.options.show) {
 			this.canvas._ctx.clearRect(0,0,this.canvas.getWidth(), this.canvas.getHeight());
-			for (var i=0; i<objs.length; i++) {
-				obj = objs[i];
+			for (var k=0; k<objs.length; k++) {
+				obj = objs[k];
 				var opts = $.extend(true, {}, obj.options);
 				if (obj.options.show) {
 					// style and shadow properties should be set before
@@ -309,6 +416,7 @@
 								}
 							}
 							break;
+
 						case 'dashedHorizontalLine':
 							
 							var dashPat = obj.options.dashPattern;
@@ -364,8 +472,123 @@
 										}
 									}
 								}
+							}
 							break;
-						}
+
+						case 'verticalLine':
+							
+							// style and shadow properties should be set before
+							// every draw of marker renderer.
+							if (obj.options.x != null) {
+								mr.style = 'line';
+								opts.closePath = false;
+								var yaxis = plot.axes[obj.options.yaxis],
+									ystart,
+									ystop,
+									x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x),
+									yminoff = obj.options.yminOffset || obj.options.yOffset,
+									ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
+								if (obj.options.ymin != null) {
+									ystart = yaxis.series_u2p(obj.options.ymin);
+								}
+								else if (yminoff != null) {
+									if ($.type(yminoff) == "number") {
+										ystart = yaxis.series_u2p(yaxis.min - yminoff);
+									}
+									else if ($.type(yminoff) == "string") {
+										ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
+									}
+								}
+								if (obj.options.ymax != null) {
+									ystop = yaxis.series_u2p(obj.options.ymax);
+								}
+								else if (ymaxoff != null) {
+									if ($.type(ymaxoff) == "number") {
+										ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
+									}
+									else if ($.type(ymaxoff) == "string") {
+										ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
+									}
+								}
+								if (ystop != null && ystart != null) {
+									mr.draw([x, ystart], [x, ystop], this.canvas._ctx, opts);
+								}
+							}
+							break;
+
+						case 'dashedVerticalLine':
+							
+							var dashPat = obj.options.dashPattern;
+							var dashPatLen = 0;
+							for (var i=0; i<dashPat.length; i++) {
+								dashPatLen += dashPat[i];
+							}
+
+							// style and shadow properties should be set before
+							// every draw of marker renderer.
+							if (obj.options.x != null) {
+								mr.style = 'line';
+								opts.closePath = false;
+								var yaxis = plot.axes[obj.options.yaxis],
+									ystart,
+									ystop,
+									x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x),
+									yminoff = obj.options.yminOffset || obj.options.yOffset,
+									ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
+								if (obj.options.ymin != null) {
+									ystart = yaxis.series_u2p(obj.options.ymin);
+								}
+								else if (yminoff != null) {
+									if ($.type(yminoff) == "number") {
+										ystart = yaxis.series_u2p(yaxis.min - yminoff);
+									}
+									else if ($.type(yminoff) == "string") {
+										ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
+									}
+								}
+								if (obj.options.ymax != null) {
+									ystop = yaxis.series_u2p(obj.options.ymax);
+								}
+								else if (ymaxoff != null) {
+									if ($.type(ymaxoff) == "number") {
+										ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
+									}
+									else if ($.type(ymaxoff) == "string") {
+										ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
+									}
+								}
+
+
+								if (ystop != null && ystart != null) {
+									var numDash = Math.ceil((ystart - ystop)/dashPatLen);
+									var firstDashAdjust = ((numDash * dashPatLen) - (ystart - ystop))/2.0;
+									var b=ystart, e, bs, es;
+									for (var i=0; i<numDash; i++) {
+										for (var j=0; j<dashPat.length; j+=2) {
+											e = b - dashPat[j];
+											if (e < ystop) {
+												e = ystop;
+											}
+											if (b < ystop) {
+												b = ystop;
+											}
+											// es = e;
+											// if (i == 0) {
+											// 	es += firstDashAdjust;
+											// }
+											mr.draw([x, b], [x, e], this.canvas._ctx, opts);
+											b -= dashPat[j];
+											if (j < dashPat.length-1) {
+												b -= dashPat[j+1];
+											}
+										}
+									}
+								}
+							}
+							break;
+
+						default:
+							break;
 					}
 				}
 			}
