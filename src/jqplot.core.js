@@ -952,7 +952,7 @@
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.1';
         // prop: breakOnNull
-        // Not implemented. wether line segments should be be broken at null value.
+        // Wether line segments should be be broken at null value.
         // False will join point on either side of line.
         this.breakOnNull = false;
         // prop: markerRenderer

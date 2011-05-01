@@ -52,15 +52,13 @@
     function bestFormatString (interval)
     {
         interval = Math.abs(interval);
-        if (interval > 1) {return '%.0f';}
+        if (interval > 1) {return '%d';}
 
         var expv = -Math.floor(Math.log(interval)/Math.LN10);
         return '%.' + expv + 'f'; 
     }
 
-    // This is somewhat surprising in its simplicity. The range is normalized
-    // to a number between 1 and 10. The interval is chosen so that the number
-    // of tick marks will range from 4-8.
+    // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
     function bestLinearInterval(range) {
         var expv = Math.floor(Math.log(range)/Math.LN10);
         var magnitude = Math.pow(10, expv);
@@ -91,11 +89,16 @@
 
         var ss = bestLinearInterval(axis_max - axis_min);
         var r = [];
-        r[0] = Math.floor(axis_min / ss) * ss;
-        r[1] = Math.ceil(axis_max / ss) * ss;
-        r[2] = Math.round((r[1]-r[0])/ss+1);
-        r[3] = bestFormatString(ss);
-        r[4] = ss;
+
+        // Figure out the axis min, max and number of ticks
+        // the min and max will be some multiple of the tick interval,
+        // 1*10^n, 2*10^n or 5*10^n.  This gaurantees that, if the
+        // axis min is negative, 0 will be a tick.
+        r[0] = Math.floor(axis_min / ss) * ss;  // min
+        r[1] = Math.ceil(axis_max / ss) * ss;   // max
+        r[2] = Math.round((r[1]-r[0])/ss+1);    // number of ticks
+        r[3] = bestFormatString(ss);            // format string
+        r[4] = ss;                              // tick Interval
         //console.log('min: %s, max: %s, numTicks: %s, rawNumTicks: %s, tickInterval: %s', r[0], r[1], r[2], (r[1]-r[0])/ss+1, r[4]);
         return r;
     }
