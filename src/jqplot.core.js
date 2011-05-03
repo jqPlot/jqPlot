@@ -2302,6 +2302,12 @@
                     });
                     $.gcCollect(this)
                 });
+                
+                this.target.find(".jqplot-title").each( function() {
+                    $(this).unbind();
+                    $.gcCollect(this)
+                });
+                
                 $.gcClear();
 
                 // Couple of posts on Stack Overflow indicate that empty() doesn't
