@@ -195,7 +195,7 @@
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
     // canvas related tests taken from modernizer:
-    // Copyright © 2009ñ2010 Faruk Ates.
+    // Copyright (c) 2009 - 2010 Faruk Ates.
     // http://www.modernizr.com
     
     $.jqplot.support_canvas = function() {
