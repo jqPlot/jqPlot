@@ -66,6 +66,7 @@
         // This has know effect when any of the following options
         // are set:  autoscale, min, max, numberTicks or tickInterval.
         this.forceTickAt100 = false;
+        this._autoFormatString = '';
         $.extend(true, this, options);
 		if (this.breakPoints) {
 			if (!$.isArray(this.breakPoints)) {
@@ -329,9 +330,7 @@
                 this.min = ret[0];
                 this.max = ret[1];
                 this.numberTicks = ret[2];
-                if (this.tickOptions.formatString == 'auto') {
-                    this.tickOptions.formatString = ret[3];
-                }
+                this._autoFormatString = ret[3];
                 //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
                 this.tickInterval = ret[4];
             }
@@ -415,7 +414,6 @@
                                 forceMinZero = false;
                             }
                         }
-                        console.log('forceZeroLine: %s, forceMinZero: %s', forceZeroLine, forceMinZero);
                     }
                     
                     // check if we need make axis min at 0.
@@ -445,8 +443,7 @@
                         temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
                         this.tickInterval = Math.ceil(ti/temp) * temp;
                         this.max = this.tickInterval * ntmax;
-                        this.min = -this.tickInterval * ntmin;                  
-                        console.log('numbeTicks: %s, ntmin: %s, ntmax: %s, ti: %s, temp: %s, tickInterval: %s, max: %s, min: %s', this.numberTicks, ntmin, ntmax, ti, temp, this.tickInterval, this.max, this.min);
+                        this.min = -this.tickInterval * ntmin;
                     }
                     
                     // if nothing else, do autoscaling which will try to line up ticks across axes.
@@ -594,6 +591,11 @@
                     }
                 }
                 
+            }
+            
+            if ((this.tickOptions == null || !this.tickOptions.formatString) && this._autoFormatString != '') {
+                this.tickOptions = this.tickOptions || {};
+                this.tickOptions.formatString = this._autoFormatString;
             }
 
             for (var i=0; i<this.numberTicks; i++){
