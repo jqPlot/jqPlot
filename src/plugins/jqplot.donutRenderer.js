@@ -82,7 +82,7 @@
         // Outer diameter of the donut, auto computed by default
         this.diameter = null;
         // prop: innerDiameter
-        // Inner diameter of teh donut, auto calculated by default.
+        // Inner diameter of the donut, auto calculated by default.
         // If specified will override thickness value.
         this.innerDiameter = null;
         // prop: thickness
@@ -141,7 +141,7 @@
         // prop: dataLabelPositionFactor
         // A Multiplier (0-1) of the pie radius which controls position of label on slice.
         // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
-        this.dataLabelPositionFactor = 0.5;
+        this.dataLabelPositionFactor = 0.4;
         // prop: dataLabelNudge
         // Number of pixels to slide the label away from (+) or toward (-) the center of the pie.
         this.dataLabelNudge = 0;
