@@ -256,7 +256,10 @@
             var lineWidth = this.lineWidth;
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
-            var rprime = this.sliceMargin / 2.0 / Math.sin((ang2 - ang1)/2.0);
+            var rprime = 0;
+            if (Math.abs(ang2-ang1) > 0) {
+                rprime = parseFloat(this.sliceMargin) / 2.0 / Math.sin((ang2 - ang1)/2.0);
+            }
             var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
             var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
             if ((ang2 - ang1) <= Math.PI) {
