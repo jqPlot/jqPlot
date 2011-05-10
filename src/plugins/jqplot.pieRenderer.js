@@ -254,11 +254,15 @@
             var r = this._diameter / 2.0;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
+            var sm = this.sliceMargin;
+            if (this.fill == false) {
+                sm += this.lineWidth;
+            }
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
             var rprime = 0;
             if (Math.abs(ang2-ang1) > 0) {
-                rprime = parseFloat(this.sliceMargin) / 2.0 / Math.sin((ang2 - ang1)/2.0);
+                rprime = parseFloat(sm) / 2.0 / Math.sin((ang2 - ang1)/2.0);
             }
             var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
             var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
