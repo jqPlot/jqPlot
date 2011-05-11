@@ -951,7 +951,7 @@
             var pad = false;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
-                if (s.show) {
+                if (s.show && s.showLabel) {
                     var lt = $.jqplot.sprintf(this.formatString, s.label.toString());
                     if (lt) {
                         var color = s.color;
@@ -971,6 +971,9 @@
                     }
                 }
             }
+            series = s = null;
+            delete series;
+            delete s;
         }
         
         function addrow(label, color, pad, idx) {
