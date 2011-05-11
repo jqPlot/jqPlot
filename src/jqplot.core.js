@@ -180,7 +180,9 @@
         errorFontStyle: '',
         errorFontWeight: '',
         catchErrors: false,
-        defaultTickFormatString: "%.1f"
+        defaultTickFormatString: "%.1f",
+        defaultColors: [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
+        defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"]
     };
     
     
@@ -1494,8 +1496,8 @@
         // to the series in the plot.  Colors will wrap around so, if their
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
-        this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"];
-        this.negativeSeriesColors = [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"];
+        this.seriesColors = $.jqplot.config.defaultColors;
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on
@@ -3030,6 +3032,7 @@
     };
         
    $.jqplot.ColorGenerator = function(colors) {
+        colors = colors || $.jqplot.config.defaultColors;
         var idx = 0;
         
         this.next = function () { 
