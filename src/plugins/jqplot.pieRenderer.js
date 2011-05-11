@@ -155,9 +155,6 @@
         }
         
         $.extend(true, this, options);
-        if (this.diameter != null) {
-            // this.diameter = this.diameter - this.sliceMargin;
-        }
         this._diameter = null;
         this._radius = null;
         // array of [start,end] angles arrays, one for each slice.  In radians.
@@ -382,7 +379,7 @@
         var mindim = Math.min(w,h);
         var d = mindim;
         // this._diameter = this.diameter || d;
-        this._diameter = this.diameter  || d // - this.sliceMargin;
+        this._diameter = this.diameter  || d; // - this.sliceMargin;
 
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
