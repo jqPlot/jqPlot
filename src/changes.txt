@@ -7,6 +7,7 @@ Title: Change Log
   a gap between the slices.
 * Expanded canvasOverlay plugin to create arbitrary dashed and solid 
   horizontal and vertical lines on top of plot.
+* Added defaultColors and defaultNegativeColors options to $.jqplot.config.
 * Fixed issue #318, highlighter & bar renderer incompatability.
 * Improve highlighter tooltip positioning with negative bars.
 * Fixed #305, mispelling of jqlotDragStart and jqlotDragStop.  MUST NOW BIND
