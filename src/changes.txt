@@ -1,5 +1,29 @@
 Title: Change Log
 
+1.0.0b1:
+* Much improved tick generation algorithm to get precise rounded tick values.
+* Auto compute tick format string if none is provided.
+* Much better "slicing" of pie charts when using "sliceMargin" option to set
+  a gap between the slices.
+* Expanded canvasOverlay plugin to create arbitrary dashed and solid 
+  horizontal and vertical lines on top of plot.
+* Fixed issue #318, highlighter & bar renderer incompatability.
+* Improve highlighter tooltip positioning with negative bars.
+* Fixed #305, mispelling of jqlotDragStart and jqlotDragStop.  MUST NOW BIND
+  TO jqplotDragStart and jqplotDragStop.
+* Fixed #290, some variables left in global scope.
+* Fixed #289, OHLC line widths hard coded at 1.5. Now set by lineWidth option.
+* Fixed #296 for determining databounds on log axes.
+* Updated to jQuery 1.5.1
+* Fixed waterfall plot to ensure first and last bars always fill to zero.
+* Added lineJoin and lineCap option to series lines.
+* Bar widths now based on width of grid, not plot target for better scaling.
+* Added looseZoom option to cursor so zooming can produce well rounded ticks.
+* Added forceTickAt0 and forceTickAt100 options to ensure there will always
+  be a tick at 0 or 100 in the plot.
+* Fixed bug where cursor legend didn't honor series showLabel option.
+
+
 1.0.0a:
 
 * Series can now be moved forward or backward in stack to e.g. bring a line
