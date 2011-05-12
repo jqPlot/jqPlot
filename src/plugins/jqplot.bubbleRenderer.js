@@ -458,7 +458,7 @@
         var x = ctx.canvas.width/2;
         var y = ctx.canvas.height/2;
         ctx.save();
-        if (gradients && !$.browser.msie) {
+        if (gradients && !$.jqplot.use_excanvas) {
             r = r*1.04;
             var comps = $.jqplot.getColorComponents(color);
             var colorinner = 'rgba('+Math.round(comps[0]+0.8*(255-comps[0]))+', '+Math.round(comps[1]+0.8*(255-comps[1]))+', '+Math.round(comps[2]+0.8*(255-comps[2]))+', '+comps[3]+')';
