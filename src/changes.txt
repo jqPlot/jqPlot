@@ -1,7 +1,8 @@
 Title: Change Log
 
 1.0.0b1:
-* Much improved tick generation algorithm to get precise rounded tick values.
+* Much improved tick generation algorithm to get precise rounded 
+  tick values (Thanks Scott Prahl!).
 * Auto compute tick format string if none is provided.
 * Much better "slicing" of pie charts when using "sliceMargin" option to set
   a gap between the slices.
