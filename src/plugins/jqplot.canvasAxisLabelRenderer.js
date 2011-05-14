@@ -168,6 +168,19 @@
     };
     
     $.jqplot.CanvasAxisLabelRenderer.prototype.draw = function(ctx) {
+          // Memory Leaks patch
+          if (this._elem) {
+              if ($.jqplot.use_excanvas) {
+                  elem = this._elem.get(0);
+                  window.G_vmlCanvasManager.uninitElement(elem);
+                  elem = null;
+              }
+            
+              this._elem.emptyForce();
+              this._domelem = null;
+              this._elem = null;
+          }
+
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.
         var domelem = document.createElement('canvas');

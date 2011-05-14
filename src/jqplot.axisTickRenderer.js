@@ -119,6 +119,12 @@
             style +='white-space:nowrap;';
         }
         style += '"';
+        
+        // Memory Leaks patch
+        if (this._elem) {
+            this._elem.emptyForce();
+            this._elem = null;
+        }
         this._elem = $('<div '+style+' class="jqplot-'+this.axis+'-tick">'+this.label+'</div>');
         for (var s in this._styles) {
             this._elem.css(s, this._styles[s]);

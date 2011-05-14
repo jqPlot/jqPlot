@@ -46,6 +46,18 @@
     
     // called with context of Grid.
     $.jqplot.CanvasGridRenderer.prototype.createElement = function() {
+        // Memory Leaks patch
+        if (this._elem) {
+          if ($.jqplot.use_excanvas) {
+            elem = this._elem.get(0);
+            window.G_vmlCanvasManager.uninitElement(elem);
+            elem = null;
+          }
+          
+          this._elem.emptyForce();
+          this._elem = null;
+        }
+      
         var elem = document.createElement('canvas');
         var w = this._plotDimensions.width;
         var h = this._plotDimensions.height;
@@ -54,9 +66,9 @@
         this._elem = $(elem);
         this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.init_(document);
-        }
+        //if ($.jqplot.use_excanvas) {
+        //    window.G_vmlCanvasManager.init_(document);
+        //}
         if ($.jqplot.use_excanvas) {
             elem = window.G_vmlCanvasManager.initElement(elem);
         }

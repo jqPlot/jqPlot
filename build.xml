@@ -129,7 +129,6 @@
           <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
           <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
           <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
-          <fileset dir="${BUILD_DIR}" includes="excanvas.min.js" />
           <fileset dir="" includes="*.php" />
           <fileset dir="" includes="style.css" />
           <fileset dir="" includes="README.txt" />
@@ -170,6 +169,19 @@
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
+        </apply>
+        <!-- Ipanema patch : patched excanvas minified -->
+        <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
+          <fileset dir="${DIST_DIR}">
+            <include name="excanvas.js" />
+          </fileset>
+          <arg line="-jar" />
+          <arg path="${YUICompressor}" />
+          <arg value="--charset" />
+          <arg value="ANSI" />
+          <arg value="-o" />
+          <targetfile />
+          <mapper type="glob" from="excanvas.js" to="temp/excanvas.min.js" />
         </apply>
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
