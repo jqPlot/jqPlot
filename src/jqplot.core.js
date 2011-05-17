@@ -117,7 +117,7 @@
     // Memory Leaks patch : garbage collector
     $.gcInit = function() {
       var gc = $("<div id='gc_jqPlotSalsaGarbage' style='display:none;visibility:hidden;'></div>");
-      $("body").append(gc)
+      $("body").append(gc);
       $._gc = gc;
     };
 
@@ -2302,12 +2302,12 @@
                     $(this).find(".jqplot-seriesToggle").each( function() {
                         $(this).unbind();
                     });
-                    $.gcCollect(this)
+                    $.gcCollect(this);
                 });
                 
                 this.target.find(".jqplot-title").each( function() {
                     $(this).unbind();
-                    $.gcCollect(this)
+                    $.gcCollect(this);
                 });
                 
                 $.gcClear();

@@ -59,26 +59,37 @@
     }
 
     // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
-    function bestLinearInterval(range) {
+    function bestLinearInterval(range, scalefact) {
         var expv = Math.floor(Math.log(range)/Math.LN10);
         var magnitude = Math.pow(10, expv);
+        // 0 < f < 10
         var f = range / magnitude;
+        // console.log('f: %s, scaled: %s ', f, f/scalefact);
+        // for large plots, scalefact will decrease f and increase number of ticks.
+        // for small plots, scalefact will increase f and decrease number of ticks.
+        f = f/scalefact;
 
+        // for large plots, smaller interval, more ticks.
+        if (f<=0.38) {return 0.1*magnitude;}
         if (f<=1.6) {return 0.2*magnitude;}
         if (f<=4.0) {return 0.5*magnitude;}
         if (f<=8.0) {return magnitude;}
-        return 2*magnitude; 
+        // for very small plots, larger interval, less ticks in number ticks
+        if (f<=16.0) {return 2*magnitude;}
+        return 5*magnitude; 
     }
 
     // Given the min and max for a dataset, return suitable endpoints
     // for the graphing, a good number for the number of ticks, and a
     // format string so that extraneous digits are not displayed.
     // returned is an array containing [min, max, nTicks, format]
-    $.jqplot.LinearTickGenerator = function(axis_min, axis_max) {
+    $.jqplot.LinearTickGenerator = function(axis_min, axis_max, scalefact) {
         // if endpoints are equal try to include zero otherwise include one
         if (axis_min == axis_max) {
         axis_max = (axis_max) ? 0 : 1;
         }
+
+        scalefact = scalefact || 1.0;
 
         // make sure range is positive
         if (axis_max < axis_min) {
@@ -87,7 +98,7 @@
         axis_min = a;
         }
 
-        var ss = bestLinearInterval(axis_max - axis_min);
+        var ss = bestLinearInterval(axis_max - axis_min, scalefact);
         var r = [];
 
         // Figure out the axis min, max and number of ticks
@@ -96,7 +107,7 @@
         // axis min is negative, 0 will be a tick.
         r[0] = Math.floor(axis_min / ss) * ss;  // min
         r[1] = Math.ceil(axis_max / ss) * ss;   // max
-        r[2] = Math.round((r[1]-r[0])/ss+1);    // number of ticks
+        r[2] = Math.round((r[1]-r[0])/ss+1.0);    // number of ticks
         r[3] = bestFormatString(ss);            // format string
         r[4] = ss;                              // tick Interval
         return r;

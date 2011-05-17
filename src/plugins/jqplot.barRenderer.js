@@ -602,8 +602,7 @@
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
         // Memory Leaks patch    
-        if (this.plugins.barRenderer 
-            && this.plugins.barRenderer.highlightCanvas) {
+        if (this.plugins.barRenderer && this.plugins.barRenderer.highlightCanvas) {
 
             this.plugins.barRenderer.highlightCanvas.resetCanvas();
             this.plugins.barRenderer.highlightCanvas = null;

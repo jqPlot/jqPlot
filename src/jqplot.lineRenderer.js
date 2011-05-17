@@ -392,8 +392,7 @@
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
         // Memory Leaks patch    
-        if (this.plugins.lineRenderer 
-          && this.plugins.lineRenderer.highlightCanvas) {
+        if (this.plugins.lineRenderer && this.plugins.lineRenderer.highlightCanvas) {
           this.plugins.lineRenderer.highlightCanvas.resetCanvas();
           this.plugins.lineRenderer.highlightCanvas = null;
         }

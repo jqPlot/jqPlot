@@ -316,7 +316,12 @@
                     }
                 }
 
-                var ret = $.jqplot.LinearTickGenerator(min, max); 
+                // console.log(this.name);
+                var threshold = 30;
+                var tdim = Math.max(dim, threshold+1);
+                var scalefact =  (tdim-threshold)/300.0;
+                // scalefact = 1;
+                var ret = $.jqplot.LinearTickGenerator(min, max, scalefact); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
@@ -326,8 +331,14 @@
                 if (min <=tumin || max >= tumax) {
                     tumin = min - range*(this.padMin - 1);
                     tumax = max + range*(this.padMax - 1);
-                    ret = $.jqplot.LinearTickGenerator(tumin, tumax);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact);
                 }
+
+
+                // if (ret[2] > max_number_ticks) {
+                //     ret[4] = Math.ceil(r[2]/max_number_ticks) * ret[4];
+                    
+                // }
 
                 this.min = ret[0];
                 this.max = ret[1];
@@ -335,6 +346,7 @@
                 this._autoFormatString = ret[3];
                 //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
                 this.tickInterval = ret[4];
+                // console.log('numberticks: %s, interval: %s', ret[2], ret[4]);
             }
 
             // User has specified some axis scale related option, can use auto algorithm

@@ -210,7 +210,7 @@
         // Memory Leaks patch
         if (this._elem) {
             if ($.jqplot.use_excanvas) {
-                elem = this._elem.get(0);
+                var elem = this._elem.get(0);
                 window.G_vmlCanvasManager.uninitElement(elem);
                 elem = null;
             }
