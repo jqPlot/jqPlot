@@ -363,6 +363,7 @@
                                 var ret = $.jqplot.LinearTickGenerator(newmin, newmax);
                                 axes[ax].min = ret[0];
                                 axes[ax].max = ret[1];
+                                axes[ax]._autoFormatString = ret[3];
                                 axes[ax].numberTicks = ret[2];
                                 axes[ax].tickInterval = ret[4];
                                 // for date axes...

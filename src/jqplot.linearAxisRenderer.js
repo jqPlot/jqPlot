@@ -67,6 +67,7 @@
         // are set:  autoscale, min, max, numberTicks or tickInterval.
         this.forceTickAt100 = false;
         this._autoFormatString = '';
+        this._overrideFormatString = false;
         $.extend(true, this, options);
 		if (this.breakPoints) {
 			if (!$.isArray(this.breakPoints)) {
@@ -275,10 +276,11 @@
                 dim = this._plotDimensions.height;
             }
             
-            // if min, max and number of ticks specified, user can't specify interval.
-            if (!this.autoscale && this.min != null && this.max != null && this.numberTicks != null) {
-                this.tickInterval = null;
-            }
+            // // if min, max and number of ticks specified, user can't specify interval.
+            // if (!this.autoscale && this.min != null && this.max != null && this.numberTicks != null) {
+            //     console.log('doing this');
+            //     this.tickInterval = null;
+            // }
             
             // if max, min, and interval specified and interval won't fit, ignore interval.
             // if (this.min != null && this.max != null && this.tickInterval != null) {
@@ -296,6 +298,12 @@
 
             // Doing complete autoscaling
             if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
+                // check to see if we can override tick format string with autocalculated one
+                if (this.tickOptions == null || !this.tickOptions.formatString) {
+                    this._overrideFormatString = true;
+                }
+
+
                 // Check if user must have tick at 0 or 100 and ensure they are in range.
                 // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
                 if (this.forceTickAt0) {
@@ -531,7 +539,7 @@
                     }
                 }
                 
-                if (this.renderer.constructor == $.jqplot.LinearAxisRenderer) {
+                if (this.renderer.constructor == $.jqplot.LinearAxisRenderer && this._autoFormatString == '') {
                     // fix for misleading tick display with small range and low precision.
                     range = this.max - this.min;
                     // figure out precision
@@ -607,7 +615,7 @@
                 
             }
             
-            if ((this.tickOptions == null || !this.tickOptions.formatString) && this._autoFormatString != '') {
+            if (this._overrideFormatString && this._autoFormatString != '') {
                 this.tickOptions = this.tickOptions || {};
                 this.tickOptions.formatString = this._autoFormatString;
             }
