@@ -396,8 +396,8 @@
         // >        y2axis: {ticks:[22, 44, 66, 88]}
         // >        }
         // > }
-        // There are 4 axes, 'xaxis', 'yaxis', 'x2axis', 'y2axis'.  Any or all of 
-        // which may be specified.
+        // There are 2 x axes, 'xaxis' and 'x2axis', and 
+        // 9 yaxes, 'yaxis', 'y2axis'. 'y3axis', ...  Any or all of which may be specified.
         this.name = name;
         this._series = [];
         // prop: show
@@ -516,6 +516,8 @@
         this._tickInterval = null;
         this._numberTicks = null;
         this.__ticks = null;
+        // hold original user options.
+        this._options = {};
     }
     
     Axis.prototype = new $.jqplot.ElemContainer();
@@ -625,6 +627,8 @@
         var db = this._dataBounds;
         db.min = null;
         db.max = null;
+        // check for when to force min 0 on bar series plots.
+        var doforce = (this.show) ? true : false;
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
             var d = s._plotData;
@@ -653,6 +657,38 @@
                     }
                 }              
             }
+
+            // Hack to not pad out bottom of bar plots unless user has specified a padding.
+            // every series will have a chance to set doforce to false.  once it is set to 
+            // false, it cannot be reset to true.
+            // If any series attached to axis is not a bar, wont force 0.
+            if (doforce && s.renderer.constructor !== $.jqplot.BarRenderer) {
+                doforce = false;
+            }
+
+            else if (doforce && this._options.hasOwnProperty('forceTickAt0') && this._options.forceTickAt0 == false) {
+                doforce = false;
+            }
+
+            else if (doforce && s.renderer.constructor === $.jqplot.BarRenderer) {
+                if (s.barDirection == 'vertical' && this.name != 'xaxis' && this.name != 'x2axis') { 
+                    if (this._options.pad != null || this._options.padMin != null) {
+                        doforce = false;
+                    }
+                }
+
+                else if (s.barDirection == 'horizontal' && (this.name == 'xaxis' || this.name == 'x2axis')) {
+                    if (this._options.pad != null || this._options.padMin != null) {
+                        doforce = false;
+                    }
+                }
+
+            }
+        }
+
+        if (doforce && this.renderer.constructor === $.jqplot.LinearAxisRenderer && db.min >= 0) {
+            this.padMin = 1.0;
+            this.forceTickAt0 = true;
         }
     };
 
@@ -2154,6 +2190,7 @@
             this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
             for (var n in this.axes) {
                 var axis = this.axes[n];
+                axis._options = $.extend(true, {}, this.options.axesDefaults, this.options.axes[n]);
                 $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
                 axis._plotWidth = this._width;
                 axis._plotHeight = this._height;
@@ -2222,39 +2259,6 @@
                     temp._xaxis.show = true;
                     temp._yaxis.show = true;
                 }
-
-                // Hack to not pad out bottom of bar plots unless user has specified a padding.
-                // if (temp.renderer === $.jqplot.BarRenderer) {
-                //     var pm = false;
-                //     switch (dir) {
-                //         case 'vertical':
-                //             if (this.options.axesDefaults && (this.options.axesDefaults.pad != null || this.options.axesDefaults.padMin != null)) {
-                //                 pm = true;
-                //             }
-                //             else if (this.options.axes && this.options.axes[this.yaxis] && (this.options.axes[this.yaxis].pad != null || this.options.axes[this.yaxis].padMin != null)) {
-                //                 pm = true;
-                //             }
-                //             if (!pm) {
-                //                 temp._yaxis.padMin = 1.0;
-                //                 temp._yaxis.rendererOptions.forceTickAt0 = true;
-                //             }
-                //             break;
-
-                //         case 'horizontal':
-                //             if (this.options.axesDefaults && (this.options.axesDefaults.pad != null || this.options.axesDefaults.padMin != null)) {
-                //                 pm = true;
-                //             }
-                //             else if (this.options.axes && this.options.axes[this.xaxis] && (this.options.axes[this.xaxis].pad != null || this.options.axes[this.xaxis].padMin != null)) {
-                //                 pm = true;
-                //             }
-                //             if (!pm) {
-                //                 temp._xaxis.padMin = 1.0;
-                //                 temp._xaxis.rendererOptions.forceTickAt0 = true;
-                //             }
-                //             break;
-                //     }
-
-                // }
 
                 // parse the renderer options and apply default colors if not provided
                 if (!temp.color && temp.show != false) {
