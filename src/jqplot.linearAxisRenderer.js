@@ -136,6 +136,11 @@
         this.max = this._max;
         this.tickInterval = this._tickInterval;
         this.numberTicks = this._numberTicks;
+        this._autoFormatString = '';
+        if (this._overrideFormatString && this.tickOptions && this.tickOptions.formatString) {
+            this.tickOptions.formatString = '';
+        }
+
         // this._ticks = this.__ticks;
     };
     
@@ -615,9 +620,11 @@
                 
             }
             
+            var applyTickPrefix = false;
             if (this._overrideFormatString && this._autoFormatString != '') {
                 this.tickOptions = this.tickOptions || {};
                 this.tickOptions.formatString = this._autoFormatString;
+                applyTickPrefix = true;
             }
 
             for (var i=0; i<this.numberTicks; i++){
@@ -625,7 +632,7 @@
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
 
-                t.setTick(tt, this.name);
+                t.setTick(tt, this.name, false, applyTickPrefix);
                 this._ticks.push(t);
             }
         }

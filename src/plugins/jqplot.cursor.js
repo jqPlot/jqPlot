@@ -185,6 +185,10 @@
                 if (!c.zoomProxy) {
                     for (var ax in axes) {
                         axes[ax].reset();
+                        axes[ax]._ticks = [];
+                        // fake out tick creation algorithm to make sure original auto
+                        // computed format string is used if _overrideFormatString is true
+                        axes[ax]._autoFormatString = c._zoom.axes[ax].tickFormatString;
                     }
                     this.redraw();
                 }
@@ -298,13 +302,18 @@
         var cax = cursor._zoom.axes;
         if (!plot.plugins.cursor.zoomProxy && cursor._zoom.isZoomed) {
             for (var ax in axes) {
+                // axes[ax]._ticks = [];
+                // axes[ax].min = cax[ax].min;
+                // axes[ax].max = cax[ax].max;
+                // axes[ax].numberTicks = cax[ax].numberTicks; 
+                // axes[ax].tickInterval = cax[ax].tickInterval;
+                // // for date axes
+                // axes[ax].daTickInterval = cax[ax].daTickInterval;
+                axes[ax].reset();
                 axes[ax]._ticks = [];
-                axes[ax].min = cax[ax].min;
-                axes[ax].max = cax[ax].max;
-                axes[ax].numberTicks = cax[ax].numberTicks; 
-                axes[ax].tickInterval = cax[ax].tickInterval;
-                // for date axes
-                axes[ax].daTickInterval = cax[ax].daTickInterval;
+                // fake out tick creation algorithm to make sure original auto
+                // computed format string is used if _overrideFormatString is true
+                axes[ax]._autoFormatString = cax[ax].tickFormatString;
             }
             plot.redraw();
             cursor._zoom.isZoomed = false;
@@ -342,6 +351,7 @@
                         c._zoom.axes[ax].daTickInterval = axes[ax].daTickInterval;
                         c._zoom.axes[ax].min = axes[ax].min;
                         c._zoom.axes[ax].max = axes[ax].max;
+                        c._zoom.axes[ax].tickFormatString = (axes[ax].tickOptions != null) ? axes[ax].tickOptions.formatString :  '';
                     }
 
 

@@ -86,22 +86,29 @@
         this.textColor;
         this._elem;
 		this._breakTick = false;
+        this._applyPrefix = true;
         
         $.extend(true, this, options);
     };
     
     $.jqplot.AxisTickRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
+        if (this.formatString != '') {
+            this._applyPrefix = false;
+        }
     };
     
     $.jqplot.AxisTickRenderer.prototype = new $.jqplot.ElemContainer();
     $.jqplot.AxisTickRenderer.prototype.constructor = $.jqplot.AxisTickRenderer;
     
-    $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
+    $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor, applyPrefix) {
         this.value = value;
         this.axis = axisName;
         if (isMinor) {
             this.isMinorTick = true;
+        }
+        if (applyPrefix) {
+            this._applyPrefix = true;
         }
         return this;
     };
@@ -111,7 +118,7 @@
             this.label = this.formatter(this.formatString, this.value);
         }
         // add prefix if needed
-        if (this.prefix && !this.formatString) {
+        if (this.prefix && this._applyPrefix) {
             this.label = this.prefix + this.label;
         }
         var style ='style="position:absolute;';
