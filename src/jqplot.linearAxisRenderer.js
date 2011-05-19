@@ -620,11 +620,9 @@
                 
             }
             
-            var applyTickPrefix = false;
             if (this._overrideFormatString && this._autoFormatString != '') {
                 this.tickOptions = this.tickOptions || {};
                 this.tickOptions.formatString = this._autoFormatString;
-                applyTickPrefix = true;
             }
 
             for (var i=0; i<this.numberTicks; i++){
@@ -632,7 +630,7 @@
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
 
-                t.setTick(tt, this.name, false, applyTickPrefix);
+                t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
         }
@@ -653,10 +651,7 @@
 				t = this._ticks[i];
 				t.value = opts[i];
 				t.label = t.formatter(t.formatString, opts[i]);
-				// add prefix if needed
-				if (t.prefix && !t.formatString) {
-					t.label = t.prefix + t.label;
-				}
+				t.label = t.prefix + t.label;
 				t._elem.html(t.label);
 			}
 			this.min = $.jqplot.arrayMin(opts);

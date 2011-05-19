@@ -70,7 +70,8 @@
         // A class of a formatter for the tick text.  sprintf by default.
         this.formatter = $.jqplot.DefaultTickFormatter;
         // prop: prefix
-        // string appended to the tick label if no formatString is specified.
+        // String to prepend to the tick label.
+        // Prefix is prepended to the formatted tick label.
         this.prefix = '';
         // prop: formatString
         // string passed to the formatter.
@@ -86,40 +87,29 @@
         this.textColor;
         this._elem;
 		this._breakTick = false;
-        this._applyPrefix = true;
         
         $.extend(true, this, options);
     };
     
     $.jqplot.AxisTickRenderer.prototype.init = function(options) {
         $.extend(true, this, options);
-        if (this.formatString != '') {
-            this._applyPrefix = false;
-        }
     };
     
     $.jqplot.AxisTickRenderer.prototype = new $.jqplot.ElemContainer();
     $.jqplot.AxisTickRenderer.prototype.constructor = $.jqplot.AxisTickRenderer;
     
-    $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor, applyPrefix) {
+    $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
         this.value = value;
         this.axis = axisName;
         if (isMinor) {
             this.isMinorTick = true;
-        }
-        if (applyPrefix) {
-            this._applyPrefix = true;
         }
         return this;
     };
     
     $.jqplot.AxisTickRenderer.prototype.draw = function() {
         if (!this.label) {
-            this.label = this.formatter(this.formatString, this.value);
-        }
-        // add prefix if needed
-        if (this.prefix && this._applyPrefix) {
-            this.label = this.prefix + this.label;
+            this.label = this.prefix + this.formatter(this.formatString, this.value);
         }
         var style ='style="position:absolute;';
         if (Number(this.label)) {

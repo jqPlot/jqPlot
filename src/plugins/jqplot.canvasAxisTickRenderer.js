@@ -85,7 +85,8 @@
         // string passed to the formatter.
         this.formatString = '';
         // prop: prefix
-        // string appended to the tick label if no formatString is specified.
+        // String to prepend to the tick label.
+        // Prefix is prepended to the formatted tick label.
         this.prefix = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
@@ -200,11 +201,7 @@
     
     $.jqplot.CanvasAxisTickRenderer.prototype.draw = function(ctx) {
         if (!this.label) {
-            this.label = this.formatter(this.formatString, this.value);
-        }
-        // add prefix if needed
-        if (this.prefix && !this.formatString) {
-            this.label = this.prefix + this.label;
+            this.label = this.prefix + this.formatter(this.formatString, this.value);
         }
         
         // Memory Leaks patch
