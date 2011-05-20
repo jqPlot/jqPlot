@@ -82,7 +82,7 @@
         this.plugins.dragable = {previousCursor:'auto', isOver:false};
         this.plugins.dragable.dragCanvas = new DragCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.dragable.dragCanvas.createElement(this._gridPadding, 'jqplot-dragable-canvas', this._plotDimensions));
+        this.eventCanvas._elem.before(this.plugins.dragable.dragCanvas.createElement(this._gridPadding, 'jqplot-dragable-canvas', this._plotDimensions, this));
         var dctx = this.plugins.dragable.dragCanvas.setContext();
     };
     

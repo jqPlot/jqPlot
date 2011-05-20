@@ -212,6 +212,59 @@
         }
     };
 
+
+    // canvas manager to reuse canvases on the plot.
+    // Should help solve problem of canvases not being freed and
+    // problem of waiting forever for firefox to decide to free memory.
+    $.jqplot.CanvasManager = function() {
+        this.canvases = [];
+        this.free = [];
+
+        this.getCanvas = function() {
+            var canvas;
+            var idx = $.inArray(true, this.free);
+    
+            if (idx > -1) {
+                canvas = this.canvases[idx];
+                this.free[idx] = false;
+                $(canvas).addClass('reused');
+            }   
+
+            else {
+                canvas = document.createElement('canvas');
+                this.canvases.push(canvas);
+                this.free.push(false);
+                idx = this.canvases.length;
+            }   
+            
+            return canvas;
+        };
+
+        this.freeAllCanvases = function() {
+            for (var i = 0; i < this.canvases.length; i++) {
+                var canvas = this.canvases[i];
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                $(canvas).removeClass().removeAttr('style');
+                this.free[i] = true;
+            }   
+        };
+
+        this.destroyAllCanvases = function() {
+            
+        };
+
+        this.freeCanvas = function(idx) {
+            var canvas = this.canvases[idx];
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            $(canvas).removeClass().removeAttr('style');
+            this.free[idx] = true;
+        };
+
+        this.destroyCanvas = function(idx) {
+            
+        };
+    };
+
             
     // Convienence function that won't hang IE of FF without FireBug.
     $.jqplot.log = function() {
@@ -1393,9 +1446,9 @@
         this.renderer.init.call(this, this.rendererOptions);
     };
     
-    Grid.prototype.createElement = function(offsets) {
+    Grid.prototype.createElement = function(offsets, plot) {
         this._offsets = offsets;
-        return this.renderer.createElement.call(this);
+        return this.renderer.createElement.call(this, plot);
     };
     
     Grid.prototype.draw = function() {
@@ -1410,7 +1463,11 @@
     $.jqplot.GenericCanvas.prototype = new $.jqplot.ElemContainer();
     $.jqplot.GenericCanvas.prototype.constructor = $.jqplot.GenericCanvas;
     
-    $.jqplot.GenericCanvas.prototype.createElement = function(offsets, clss, plotDimensions) {
+    $.jqplot.GenericCanvas.prototype.createElement = function(offsets, clss, plotDimensions, plot) {
+        if (!plot) {
+            throw('No Plot Specified for Generic Canvas Create Element');
+        }
+
         this._offsets = offsets;
         var klass = 'jqplot';
         if (clss != undefined) {
@@ -1426,10 +1483,11 @@
             }
         }
         else {
-            elem = document.createElement('canvas');
+            //elem = document.createElement('canvas');
+            elem = plot.canvasManager.getCanvas();
         }
         // if new plotDimensions supplied, use them.
-        if (plotDimensions != undefined) {
+        if (plotDimensions != null) {
             this._plotDimensions = plotDimensions;
         }
         
@@ -1463,8 +1521,8 @@
         //this._elem.remove();
         this._elem.emptyForce();
       }
-      
-      this._ctx = null;
+      // not compatible with canvas manager?  maybe even before?
+      //this._ctx = null;
     };
     
     $.jqplot.HooksManager = function () {
@@ -1691,8 +1749,10 @@
         this.eventListenerHooks = new $.jqplot.EventListenerManager();
         this.preDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         this.postDrawSeriesShadowHooks = new $.jqplot.HooksManager();
-        
+
         this.colorGenerator = $.jqplot.ColorGenerator;
+
+        this.canvasManager = new $.jqplot.CanvasManager();
         
         // Group: methods
         //
@@ -2332,6 +2392,7 @@
             this.target.trigger('jqplotPreReplot');
             
             if (clear) {
+                this.canvasManager.freeAllCanvases();
                 // Memory Leaks patch
                 this.target.find("table.jqplot-table-legend,table.jqplot-legend").each( function() {
                     $(this).unbind();
@@ -2414,7 +2475,7 @@
                     this.preDrawHooks.hooks[i].call(this);
                 }
                 // create an underlying canvas to be used for special features.
-                this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas'));
+                this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas', null, this));
                 this.baseCanvas.setContext();
                 this.target.append(this.title.draw());
                 this.title.pack({top:0, left:0});
@@ -2501,7 +2562,7 @@
                 }
                 // ax.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
-                this.target.append(this.grid.createElement(this._gridPadding));
+                this.target.append(this.grid.createElement(this._gridPadding, this));
                 this.grid.draw();
                 
                 // put the shadow canvases behind the series canvases so shadows don't overlap on stacked bars.
@@ -2509,7 +2570,7 @@
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
-                    this.target.append(this.series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas'));
+                    this.target.append(this.series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas', null, this));
                     this.series[j].shadowCanvas.setContext();
                     this.series[j].shadowCanvas._elem.data('seriesIndex', j);
                 }
@@ -2518,13 +2579,13 @@
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
-                    this.target.append(this.series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas'));
+                    this.target.append(this.series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas', null, this));
                     this.series[j].canvas.setContext();
                     this.series[j].canvas._elem.data('seriesIndex', j);
                 }
                 // Need to use filled canvas to capture events in IE.
                 // Also, canvas seems to block selection of other elements in document on FF.
-                this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas'));
+                this.target.append(this.eventCanvas.createElement(this._gridPadding, 'jqplot-event-canvas', null, this));
                 this.eventCanvas.setContext();
                 this.eventCanvas._ctx.fillStyle = 'rgba(0,0,0,0)';
                 this.eventCanvas._ctx.fillRect(0,0,this.eventCanvas._ctx.canvas.width, this.eventCanvas._ctx.canvas.height);

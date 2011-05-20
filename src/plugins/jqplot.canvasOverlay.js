@@ -601,7 +601,7 @@
     $.jqplot.CanvasOverlay.postPlotDraw = function() {
         this.plugins.canvasOverlay.canvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.canvasOverlay.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions));
+        this.eventCanvas._elem.before(this.plugins.canvasOverlay.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));
         this.plugins.canvasOverlay.canvas.setContext();
 		if (!this.plugins.canvasOverlay.deferDraw) {
 			this.plugins.canvasOverlay.draw(this);

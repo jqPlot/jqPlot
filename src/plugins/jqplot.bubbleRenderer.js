@@ -709,7 +709,7 @@
         var height = this._plotDimensions.height - this._gridPadding.top - this._gridPadding.bottom;
         this.plugins.bubbleRenderer.highlightLabelCanvas.css({top:top, left:left, width:width+'px', height:height+'px'});
 
-        this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-bubbleRenderer-highlight-canvas', this._plotDimensions));
+        this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-bubbleRenderer-highlight-canvas', this._plotDimensions, this));
         this.eventCanvas._elem.before(this.plugins.bubbleRenderer.highlightLabelCanvas);
         
         var hctx = this.plugins.bubbleRenderer.highlightCanvas.setContext();
