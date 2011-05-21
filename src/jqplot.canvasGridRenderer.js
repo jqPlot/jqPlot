@@ -51,15 +51,21 @@
           if ($.jqplot.use_excanvas) {
             elem = this._elem.get(0);
             window.G_vmlCanvasManager.uninitElement(elem);
-            elem = null;    
+            elem = null;
           }
           
           this._elem.emptyForce();
           this._elem = null;
         }
       
-        //var elem = document.createElement('canvas');
-        var elem = plot.canvasManager.getCanvas();
+        // don't use the canvas manager with excanvas.
+        if ($.jqplot.use_excanvas) {
+          elem = document.createElement('canvas');
+        }
+        else {
+          elem = plot.canvasManager.getCanvas();
+        }
+
         var w = this._plotDimensions.width;
         var h = this._plotDimensions.height;
         elem.width = w;

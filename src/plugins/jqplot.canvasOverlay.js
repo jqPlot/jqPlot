@@ -599,6 +599,11 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     $.jqplot.CanvasOverlay.postPlotDraw = function() {
+        // Memory Leaks patch    
+        if (this.plugins.canvasOverlay && this.plugins.canvasOverlay.highlightCanvas) {
+            this.plugins.canvasOverlay.highlightCanvas.resetCanvas();
+            this.plugins.canvasOverlay.highlightCanvas = null;
+        }
         this.plugins.canvasOverlay.canvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.canvasOverlay.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));

@@ -93,7 +93,7 @@
         }
   
         // Remove any remaining nodes
-        if ($.browser.msie) {
+        if ($.jqplot_use_excanvas) {
           elem.outerHTML = "";
         } else {
           while ( elem.firstChild ) {
@@ -212,7 +212,6 @@
         }
     };
 
-
     // canvas manager to reuse canvases on the plot.
     // Should help solve problem of canvases not being freed and
     // problem of waiting forever for firefox to decide to free memory.
@@ -250,7 +249,7 @@
         };
 
         this.destroyAllCanvases = function() {
-            
+            return null;
         };
 
         this.freeCanvas = function(idx) {
@@ -261,7 +260,7 @@
         };
 
         this.destroyCanvas = function(idx) {
-            
+            return null;
         };
     };
 
@@ -1446,7 +1445,7 @@
         this.renderer.init.call(this, this.rendererOptions);
     };
     
-    Grid.prototype.createElement = function(offsets, plot) {
+    Grid.prototype.createElement = function(offsets,plot) {
         this._offsets = offsets;
         return this.renderer.createElement.call(this, plot);
     };
@@ -1464,10 +1463,6 @@
     $.jqplot.GenericCanvas.prototype.constructor = $.jqplot.GenericCanvas;
     
     $.jqplot.GenericCanvas.prototype.createElement = function(offsets, clss, plotDimensions, plot) {
-        if (!plot) {
-            throw('No Plot Specified for Generic Canvas Create Element');
-        }
-
         this._offsets = offsets;
         var klass = 'jqplot';
         if (clss != undefined) {
@@ -1483,8 +1478,15 @@
             }
         }
         else {
-            //elem = document.createElement('canvas');
-            elem = plot.canvasManager.getCanvas();
+            elem = document.createElement('canvas');
+            // don't use the canvas manager with excanvas.
+            if ($.jqplot.use_excanvas) {
+                elem = document.createElement('canvas');
+            }
+            else {
+                elem = plot.canvasManager.getCanvas();
+            }
+
         }
         // if new plotDimensions supplied, use them.
         if (plotDimensions != null) {
@@ -1521,8 +1523,8 @@
         //this._elem.remove();
         this._elem.emptyForce();
       }
-      // not compatible with canvas manager?  maybe even before?
-      //this._ctx = null;
+      
+      this._ctx = null;
     };
     
     $.jqplot.HooksManager = function () {
@@ -1749,7 +1751,7 @@
         this.eventListenerHooks = new $.jqplot.EventListenerManager();
         this.preDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         this.postDrawSeriesShadowHooks = new $.jqplot.HooksManager();
-
+        
         this.colorGenerator = $.jqplot.ColorGenerator;
 
         this.canvasManager = new $.jqplot.CanvasManager();

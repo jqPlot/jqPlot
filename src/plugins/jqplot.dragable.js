@@ -79,6 +79,12 @@
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     // add a new DragCanvas object to the plot plugins to handle drawing on this new canvas.
     $.jqplot.Dragable.postPlotDraw = function() {
+        // Memory Leaks patch    
+        if (this.plugins.dragable && this.plugins.dragable.highlightCanvas) {
+            this.plugins.dragable.highlightCanvas.resetCanvas();
+            this.plugins.dragable.highlightCanvas = null;
+        }
+
         this.plugins.dragable = {previousCursor:'auto', isOver:false};
         this.plugins.dragable.dragCanvas = new DragCanvas();
         

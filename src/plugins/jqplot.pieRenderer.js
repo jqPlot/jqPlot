@@ -768,8 +768,7 @@
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
         // Memory Leaks patch    
-        if (this.plugins.pieRenderer &&
-        this.plugins.pieRenderer.highlightCanvas) {
+        if (this.plugins.pieRenderer && this.plugins.pieRenderer.highlightCanvas) {
             this.plugins.pieRenderer.highlightCanvas.resetCanvas();
             this.plugins.pieRenderer.highlightCanvas = null;
         }

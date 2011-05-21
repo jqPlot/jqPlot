@@ -875,6 +875,12 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
+        // Memory Leaks patch    
+        if (this.plugins.donutRenderer && this.plugins.donutRenderer.highlightCanvas) {
+            this.plugins.donutRenderer.highlightCanvas.resetCanvas();
+            this.plugins.donutRenderer.highlightCanvas = null;
+        }
+
         this.plugins.donutRenderer = {highlightedSeriesIndex:null};
         this.plugins.donutRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         // do we have any data labels?  if so, put highlight canvas before those

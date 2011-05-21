@@ -903,6 +903,12 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
+        // Memory Leaks patch    
+        if (this.plugins.funnelRenderer && this.plugins.funnelRenderer.highlightCanvas) {
+            this.plugins.funnelRenderer.highlightCanvas.resetCanvas();
+            this.plugins.funnelRenderer.highlightCanvas = null;
+        }
+
         this.plugins.funnelRenderer = {};
         this.plugins.funnelRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
