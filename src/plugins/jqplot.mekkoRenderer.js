@@ -286,6 +286,10 @@
                         idx++;
                     }   
                 }
+
+                tr = null;
+                td1 = null;
+                td2 = null;
             }
         }
         return this._elem;

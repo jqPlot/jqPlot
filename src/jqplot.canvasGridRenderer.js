@@ -46,6 +46,7 @@
     
     // called with context of Grid.
     $.jqplot.CanvasGridRenderer.prototype.createElement = function(plot) {
+        var elem;
         // Memory Leaks patch
         if (this._elem) {
           if ($.jqplot.use_excanvas) {

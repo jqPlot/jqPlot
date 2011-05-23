@@ -69,21 +69,47 @@
     
     // called with scope of legend
     $.jqplot.TableLegendRenderer.prototype.draw = function() {
-        var legend = this;
+        if (this._elem) {
+            this._elem.emptyForce();
+            this._elem = null;
+        }
+
         if (this.show) {
             var series = this._series;
             // make a table.  one line label per row.
-            var ss = 'position:absolute;';
-            ss += (this.background) ? 'background:'+this.background+';' : '';
-            ss += (this.border) ? 'border:'+this.border+';' : '';
-            ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
-            ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
-            ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
-            ss += (this.marginTop != null) ? 'margin-top:'+this.marginTop+';' : '';
-            ss += (this.marginBottom != null) ? 'margin-bottom:'+this.marginBottom+';' : '';
-            ss += (this.marginLeft != null) ? 'margin-left:'+this.marginLeft+';' : '';
-            ss += (this.marginRight != null) ? 'margin-right:'+this.marginRight+';' : '';
-            this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
+            var elem = document.createElement('table');
+            this._elem = $(elem);
+            this._elem.addClass('jqplot-table-legend');
+
+            var ss = {position:'absolute'};
+            if (this.background) {
+                ss['background'] = this.background;
+            }
+            if (this.border) {
+                ss['border'] = this.border;
+            }
+            if (this.fontSize) {
+                ss['fontSize'] = this.fontSize;
+            }
+            if (this.fontFamily) {
+                ss['fontFamily'] = this.fontFamily;
+            }
+            if (this.textColor) {
+                ss['textColor'] = this.textColor;
+            }
+            if (this.marginTop != null) {
+                ss['marginTop'] = this.marginTop;
+            }
+            if (this.marginBottom != null) {
+                ss['marginBottom'] = this.marginBottom;
+            }
+            if (this.marginLeft != null) {
+                ss['marginLeft'] = this.marginLeft;
+            }
+            if (this.marginRight != null) {
+                ss['marginRight'] = this.marginRight;
+            }
+            
         
             var pad = false, 
                 reverse = false,

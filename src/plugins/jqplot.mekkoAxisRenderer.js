@@ -95,7 +95,11 @@
             var dim=0;
             var temp;
             
-            this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
+            var elem = document.createElement('div');
+            this._elem = $(elem);
+            this._elem.addClass('jqplot-axis jqplot-'+this.name);
+            this._elem.css('position', 'absolute');
+            elem = null;
             
             if (this.name == 'xaxis' || this.name == 'x2axis') {
                 this._elem.width(this._plotDimensions.width);
@@ -109,8 +113,7 @@
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
             if (this._label.show) {
-                var elem = this._label.draw(ctx);
-                elem.appendTo(this._elem);
+                this._elem.append(this._label.draw(ctx));
             }
             
             var t, tick, elem;
@@ -119,8 +122,7 @@
                 for (var i=0; i<t.length; i++) {
                     tick = t[i];
                     if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
+                        this._elem.append(tick.draw(ctx));
                     }
                 }
             }
@@ -139,6 +141,7 @@
                     elem.addClass('jqplot-'+this.name+'-tick');
                     elem.addClass('jqplot-mekko-barLabel');
                     elem.appendTo(this._elem);
+                    elem = null;
                 }   
             }
             
