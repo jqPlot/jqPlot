@@ -233,13 +233,22 @@
         }
 
         
-        // if (c.zoom) {
-        c.zoomCanvas = new $.jqplot.GenericCanvas();
-        this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions, this));
-        c.zoomCanvas.setContext();
-        // }
+        if (c.zoom) {
+            c.zoomCanvas = new $.jqplot.GenericCanvas();
+            this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions, this));
+            c.zoomCanvas.setContext();
+        }
+        
         c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
-        c.zoomCanvas._elem.before(c._tooltipElem);
+        
+        if (c.zoomCanvas) {
+            c.zoomCanvas._elem.before(c._tooltipElem);
+        }
+
+        else {
+            this.eventCanvas._elem.before(c._tooltipElem);
+        }
+
         if (c.showVerticalLine || c.showHorizontalLine) {
             c.cursorCanvas = new $.jqplot.GenericCanvas();
             this.eventCanvas._elem.before(c.cursorCanvas.createElement(this._gridPadding, 'jqplot-cursor-canvas', this._plotDimensions, this));
@@ -753,7 +762,6 @@
     
     function handleMouseMove(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
-        var ctx = c.zoomCanvas._ctx;
         if (c.show) {
             if (c.showTooltip) {
                 updateTooltip(gridpos, datapos, plot);
@@ -765,7 +773,6 @@
                 moveLine(gridpos, plot);
             }
         }
-        ctx = null;
     }
             
     function getEventPosition(ev) {

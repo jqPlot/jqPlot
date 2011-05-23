@@ -81,7 +81,7 @@
     };
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.draw = function(ctx) {
+    $.jqplot.LinearAxisRenderer.prototype.draw = function(ctx, plot) {
         if (this.show) {
             // populate the axis label and value properties.
             // createTicks is a method on the renderer, but
@@ -113,7 +113,7 @@
             this._label = new this.labelRenderer(this.labelOptions);
             var elem;
             if (this._label.show) {
-                elem = this._label.draw(ctx);
+                elem = this._label.draw(ctx, plot);
                 elem.appendTo(this._elem);
             }
     
@@ -121,7 +121,7 @@
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
                 if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    elem = tick.draw(ctx);
+                    elem = tick.draw(ctx, plot);
                     elem.appendTo(this._elem);
                 }
             }

@@ -167,44 +167,57 @@
         return a;
     };
     
-    $.jqplot.CanvasAxisLabelRenderer.prototype.draw = function(ctx) {
+    $.jqplot.CanvasAxisLabelRenderer.prototype.draw = function(ctx, plot) {
           // Memory Leaks patch
           if (this._elem) {
               if ($.jqplot.use_excanvas) {
-                  var elem = this._elem.get(0);
-                  window.G_vmlCanvasManager.uninitElement(elem);
-                  elem = null;
+                  window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
               }
             
               this._elem.emptyForce();
-              this._domelem = null;
               this._elem = null;
           }
 
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.
-        var domelem = document.createElement('canvas');
+
+        var elem;
+
+        // don't use the canvas manager with excanvas.
+        if ($.jqplot.use_excanvas) {
+            window.G_vmlCanvasManager.uninitElement(elem);
+            elem = document.createElement('canvas');
+        }
+        else {
+            elem = plot.canvasManager.getCanvas();
+        }
+
         this._textRenderer.setText(this.label, ctx);
         var w = this.getWidth(ctx);
         var h = this.getHeight(ctx);
-        domelem.width = w;
-        domelem.height = h;
-        domelem.style.width = w;
-        domelem.style.height = h;
-        // domelem.style.textAlign = 'center';
-        domelem.style.position = 'absolute';
-        this._domelem = domelem;
-        this._elem = $(domelem);
+        elem.width = w;
+        elem.height = h;
+        elem.style.width = w;
+        elem.style.height = h;
+        // // domelem.style.textAlign = 'center';
+        // elem.style.position = 'absolute';
+        this._elem = $(elem);
+        this._elem.css({ position: 'absolute'});
         this._elem.addClass('jqplot-'+this.axis+'-label');
+
+        if ($.jqplot.use_excanvas) {
+            // useless ?? window.G_vmlCanvasManager.init_(document);
+            elem = window.G_vmlCanvasManager.initElement(elem);
+        }
         
-        domelem = null;
+        elem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisLabelRenderer.prototype.pack = function() {
         if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.init_(document);
-            this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
+            //window.G_vmlCanvasManager.init_(document);
+            this._elem.get(0) = window.G_vmlCanvasManager.initElement(this._elem.get(0));
         }
         this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };

@@ -203,7 +203,7 @@ function getNewDataPoint() {
   // the plot as a base set.  Adjust the close value by a random amount,
 
   // a slight adjustment to current price
-  var val = Math.random()*10 * (Math.random() - 0.5);
+  var val = Math.random()*20 * (Math.random() - 0.1);
   var d = plot1.series[0].data;
   var dp = d[d.length-1];
   // get the current values.
@@ -225,7 +225,7 @@ function getNewDataPoint() {
 function runUpdate() {
 
   // Simulate 1000 iterations of streaming for testing purposes.
-  if (counter < 1000) {
+  if (counter < 10000) {
     var newdata = getNewDataPoint();
     // updatePlot method each time have an updated data point.
     updatePlot(newdata);

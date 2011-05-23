@@ -59,7 +59,7 @@
         $.extend(true, this, options);
     };
     
-    $.jqplot.AxisLabelRenderer.prototype.draw = function() {
+    $.jqplot.AxisLabelRenderer.prototype.draw = function(ctx, plot) {
         // Memory Leaks patch
         if (this._elem) {
             this._elem.emptyForce();

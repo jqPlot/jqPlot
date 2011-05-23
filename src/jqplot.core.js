@@ -221,31 +221,36 @@
 
         this.getCanvas = function() {
             var canvas;
-            var idx = $.inArray(true, this.free);
-    
-            if (idx > -1) {
-                canvas = this.canvases[idx];
-                this.free[idx] = false;
-                $(canvas).addClass('reused');
+            var makeNew = true;
+
+            for (var i=0, l=this.canvases.length; i<l; i++) {
+                if (this.free[i] === true) {
+                    makeNew = false;
+                    canvas = this.canvases[i];
+                    this.free[i] = false;
+                    $(canvas).addClass('reused');
+                    break;
+                }
             }   
 
-            else {
+            if (makeNew) {
                 canvas = document.createElement('canvas');
                 this.canvases.push(canvas);
                 this.free.push(false);
-                idx = this.canvases.length;
             }   
             
             return canvas;
         };
 
         this.freeAllCanvases = function() {
+            var canvas;
             for (var i = 0; i < this.canvases.length; i++) {
-                var canvas = this.canvases[i];
+                canvas = this.canvases[i];
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
                 $(canvas).removeClass().removeAttr('style');
                 this.free[i] = true;
             }   
+            canvas = null;
         };
 
         this.destroyAllCanvases = function() {
@@ -635,13 +640,13 @@
         
     };
     
-    Axis.prototype.draw = function(ctx) {
+    Axis.prototype.draw = function(ctx, plot) {
         // Memory Leaks patch
         if (this.__ticks) {
           this.__ticks = null;
         }
 
-        return this.renderer.draw.call(this, ctx);
+        return this.renderer.draw.call(this, ctx, plot);
         
     };
     
@@ -1469,25 +1474,33 @@
             klass = clss;
         }
         var elem;
-        // if this canvas already has a dom element, don't make a new one.
-        if (this._elem) {
-            elem = this._elem.get(0);
-            // Memory Leaks patch
-            if ($.jqplot.use_excanvas) {
-                window.G_vmlCanvasManager.uninitElement(elem);
-            }
+
+        // if (this._elem) {
+        //     // Memory Leaks patch
+        //     if ($.jqplot.use_excanvas) {
+        //         window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
+        //     }
+        // }
+        // else {
+        //     // don't use the canvas manager with excanvas.
+        //     if ($.jqplot.use_excanvas) {
+        //         elem = document.createElement('canvas');
+        //     }
+        //     else {
+        //         elem = plot.canvasManager.getCanvas();
+        //     }
+
+        // }
+
+        // don't use the canvas manager with excanvas.
+        if ($.jqplot.use_excanvas) {
+            window.G_vmlCanvasManager.uninitElement(elem);
+            elem = document.createElement('canvas');
         }
         else {
-            elem = document.createElement('canvas');
-            // don't use the canvas manager with excanvas.
-            if ($.jqplot.use_excanvas) {
-                elem = document.createElement('canvas');
-            }
-            else {
-                elem = plot.canvasManager.getCanvas();
-            }
-
+            elem = plot.canvasManager.getCanvas();
         }
+
         // if new plotDimensions supplied, use them.
         if (plotDimensions != null) {
             this._plotDimensions = plotDimensions;
@@ -2412,6 +2425,9 @@
                 
                 $.gcClear();
 
+                this.eventCanvas._elem.unbind();
+                this.target.unbind();
+
                 // Couple of posts on Stack Overflow indicate that empty() doesn't
                 // always cear up the dom and release memory.  Sometimes setting
                 // innerHTML property to null is needed.  Particularly on IE, may 
@@ -2516,7 +2532,7 @@
                 
                 var ax = this.axes;
                 for (var name in ax) {
-                    this.target.append(ax[name].draw(this.baseCanvas._ctx));
+                    this.target.append(ax[name].draw(this.baseCanvas._ctx, this));
                     ax[name].set();
                 }
                 if (ax.yaxis.show) {
