@@ -95,7 +95,8 @@
         // Remove any remaining nodes
         if ($.jqplot_use_excanvas) {
           elem.outerHTML = "";
-        } else {
+        }
+        else {
           while ( elem.firstChild ) {
             elem.removeChild( elem.firstChild );
           }

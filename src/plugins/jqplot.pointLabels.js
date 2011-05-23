@@ -285,8 +285,9 @@
             var pd = this._plotData;
             var xax = this._xaxis;
             var yax = this._yaxis;
+            var elem, helem;
 
-            for (var i=p._labels.length-1; i>=0; i--) {
+            for (var i=0, l=p._labels.length; i < l; i++) {
                 var label = p._labels[i];
                 
                 if (p.hideZeros && parseInt(p._labels[i], 10) == 0) {
@@ -296,9 +297,17 @@
                 if (label != null) {
                     label = p.formatter(p.formatString, label);
                 } 
-                var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
+
+                helem = document.createElement('div');
+                p._elems[i] = $(helem);
+
+                elem = p._elems[i];
+
+
+                elem.addClass('jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i);
+                elem.css('position', 'absolute');
                 elem.insertAfter(sctx.canvas);
-                p._elems.push(elem);
+
                 if (p.escapeHTML) {
                     elem.text(label);
                 }
@@ -321,8 +330,8 @@
                 }
                 elem.css('left', ell);
                 elem.css('top', elt);
-                var elr = ell + $(elem).width();
-                var elb = elt + $(elem).height();
+                var elr = ell + elem.width();
+                var elb = elt + elem.height();
                 var et = p.edgeTolerance;
                 var scl = $(sctx.canvas).position().left;
                 var sct = $(sctx.canvas).position().top;
@@ -330,8 +339,10 @@
                 var scb = sctx.canvas.height + sct;
                 // if label is outside of allowed area, remove it
                 if (ell - et < scl || elt - et < sct || elr + et > scr || elb + et > scb) {
-                    $(elem).detach();
+                    elem.remove();
                 }
+                elem = null;
+                helem = null;
             }
         }
     };

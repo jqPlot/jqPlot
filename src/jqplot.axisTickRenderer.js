@@ -111,18 +111,26 @@
         if (!this.label) {
             this.label = this.prefix + this.formatter(this.formatString, this.value);
         }
-        var style ='style="position:absolute;';
+        var style = {position: 'absolute'};
         if (Number(this.label)) {
-            style +='white-space:nowrap;';
+            style['whitSpace'] = 'nowrap';
         }
-        style += '"';
         
         // Memory Leaks patch
         if (this._elem) {
             this._elem.emptyForce();
             this._elem = null;
         }
-        this._elem = $('<div '+style+' class="jqplot-'+this.axis+'-tick">'+this.label+'</div>');
+
+
+        var elem = document.createElement('div');
+        this._elem = $(elem);
+        this._elem.addClass("jqplot-"+this.axis+"-tick");
+        this._elem.text(this.label);
+        this._elem.css(style);
+
+
+        // elem = $('<div '+style+' class="jqplot-'+this.axis+'-tick">'+this.label+'</div>');
         for (var s in this._styles) {
             this._elem.css(s, this._styles[s]);
         }
@@ -138,6 +146,9 @@
 		if (this._breakTick) {
 			this._elem.addClass('jqplot-breakTick');
 		}
+        
+        elem = null;
+        
         return this._elem;
     };
         

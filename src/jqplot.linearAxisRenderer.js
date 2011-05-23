@@ -36,18 +36,18 @@
     
     // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
-		// prop: breakPoints
-		// EXPERIMENTAL!! Use at your own risk!
-		// Works only with linear axes and the default tick renderer.
-		// Array of [start, stop] points to create a broken axis.
-		// Broken axes have a "jump" in them, which is an immediate 
-		// transition from a smaller value to a larger value.
-		// Currently, axis ticks MUST be manually assigned if using breakPoints
-		// by using the axis ticks array option.
-		this.breakPoints = null;
-		// prop: breakTickLabel
-		// Label to use at the axis break if breakPoints are specified.
-		this.breakTickLabel = "&asymp;";
+        // prop: breakPoints
+        // EXPERIMENTAL!! Use at your own risk!
+        // Works only with linear axes and the default tick renderer.
+        // Array of [start, stop] points to create a broken axis.
+        // Broken axes have a "jump" in them, which is an immediate 
+        // transition from a smaller value to a larger value.
+        // Currently, axis ticks MUST be manually assigned if using breakPoints
+        // by using the axis ticks array option.
+        this.breakPoints = null;
+        // prop: breakTickLabel
+        // Label to use at the axis break if breakPoints are specified.
+        this.breakTickLabel = "&asymp;";
         // prop: forceTickAt0
         // This will ensure that there is always a tick mark at 0.
         // If data range is strictly positive or negative,
@@ -69,15 +69,15 @@
         this._autoFormatString = '';
         this._overrideFormatString = false;
         $.extend(true, this, options);
-		if (this.breakPoints) {
-			if (!$.isArray(this.breakPoints)) {
-				this.breakPoints = null;
-			}
-			else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
-				this.breakPoints = null;
-			}
-		}
-		this.resetDataBounds();
+        if (this.breakPoints) {
+            if (!$.isArray(this.breakPoints)) {
+                this.breakPoints = null;
+            }
+            else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
+                this.breakPoints = null;
+            }
+        }
+        this.resetDataBounds();
     };
     
     // called with scope of axis
@@ -97,9 +97,15 @@
                 // Memory Leaks patch
                 //this._elem.empty();
                 this._elem.emptyForce();
+                this._elem = null;
             }
             
-            this._elem = $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
+            var elem = document.createElement('div');
+            this._elem = $(elem);
+            this._elem.addClass('jqplot-axis jqplot-'+this.name);
+            this._elem.css('posiiton', 'absolute');
+            elem = null;
+
             
             if (this.name == 'xaxis' || this.name == 'x2axis') {
                 this._elem.width(this._plotDimensions.width);
@@ -111,7 +117,6 @@
             // create a _label object.
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
-            var elem;
             if (this._label.show) {
                 elem = this._label.draw(ctx, plot);
                 elem.appendTo(this._elem);
@@ -124,7 +129,9 @@
                     elem = tick.draw(ctx, plot);
                     elem.appendTo(this._elem);
                 }
+                tick = null;
             }
+            t = null;
             elem = null;
         }
         return this._elem;
@@ -153,8 +160,9 @@
         var lshow = (this._label == null) ? false : this._label.show;
         if (this.show) {
             var t = this._ticks;
+            var tick;
             for (var i=0; i<t.length; i++) {
-                var tick = t[i];
+                tick = t[i];
                 if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
                     if (this.name == 'xaxis' || this.name == 'x2axis') {
                         temp = tick._elem.outerHeight(true);
@@ -167,6 +175,8 @@
                     }
                 }
             }
+            tick = null;
+            t = null;
             
             if (lshow) {
                 w = this._label._elem.outerWidth(true);
@@ -224,44 +234,44 @@
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
                 if (ut.constructor == Array) {
-	                t.value = ut[0];
-					if (this.breakPoints) {
-						if (ut[0] == this.breakPoints[0]) {
-							t.label = this.breakTickLabel;
-							t._breakTick = true;
-							t.showGridline = false;
-							t.showMark = false;
-						}
-						else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
-							t.show = false;
-							t.showGridline = false;
-		                    t.label = ut[1];
-						}
-						else {
-		                    t.label = ut[1];
-						}
-					}
-					else {
-	                    t.label = ut[1];
-					}
+                    t.value = ut[0];
+                    if (this.breakPoints) {
+                        if (ut[0] == this.breakPoints[0]) {
+                            t.label = this.breakTickLabel;
+                            t._breakTick = true;
+                            t.showGridline = false;
+                            t.showMark = false;
+                        }
+                        else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
+                            t.show = false;
+                            t.showGridline = false;
+                            t.label = ut[1];
+                        }
+                        else {
+                            t.label = ut[1];
+                        }
+                    }
+                    else {
+                        t.label = ut[1];
+                    }
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
                 
                 else {
-	                t.value = ut;
-					if (this.breakPoints) {
-						if (ut == this.breakPoints[0]) {
-							t.label = this.breakTickLabel;
-							t._breakTick = true;
-							t.showGridline = false;
-							t.showMark = false;
-						}
-						else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
-							t.show = false;
-							t.showGridline = false;
-						}
-					}
+                    t.value = ut;
+                    if (this.breakPoints) {
+                        if (ut == this.breakPoints[0]) {
+                            t.label = this.breakTickLabel;
+                            t._breakTick = true;
+                            t.showGridline = false;
+                            t.showMark = false;
+                        }
+                        else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
+                            t.show = false;
+                            t.showGridline = false;
+                        }
+                    }
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
                 }
@@ -632,44 +642,47 @@
 
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
+                t = null;
             }
         }
+        ticks = null;
     };
-	
-	// Used to reset just the values of the ticks and then repack, which will
-	// recalculate the positioning functions.  It is assuemd that the 
-	// number of ticks is the same and the values of the new array are at the
-	// proper interval.
-	// This method needs to be called with the scope of an axis object, like:
-	//
-	// > plot.axes.yaxis.renderer.resetTickValues.call(plot.axes.yaxis, yarr);
-	//
-	$.jqplot.LinearAxisRenderer.prototype.resetTickValues = function(opts) {
-		if ($.isArray(opts) && opts.length == this._ticks.length) {
-			var t;
-			for (var i=0; i<opts.length; i++) {
-				t = this._ticks[i];
-				t.value = opts[i];
-				t.label = t.formatter(t.formatString, opts[i]);
-				t.label = t.prefix + t.label;
-				t._elem.html(t.label);
-			}
-			this.min = $.jqplot.arrayMin(opts);
-			this.max = $.jqplot.arrayMax(opts);
-			this.pack();
-		}
-		// Not implemented yet.
+    
+    // Used to reset just the values of the ticks and then repack, which will
+    // recalculate the positioning functions.  It is assuemd that the 
+    // number of ticks is the same and the values of the new array are at the
+    // proper interval.
+    // This method needs to be called with the scope of an axis object, like:
+    //
+    // > plot.axes.yaxis.renderer.resetTickValues.call(plot.axes.yaxis, yarr);
+    //
+    $.jqplot.LinearAxisRenderer.prototype.resetTickValues = function(opts) {
+        if ($.isArray(opts) && opts.length == this._ticks.length) {
+            var t;
+            for (var i=0; i<opts.length; i++) {
+                t = this._ticks[i];
+                t.value = opts[i];
+                t.label = t.formatter(t.formatString, opts[i]);
+                t.label = t.prefix + t.label;
+                t._elem.html(t.label);
+            }
+            t = null;
+            this.min = $.jqplot.arrayMin(opts);
+            this.max = $.jqplot.arrayMax(opts);
+            this.pack();
+        }
+        // Not implemented yet.
         // else if ($.isPlainObject(opts)) {
         // 
         // }
-	};
+    };
     
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
-		// Add defaults for repacking from resetTickValues function.
-		pos = pos || {};
-		offsets = offsets || this._offsets;
-		
+        // Add defaults for repacking from resetTickValues function.
+        pos = pos || {};
+        offsets = offsets || this._offsets;
+        
         var ticks = this._ticks;
         var max = this.max;
         var min = this.min;
@@ -687,86 +700,86 @@
         var unitlength = max - min;
         
         // point to unit and unit to point conversions references to Plot DOM element top left corner.
-		if (this.breakPoints) {
-			unitlength = unitlength - this.breakPoints[1] + this.breakPoints[0];
-			
-	        this.p2u = function(p){
-	            return (p - offmin) * unitlength / pixellength + min;
-	        };
+        if (this.breakPoints) {
+            unitlength = unitlength - this.breakPoints[1] + this.breakPoints[0];
+            
+            this.p2u = function(p){
+                return (p - offmin) * unitlength / pixellength + min;
+            };
         
-	        this.u2p = function(u){
-				if (u > this.breakPoints[0] && u < this.breakPoints[1]){
-					u = this.breakPoints[0];
-				}
-				if (u <= this.breakPoints[0]) {
-	            	return (u - min) * pixellength / unitlength + offmin;
-				}
-				else {
-					return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength + offmin;
-				}
-	        };
+            this.u2p = function(u){
+                if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+                    u = this.breakPoints[0];
+                }
+                if (u <= this.breakPoints[0]) {
+                    return (u - min) * pixellength / unitlength + offmin;
+                }
+                else {
+                    return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength + offmin;
+                }
+            };
                 
-	        if (this.name.charAt(0) == 'x'){
-	            this.series_u2p = function(u){
-					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
-						u = this.breakPoints[0];
-					}
-					if (u <= this.breakPoints[0]) {
-		            	return (u - min) * pixellength / unitlength;
-					}
-					else {
-						return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength;
-					}
-	            };
-	            this.series_p2u = function(p){
-	                return p * unitlength / pixellength + min;
-	            };
-	        }
+            if (this.name.charAt(0) == 'x'){
+                this.series_u2p = function(u){
+                    if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+                        u = this.breakPoints[0];
+                    }
+                    if (u <= this.breakPoints[0]) {
+                        return (u - min) * pixellength / unitlength;
+                    }
+                    else {
+                        return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength;
+                    }
+                };
+                this.series_p2u = function(p){
+                    return p * unitlength / pixellength + min;
+                };
+            }
         
-	        else {
-	            this.series_u2p = function(u){
-					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
-						u = this.breakPoints[0];
-					}
-					if (u >= this.breakPoints[1]) {
-		            	return (u - max) * pixellength / unitlength;
-					}
-					else {
-						return (u + this.breakPoints[1] - this.breakPoints[0] - max) * pixellength / unitlength;
-					}
-	            };
-	            this.series_p2u = function(p){
-	                return p * unitlength / pixellength + max;
-	            };
-	        }
-		}
-		else {
-	        this.p2u = function(p){
-	            return (p - offmin) * unitlength / pixellength + min;
-	        };
+            else {
+                this.series_u2p = function(u){
+                    if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+                        u = this.breakPoints[0];
+                    }
+                    if (u >= this.breakPoints[1]) {
+                        return (u - max) * pixellength / unitlength;
+                    }
+                    else {
+                        return (u + this.breakPoints[1] - this.breakPoints[0] - max) * pixellength / unitlength;
+                    }
+                };
+                this.series_p2u = function(p){
+                    return p * unitlength / pixellength + max;
+                };
+            }
+        }
+        else {
+            this.p2u = function(p){
+                return (p - offmin) * unitlength / pixellength + min;
+            };
         
-	        this.u2p = function(u){
-	            return (u - min) * pixellength / unitlength + offmin;
-	        };
+            this.u2p = function(u){
+                return (u - min) * pixellength / unitlength + offmin;
+            };
                 
-	        if (this.name == 'xaxis' || this.name == 'x2axis'){
-	            this.series_u2p = function(u){
-	                return (u - min) * pixellength / unitlength;
-	            };
-	            this.series_p2u = function(p){
-	                return p * unitlength / pixellength + min;
-	            };
-	        }
+            if (this.name == 'xaxis' || this.name == 'x2axis'){
+                this.series_u2p = function(u){
+                    return (u - min) * pixellength / unitlength;
+                };
+                this.series_p2u = function(p){
+                    return p * unitlength / pixellength + min;
+                };
+            }
         
-	        else {
-	            this.series_u2p = function(u){
-	                return (u - max) * pixellength / unitlength;
-	            };
-	            this.series_p2u = function(p){
-	                return p * unitlength / pixellength + max;
-	            };
-	        }
-		}
+            else {
+                this.series_u2p = function(u){
+                    return (u - max) * pixellength / unitlength;
+                };
+                this.series_p2u = function(p){
+                    return p * unitlength / pixellength + max;
+                };
+            }
+        }
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -886,5 +899,7 @@
                 }
             }
         }
+
+        ticks = null;
     };
 })(jQuery);

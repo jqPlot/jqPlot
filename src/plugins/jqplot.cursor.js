@@ -238,8 +238,13 @@
             this.eventCanvas._elem.before(c.zoomCanvas.createElement(this._gridPadding, 'jqplot-zoom-canvas', this._plotDimensions, this));
             c.zoomCanvas.setContext();
         }
+
+        var elem = document.createElement('div');
+        c._tooltipElem = $(elem);
+        elem = null;
+        c._tooltipElem.addClass('jqplot-cursor-tooltip');
+        c._tooltipElem.css({position:'absolute', display:'none'});
         
-        c._tooltipElem = $('<div class="jqplot-cursor-tooltip" style="position:absolute;display:none"></div>');
         
         if (c.zoomCanvas) {
             c.zoomCanvas._elem.before(c._tooltipElem);
@@ -979,10 +984,18 @@
     
     // called in context of a Legend
     $.jqplot.CursorLegendRenderer.prototype.draw = function() {
+        if (this._elem) {
+            this._elem.emptyForce();
+            this._elem = null;
+        }
         if (this.show) {
             var series = this._series, s;
             // make a table.  one line label per row.
-            this._elem = $('<table class="jqplot-legend jqplot-cursor-legend" style="position:absolute"></table>');
+            var elem = document.createElement('div');
+            this._elem = $(elem);
+            elem = null;
+            this._elem.addClass('jqplot-legend jqplot-cursor-legend');
+            this._elem.css('position', 'absolute');
         
             var pad = false;
             for (var i = 0; i< series.length; i++) {
