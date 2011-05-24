@@ -580,7 +580,8 @@
                 var i, j;
                 var tr, td1, td2; 
                 var lt, rs, color;
-                var idx = 0;    
+                var idx = 0; 
+                var div0, div1;   
                 
                 for (i=0; i<nr; i++) {
                     tr = $(document.createElement('tr'));

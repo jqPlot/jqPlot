@@ -115,30 +115,30 @@
       }
     };
     
-    // Memory Leaks patch : garbage collector
-    $.gcInit = function() {
-      var gc = $("<div id='gc_jqPlotSalsaGarbage' style='display:none;visibility:hidden;'></div>");
-      $("body").append(gc);
-      $._gc = gc;
-    };
+    // // Memory Leaks patch : garbage collector
+    // $.gcInit = function() {
+    //   var gc = $("<div id='gc_jqPlotSalsaGarbage' style='display:none;visibility:hidden;'></div>");
+    //   $("body").append(gc);
+    //   $._gc = gc;
+    // };
 
-    $.gcCollect = function(elem) {
-      $._gc.append(elem);
-    };
+    // $.gcCollect = function(elem) {
+    //   $._gc.append(elem);
+    // };
     
-    $.gcClear = function() {
-      if ($.browser.msie) {
-        $._gc.children().each(function() {
-          this.outerHTML = "";
-        });
-      }
+    // $.gcClear = function() {
+    //   if ($.browser.msie) {
+    //     $._gc.children().each(function() {
+    //       this.outerHTML = "";
+    //     });
+    //   }
       
-      $._gc.empty();
-    };
+    //   $._gc.empty();
+    // };
     
-    $(document).ready(function() {
-      $.gcInit();
-    });
+    // $(document).ready(function() {
+    //   $.gcInit();
+    // });
 
     /**
      * Class: $.jqplot
@@ -1480,31 +1480,31 @@
         }
         var elem;
 
-        // if (this._elem) {
-        //     // Memory Leaks patch
-        //     if ($.jqplot.use_excanvas) {
-        //         window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
-        //     }
-        // }
-        // else {
-        //     // don't use the canvas manager with excanvas.
-        //     if ($.jqplot.use_excanvas) {
-        //         elem = document.createElement('canvas');
-        //     }
-        //     else {
-        //         elem = plot.canvasManager.getCanvas();
-        //     }
-
-        // }
-
-        // don't use the canvas manager with excanvas.
-        if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.uninitElement(elem);
-            elem = document.createElement('canvas');
+        if (this._elem) {
+            // Memory Leaks patch
+            if ($.jqplot.use_excanvas) {
+                window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
+            }
         }
         else {
-            elem = plot.canvasManager.getCanvas();
+            // don't use the canvas manager with excanvas.
+            if ($.jqplot.use_excanvas) {
+                elem = document.createElement('canvas');
+            }
+            else {
+                elem = plot.canvasManager.getCanvas();
+            }
+
         }
+
+        // don't use the canvas manager with excanvas.
+        // if ($.jqplot.use_excanvas) {
+        //     window.G_vmlCanvasManager.uninitElement(elem);
+        //     elem = document.createElement('canvas');
+        // }
+        // else {
+        //     elem = plot.canvasManager.getCanvas();
+        // }
 
         // if new plotDimensions supplied, use them.
         if (plotDimensions != null) {
@@ -2414,21 +2414,21 @@
             if (clear) {
                 this.canvasManager.freeAllCanvases();
                 // Memory Leaks patch
-                this.target.find("table.jqplot-table-legend,table.jqplot-legend").each( function() {
-                    $(this).unbind();
+                // this.target.find("table.jqplot-table-legend,table.jqplot-legend").each( function() {
+                //     $(this).unbind();
 
-                    $(this).find(".jqplot-seriesToggle").each( function() {
-                        $(this).unbind();
-                    });
-                    $.gcCollect(this);
-                });
+                //     $(this).find(".jqplot-seriesToggle").each( function() {
+                //         $(this).unbind();
+                //     });
+                //     $.gcCollect(this);
+                // });
                 
-                this.target.find(".jqplot-title").each( function() {
-                    $(this).unbind();
-                    $.gcCollect(this);
-                });
+                // this.target.find(".jqplot-title").each( function() {
+                //     $(this).unbind();
+                //     $.gcCollect(this);
+                // });
                 
-                $.gcClear();
+                // $.gcClear();
 
                 this.eventCanvas._elem.unbind();
                 this.target.unbind();
@@ -2462,6 +2462,7 @@
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
+                this.canvasManager.freeAllCanvases();
                 // Couple of posts on Stack Overflow indicate that empty() doesn't
                 // always cear up the dom and release memory.  Sometimes setting
                 // innerHTML property to null is needed.  Particularly on IE, may 
