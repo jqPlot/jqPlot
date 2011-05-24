@@ -297,7 +297,7 @@
     };
     
     // called with scope of axis
-    $.jqplot.CategoryAxisRenderer.prototype.draw = function(ctx) {
+    $.jqplot.CategoryAxisRenderer.prototype.draw = function(ctx, plot) {
         if (this.show) {
             // populate the axis label and value properties.
             // createTicks is a method on the renderer, but
@@ -336,7 +336,7 @@
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
                 if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    var elem = tick.draw(ctx);
+                    var elem = tick.draw(ctx, plot);
                     elem.appendTo(this._elem);
                 }
             }
