@@ -511,17 +511,42 @@
         var legend = this;
         if (this.show) {
             var series = this._series;
-            var ss = 'position:absolute;';
-            ss += (this.background) ? 'background:'+this.background+';' : '';
-            ss += (this.border) ? 'border:'+this.border+';' : '';
-            ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
-            ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
-            ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
-            ss += (this.marginTop != null) ? 'margin-top:'+this.marginTop+';' : '';
-            ss += (this.marginBottom != null) ? 'margin-bottom:'+this.marginBottom+';' : '';
-            ss += (this.marginLeft != null) ? 'margin-left:'+this.marginLeft+';' : '';
-            ss += (this.marginRight != null) ? 'margin-right:'+this.marginRight+';' : '';
-            this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
+
+
+            this._elem = $(document.createElement('table'));
+            this._elem.addClass('jqplot-table-legend');
+
+            var ss = {position:'absolute'};
+            if (this.background) {
+                ss['background'] = this.background;
+            }
+            if (this.border) {
+                ss['border'] = this.border;
+            }
+            if (this.fontSize) {
+                ss['fontSize'] = this.fontSize;
+            }
+            if (this.fontFamily) {
+                ss['fontFamily'] = this.fontFamily;
+            }
+            if (this.textColor) {
+                ss['textColor'] = this.textColor;
+            }
+            if (this.marginTop != null) {
+                ss['marginTop'] = this.marginTop;
+            }
+            if (this.marginBottom != null) {
+                ss['marginBottom'] = this.marginBottom;
+            }
+            if (this.marginLeft != null) {
+                ss['marginLeft'] = this.marginLeft;
+            }
+            if (this.marginRight != null) {
+                ss['marginRight'] = this.marginRight;
+            }
+
+            this._elem.css(ss);
+
             // Pie charts legends don't go by number of series, but by number of data points
             // in the series.  Refactor things here for that.
             
@@ -552,16 +577,23 @@
                     nc = 1;
                 }
                 
-                var i, j, tr, td1, td2, lt, rs, color;
+                var i, j;
+                var tr, td1, td2; 
+                var lt, rs, color;
                 var idx = 0;    
                 
                 for (i=0; i<nr; i++) {
+                    tr = $(document.createElement('tr'));
+                    tr.addClass('jqplot-table-legend');
+                    
                     if (reverse){
-                        tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+                        tr.prependTo(this._elem);
                     }
+                    
                     else{
-                        tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+                        tr.appendTo(this._elem);
                     }
+                    
                     for (j=0; j<nc; j++) {
                         if (idx < pd.length){
                             lt = this.labels[idx] || pd[idx][0].toString();
@@ -583,11 +615,23 @@
                                 }
                             }
                             rs = (pad) ? this.rowSpacing : '0';
-                
-                            td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
-                                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
-                                '</div></td>');
-                            td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+
+
+
+                            td1 = $(document.createElement('td'));
+                            td1.addClass('jqplot-table-legend');
+                            td1.css({textAlign: 'center', paddingTop: rs});
+
+                            div0 = $(document.createElement('div'));
+                            div1 = $(document.createElement('div'));
+                            div1.addClass('jqplot-table-legend-swatch');
+                            div1.css({backgroundColor: color, borderColor: color});
+                            td1.append(div0.append(div1));
+
+                            td2 = $(document.createElement('td'));
+                            td2.addClass('jqplot-table-legend');
+                            td2.css('paddingTop', rs);
+
                             if (this.escapeHtml){
                                 td2.text(lt);
                             }

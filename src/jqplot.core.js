@@ -249,6 +249,8 @@
                 canvas = this.canvases[i];
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
                 $(canvas).removeClass().removeAttr('style');
+                canvas.width = 0;
+                canvas.height = 0;
                 this.free[i] = true;
             }   
             canvas = null;
@@ -262,6 +264,8 @@
             var canvas = this.canvases[idx];
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             $(canvas).removeClass().removeAttr('style');
+            canvas.width = 0;
+            canvas.height = 0;
             this.free[idx] = true;
         };
 
