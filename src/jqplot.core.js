@@ -217,57 +217,52 @@
     // Should help solve problem of canvases not being freed and
     // problem of waiting forever for firefox to decide to free memory.
     $.jqplot.CanvasManager = function() {
-        this.canvases = [];
-        this.free = [];
-
+		// canvases are managed globally so that they can be reused
+		// across plots after they have been freed
+		if (typeof $.jqplot.CanvasManager.canvases == 'undefined') {
+			$.jqplot.CanvasManager.canvases = [];
+			$.jqplot.CanvasManager.free = [];
+		}
+		
+		var canvases = $.jqplot.CanvasManager.canvases;
+		var free = $.jqplot.CanvasManager.free;
+        
         this.getCanvas = function() {
             var canvas;
             var makeNew = true;
 
-            for (var i=0, l=this.canvases.length; i<l; i++) {
-                if (this.free[i] === true) {
+            for (var i=0, l=canvases.length; i<l; i++) {
+                if (free[i] === true) {
                     makeNew = false;
-                    canvas = this.canvases[i];
-                    this.free[i] = false;
-                    $(canvas).addClass('reused');
+                    canvas = canvases[i];
+                    free[i] = false;
                     break;
                 }
             }   
 
             if (makeNew) {
                 canvas = document.createElement('canvas');
-                this.canvases.push(canvas);
-                this.free.push(false);
+                canvases.push(canvas);
+                free.push(false);
             }   
             
             return canvas;
         };
 
         this.freeAllCanvases = function() {
-            var canvas;
-            for (var i = 0; i < this.canvases.length; i++) {
-                canvas = this.canvases[i];
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                $(canvas).removeClass().removeAttr('style');
-                this.free[i] = true;
-            }   
+            for (var i = 0; i < canvases.length; i++) {
+                this.freeCanvas(i);
+            }
             canvas = null;
         };
 
-        this.destroyAllCanvases = function() {
-            return null;
-        };
-
         this.freeCanvas = function(idx) {
-            var canvas = this.canvases[idx];
+            var canvas = canvases[idx];
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             $(canvas).removeClass().removeAttr('style');
-            this.free[idx] = true;
+            free[idx] = true;
         };
-
-        this.destroyCanvas = function(idx) {
-            return null;
-        };
+		
     };
 
             
@@ -2388,6 +2383,13 @@
                 this.postParseOptionsHooks.hooks[i].call(this, options);
             }
         };
+		
+		// method: destroy
+		// Releases all resources occupied by the plot
+		this.destroy = function() {
+			this.canvasManager.freeAllCanvases();
+			this.target.empty();
+		};
         
         // method: replot
         // Does a reinitialization of the plot followed by
