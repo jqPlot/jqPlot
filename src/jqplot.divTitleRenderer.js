@@ -75,6 +75,9 @@
             if (this.textAlign) {
                 styles['textAlign'] = this.textAlign;
             }
+            else {
+                styles['textAlign'] = 'center';
+            }
             if (color) {
                 styles['color'] = color;
             }

@@ -123,14 +123,14 @@
             }
     
             var t = this._ticks;
+            var tick;
             for (var i=0; i<t.length; i++) {
-                var tick = t[i];
+                tick = t[i];
                 if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    elem = tick.draw(ctx, plot);
-                    elem.appendTo(this._elem);
+                    this._elem.append(tick.draw(ctx, plot));
                 }
-                tick = null;
             }
+            tick = null;
             t = null;
             elem = null;
         }
