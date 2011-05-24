@@ -108,23 +108,7 @@
             ropts.pt2px = this.pt2px;
         }
         
-        if (this.enableFontSupport) {
-            
-            function support_canvas_text() {
-                return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-            }
-            
-            if (support_canvas_text()) {
-                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
-            }
-            
-            else {
-                this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
-            }
-        }
-        else {
-            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
-        }
+        this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts);  
     };
     
     $.jqplot.CanvasAxisLabelRenderer.prototype.init = function(options) {
@@ -180,17 +164,7 @@
 
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.
-
-        var elem;
-
-        // don't use the canvas manager with excanvas.
-        if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.uninitElement(elem);
-            elem = document.createElement('canvas');
-        }
-        else {
-            elem = plot.canvasManager.getCanvas();
-        }
+        var elem = plot.canvasManager.getCanvas();
 
         this._textRenderer.setText(this.label, ctx);
         var w = this.getWidth(ctx);
@@ -199,26 +173,18 @@
         elem.height = h;
         elem.style.width = w;
         elem.style.height = h;
-        // // domelem.style.textAlign = 'center';
-        // elem.style.position = 'absolute';
+        
+		elem = plot.canvasManager.initCanvas(elem);
+		
         this._elem = $(elem);
         this._elem.css({ position: 'absolute'});
         this._elem.addClass('jqplot-'+this.axis+'-label');
-
-        if ($.jqplot.use_excanvas) {
-            // useless ?? window.G_vmlCanvasManager.init_(document);
-            elem = window.G_vmlCanvasManager.initElement(elem);
-        }
         
         elem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisLabelRenderer.prototype.pack = function() {
-        if ($.jqplot.use_excanvas) {
-            //window.G_vmlCanvasManager.init_(document);
-            this._elem.get(0) = window.G_vmlCanvasManager.initElement(this._elem.get(0));
-        }
         this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     

@@ -59,13 +59,7 @@
           this._elem = null;
         }
       
-        // don't use the canvas manager with excanvas.
-        if ($.jqplot.use_excanvas) {
-          elem = document.createElement('canvas');
-        }
-        else {
-          elem = plot.canvasManager.getCanvas();
-        }
+        elem = plot.canvasManager.getCanvas();
 
         var w = this._plotDimensions.width;
         var h = this._plotDimensions.height;
@@ -74,12 +68,9 @@
         this._elem = $(elem);
         this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        //if ($.jqplot.use_excanvas) {
-        //    window.G_vmlCanvasManager.init_(document);
-        //}
-        if ($.jqplot.use_excanvas) {
-            elem = window.G_vmlCanvasManager.initElement(elem);
-        }
+        
+		elem = plot.canvasManager.initCanvas(elem);
+		
         this._top = this._offsets.top;
         this._bottom = h - this._offsets.bottom;
         this._left = this._offsets.left;

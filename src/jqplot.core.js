@@ -224,43 +224,60 @@
 			$.jqplot.CanvasManager.free = [];
 		}
 		
-		var canvases = $.jqplot.CanvasManager.canvases;
-		var free = $.jqplot.CanvasManager.free;
+		var myCanvases = [];
         
         this.getCanvas = function() {
-            var canvas;
+			var canvas;
             var makeNew = true;
 
-            for (var i=0, l=canvases.length; i<l; i++) {
-                if (free[i] === true) {
+           for (var i=0, l=$.jqplot.CanvasManager.canvases.length; i<l; i++) {
+                if ($.jqplot.CanvasManager.free[i] === true) {
                     makeNew = false;
-                    canvas = canvases[i];
-                    free[i] = false;
+                    canvas = $.jqplot.CanvasManager.canvases[i];
+                    $.jqplot.CanvasManager.free[i] = false;
+					myCanvases.push(i);
                     break;
                 }
-            }   
+            }
 
             if (makeNew) {
                 canvas = document.createElement('canvas');
-                canvases.push(canvas);
-                free.push(false);
+				myCanvases.push($.jqplot.CanvasManager.canvases.length);
+				$.jqplot.CanvasManager.canvases.push(canvas);
+                $.jqplot.CanvasManager.free.push(false);
             }   
             
             return canvas;
         };
+		
+		// this method has to be used after settings the dimesions
+		// on the element returned by getCanvas()
+		this.initCanvas = function(canvas) {
+			if ($.jqplot.use_excanvas) {
+				return window.G_vmlCanvasManager.initElement(canvas);
+			}
+			return canvas;
+		}
 
         this.freeAllCanvases = function() {
-            for (var i = 0; i < canvases.length; i++) {
-                this.freeCanvas(i);
+			for (var i = 0; i < myCanvases.length; i++) {
+				this.freeCanvas(myCanvases[i]);
             }
-            canvas = null;
+			myCanvases = [];
         };
 
         this.freeCanvas = function(idx) {
-            var canvas = canvases[idx];
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-            $(canvas).removeClass().removeAttr('style');
-            free[idx] = true;
+			if ($.jqplot.use_excanvas) {
+				// excanvas can't be reused, but properly unset
+				window.G_vmlCanvasManager.uninitElement($.jqplot.CanvasManager.canvases[idx]);
+				$.jqplot.CanvasManager.canvases[idx] = null;
+			} else {
+				var canvas = $.jqplot.CanvasManager.canvases[idx];
+				canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+				$(canvas).unbind().removeAttr('class').removeAttr('style')
+						.removeAttr('width').removeAttr('height');
+				$.jqplot.CanvasManager.free[idx] = true;
+			}
         };
 		
     };
@@ -308,11 +325,17 @@
     // http://www.modernizr.com
     
     $.jqplot.support_canvas = function() {
-        return !!document.createElement('canvas').getContext;
+		if (typeof $.jqplot.support_canvas.result == 'undefined') {
+			$.jqplot.support_canvas.result = !!document.createElement('canvas').getContext; 
+		}
+        return $.jqplot.support_canvas.result;
     };
             
     $.jqplot.support_canvas_text = function() {
-        return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+		if (typeof $.jqplot.support_canvas_text.result == 'undefined') {
+			$.jqplot.support_canvas_text.result = !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function'); 
+		}
+        return $.jqplot.support_canvas_text.result;
     };
     
     $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
@@ -1488,15 +1511,8 @@
 
         // }
 
-        // don't use the canvas manager with excanvas.
-        if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.uninitElement(elem);
-            elem = document.createElement('canvas');
-        }
-        else {
-            elem = plot.canvasManager.getCanvas();
-        }
-
+        elem = plot.canvasManager.getCanvas();
+		
         // if new plotDimensions supplied, use them.
         if (plotDimensions != null) {
             this._plotDimensions = plotDimensions;
@@ -1508,11 +1524,9 @@
         this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
         
         this._elem.addClass(klass);
-        if ($.jqplot.use_excanvas) {
-            // useless ?? window.G_vmlCanvasManager.init_(document);
-            elem = window.G_vmlCanvasManager.initElement(elem);
-        }
-        // avoid memory leak
+        
+		elem = plot.canvasManager.initCanvas(elem);
+		
         elem = null;
         return this._elem;
     };
@@ -2388,7 +2402,7 @@
 		// Releases all resources occupied by the plot
 		this.destroy = function() {
 			this.canvasManager.freeAllCanvases();
-			this.target.empty();
+			this.target[0].innerHTML = '';
 		};
         
         // method: replot
