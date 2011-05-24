@@ -229,16 +229,18 @@
         this.getCanvas = function() {
 			var canvas;
             var makeNew = true;
-
-           for (var i=0, l=$.jqplot.CanvasManager.canvases.length; i<l; i++) {
-                if ($.jqplot.CanvasManager.free[i] === true) {
-                    makeNew = false;
-                    canvas = $.jqplot.CanvasManager.canvases[i];
-                    $.jqplot.CanvasManager.free[i] = false;
-					myCanvases.push(i);
-                    break;
-                }
-            }
+			
+			if (!$.jqplot.use_excanvas) {
+				for (var i = 0, l = $.jqplot.CanvasManager.canvases.length; i < l; i++) {
+					if ($.jqplot.CanvasManager.free[i] === true) {
+						makeNew = false;
+						canvas = $.jqplot.CanvasManager.canvases[i];
+						$.jqplot.CanvasManager.free[i] = false;
+						myCanvases.push(i);
+						break;
+					}
+				}
+			}
 
             if (makeNew) {
                 canvas = document.createElement('canvas');
