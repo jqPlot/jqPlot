@@ -221,7 +221,6 @@
 
         // don't use the canvas manager with excanvas.
         if ($.jqplot.use_excanvas) {
-            window.G_vmlCanvasManager.uninitElement(elem);
             elem = document.createElement('canvas');
         }
         else {
@@ -251,10 +250,10 @@
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
-        if ($.jqplot.use_excanvas) {
-            //window.G_vmlCanvasManager.init_(document);
-            this._elem.get(0) = window.G_vmlCanvasManager.initElement(this._elem.get(0));
-        }
+        // if ($.jqplot.use_excanvas) {
+        //     //window.G_vmlCanvasManager.init_(document);
+        //     this._elem.get(0) = window.G_vmlCanvasManager.initElement(this._elem.get(0));
+        // }
         this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     

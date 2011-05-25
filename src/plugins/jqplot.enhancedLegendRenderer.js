@@ -165,7 +165,7 @@
                             if (this.seriesToggle) {
                                 var speed;
                                 if (typeof(this.seriesToggle) == 'string' || typeof(this.seriesToggle) == 'number') {
-                                    if (!$.browser.msie || !this.disableIEFading) {
+                                    if (!$.jqplot.use_excanvas || !this.disableIEFading) {
                                         speed = this.seriesToggle;
                                     }
                                 } 
