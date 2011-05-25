@@ -217,15 +217,7 @@
         // create a canvas here, but can't draw on it untill it is appended
         // to dom for IE compatability.
 
-        var elem;
-
-        // don't use the canvas manager with excanvas.
-        if ($.jqplot.use_excanvas) {
-            elem = document.createElement('canvas');
-        }
-        else {
-            elem = plot.canvasManager.getCanvas();
-        }
+        var elem = plot.canvasManager.getCanvas();
 
         this._textRenderer.setText(this.label, ctx);
         var w = this.getWidth(ctx);
@@ -236,24 +228,18 @@
         elem.style.height = h;
         elem.style.textAlign = 'left';
         elem.style.position = 'absolute';
+		
+		elem = plot.canvasManager.initCanvas(elem);
+		
         this._elem = $(elem);
         this._elem.css(this._styles);
         this._elem.addClass('jqplot-'+this.axis+'-tick');
-
-        if ($.jqplot.use_excanvas) {
-            // useless ?? window.G_vmlCanvasManager.init_(document);
-            elem = window.G_vmlCanvasManager.initElement(elem);
-        }
-        
+		
         elem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
-        // if ($.jqplot.use_excanvas) {
-        //     //window.G_vmlCanvasManager.init_(document);
-        //     this._elem.get(0) = window.G_vmlCanvasManager.initElement(this._elem.get(0));
-        // }
         this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     
