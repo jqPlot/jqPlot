@@ -43,12 +43,12 @@
 <script class="code" type="text/javascript">$(document).ready(function(){
 	jQuery.jqplot.config.enablePlugins = true;
 	plot1 = jQuery.jqplot('chart1', 
-		[[['Verwerkende FruedenStrudle industrie', 9],['Retail', 8], ['Primaire producent', 7], 
+		[[['Verwerkende industrie', 9],['Retail', 8], ['Primaire producent', 7], 
 		['Out of home', 6],['Groothandel', 5], ['Grondstof', 4], ['Consument', 3], ['Bewerkende industrie', 2]]], 
 		{
 			title: ' ', 
-			seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
-			legend: { show:true, location: 'e' }
+			seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4, showDataLabels: true } }, 
+			legend: { show:true }
 		}
 	);
 });
@@ -61,8 +61,8 @@
     ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 3], ['Bewerkende industrie', 2]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
-      legend: { show:true, location: 'ne', rendererOptions: {numberRows: 1}, placement:'inside'}
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4, showDataLabels: true } }, 
+      legend: { show:true }
     }
   );
 });
@@ -74,8 +74,8 @@
     ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 2]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
-      legend: { show:true, location: 's' }
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4, showDataLabels: true } }, 
+      legend: { show:true }
     }
   );
 
@@ -89,8 +89,8 @@
     ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 1]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
-      legend: { show:true, location: 'n' }
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4, showDataLabels: true } }, 
+      legend: { show:true }
     }
   );
 
@@ -100,12 +100,12 @@
 
 <script class="code" type="text/javascript">$(document).ready(function(){
   plot5 = jQuery.jqplot('chart5', 
-    [[['Verwerkende FruedenStrudel industrie', 100],['Retail', 0], ['Primaire producent', 0], 
+    [[['Verwerkende industrie', 100],['Retail', 0], ['Primaire producent', 0], 
     ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 1]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
-      legend: { show:true, location: 'nw' }
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4, showDataLabels: true } }, 
+      legend: { show:true }
     }
   );
 
@@ -118,8 +118,8 @@
     [[['Verwerkende industrie', 100]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
-      legend: { show:true, location: 'se' }
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4, showDataLabels: true } }, 
+      legend: { show:true }
     }
   );
 
