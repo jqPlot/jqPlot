@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery-1.5.1.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/jquery-1.6.1.js"></script>
   <!-- END: load jquery -->  
   
   <!-- BEGIN: load jqplot -->
@@ -39,27 +39,104 @@
         margin: 2em 0;
     }
   </style>
-  
-<script id="example_1" type="text/javascript">$(document).ready(function(){
+
+<script class="code" type="text/javascript">$(document).ready(function(){
 	jQuery.jqplot.config.enablePlugins = true;
 	plot1 = jQuery.jqplot('chart1', 
-		[[['Verwerkende industrie', 9],['Retail', 0], ['Primaire producent', 38], 
-		['Out of home', 0],['Groothandel', 0], ['Grondstof', 9], ['Consument', 3], ['Bewerkende industrie', 0]]], 
+		[[['Verwerkende FruedenStrudle industrie', 9],['Retail', 8], ['Primaire producent', 7], 
+		['Out of home', 6],['Groothandel', 5], ['Grondstof', 4], ['Consument', 3], ['Bewerkende industrie', 2]]], 
 		{
 			title: ' ', 
-			seriesDefaults: {renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin:2 } }, 
-			legend: { show:true }
+			seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
+			legend: { show:true, location: 'e' }
 		}
 	);
 });
 </script>
 
-<script type="text/javascript">
-    $(document).ready(function(){
-        
-        $('#code_1').html($('#example_1').html());
-        $(document).unload(function() {$('*').unbind(); });
 
+<script class="code" type="text/javascript">$(document).ready(function(){
+  plot2 = jQuery.jqplot('chart2', 
+    [[['Verwerkende industrie', 9],['Retail', 0], ['Primaire producent', 0], 
+    ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 3], ['Bewerkende industrie', 2]]], 
+    {
+      title: ' ', 
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
+      legend: { show:true, location: 'ne', rendererOptions: {numberRows: 1}, placement:'inside'}
+    }
+  );
+});
+</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){
+  plot3 = jQuery.jqplot('chart3', 
+    [[['Verwerkende industrie', 9],['Retail', 0], ['Primaire producent', 0], 
+    ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 2]]], 
+    {
+      title: ' ', 
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
+      legend: { show:true, location: 's' }
+    }
+  );
+
+  
+});
+</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){
+  plot4 = jQuery.jqplot('chart4', 
+    [[['Verwerkende industrie', 30],['Retail', 0], ['Primaire producent', 0], 
+    ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 1]]], 
+    {
+      title: ' ', 
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
+      legend: { show:true, location: 'n' }
+    }
+  );
+
+  
+});
+</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){
+  plot5 = jQuery.jqplot('chart5', 
+    [[['Verwerkende FruedenStrudel industrie', 100],['Retail', 0], ['Primaire producent', 0], 
+    ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 1]]], 
+    {
+      title: ' ', 
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
+      legend: { show:true, location: 'nw' }
+    }
+  );
+
+  
+});
+</script>
+
+<script class="code" type="text/javascript">$(document).ready(function(){
+  plot6 = jQuery.jqplot('chart6', 
+    [[['Verwerkende industrie', 100]]], 
+    {
+      title: ' ', 
+      seriesDefaults: {shadow: false, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { sliceMargin: 4 } }, 
+      legend: { show:true, location: 'se' }
+    }
+  );
+
+  
+});
+</script>
+
+
+<script type="text/javascript">    
+    $(document).ready(function(){
+        $('script.code').each(function(index) {
+            $('pre.code').eq(index).text($(this).html());
+        });
+        $('script.common').each(function(index) {
+            $('pre.common').eq(index).html($(this).html());
+        });
+        $(document).unload(function() {$('*').unbind(); });
     });
 </script> 
     
@@ -71,9 +148,22 @@
                
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
     
-    <pre id="code_1"></pre>
+    <pre class="code"></pre>
  
+    <div id="chart2" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
     
- 
+    <pre class="code"></pre>
+
+    <div id="chart3" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code"></pre>
+  
+    <div id="chart4" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code"></pre>
+
+    <div id="chart5" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code"></pre>
+
+    <div id="chart6" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code"></pre>
   </body>
 </html>
