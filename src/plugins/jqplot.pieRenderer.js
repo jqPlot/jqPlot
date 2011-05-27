@@ -254,10 +254,26 @@
     function calcRadiusAdjustment(ang) {
         return Math.sin((ang - (ang-Math.PI) / 8 / Math.PI )/2.0);
     }
+
+    function calcRPrime(ang1, ang2, sliceMargin, fill, lineWidth) {
+        var rprime = 0;
+        var ang = ang2 - ang1;
+        var absang = Math.abs(ang);
+        var sm = sliceMargin;
+        if (fill == false) {
+            sm += lineWidth;
+        }
+
+        if (sm > 0 && absang > 0.01 && absang < 6.282) {
+            rprime = parseFloat(sm) / 2.0 / calcRadiusAdjustment(ang);
+        }
+
+        return rprime;
+    }
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
-            var r = this._diameter / 2.0;
+            var r = this._radius;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
             var sm = this.sliceMargin;
@@ -266,12 +282,8 @@
             }
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
-            var rprime = 0;
-            var ang = ang2 - ang1;
-            var absang = Math.abs(ang);
-            if (this.sliceMargin > 0 && absang > 0.01 && absang < 6.282) {
-                rprime = parseFloat(sm) / 2.0 / calcRadiusAdjustment(ang);
-            }
+            
+            var rprime = calcRPrime(ang1, ang2, this.sliceMargin, this.fill, this.lineWidth);
 
             var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
             var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
@@ -286,16 +298,20 @@
             ctx.translate(transx, transy);
             
             if (isShadow) {
-                for (var i=0; i<this.shadowDepth; i++) {
+                for (var i=0, l=this.shadowDepth; i<l; i++) {
                     ctx.save();
                     ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
                     doDraw(r);
+                }
+                for (var i=0, l=this.shadowDepth; i<l; i++) {
+                    ctx.restore();
                 }
             }
     
             else {
                 doDraw(r);
             }
+            ctx.restore();
         }
     
         function doDraw (rad) {
@@ -329,14 +345,6 @@
                 ctx.stroke();
             }
         }
-        
-        if (isShadow) {
-            for (var i=0; i<this.shadowDepth; i++) {
-                ctx.restore();
-            }
-        }
-        
-        ctx.restore();
     };
     
     // called with scope of series
@@ -385,7 +393,6 @@
         }
         
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
-        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var cw = ctx.canvas.width;
         var ch = ctx.canvas.height;
@@ -393,7 +400,6 @@
         var h = ch - offy - 2 * this.padding;
         var mindim = Math.min(w,h);
         var d = mindim;
-        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
         // Fixes issue #272.  Thanks hugwijst!
         // reset slice angles array.
@@ -404,7 +410,7 @@
             sm += this.lineWidth;
         }
         
-        var rprime = 0;
+        var rprime;
         var maxrprime = 0;
 
         var ang, ang1, ang2, shadowColor;
@@ -417,15 +423,9 @@
 
             this._sliceAngles.push([ang1, ang2]);
 
-            var ang = ang2 - ang1;
-            var absang = Math.abs(ang);
+            rprime = calcRPrime(ang1, ang2, this.sliceMargin, this.fill, this.lineWidth);
 
-            if (this.sliceMargin > 0 && absang > 0.01 && absang < 6.282) {
-                rprime = parseFloat(sm) / 2.0 / calcRadiusAdjustment(ang);
-            }
-
-
-            if (absang > Math.PI) {
+            if (Math.abs(ang2-ang1) > Math.PI) {
                 maxrprime = Math.max(rprime, maxrprime);  
             }
         }
@@ -445,6 +445,8 @@
         }
 
         var r = this._radius = this._diameter/2;
+
+        this._center = [(cw - trans * offx)/2 + trans * offx + maxrprime * Math.cos(sa), (ch - trans*offy)/2 + trans * offy + maxrprime * Math.sin(sa)];
 
         if (this.shadow) {
             for (var i=0, l=gd.length; i<l; i++) {
@@ -495,8 +497,7 @@
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-        }
-               
+        }            
     };
     
     $.jqplot.PieAxisRenderer = function() {

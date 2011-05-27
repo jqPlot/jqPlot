@@ -260,7 +260,7 @@
                 return window.G_vmlCanvasManager.initElement(canvas);
             }
             return canvas;
-        }
+        };
 
         this.freeAllCanvases = function() {
             for (var i = 0, l=myCanvases.length; i < l; i++) {
