@@ -122,7 +122,7 @@
         // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
         this.dataLabelFormatString = null;
         // prop: dataLabelThreshold
-        // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
+        // Threshhold in percentage (0-100) of pie area, below which no label will be displayed.
         // This applies to all label types, not just to percentage labels.
         this.dataLabelThreshold = 3;
         // prop: dataLabelPositionFactor
