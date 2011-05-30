@@ -114,31 +114,7 @@
         parent.removeChild( parent.firstChild );
       }
     };
-    
-    // // Memory Leaks patch : garbage collector
-    // $.gcInit = function() {
-    //   var gc = $("<div id='gc_jqPlotSalsaGarbage' style='display:none;visibility:hidden;'></div>");
-    //   $("body").append(gc);
-    //   $._gc = gc;
-    // };
 
-    // $.gcCollect = function(elem) {
-    //   $._gc.append(elem);
-    // };
-    
-    // $.gcClear = function() {
-    //   if ($.browser.msie) {
-    //     $._gc.children().each(function() {
-    //       this.outerHTML = "";
-    //     });
-    //   }
-      
-    //   $._gc.empty();
-    // };
-    
-    // $(document).ready(function() {
-    //   $.gcInit();
-    // });
 
     /**
      * Class: $.jqplot
@@ -212,6 +188,8 @@
             return plot;
         }
     };
+
+    $.jqplot.version = "@VERSION";
 
     // canvas manager to reuse canvases on the plot.
     // Should help solve problem of canvases not being freed and
