@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Plots in Hidden Containers</title>
+  <title>Resizable Plots</title>
   <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
@@ -42,7 +42,6 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
   
   <link type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui-1.8.6.custom.css" rel="Stylesheet" />	
@@ -62,8 +61,7 @@
     var options = {
       title: "Lines",
       legend:{show:true, location:'se'},
-      seriesDefaults:{trendline:{show:true, type:"exp"}},
-      axes:{yaxis:{renderer:$.jqplot.LogAxisRenderer}}
+      seriesDefaults:{trendline:{show:true}}
     }
     
     

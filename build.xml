@@ -77,11 +77,11 @@
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
         </copy>
         
-        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
 			<fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
 		</replaceregexp>
         
-        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
 			<fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
 		</replaceregexp>
                 
@@ -225,7 +225,7 @@
           </filterchain>
         </copy>
         
-        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
 			<fileset dir="${DIST_DIR}">
 				<include name="jquery.jqplot.js"/>
 				<include name="jquery.jqplot.min.js"/>
@@ -234,7 +234,7 @@
 			</fileset>
 		</replaceregexp>
         
-        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
 			<fileset dir="${DIST_DIR}/plugins">
 				<include name="jqplot.*.js"/>
 				<include name="jqplot.*.min.js" />
@@ -311,7 +311,7 @@
   <target name="docs" depends="dist, min" description="Create documentation for distribution.">
     <echo message="Creating documentation" />
       <!-- don't want to process jquery itself -->
-        <move file="${BUILD_DIR}/jquery-1.5.1.js" tofile="${BUILD_DIR}/jquery-1.5.1.js.bak" />
+        <move file="${BUILD_DIR}/jquery.js" tofile="${BUILD_DIR}/jquery.js.bak" />
         <mkdir dir="${DIST_DIR}/docs" />
         <!-- rename files we don't used for docs -->
         <move file="${BUILD_DIR}/jquery.jqplot.js" tofile="${BUILD_DIR}/jquery.jqplot.js.bak"/>
@@ -344,7 +344,7 @@
           <fileset dir="${SRC_DIR}/images" includes="*.png" />
         </copy>
         <!-- put jquery back the way it was -->
-        <move file="${BUILD_DIR}/jquery-1.5.1.js.bak" tofile="${BUILD_DIR}/jquery-1.5.1.js" />
+        <move file="${BUILD_DIR}/jquery.js.bak" tofile="${BUILD_DIR}/jquery.js" />
         <echo message="Documentation Finished" />
   </target>
 
