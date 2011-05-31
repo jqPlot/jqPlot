@@ -78,13 +78,26 @@
         // add a canvasOverlay attribute to the plot
         this.plugins.canvasOverlay = new $.jqplot.CanvasOverlay(options.canvasOverlay);		
 	};
-	
+
+	/**
+	 * Class: Line
+	 * A straigh line.
+	 */
 	function Line(options) {
 		this.type = 'line';
 		this.options = {
+			// prop: name
+			// Optional name for this overlay object.
+			// Can be later used to retrieve the object by name.
 			name: null,
+			// prop: show
+			// true to show (draw), false to not draw.
 			show: true,
+			// prop: lineWidth
+			// Width of the line.
 			lineWidth: 2,
+			// prop: lineCap
+			// 
 			lineCap: 'round',
 			color: '#666666',
 	        // prop: shadow

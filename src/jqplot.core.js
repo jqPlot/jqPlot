@@ -117,7 +117,7 @@
 
 
     /**
-     * Class: $.jqplot
+     * Function: $.jqplot
      * jQuery function called by the user to create a plot.
      *  
      * Parameters:
