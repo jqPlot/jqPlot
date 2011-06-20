@@ -119,10 +119,8 @@ $(document).ready(function(){
    s1 = [0];
    plot5 = $.jqplot('chart5',[s1],{
        seriesDefaults: {
-           legend: { show: true },
            renderer: $.jqplot.MeterGaugeRenderer,
            rendererOptions: {
-               legend: { show: true },
                label: 'Line Chart',
                labelPosition: 'bottom',
                intervalOuterRadius: 120,
@@ -130,7 +128,8 @@ $(document).ready(function(){
                intervals:[10000, 40000, 50000],
                intervalColors:['#cc6666', '#E7E658', '#66cc66']
            }
-       }
+       },
+       legend: { show: true },
    });
 });</script> 
 <script type="text/javascript">
