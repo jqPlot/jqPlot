@@ -81,7 +81,7 @@
 
 	/**
 	 * Class: Line
-	 * A straigh line.
+	 * A straight line.
 	 */
 	function Line(options) {
 		this.type = 'line';
@@ -97,39 +97,10 @@
 			// Width of the line.
 			lineWidth: 2,
 			// prop: lineCap
-			// 
+			// Type of ending placed on the line ['round', 'butt', 'square']
 			lineCap: 'round',
-			color: '#666666',
-	        // prop: shadow
-	        // wether or not to draw a shadow on the line
-	        shadow: true,
-	        // prop: shadowAngle
-	        // Shadow angle in degrees
-	        shadowAngle: 45,
-	        // prop: shadowOffset
-	        // Shadow offset from line in pixels
-	        shadowOffset: 1,
-	        // prop: shadowDepth
-	        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
-	        shadowDepth: 3,
-	        // prop: shadowAlpha
-	        // Alpha channel transparency of shadow.  0 = transparent.
-	        shadowAlpha: '0.07',
-			xaxis: 'xaxis',
-			yaxis: 'yaxis',
-			start: [],
-			stop: []
-		};
-		$.extend(true, this.options, options);
-	}
-	
-	function HorizontalLine(options) {
-		this.type = 'horizontalLine';
-		this.options = {
-			name: null,
-			show: true,
-			lineWidth: 2,
-			lineCap: 'round',
+			// prop: color
+			// color of the line
 			color: '#666666',
 	        // prop: shadow
 	        // wether or not to draw a shadow on the line
@@ -147,16 +118,76 @@
 	        // Alpha channel transparency of shadow.  0 = transparent.
 	        shadowAlpha: '0.07',
 	        // prop: xaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired x axis here.
+	        // X axis to use for positioning/scaling the line.
 			xaxis: 'xaxis',
 	        // prop: yaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired y axis here.
+	        // Y axis to use for positioning/scaling the line.
 			yaxis: 'yaxis',
+			// prop: start
+			// [x, y] coordinates for the start of the line.
+			start: [],
+			// prop: stop
+			// [x, y] coordinates for the end of the line.
+			stop: []
+		};
+		$.extend(true, this.options, options);
+	}
+
+	/**
+	 * Class: HorizontalLine
+	 * A straight horizontal line.
+	 */
+	function HorizontalLine(options) {
+		this.type = 'horizontalLine';
+		this.options = {
+			// prop: name
+			// Optional name for this overlay object.
+			// Can be later used to retrieve the object by name.
+			name: null,
+			// prop: show
+			// true to show (draw), false to not draw.
+			show: true,
+			// prop: lineWidth
+			// Width of the line.
+			lineWidth: 2,
+			// prop: lineCap
+			// Type of ending placed on the line ['round', 'butt', 'square']
+			lineCap: 'round',
+			// prop: color
+			// color of the line
+			color: '#666666',
+	        // prop: shadow
+	        // wether or not to draw a shadow on the line
+	        shadow: true,
+	        // prop: shadowAngle
+	        // Shadow angle in degrees
+	        shadowAngle: 45,
+	        // prop: shadowOffset
+	        // Shadow offset from line in pixels
+	        shadowOffset: 1,
+	        // prop: shadowDepth
+	        // Number of times shadow is stroked, each stroke offset shadowOffset from the last.
+	        shadowDepth: 3,
+	        // prop: shadowAlpha
+	        // Alpha channel transparency of shadow.  0 = transparent.
+	        shadowAlpha: '0.07',
+	        // prop: xaxis
+	        // X axis to use for positioning/scaling the line.
+			xaxis: 'xaxis',
+	        // prop: yaxis
+	        // Y axis to use for positioning/scaling the line.
+			yaxis: 'yaxis',
+			// prop: y
+			// y value to position the line
 			y: null,
+			// prop: xmin
+			// x value for the start of the line, null to scale to axis min.
 			xmin: null,
+			// prop: xmax
+			// x value for the end of the line, null to scale to axis max.
 			xmax: null,
+			// prop xOffset
+			// offset ends of the line inside the grid.  Number 
 			xOffset: '6px',	// number or string.  Number interpreted as units, string as pixels.
 			xminOffset: null,
 			xmaxOffset: null
@@ -164,13 +195,29 @@
 		$.extend(true, this.options, options);
 	}
 	
+
+	/**
+	 * Class: DashedHorizontalLine
+	 * A straight dashed horizontal line.
+	 */
 	function DashedHorizontalLine(options) {
 		this.type = 'dashedHorizontalLine';
 		this.options = {
+			// prop: name
+			// Optional name for this overlay object.
+			// Can be later used to retrieve the object by name.
 			name: null,
+			// prop: show
+			// true to show (draw), false to not draw.
 			show: true,
+			// prop: lineWidth
+			// Width of the line.
 			lineWidth: 2,
+			// prop: lineCap
+			// Type of ending placed on the line ['round', 'butt', 'square']
 			lineCap: 'butt',
+			// prop: color
+			// color of the line
 			color: '#666666',
 	        // prop: shadow
 	        // wether or not to draw a shadow on the line
@@ -188,12 +235,10 @@
 	        // Alpha channel transparency of shadow.  0 = transparent.
 	        shadowAlpha: '0.07',
 	        // prop: xaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired x axis here.
+	        // X axis to use for positioning/scaling the line.
 			xaxis: 'xaxis',
 	        // prop: yaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired y axis here.
+	        // Y axis to use for positioning/scaling the line.
 			yaxis: 'yaxis',
 			y: null,
 			xmin: null,
@@ -210,13 +255,29 @@
 		$.extend(true, this.options, options);
 	}
 	
+
+	/**
+	 * Class: VerticalLine
+	 * A straight vertical line.
+	 */
 	function VerticalLine(options) {
 		this.type = 'verticalLine';
 		this.options = {
+			// prop: name
+			// Optional name for this overlay object.
+			// Can be later used to retrieve the object by name.
 			name: null,
+			// prop: show
+			// true to show (draw), false to not draw.
 			show: true,
+			// prop: lineWidth
+			// Width of the line.
 			lineWidth: 2,
+			// prop: lineCap
+			// Type of ending placed on the line ['round', 'butt', 'square']
 			lineCap: 'round',
+			// prop: color
+			// color of the line
 			color: '#666666',
 	        // prop: shadow
 	        // wether or not to draw a shadow on the line
@@ -234,12 +295,10 @@
 	        // Alpha channel transparency of shadow.  0 = transparent.
 	        shadowAlpha: '0.07',
 	        // prop: xaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired x axis here.
+	        // X axis to use for positioning/scaling the line.
 			xaxis: 'xaxis',
 	        // prop: yaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired y axis here.
+	        // Y axis to use for positioning/scaling the line.
 			yaxis: 'yaxis',
 			x: null,
 			ymin: null,
@@ -251,13 +310,29 @@
 		$.extend(true, this.options, options);
 	}
 	
+
+	/**
+	 * Class: DashedVerticalLine
+	 * A straight dashed vertical line.
+	 */
 	function DashedVerticalLine(options) {
 		this.type = 'dashedVerticalLine';
 		this.options = {
+			// prop: name
+			// Optional name for this overlay object.
+			// Can be later used to retrieve the object by name.
 			name: null,
+			// prop: show
+			// true to show (draw), false to not draw.
 			show: true,
+			// prop: lineWidth
+			// Width of the line.
 			lineWidth: 2,
+			// prop: lineCap
+			// Type of ending placed on the line ['round', 'butt', 'square']
 			lineCap: 'butt',
+			// prop: color
+			// color of the line
 			color: '#666666',
 	        // prop: shadow
 	        // wether or not to draw a shadow on the line
@@ -275,12 +350,10 @@
 	        // Alpha channel transparency of shadow.  0 = transparent.
 	        shadowAlpha: '0.07',
 	        // prop: xaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired x axis here.
+	        // X axis to use for positioning/scaling the line.
 			xaxis: 'xaxis',
 	        // prop: yaxis
-	        // For drawing, canvas has to know which x-y axes to scale to.
-	        // Specify the desired y axis here.
+	        // Y axis to use for positioning/scaling the line.
 			yaxis: 'yaxis',
 			x: null,
 			ymin: null,
