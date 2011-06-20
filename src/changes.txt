@@ -1,5 +1,29 @@
 Title: Change Log
 
+1.0.0b2:
+* Major improvements in memory usage:
+** Merged in changes from Timo Besenruether to reuse canvas elements and improve 
+   memory performance.
+** Fixed all identifiable DOM leaks.
+** Mergged in changes from cguillot for memory improvements in IE < 9.
+* Added vertical and dashed vertical line support for canvas overlay.
+* Updated to jQuery 1.6.1.
+* Improved pie slice margin calculation and fixed slice margin and pie positioning 
+  with small slices.
+* Improved bar renderer so bars always start at 0 if:
+** The axis is a linear axis (not log/date).
+** There are no other line types besides bars attached to the axis.
+** The data on the axis is all >= 0.
+** The user has not specified a pad, padMin or forceTickAt0 = true option.
+* Modified tick prefix behavious so prefix no added to all ticks, even if format 
+  string is specified.
+* Fix to ensure original tick formats are applied when zooming and resetting 
+  zoom.
+* Updated auto tick format string so format adjusted when zooming.
+* Modified auto tick computation to put less ticks on small plots and more
+  ticks on large plots.
+* Update bubble render to support gradients in IE 9.
+
 1.0.0b1:
 * Much improved tick generation algorithm to get precise rounded 
   tick values (Thanks Scott Prahl!).
