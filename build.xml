@@ -134,7 +134,8 @@
           <fileset dir="" includes="README.txt" />
           <fileset dir="" includes="copyright.txt" />
           <fileset dir="${SRC_DIR}" includes="*.txt" />
-          <fileset dir="${SRC_DIR}" includes="jquery-*.js" />
+          <fileset dir="${SRC_DIR}" includes="jquery.js" />
+          <fileset dir="${SRC_DIR}" includes="jquery.min.js" />
         </copy>
         
         <copy todir="${DIST_DIR}/examples">
@@ -251,7 +252,8 @@
         <mkdir dir="${WEB_DIR}" />
         <copy todir="${WEB_DIR}">
           <fileset dir="${DIST_DIR}">
-            <include name="jquery*.js" />
+            <include name="jquery.js" />
+            <include name="jquery.min.js" />
             <include name="jquery.jqplot*.css" />
             <include name="excanvas*.js" />
             <include name="*.php" />
@@ -298,7 +300,7 @@
   <target name="compress" depends="dist, min, docs" description="Create the zip, gzip, and bzip compressed archives for downloading">
       <zip destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"
        basedir=""
-       includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery-*.js ${DIST_DIR}/jquery*.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/images/* ${DIST_DIR}/examples/jquery-ui/js/* ${DIST_DIR}/docs/* ${DIST_DIR}/docs/files/* ${DIST_DIR}/docs/files/examples/* ${DIST_DIR}/docs/files/images/* ${DIST_DIR}/docs/files/plugins/* ${DIST_DIR}/docs/index/* ${DIST_DIR}/docs/javascript/* ${DIST_DIR}/docs/search/* ${DIST_DIR}/docs/styles/*"
+       includes="${DIST_DIR}/excanvas*.js ${DIST_DIR}/jquery.js ${DIST_DIR}/jquery.min.js ${DIST_DIR}/jquery.jqplot.* ${DIST_DIR}/*.txt ${DIST_DIR}/plugins/* ${DIST_DIR}/examples/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/* ${DIST_DIR}/examples/jquery-ui/css/ui-lightness/images/* ${DIST_DIR}/examples/jquery-ui/js/* ${DIST_DIR}/docs/* ${DIST_DIR}/docs/files/* ${DIST_DIR}/docs/files/examples/* ${DIST_DIR}/docs/files/images/* ${DIST_DIR}/docs/files/plugins/* ${DIST_DIR}/docs/index/* ${DIST_DIR}/docs/javascript/* ${DIST_DIR}/docs/search/* ${DIST_DIR}/docs/styles/*"
       />
       <tar destfile="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.tar.gz" compression="gzip">
           <zipfileset src="${DIST_DIR}/jquery.jqplot.${version}r${HG_ID}.zip"/>
