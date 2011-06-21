@@ -170,7 +170,7 @@
                 }
             }
             else {
-                var d = this.data;
+                var d = this._plotData;
                 if (this.renderer.constructor == $.jqplot.BarRenderer && this.waterfall) {
                     d = this._data;
                 }
@@ -180,6 +180,7 @@
                         p._labels.push(d[i][labelIdx]);
                     }
                 }
+                d = null;
             }
         }
         else if (p.labels.length){
