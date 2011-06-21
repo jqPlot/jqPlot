@@ -328,7 +328,7 @@
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
             if (this._label.show) {
-                var elem = this._label.draw(ctx);
+                var elem = this._label.draw(ctx, plot);
                 elem.appendTo(this._elem);
             }
     
