@@ -2429,7 +2429,9 @@
                 
                 // $.gcClear();
 
-                this.eventCanvas._elem.unbind();
+                if (this._eventCanvas) {
+                    this.eventCanvas._elem.unbind();
+                }
                 this.target.unbind();
 
                 // Couple of posts on Stack Overflow indicate that empty() doesn't
