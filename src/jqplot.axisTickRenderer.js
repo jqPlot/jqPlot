@@ -85,6 +85,9 @@
         // prop: textColor
         // css spec for the color attribute.
         this.textColor;
+        // prop: escapeHTML
+        // true to escape HTML entities in the label.
+        this.escapeHTML = false;
         this._elem;
 		this._breakTick = false;
         
@@ -124,7 +127,14 @@
 
         this._elem = $(document.createElement('div'));
         this._elem.addClass("jqplot-"+this.axis+"-tick");
-        this._elem.text(this.label);
+        
+        if (!this.escapeHTML) {
+            this._elem.html(this.label);
+        }
+        else {
+            this._elem.text(this.label);
+        }
+        
         this._elem.css(style);
 
         for (var s in this._styles) {
