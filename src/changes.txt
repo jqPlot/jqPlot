@@ -7,6 +7,8 @@ Title: Change Log
 ** Fixed all identifiable DOM leaks.
 ** Mergged in changes from cguillot for memory improvements in IE < 9.
 * Added vertical and dashed vertical line support for canvas overlay.
+* Fixed bug where initially hidden plots would not display.
+* Fixed bug with point labels and null data points.
 * Updated to jQuery 1.6.1.
 * Improved pie slice margin calculation and fixed slice margin and pie positioning 
   with small slices.
