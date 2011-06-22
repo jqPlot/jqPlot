@@ -2461,10 +2461,9 @@
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
-                // Couple of posts on Stack Overflow indicate that empty() doesn't
-                // always cear up the dom and release memory.  Sometimes setting
-                // innerHTML property to null is needed.  Particularly on IE, may 
-                // have to directly set it to null, bypassing jQuery.
+                this.canvasManager.freeAllCanvases();
+                this.eventCanvas._elem.unbind();
+                this.target.unbind();
                 this.target.empty();
             }
              for (var ax in this.axes) {
