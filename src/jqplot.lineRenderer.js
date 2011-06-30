@@ -40,6 +40,10 @@
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
         this._type='line';
+        this.smooth = false;
+        this.steps = 50;
+        this.tension = 0.5;
+        this._smoothedData = [];
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);

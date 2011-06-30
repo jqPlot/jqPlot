@@ -118,17 +118,18 @@ $(document).ready(function(){
 <script id = "example_5" type="text/javascript">$(document).ready(function(){
    s1 = [0];
    plot5 = $.jqplot('chart5',[s1],{
-       seriesDefaults: {
+       title: 'This is a rather Long Title For a Meter Test',
+       series: [{
            renderer: $.jqplot.MeterGaugeRenderer,
            rendererOptions: {
                label: 'Line Chart',
                labelPosition: 'bottom',
-               intervalOuterRadius: 120,
+               // intervalOuterRadius: 120,
                ticks: [0, 10000, 20000, 30000, 40000, 50000],
                intervals:[10000, 40000, 50000],
                intervalColors:['#cc6666', '#E7E658', '#66cc66']
            }
-       },
+       }],
        legend: { show: true },
    });
 });</script> 
