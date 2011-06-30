@@ -395,7 +395,7 @@
                     }
                     this.needleThickness = this.needleThickness || 2+Math.pow(this.ringWidth, 0.8);
                     this.innerPad = this.ringWidth/2 + this.needleThickness/2 + this.needlePad;
-                    this.diameter = w - 2*this.innerPad;
+                    this.diameter = w - 2*this.innerPad - this.ringWidth - this.padding;
                 }
                 // center taking into account legend and over draw for gauge bottom below hub.
                 // this will be center of hub.
@@ -413,6 +413,7 @@
                 this._center = [(cw-trans*offx)/2 + trans * offx, (ch-trans*offy)/2 + trans * offy];
             }
         }
+
         
         if (this._labelElem && this.labelPosition == 'bottom') {
             this._center[1] -= this._labelElem.outerHeight(true);
@@ -983,7 +984,6 @@
         options.legend = options.legend || {};
         options.seriesDefaults = options.seriesDefaults || {};
         options.grid = options.grid || {};
-        // options.gridPadding = options.gridPadding || {};
            
         // only set these if there is a gauge series
         var setopts = false;
@@ -1006,10 +1006,6 @@
             options.grid.drawGridlines = false;
             options.grid.borderWidth = (options.grid.borderWidth != null) ? options.grid.borderWidth : 0;
             options.grid.shadow = (options.grid.shadow != null) ? options.grid.shadow : false;
-            // options.gridPadding.top = (options.gridPadding.top != null) ? options.gridPadding.top : 0;
-            // options.gridPadding.bottom = (options.gridPadding.bottom != null) ? options.gridPadding.bottom : 0;
-            // options.gridPadding.left = (options.gridPadding.left != null) ? options.gridPadding.left : 0;
-            // options.gridPadding.right = (options.gridPadding.right != null) ? options.gridPadding.right : 0;
         }
     }
     
