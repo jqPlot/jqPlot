@@ -40,10 +40,9 @@
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
         this._type='line';
-        this.smooth = false;
-        this.steps = 50;
-        this.tension = 0.5;
-        this._smoothedData = [];
+        this.renderer.smooth = false;  // false values no smoothing, low, normal, high, higher, max or a number > 2.
+        this.renderer.tension = 0.5;
+        this.renderer._smoothedData = [];
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);
@@ -110,6 +109,41 @@
         }
 
     };
+
+    function getSteps (d, f) {
+        return (3.4182054+f) * Math.pow(d, -0.3534992);
+    }
+
+    function smoothToSteps (smooth, dist) {
+        var s;
+        switch (smooth) {
+            case 'low':
+                s = getSteps(dist, -0.5);
+                break;
+            case 'normal':
+                s = getSteps(dist, 0);
+                break;
+            case 'high':
+                s = getSteps(dist, 0.5);
+                break;
+            case 'higher':
+                s = getSteps(dist, 1.0);
+                break;
+            case 'max':
+                s = getSteps(dist, 1.5);
+                break;
+            default:
+                s = getSteps(dist, 0);
+                break;
+        }
+        if (s < 6) {
+            s = 6;
+        }
+        else {
+            s = Math.round(s);
+        }
+        return s;
+    }
     
     // Method: setGridData
     // converts the user data values to grid coordinates and stores them
@@ -123,7 +157,8 @@
         var pdata = this._prevPlotData;
         this.gridData = [];
         this._prevGridData = [];
-        for (var i=0; i<this.data.length; i++) {
+        this.renderer._smoothedData = [];
+        for (var i=0, l=this.data.length; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
@@ -147,6 +182,55 @@
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
             }
         }
+        if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 1) {
+            var steps;
+            var a = this.renderer.tension;
+            var smooth = this.renderer.smooth;
+            var t, s, h1, h2, h3, h4;
+            var TiX, TiY, Ti1X, Ti1Y;
+            var Px, Py, p;
+            var gd = this.gridData;
+            var sd = this.renderer._smoothedData;
+            var dist = gd.length/this.canvas.getWidth();
+            if (!isNaN(parseFloat(smooth))) {
+                steps = parseFloat(smooth);
+            }
+            else {
+                steps = smoothToSteps(smooth, dist);
+            }
+            console.log(dist, steps);
+
+            for (var i=0, l = gd.length-1; i < l; i++) {
+                for (t=0; t < steps; t++) {
+                    s = t / steps;
+                    h1 = (1 + 2*s)*Math.pow((1-s),2);
+                    h2 = s*Math.pow((1-s),2);
+                    h3 = Math.pow(s,2)*(3-2*s);
+                    h4 = Math.pow(s,2)*(s-1);     
+                    
+                    if (gd[i-1]) {  
+                        TiX = a * (gd[i+1][0] - gd[i-1][0]); 
+                        TiY = a * (gd[i+1][1] - gd[i-1][1]);
+                    } else {
+                        TiX = a * (gd[i+1][0] - gd[i][0]); 
+                        TiY = a * (gd[i+1][1] - gd[i][1]);                                  
+                    }
+                    if (gd[i+2]) {  
+                        Ti1X = a * (gd[i+2][0] - gd[i][0]); 
+                        Ti1Y = a * (gd[i+2][1] - gd[i][1]);
+                    } else {
+                        Ti1X = a * (gd[i+1][0] - gd[i][0]); 
+                        Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
+                    }
+                    
+                    pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
+                    pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
+                    p = [pX, pY];
+                    sd.push(p);
+                }
+            }
+            sd.push(gd[l]);
+        }
     };
     
     // Method: makeGridData
@@ -161,6 +245,7 @@
         var yp = this._yaxis.series_u2p;
         var gd = [];
         var pgd = [];
+        this.renderer._smoothedData = [];
         for (var i=0; i<data.length; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
@@ -173,6 +258,54 @@
             else if (data[i][1] == null) {
                 gd.push([xp.call(this._xaxis, data[i][0]), null]);
             }
+        }
+        if (this._type === 'line' && this.renderer.smooth && gd.length > 1) {
+            var steps;
+            var a = this.renderer.tension;
+            var smooth = this.renderer.smooth;
+            var t, s, h1, h2, h3, h4;
+            var TiX, TiY, Ti1X, Ti1Y;
+            var Px, Py, p;
+            var sd = this.renderer._smoothedData;
+            var dist = gd.length/this.canvas.getWidth();
+            if (!isNaN(parseFloat(smooth))) {
+                steps = parseFloat(smooth);
+            }
+            else {
+                steps = smoothToSteps(smooth, dist);
+            }
+            console.log(dist, steps);
+
+            for (var i=0, l = gd.length-1; i < l; i++) {
+                for (t=0; t < steps; t++) {
+                    s = t / steps;
+                    h1 = (1 + 2*s)*Math.pow((1-s),2);
+                    h2 = s*Math.pow((1-s),2);
+                    h3 = Math.pow(s,2)*(3-2*s);
+                    h4 = Math.pow(s,2)*(s-1);     
+                    
+                    if (gd[i-1]) {  
+                        TiX = a * (gd[i+1][0] - gd[i-1][0]); 
+                        TiY = a * (gd[i+1][1] - gd[i-1][1]);
+                    } else {
+                        TiX = a * (gd[i+1][0] - gd[i][0]); 
+                        TiY = a * (gd[i+1][1] - gd[i][1]);                                  
+                    }
+                    if (gd[i+2]) {  
+                        Ti1X = a * (gd[i+2][0] - gd[i][0]); 
+                        Ti1Y = a * (gd[i+2][1] - gd[i][1]);
+                    } else {
+                        Ti1X = a * (gd[i+1][0] - gd[i][0]); 
+                        Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
+                    }
+                    
+                    pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
+                    pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
+                    p = [pX, pY];
+                    sd.push(p);
+                }
+            }
+            sd.push(gd[l]);
         }
         return gd;
     };
@@ -334,11 +467,18 @@
                     }
                 }
                 else {
+
+                    var tempgd = gd;
+
+                    if (this._type === 'line' && this.renderer.smooth && this.renderer._smoothedData.length) {
+                        tempgd = this.renderer._smoothedData;
+                    }
+
                     if (shadow) {
-                        this.renderer.shadowRenderer.draw(ctx, gd, opts);
+                        this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
                     }
     
-                    this.renderer.shapeRenderer.draw(ctx, gd, opts);
+                    this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
                 }
             }
             // calculate the bounding box
