@@ -148,10 +148,10 @@
     //     return s;
     // }
 
-    // function tanh (x) {
-    //     var a = (Math.exp(2*x) - 1) / (Math.exp(2*x) + 1);
-    //     return a;
-    // }
+    function tanh (x) {
+        var a = (Math.exp(2*x) - 1) / (Math.exp(2*x) + 1);
+        return a;
+    }
 
     function computeSmoothedData (smooth, tension, gd, dim) {
         var steps;
@@ -163,6 +163,7 @@
         var Px, Py, p;
         var sd = [];
         var dist = gd.length/dim;
+        var min, max, stretch, scale, shift;
         if (!isNaN(parseFloat(smooth))) {
             steps = parseFloat(smooth);
         }
@@ -176,14 +177,32 @@
 
         for (var i=0, l = gd.length-1; i < l; i++) {
             if (tension === null) {
-                slope = (gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]);
-                a = 0.05 * Math.abs(slope) + 0.2
-                if (a > 0.8) {
-                    a = 0.8;
-                }
+                slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
+
+                // if (slope < 1) {
+                //     a = 0.3 + 0.1 * slope;
+                // }
+                // else if (slope < 2) {
+                //     a = 0.35 + 0.05 * slope
+                // }
+
+                // a = 0.04 * slope + 0.3
+                // if (a > 0.8) {
+                //     a = 0.8;
+                // }
                 // temp = (Math.abs(slope) + 1.4) / 10;
                 // a = tanh (temp);
-                // console.log('slope: %s, a: %s', slope, a);
+                min = 0.25;
+                max = 0.85;
+                stretch = (max - min)/2.0;
+                scale = 2.8;
+                shift = -2;
+
+                temp = slope/scale + shift;
+
+                a = stretch * tanh(temp) - stretch * tanh(shift) + min;
+
+                console.log('pt: %s, slope: %s, a: %s', i, slope, a);
             }
             else {
                 a = tension;
