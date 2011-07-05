@@ -22,6 +22,7 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
   <!-- END: load jqplot -->
 
   <style type="text/css">
@@ -50,6 +51,7 @@
   </style>
   
   <script class="code" type="text/javascript">$(document).ready(function(){
+        $.jqplot.config.enablePlugins = true;
         var s1 = [2, 6, 7, 10];
         var ticks = ['a', 'b', 'c', 'd'];
         

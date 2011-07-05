@@ -41,7 +41,7 @@
         options = options || {};
         this._type='line';
         this.renderer.smooth = false;  // false values no smoothing, low, normal, high, higher, max or a number > 2.
-        this.renderer.tension = 0.5;
+        this.renderer.tension = null;
         this.renderer._smoothedData = [];
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
@@ -114,35 +114,111 @@
         return (3.4182054+f) * Math.pow(d, -0.3534992);
     }
 
-    function smoothToSteps (smooth, dist) {
-        var s;
-        switch (smooth) {
-            case 'low':
-                s = getSteps(dist, -0.5);
-                break;
-            case 'normal':
-                s = getSteps(dist, 0);
-                break;
-            case 'high':
-                s = getSteps(dist, 0.5);
-                break;
-            case 'higher':
-                s = getSteps(dist, 1.0);
-                break;
-            case 'max':
-                s = getSteps(dist, 1.5);
-                break;
-            default:
-                s = getSteps(dist, 0);
-                break;
-        }
-        if (s < 6) {
-            s = 6;
+    //
+    // Maybe implement some type of selectable smoothing.
+    //
+    // function smoothToSteps (smooth, dist) {
+    //     var s;
+    //     switch (smooth) {
+    //         case 'low':
+    //             s = getSteps(dist, -0.5);
+    //             break;
+    //         case 'normal':
+    //             s = getSteps(dist, 0);
+    //             break;
+    //         case 'high':
+    //             s = getSteps(dist, 0.5);
+    //             break;
+    //         case 'higher':
+    //             s = getSteps(dist, 1.0);
+    //             break;
+    //         case 'max':
+    //             s = getSteps(dist, 1.5);
+    //             break;
+    //         default:
+    //             s = getSteps(dist, 0);
+    //             break;
+    //     }
+    //     if (s < 6) {
+    //         s = 6;
+    //     }
+    //     else {
+    //         s = Math.round(s);
+    //     }
+    //     return s;
+    // }
+
+    // function tanh (x) {
+    //     var a = (Math.exp(2*x) - 1) / (Math.exp(2*x) + 1);
+    //     return a;
+    // }
+
+    function computeSmoothedData (smooth, tension, gd, dim) {
+        var steps;
+        var a = null;
+        var slope = null;
+        var temp = null;
+        var t, s, h1, h2, h3, h4;
+        var TiX, TiY, Ti1X, Ti1Y;
+        var Px, Py, p;
+        var sd = [];
+        var dist = gd.length/dim;
+        if (!isNaN(parseFloat(smooth))) {
+            steps = parseFloat(smooth);
         }
         else {
-            s = Math.round(s);
+            // steps = smoothToSteps(smooth, dist);
+            steps = getSteps(dist, 0.5);
         }
-        return s;
+        if (!isNaN(parseFloat(tension))) {
+            tension = parseFloat(tension);
+        }
+
+        for (var i=0, l = gd.length-1; i < l; i++) {
+            if (tension === null) {
+                slope = (gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]);
+                a = 0.05 * Math.abs(slope) + 0.2
+                if (a > 0.8) {
+                    a = 0.8;
+                }
+                // temp = (Math.abs(slope) + 1.4) / 10;
+                // a = tanh (temp);
+                // console.log('slope: %s, a: %s', slope, a);
+            }
+            else {
+                a = tension;
+            }
+            for (t=0; t < steps; t++) {
+                s = t / steps;
+                h1 = (1 + 2*s)*Math.pow((1-s),2);
+                h2 = s*Math.pow((1-s),2);
+                h3 = Math.pow(s,2)*(3-2*s);
+                h4 = Math.pow(s,2)*(s-1);     
+                
+                if (gd[i-1]) {  
+                    TiX = a * (gd[i+1][0] - gd[i-1][0]); 
+                    TiY = a * (gd[i+1][1] - gd[i-1][1]);
+                } else {
+                    TiX = a * (gd[i+1][0] - gd[i][0]); 
+                    TiY = a * (gd[i+1][1] - gd[i][1]);                                  
+                }
+                if (gd[i+2]) {  
+                    Ti1X = a * (gd[i+2][0] - gd[i][0]); 
+                    Ti1Y = a * (gd[i+2][1] - gd[i][1]);
+                } else {
+                    Ti1X = a * (gd[i+1][0] - gd[i][0]); 
+                    Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
+                }
+                
+                pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
+                pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
+                p = [pX, pY];
+                sd.push(p);
+            }
+        }
+        sd.push(gd[l]);
+        // console.log('pixels/point: %s, steps: %s, tension: %s', dim/sd.length, steps, a);
+        return sd;
     }
     
     // Method: setGridData
@@ -183,53 +259,7 @@
             }
         }
         if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 1) {
-            var steps;
-            var a = this.renderer.tension;
-            var smooth = this.renderer.smooth;
-            var t, s, h1, h2, h3, h4;
-            var TiX, TiY, Ti1X, Ti1Y;
-            var Px, Py, p;
-            var gd = this.gridData;
-            var sd = this.renderer._smoothedData;
-            var dist = gd.length/this.canvas.getWidth();
-            if (!isNaN(parseFloat(smooth))) {
-                steps = parseFloat(smooth);
-            }
-            else {
-                steps = smoothToSteps(smooth, dist);
-            }
-            console.log(dist, steps);
-
-            for (var i=0, l = gd.length-1; i < l; i++) {
-                for (t=0; t < steps; t++) {
-                    s = t / steps;
-                    h1 = (1 + 2*s)*Math.pow((1-s),2);
-                    h2 = s*Math.pow((1-s),2);
-                    h3 = Math.pow(s,2)*(3-2*s);
-                    h4 = Math.pow(s,2)*(s-1);     
-                    
-                    if (gd[i-1]) {  
-                        TiX = a * (gd[i+1][0] - gd[i-1][0]); 
-                        TiY = a * (gd[i+1][1] - gd[i-1][1]);
-                    } else {
-                        TiX = a * (gd[i+1][0] - gd[i][0]); 
-                        TiY = a * (gd[i+1][1] - gd[i][1]);                                  
-                    }
-                    if (gd[i+2]) {  
-                        Ti1X = a * (gd[i+2][0] - gd[i][0]); 
-                        Ti1Y = a * (gd[i+2][1] - gd[i][1]);
-                    } else {
-                        Ti1X = a * (gd[i+1][0] - gd[i][0]); 
-                        Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
-                    }
-                    
-                    pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
-                    pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
-                    p = [pX, pY];
-                    sd.push(p);
-                }
-            }
-            sd.push(gd[l]);
+            this.renderer._smoothedData = computeSmoothedData(this.renderer.smooth, this.renderer.tension, this.gridData, this.canvas.getWidth());
         }
     };
     
@@ -260,52 +290,7 @@
             }
         }
         if (this._type === 'line' && this.renderer.smooth && gd.length > 1) {
-            var steps;
-            var a = this.renderer.tension;
-            var smooth = this.renderer.smooth;
-            var t, s, h1, h2, h3, h4;
-            var TiX, TiY, Ti1X, Ti1Y;
-            var Px, Py, p;
-            var sd = this.renderer._smoothedData;
-            var dist = gd.length/this.canvas.getWidth();
-            if (!isNaN(parseFloat(smooth))) {
-                steps = parseFloat(smooth);
-            }
-            else {
-                steps = smoothToSteps(smooth, dist);
-            }
-            console.log(dist, steps);
-
-            for (var i=0, l = gd.length-1; i < l; i++) {
-                for (t=0; t < steps; t++) {
-                    s = t / steps;
-                    h1 = (1 + 2*s)*Math.pow((1-s),2);
-                    h2 = s*Math.pow((1-s),2);
-                    h3 = Math.pow(s,2)*(3-2*s);
-                    h4 = Math.pow(s,2)*(s-1);     
-                    
-                    if (gd[i-1]) {  
-                        TiX = a * (gd[i+1][0] - gd[i-1][0]); 
-                        TiY = a * (gd[i+1][1] - gd[i-1][1]);
-                    } else {
-                        TiX = a * (gd[i+1][0] - gd[i][0]); 
-                        TiY = a * (gd[i+1][1] - gd[i][1]);                                  
-                    }
-                    if (gd[i+2]) {  
-                        Ti1X = a * (gd[i+2][0] - gd[i][0]); 
-                        Ti1Y = a * (gd[i+2][1] - gd[i][1]);
-                    } else {
-                        Ti1X = a * (gd[i+1][0] - gd[i][0]); 
-                        Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
-                    }
-                    
-                    pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
-                    pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
-                    p = [pX, pY];
-                    sd.push(p);
-                }
-            }
-            sd.push(gd[l]);
+            this.renderer._smoothedData = computeSmoothedData(this.renderer.smooth, this.renderer.tension, gd, this.canvas.getWidth());
         }
         return gd;
     };
