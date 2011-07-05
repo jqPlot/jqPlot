@@ -42,7 +42,10 @@
         this._type='line';
         this.renderer.smooth = false;  // true or a number > 2 for smoothing.
         this.renderer.tension = null; // null to auto compute or a number typically > 6.  Fewer points requires higher tension.
+        // this is smoothed data in grid coordinates, like gridData
         this.renderer._smoothedData = [];
+        // this is smoothed data in plot units (plot coordinates), like plotData.
+        this.renderer._smoothedPlotData = [];
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);
@@ -50,6 +53,12 @@
         delete (options.highlightColor);
         
         $.extend(true, this.renderer, options);
+
+        // smoothing is not compatible with stacked lines, disable
+        if (this._stack) {
+            this.renderer.smooth = false;
+        }
+
         // set the shape renderer options
         var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
@@ -119,7 +128,13 @@
         return a;
     }
 
-    function computeSmoothedData (smooth, tension, gd, dim) {
+    // called with scope of series
+    function computeSmoothedData (gd) {
+        var smooth = this.renderer.smooth;
+        var tension = this.renderer.tension;
+        var dim = this.canvas.getWidth();
+        var xp = this._xaxis.series_p2u;
+        var yp = this._yaxis.series_p2u; 
         var steps;
         var a = null;
         var a1 = null;
@@ -130,6 +145,7 @@
         var TiX, TiY, Ti1X, Ti1Y;
         var Px, Py, p;
         var sd = [];
+        var spd = [];
         var dist = gd.length/dim;
         var min, max, stretch, scale, shift;
         if (!isNaN(parseFloat(smooth))) {
@@ -147,7 +163,7 @@
             if (tension === null) {
                 slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
 
-                min = 0.25;
+                min = 0.33;
                 max = 0.6;
                 stretch = (max - min)/2.0;
                 scale = 2.5;
@@ -167,7 +183,7 @@
 
                 a = Math.min(a1, a2);
 
-                console.log('pt: %s, slope: %s, a1: %s, a2: %s, a: %s', i, slope, a1, a2, a);
+                // console.log('pt: %s, slope: %s, a1: %s, a2: %s, a: %s', i, slope, a1, a2, a);
             }
             else {
                 a = tension;
@@ -197,12 +213,13 @@
                 pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
                 pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
                 p = [pX, pY];
-                sd.push(p);
+
+                this.renderer._smoothedData.push(p);
+                this.renderer._smoothedPlotData.push([xp(pX), yp(pY)]);
             }
         }
-        sd.push(gd[l]);
-        // console.log('pixels/point: %s, steps: %s, tension: %s', dim/sd.length, steps, a);
-        return sd;
+        this.renderer._smoothedData.push(gd[l]);
+        this.renderer._smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
     }
     
     // Method: setGridData
@@ -243,7 +260,7 @@
             }
         }
         if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 1) {
-            this.renderer._smoothedData = computeSmoothedData(this.renderer.smooth, this.renderer.tension, this.gridData, this.canvas.getWidth());
+            computeSmoothedData.call(this, this.gridData);
         }
     };
     
@@ -274,7 +291,7 @@
             }
         }
         if (this._type === 'line' && this.renderer.smooth && gd.length > 1) {
-            this.renderer._smoothedData = computeSmoothedData(this.renderer.smooth, this.renderer.tension, gd, this.canvas.getWidth());
+            computeSmoothedData.call(this, gd);
         }
         return gd;
     };
@@ -312,6 +329,7 @@
                         if (this.index == 0 || !this._stack) {
                         
                             var tempgd = [];
+                            var pd = (this.renderer.smooth) ? this.renderer._smoothedPlotData : this._plotData;
                             this._areaPoints = [];
                             var pyzero = this._yaxis.series_u2p(this.fillToValue);
                             var pxzero = this._xaxis.series_u2p(this.fillToValue);
@@ -324,8 +342,8 @@
                                     tempgd.push(gd[i]);
                                     this._areaPoints.push(gd[i]);
                                     // do we have an axis crossing?
-                                    if (this._plotData[i][1] * this._plotData[i+1][1] < 0) {
-                                        if (this._plotData[i][1] < 0) {
+                                    if (pd[i][1] * pd[i+1][1] < 0) {
+                                        if (pd[i][1] < 0) {
                                             isnegative = true;
                                             opts.fillStyle = negativeColor;
                                         }
@@ -347,7 +365,7 @@
                                         // this._areaPoints = [[xintercept, pyzero]];
                                     }   
                                 }
-                                if (this._plotData[gd.length-1][1] < 0) {
+                                if (pd[gd.length-1][1] < 0) {
                                     isnegative = true;
                                     opts.fillStyle = negativeColor;
                                 }
@@ -437,17 +455,11 @@
                 }
                 else {
 
-                    var tempgd = gd;
-
-                    if (this._type === 'line' && this.renderer.smooth && this.renderer._smoothedData.length) {
-                        tempgd = this.renderer._smoothedData;
-                    }
-
                     if (shadow) {
-                        this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
+                        this.renderer.shadowRenderer.draw(ctx, gd, opts);
                     }
     
-                    this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
+                    this.renderer.shapeRenderer.draw(ctx, gd, opts);
                 }
             }
             // calculate the bounding box

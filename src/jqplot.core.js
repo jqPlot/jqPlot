@@ -1280,6 +1280,11 @@
                 data = this._plotData;
             }
             gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+
+            if (this._type === 'line' && this.renderer.smooth && this.renderer._smoothedData.length) {
+                gridData = this.renderer._smoothedData;
+            }
+
             this.renderer.draw.call(this, sctx, gridData, options, plot);
         }
         
