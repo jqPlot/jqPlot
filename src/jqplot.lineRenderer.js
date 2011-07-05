@@ -40,8 +40,8 @@
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
         this._type='line';
-        this.renderer.smooth = false;  // false values no smoothing, low, normal, high, higher, max or a number > 2.
-        this.renderer.tension = null;
+        this.renderer.smooth = false;  // true or a number > 2 for smoothing.
+        this.renderer.tension = null; // null to auto compute or a number typically > 6.  Fewer points requires higher tension.
         this.renderer._smoothedData = [];
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
@@ -114,40 +114,6 @@
         return (3.4182054+f) * Math.pow(d, -0.3534992);
     }
 
-    //
-    // Maybe implement some type of selectable smoothing.
-    //
-    // function smoothToSteps (smooth, dist) {
-    //     var s;
-    //     switch (smooth) {
-    //         case 'low':
-    //             s = getSteps(dist, -0.5);
-    //             break;
-    //         case 'normal':
-    //             s = getSteps(dist, 0);
-    //             break;
-    //         case 'high':
-    //             s = getSteps(dist, 0.5);
-    //             break;
-    //         case 'higher':
-    //             s = getSteps(dist, 1.0);
-    //             break;
-    //         case 'max':
-    //             s = getSteps(dist, 1.5);
-    //             break;
-    //         default:
-    //             s = getSteps(dist, 0);
-    //             break;
-    //     }
-    //     if (s < 6) {
-    //         s = 6;
-    //     }
-    //     else {
-    //         s = Math.round(s);
-    //     }
-    //     return s;
-    // }
-
     function tanh (x) {
         var a = (Math.exp(2*x) - 1) / (Math.exp(2*x) + 1);
         return a;
@@ -156,6 +122,8 @@
     function computeSmoothedData (smooth, tension, gd, dim) {
         var steps;
         var a = null;
+        var a1 = null;
+        var a2 = null;
         var slope = null;
         var temp = null;
         var t, s, h1, h2, h3, h4;
@@ -179,30 +147,27 @@
             if (tension === null) {
                 slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
 
-                // if (slope < 1) {
-                //     a = 0.3 + 0.1 * slope;
-                // }
-                // else if (slope < 2) {
-                //     a = 0.35 + 0.05 * slope
-                // }
-
-                // a = 0.04 * slope + 0.3
-                // if (a > 0.8) {
-                //     a = 0.8;
-                // }
-                // temp = (Math.abs(slope) + 1.4) / 10;
-                // a = tanh (temp);
                 min = 0.25;
-                max = 0.85;
+                max = 0.6;
                 stretch = (max - min)/2.0;
-                scale = 2.8;
+                scale = 2.5;
                 shift = -2;
 
                 temp = slope/scale + shift;
 
-                a = stretch * tanh(temp) - stretch * tanh(shift) + min;
+                a1 = stretch * tanh(temp) - stretch * tanh(shift) + min;
 
-                console.log('pt: %s, slope: %s, a: %s', i, slope, a);
+                // if have both left and right line segments, will use  minimum tension. 
+                if (i > 0) {
+                    slope = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
+                }
+                temp = slope/scale + shift;
+
+                a2 = stretch * tanh(temp) - stretch * tanh(shift) + min;
+
+                a = Math.min(a1, a2);
+
+                console.log('pt: %s, slope: %s, a1: %s, a2: %s, a: %s', i, slope, a1, a2, a);
             }
             else {
                 a = tension;
