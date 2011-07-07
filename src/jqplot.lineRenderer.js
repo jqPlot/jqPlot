@@ -123,6 +123,12 @@
         return (3.4182054+f) * Math.pow(d, -0.3534992);
     }
 
+    function computeSteps (d1, d2) {
+        var s = Math.sqrt(Math.pow((d2[0]- d1[0]), 2) + Math.pow ((d2[1] - d1[1]), 2));
+        console.log(s);
+        return 5.7648 * Math.log(s) + 7.4456;
+    }
+
     function tanh (x) {
         var a = (Math.exp(2*x) - 1) / (Math.exp(2*x) + 1);
         return a;
@@ -135,11 +141,13 @@
         var dim = this.canvas.getWidth();
         var xp = this._xaxis.series_p2u;
         var yp = this._yaxis.series_p2u; 
-        var steps;
+        var steps =null;
+        var _steps = null;
         var a = null;
         var a1 = null;
         var a2 = null;
         var slope = null;
+        var slope2 = null;
         var temp = null;
         var t, s, h1, h2, h3, h4;
         var TiX, TiY, Ti1X, Ti1Y;
@@ -152,7 +160,6 @@
             steps = parseFloat(smooth);
         }
         else {
-            // steps = smoothToSteps(smooth, dist);
             steps = getSteps(dist, 0.5);
         }
         if (!isNaN(parseFloat(tension))) {
@@ -160,14 +167,20 @@
         }
 
         for (var i=0, l = gd.length-1; i < l; i++) {
+            // if (_steps === null) {
+            //     steps = computeSteps(gd[i], gd[i+1]);
+            // }
+            // else {
+            //     steps = _steps;
+            // }
             if (tension === null) {
                 slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
 
-                min = 0.33;
-                max = 0.6;
+                min = 0.35;
+                max = 0.62;
                 stretch = (max - min)/2.0;
                 scale = 2.5;
-                shift = -2;
+                shift = -1.4;
 
                 temp = slope/scale + shift;
 
@@ -175,15 +188,16 @@
 
                 // if have both left and right line segments, will use  minimum tension. 
                 if (i > 0) {
-                    slope = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
+                    slope2 = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
                 }
-                temp = slope/scale + shift;
+                temp = slope2/scale + shift;
 
                 a2 = stretch * tanh(temp) - stretch * tanh(shift) + min;
 
-                a = Math.min(a1, a2);
+                a = (a1 + a2)/2.0;
 
-                // console.log('pt: %s, slope: %s, a1: %s, a2: %s, a: %s', i, slope, a1, a2, a);
+                // console.log('pt: %s, slope1: %s, slope2: %s, a1: %s, a2: %s, a: %s', i, slope, slope2, a1, a2, a);
+                // console.log('pt: %s, steps: %s, a: %s', i, steps, a);
             }
             else {
                 a = tension;
@@ -313,8 +327,7 @@
                 if (fill) {
                     if (this.fillToZero) {
                         // have to break line up into shapes at axis crossings
-                        var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
-                        var negativeColor = negativeColors.get(this.index);
+                        negativeColor = this.negativeColor;
                         if (! this.useNegativeColors) {
                             negativeColor = opts.fillStyle;
                         }
@@ -447,6 +460,9 @@
                         // }
                         // now draw the markers
                         if (this.markerRenderer.show) {
+                            if (this.renderer.smooth) {
+                                fasgd = this.gridData;
+                            }
                             for (i=0; i<fasgd.length; i++) {
                                 this.markerRenderer.draw(fasgd[i][0], fasgd[i][1], ctx, opts.markerOptions);
                             }
@@ -483,6 +499,9 @@
         
             // now draw the markers
             if (this.markerRenderer.show && !fill) {
+                if (this.renderer.smooth) {
+                    gd = this.gridData;
+                }
                 for (i=0; i<gd.length; i++) {
                     if (gd[i][0] != null && gd[i][1] != null) {
                         this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
