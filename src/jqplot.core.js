@@ -1087,6 +1087,10 @@
         // prop: color
         // css color spec for the series
         this.color;
+        // prop: negativeColor
+        // css color spec used for filled (area) plots that are filled to zero and
+        // the "useNegativeColors" option is true.
+        this.negativeColor;
         // prop: lineWidth
         // width of the line in pixels.  May have different meanings depending on renderer.
         this.lineWidth = 2.5;
@@ -2262,6 +2266,7 @@
             }
             this.defaultAxisStart = (options && options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
             var cg = new this.colorGenerator(this.seriesColors);
+            var ncg = new this.colorGenerator(this.negativeSeriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
             this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
@@ -2305,6 +2310,7 @@
                 return temp;
             };
 
+            var colorIndex = 0;
             for (var i=0; i<this.data.length; i++) {
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
@@ -2340,6 +2346,11 @@
                 // parse the renderer options and apply default colors if not provided
                 if (!temp.color && temp.show != false) {
                     temp.color = cg.next();
+                    colorIndex = cg.getIndex() - 1;;
+                }
+                if (!temp.negativeColor && temp.show != false) {
+                    temp.negativeColor = ncg.get(colorIndex);
+                    ncg.setIndex(colorIndex);
                 }
                 if (!temp.label) {
                     temp.label = 'Series '+ (i+1).toString();
@@ -3304,6 +3315,14 @@
         
         this.reset = function() {
             idx = 0;
+        };
+
+        this.getIndex = function() {
+            return idx;
+        };
+
+        this.setIndex = function(index) {
+            idx = index;
         };
     };
 
