@@ -134,6 +134,15 @@
         return a;
     }
 
+
+
+
+
+
+
+
+
+
     // called with scope of series
     function computeSmoothedData (gd) {
         var smooth = this.renderer.smooth;
@@ -143,98 +152,250 @@
         var yp = this._yaxis.series_p2u; 
         var steps =null;
         var _steps = null;
-        var a = null;
-        var a1 = null;
-        var a2 = null;
-        var slope = null;
-        var slope2 = null;
-        var temp = null;
-        var t, s, h1, h2, h3, h4;
-        var TiX, TiY, Ti1X, Ti1Y;
-        var Px, Py, p;
-        var sd = [];
-        var spd = [];
         var dist = gd.length/dim;
-        var min, max, stretch, scale, shift;
+
         if (!isNaN(parseFloat(smooth))) {
             steps = parseFloat(smooth);
         }
         else {
             steps = getSteps(dist, 0.5);
         }
-        if (!isNaN(parseFloat(tension))) {
-            tension = parseFloat(tension);
+
+        function getY (a, b, c, d, x) {
+            return a + b*x + c*Math.pow(x, 2) + d*Math.pow(x, 3);
         }
 
-        for (var i=0, l = gd.length-1; i < l; i++) {
-            // if (_steps === null) {
-            //     steps = computeSteps(gd[i], gd[i+1]);
-            // }
-            // else {
-            //     steps = _steps;
-            // }
-            if (tension === null) {
-                slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
+        ///////////
+        // Helper function for constrained cubic spline interpolation.
+        //////////
+        function computeFPrimes(data) {
+            var l = data.length;
+            var fprimes = [];
 
-                min = 0.35;
-                max = 0.62;
-                stretch = (max - min)/2.0;
-                scale = 2.5;
-                shift = -1.4;
+            function fp (p0, p1, p2) {
+                var x0 = p0[0],
+                    x1 = p1[0],
+                    x2 = p2[0],
+                    y0 = p0[1],
+                    y1 = p1[1],
+                    y2 = p2[1];
 
-                temp = slope/scale + shift;
+                var slope2 = (y2 - y1) / (x2 - x1);
+                var slope1 = (y1 - y0) / (x1 - x0);
 
-                a1 = stretch * tanh(temp) - stretch * tanh(shift) + min;
-
-                // if have both left and right line segments, will use  minimum tension. 
-                if (i > 0) {
-                    slope2 = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
+                if (slope1 * slope2 < 0) {
+                    res =0;
                 }
-                temp = slope2/scale + shift;
 
-                a2 = stretch * tanh(temp) - stretch * tanh(shift) + min;
-
-                a = (a1 + a2)/2.0;
-
-                // console.log('pt: %s, slope1: %s, slope2: %s, a1: %s, a2: %s, a: %s', i, slope, slope2, a1, a2, a);
-                // console.log('pt: %s, steps: %s, a: %s', i, steps, a);
+                else {
+                    res = (slope1 + slope2) / 2;
+                }
+                return res;
             }
-            else {
-                a = tension;
-            }
-            for (t=0; t < steps; t++) {
-                s = t / steps;
-                h1 = (1 + 2*s)*Math.pow((1-s),2);
-                h2 = s*Math.pow((1-s),2);
-                h3 = Math.pow(s,2)*(3-2*s);
-                h4 = Math.pow(s,2)*(s-1);     
-                
-                if (gd[i-1]) {  
-                    TiX = a * (gd[i+1][0] - gd[i-1][0]); 
-                    TiY = a * (gd[i+1][1] - gd[i-1][1]);
-                } else {
-                    TiX = a * (gd[i+1][0] - gd[i][0]); 
-                    TiY = a * (gd[i+1][1] - gd[i][1]);                                  
-                }
-                if (gd[i+2]) {  
-                    Ti1X = a * (gd[i+2][0] - gd[i][0]); 
-                    Ti1Y = a * (gd[i+2][1] - gd[i][1]);
-                } else {
-                    Ti1X = a * (gd[i+1][0] - gd[i][0]); 
-                    Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
-                }
-                
-                pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
-                pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
-                p = [pX, pY];
 
-                this.renderer._smoothedData.push(p);
-                this.renderer._smoothedPlotData.push([xp(pX), yp(pY)]);
+            function fp0 (p0, p1, p2) {
+                var x0 = p0[0],
+                    x1 = p1[0],
+                    x2 = p2[0],
+                    y0 = p0[1],
+                    y1 = p1[1],
+                    y2 = p2[1];
+
+                    return 3 * (y1 - y0) / 2 / (x1 - x0) - fp(p0, p1, p2) / 2;
+            }
+
+            function fpn (p0, p1, p2) {
+                var x0 = p0[0],
+                    x1 = p1[0],
+                    x2 = p2[0],
+                    y0 = p0[1],
+                    y1 = p1[1],
+                    y2 = p2[1];
+
+                    return 3 * (y2 - y1) / 2 / (x2 - x1) - fp(p0, p1, p2) / 2;
+            }
+
+            fprimes.push(fp0(data[0], data[1], data[2]));
+
+            var temp;
+            for (var i=1; i<l-1; i++) {
+                temp = fp(data[i-1], data[i], data[i+1]);
+                fprimes.push(temp);
+            }
+            fprimes.push(fpn(data[l-3], data[l-2], data[l-1]));
+
+            return fprimes;
+        }
+
+        function computeCoeffs (fp, data) {
+            var fppm1 = [];
+            var fpp = [];
+            var a = [];
+            var b = [];
+            var c = [];
+            var d = [];
+            var y = [];
+
+            var ppm1, pp;
+
+            var xi, xim1, yi, yim1;
+            var l = fp.length;
+
+            // one equation for each interval.  # intervals = # points - 1
+            for (var i=1; i<l; i++) {
+                xi = data[i][0];
+                xim1 = data[i-1][0];
+                yi = data[i][1];
+                yim1 = data[i-1][1];
+
+                ppm1 = -2.0 * (fp[i] + 2.0*fp[i-1]) / (xi - xim1) + 6.0 * (yi - yim1) / Math.pow((xi - xim1), 2);
+                pp = 2.0 * (2.0 * fp[i] + fp[i-1]) / (xi - xim1) - 6.0 * (yi - yim1) / Math.pow((xi - xim1), 2);
+                fppm1.push (ppm1);
+                fpp.push (pp);
+
+                d.push( (pp - ppm1) / 6 / (xi - xim1) );
+                c.push( (xi * ppm1 - xim1 * pp) / 2 / (xi - xim1) );
+                b.push( ((yi - yim1) - c[i-1] * (Math.pow(xi, 2) - Math.pow(xim1, 2)) - d[i-1] * (Math.pow(xi, 3) - Math.pow(xim1, 3))) / (xi - xim1) );
+                a.push( yim1 - b[i-1]*xim1 - c[i-1]*Math.pow(xim1, 2) - d[i-1]*Math.pow(xim1, 3) );
+            }
+
+            return [a, b, c, d];
+        }
+
+        ///////
+        // End helper functions
+        //////
+
+        fprimes = computeFPrimes(gd);
+
+        m = computeCoeffs(fprimes, gd);
+
+        var temp, tempx;
+
+        for (var i=0, l=gd.length - 1; i<l; i++) {
+            var a = m[0][i], b = m[1][i], c = m[2][i], d = m[3][i];
+            var x0 = gd[i][0];
+            var x1 = gd[i+1][0];
+
+            var interval = (x1 - x0) / steps;
+            for (var j=0; j < steps; j++) {
+                temp = [];
+                tempx = x0 + j*interval;
+                temp.push(tempx);
+                temp.push(getY(a, b, c, d, tempx));
+                this.renderer._smoothedData.push(temp);
+                this.renderer._smoothedPlotData.push([xp(temp[0]), yp(temp[1])]);
             }
         }
+
         this.renderer._smoothedData.push(gd[l]);
         this.renderer._smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
     }
+
+
+
+
+    // called with scope of series
+    // function computeSmoothedData (gd) {
+    //     var smooth = this.renderer.smooth;
+    //     var tension = this.renderer.tension;
+    //     var dim = this.canvas.getWidth();
+    //     var xp = this._xaxis.series_p2u;
+    //     var yp = this._yaxis.series_p2u; 
+    //     var steps =null;
+    //     var _steps = null;
+    //     var a = null;
+    //     var a1 = null;
+    //     var a2 = null;
+    //     var slope = null;
+    //     var slope2 = null;
+    //     var temp = null;
+    //     var t, s, h1, h2, h3, h4;
+    //     var TiX, TiY, Ti1X, Ti1Y;
+    //     var Px, Py, p;
+    //     var sd = [];
+    //     var spd = [];
+    //     var dist = gd.length/dim;
+    //     var min, max, stretch, scale, shift;
+    //     if (!isNaN(parseFloat(smooth))) {
+    //         steps = parseFloat(smooth);
+    //     }
+    //     else {
+    //         steps = getSteps(dist, 0.5);
+    //     }
+    //     if (!isNaN(parseFloat(tension))) {
+    //         tension = parseFloat(tension);
+    //     }
+
+    //     for (var i=0, l = gd.length-1; i < l; i++) {
+    //         // if (_steps === null) {
+    //         //     steps = computeSteps(gd[i], gd[i+1]);
+    //         // }
+    //         // else {
+    //         //     steps = _steps;
+    //         // }
+    //         if (tension === null) {
+    //             slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
+
+    //             min = 0.3;
+    //             max = 0.6;
+    //             stretch = (max - min)/2.0;
+    //             scale = 2.5;
+    //             shift = -1.4;
+
+    //             temp = slope/scale + shift;
+
+    //             a1 = stretch * tanh(temp) - stretch * tanh(shift) + min;
+
+    //             // if have both left and right line segments, will use  minimum tension. 
+    //             if (i > 0) {
+    //                 slope2 = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
+    //             }
+    //             temp = slope2/scale + shift;
+
+    //             a2 = stretch * tanh(temp) - stretch * tanh(shift) + min;
+
+    //             a = (a1 + a2)/2.0;
+
+    //             // console.log('pt: %s, slope1: %s, slope2: %s, a1: %s, a2: %s, a: %s', i, slope, slope2, a1, a2, a);
+    //             // console.log('pt: %s, steps: %s, a: %s', i, steps, a);
+    //         }
+    //         else {
+    //             a = tension;
+    //         }
+    //         for (t=0; t < steps; t++) {
+    //             s = t / steps;
+    //             h1 = (1 + 2*s)*Math.pow((1-s),2);
+    //             h2 = s*Math.pow((1-s),2);
+    //             h3 = Math.pow(s,2)*(3-2*s);
+    //             h4 = Math.pow(s,2)*(s-1);     
+                
+    //             if (gd[i-1]) {  
+    //                 TiX = a * (gd[i+1][0] - gd[i-1][0]); 
+    //                 TiY = a * (gd[i+1][1] - gd[i-1][1]);
+    //             } else {
+    //                 TiX = a * (gd[i+1][0] - gd[i][0]); 
+    //                 TiY = a * (gd[i+1][1] - gd[i][1]);                                  
+    //             }
+    //             if (gd[i+2]) {  
+    //                 Ti1X = a * (gd[i+2][0] - gd[i][0]); 
+    //                 Ti1Y = a * (gd[i+2][1] - gd[i][1]);
+    //             } else {
+    //                 Ti1X = a * (gd[i+1][0] - gd[i][0]); 
+    //                 Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
+    //             }
+                
+    //             pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
+    //             pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
+    //             p = [pX, pY];
+
+    //             this.renderer._smoothedData.push(p);
+    //             this.renderer._smoothedPlotData.push([xp(pX), yp(pY)]);
+    //         }
+    //     }
+    //     this.renderer._smoothedData.push(gd[l]);
+    //     this.renderer._smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
+    // }
     
     // Method: setGridData
     // converts the user data values to grid coordinates and stores them
@@ -249,6 +410,7 @@
         this.gridData = [];
         this._prevGridData = [];
         this.renderer._smoothedData = [];
+        this.renderer._smoothedPlotData = [];
         for (var i=0, l=this.data.length; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
@@ -291,6 +453,7 @@
         var gd = [];
         var pgd = [];
         this.renderer._smoothedData = [];
+        this.renderer._smoothedPlotData = [];
         for (var i=0; i<data.length; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
