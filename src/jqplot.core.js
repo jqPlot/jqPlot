@@ -2886,7 +2886,7 @@
                         y = gridpos.y;
                         r = s.renderer;
                         if (s.show) {
-                            if (s.fill) {
+                            if (s.fill && (!plot.plugins.highlighter || !plot.plugins.highlighter.show)) {
                                 // first check if it is in bounding box
                                 var inside = false;
                                 if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
