@@ -1232,6 +1232,16 @@
             }
         }
         this.data = temp;
+
+        // parse the renderer options and apply default colors if not provided
+        if (!this.color && this.show) {
+            this.color = plot.colorGenerator.get(this.index);
+        }
+        if (!this.negativeColor && this.show) {
+            this.negativeColor = plot.negativeColorGenerator.get(this.index);
+        }
+
+
         if (!this.fillColor) {
             this.fillColor = this.color;
         }
@@ -1771,7 +1781,8 @@
         this.preDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         this.postDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         
-        this.colorGenerator = $.jqplot.ColorGenerator;
+        this.colorGenerator = new $.jqplot.ColorGenerator();
+        this.negativeColorGenerator = new $.jqplot.ColorGenerator();
 
         this.canvasManager = new $.jqplot.CanvasManager();
         
@@ -2265,8 +2276,10 @@
                 this.captureRightClick = this.options.captureRightClick;
             }
             this.defaultAxisStart = (options && options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
-            var cg = new this.colorGenerator(this.seriesColors);
-            var ncg = new this.colorGenerator(this.negativeSeriesColors);
+            this.colorGenerator.setColors(this.seriesColors);
+            this.negativeColorGenerator.setColors(this.negativeSeriesColors);
+            // var cg = new this.colorGenerator(this.seriesColors);
+            // var ncg = new this.colorGenerator(this.negativeSeriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
             this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
@@ -2343,15 +2356,15 @@
                     temp._yaxis.show = true;
                 }
 
-                // parse the renderer options and apply default colors if not provided
-                if (!temp.color && temp.show != false) {
-                    temp.color = cg.next();
-                    colorIndex = cg.getIndex() - 1;;
-                }
-                if (!temp.negativeColor && temp.show != false) {
-                    temp.negativeColor = ncg.get(colorIndex);
-                    ncg.setIndex(colorIndex);
-                }
+                // // parse the renderer options and apply default colors if not provided
+                // if (!temp.color && temp.show != false) {
+                //     temp.color = cg.next();
+                //     colorIndex = cg.getIndex() - 1;;
+                // }
+                // if (!temp.negativeColor && temp.show != false) {
+                //     temp.negativeColor = ncg.get(colorIndex);
+                //     ncg.setIndex(colorIndex);
+                // }
                 if (!temp.label) {
                     temp.label = 'Series '+ (i+1).toString();
                 }
