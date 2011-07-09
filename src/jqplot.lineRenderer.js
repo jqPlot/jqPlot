@@ -265,7 +265,7 @@
     //
     // and download of the original plugin:
     //
-    // http://blog.statscollector.com/a-plugin-renderer-for-jqplot-to-draw-a-hermite-spline/
+    // http://blog.statscollector.com/wp-content/uploads/2010/02/jqplot.hermiteSplineRenderer.js
     //////////
 
     // called with scope of series
