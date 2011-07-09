@@ -184,7 +184,6 @@
 
     function computeSteps (d1, d2) {
         var s = Math.sqrt(Math.pow((d2[0]- d1[0]), 2) + Math.pow ((d2[1] - d1[1]), 2));
-        console.log(s);
         return 5.7648 * Math.log(s) + 7.4456;
     }
 
@@ -500,9 +499,10 @@
     
 
     // called within scope of series.
-    $.jqplot.LineRenderer.prototype.draw = function(ctx, gd, options) {
+    $.jqplot.LineRenderer.prototype.draw = function(ctx, gd, options, plot) {
         var i;
-        var opts = (options != undefined) ? options : {};
+        // get a copy of the options, so we don't modify the original object.
+        var opts = $.extend(true, {}, options);
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
@@ -513,7 +513,7 @@
             if (showLine) {
                 // if we fill, we'll have to add points to close the curve.
                 if (fill) {
-                    if (this.fillToZero) {
+                    if (this.fillToZero) { 
                         // have to break line up into shapes at axis crossings
                         negativeColor = this.negativeColor;
                         if (! this.useNegativeColors) {
@@ -534,6 +534,8 @@
                             this._areaPoints = [];
                             var pyzero = this._yaxis.series_u2p(this.fillToValue);
                             var pxzero = this._xaxis.series_u2p(this.fillToValue);
+
+                            opts.closePath = true;
                             
                             if (this.fillAxis == 'y') {
                                 tempgd.push([gd[0][0], pyzero]);
@@ -560,7 +562,6 @@
                                         if (shadow) {
                                             this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
                                         }
-                                        console.log('here');
                                         this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
                                         // now empty temp array and continue
                                         tempgd = [[xintercept, pyzero]];
@@ -580,7 +581,7 @@
                                 tempgd.push([gd[gd.length-1][0], pyzero]); 
                                 this._areaPoints.push([gd[gd.length-1][0], pyzero]); 
                             }
-                            // now draw this shape and shadow.
+                            // now draw the last area.
                             if (shadow) {
                                 this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
                             }
