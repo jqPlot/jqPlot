@@ -56,6 +56,34 @@
         this.renderer._smoothedData = [];
         // this is smoothed data in plot units (plot coordinates), like plotData.
         this.renderer._smoothedPlotData = [];
+
+        // prop: bands
+        // Banding around line, e.g error bands or confidence intervals.
+        this.renderer.bands = {
+            show: false,
+            data: [],
+            color: this.color,
+            showLine: false,
+            fill: true,
+            fillColor: this.fillColor
+        }
+
+        // prop: bandData
+        // An array shortcut to specify upper and lower bands around line.
+        // Only y values are specified for band data, x values are always
+        // assumed from the series data.
+        //
+        // Can be of form [[yl1, yl2, ...], [yu1, yu2, ...]] where
+        // [yl1, yl2, ...] are y values of the lower line and
+        // [yu1, yu2, ...] are y values of the upper line.
+        //
+        // Can be of form [[yl1, yu1], [yl2, yu2], [yl3, yu3], ...] where
+        // there must be 3 or more array elements.  In this case, 
+        // [yl1, yu1] specifies the lower and upper y values for the 1st
+        // data point and so on.
+        this.renderer.bandData = [];
+
+
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);
@@ -63,6 +91,27 @@
         delete (options.highlightColor);
         
         $.extend(true, this.renderer, options);
+
+        // if plot is filled, turn off bands.
+        if (this.fill) {
+            this.renderer.bands.show = false;
+        }
+
+        // use bandData if no data specified in bands option
+        if (this.renderer.bands.data.length == 0) {
+            if (this.renderer.bandData.length == 2) {
+                this.renderer.bands.data.push(this.renderer.bandData[0]);
+                this.renderer.bands.data.push(this.renderer.bandData[1]);
+            }
+
+            else {
+                var bd = this.renderer.bandData;
+                for (var i=0, l=bd.length; i<l; i++) {
+                    this.renderer.bands.data[0].push(bd[i][0]);
+                    this.renderer.bands.data[1].push(bd[i][1]);
+                }
+            }
+        }
 
         // smoothing is not compatible with stacked lines, disable
         if (this._stack) {
@@ -511,6 +560,7 @@
                                         if (shadow) {
                                             this.renderer.shadowRenderer.draw(ctx, tempgd, opts);
                                         }
+                                        console.log('here');
                                         this.renderer.shapeRenderer.draw(ctx, tempgd, opts);
                                         // now empty temp array and continue
                                         tempgd = [[xintercept, pyzero]];
