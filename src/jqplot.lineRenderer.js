@@ -40,8 +40,18 @@
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
         this._type='line';
+        // prop: smooth
+        // True to draw a smoothed (interpolated) line through the data points
+        // with automatically computed number of smoothing points.
+        // Set to an integer number > 2 to specify number of smoothing points
+        // to use between each data point.
         this.renderer.smooth = false;  // true or a number > 2 for smoothing.
         this.renderer.tension = null; // null to auto compute or a number typically > 6.  Fewer points requires higher tension.
+        // prop: constrainSmoothing
+        // True to use a more accurate smoothing algorithm that will
+        // not overshoot any data points.  False to allow overshoot but
+        // produce a smoother looking line.
+        this.renderer.constrainSmoothing = true;
         // this is smoothed data in grid coordinates, like gridData
         this.renderer._smoothedData = [];
         // this is smoothed data in plot units (plot coordinates), like plotData.
@@ -134,19 +144,22 @@
         return a;
     }
 
-
-
-
-
-
-
-
-
+    //////////
+    // computeConstrainedSmoothedData
+    // An implementation of the constrained cubic spline interpolation
+    // method as presented in:
+    //
+    // Kruger, CJC, Constrained Cubic Spine Interpolation for Chemical Engineering Applications
+    // http://www.korf.co.uk/spline.pdf
+    //
+    // The implementation below borrows heavily from the sample Visual Basic
+    // implementation by CJC Kruger found in http://www.korf.co.uk/spline.xls
+    //
+    /////////
 
     // called with scope of series
-    function computeSmoothedData (gd) {
+    function computeConstrainedSmoothedData (gd) {
         var smooth = this.renderer.smooth;
-        var tension = this.renderer.tension;
         var dim = this.canvas.getWidth();
         var xp = this._xaxis.series_p2u;
         var yp = this._yaxis.series_p2u; 
@@ -161,241 +174,194 @@
             steps = getSteps(dist, 0.5);
         }
 
-        function getY (a, b, c, d, x) {
-            return a + b*x + c*Math.pow(x, 2) + d*Math.pow(x, 3);
+        var yy = [];
+        var xx = [];
+
+        for (var i=0, l = gd.length; i<l; i++) {
+            yy.push(gd[i][1]);
+            xx.push(gd[i][0]);
         }
 
-        ///////////
-        // Helper function for constrained cubic spline interpolation.
-        //////////
-        function computeFPrimes(data) {
-            var l = data.length;
-            var fprimes = [];
+        function dxx(x1, x0) {
+            if (x1 - x0 == 0) return Math.pow(10,10);
+            else return x1 - x0;
+        }
 
-            function fp (p0, p1, p2) {
-                var x0 = p0[0],
-                    x1 = p1[0],
-                    x2 = p2[0],
-                    y0 = p0[1],
-                    y1 = p1[1],
-                    y2 = p2[1];
+        // loop through each line segment.  Have # points - 1 line segments.  Nmber segments starting at 1.
+        var nmax = gd.length - 1;
+        for (var num = 1, gdl = gd.length; num<gdl; num++) {
+            var gxx = [];
+            var ggxx = [];
+            // point at each end of segment.
+            for (var j = 0; j < 2; j++) {
+                var i = num - 1 + j; // point number, 0 to # points.
 
-                var slope2 = (y2 - y1) / (x2 - x1);
-                var slope1 = (y1 - y0) / (x1 - x0);
-
-                if (slope1 * slope2 < 0) {
-                    res =0;
+                if (i == 0 || i == nmax) {
+                    gxx[j] = Math.pow(10, 10);
+                }
+                else if (yy[i+1] - yy[i] == 0 || yy[i] - yy[i-1] == 0) {
+                    gxx[j] = 0;
+                }
+                else if (((xx[i+1] - xx[i]) / (yy[i+1] - yy[i]) + (xx[i] - xx[i-1]) / (yy[i] - yy[i-1])) == 0 ) {
+                    gxx[j] = 0;
+                }
+                else if ( (yy[i+1] - yy[i]) * (yy[i] - yy[i-1]) < 0 ) {
+                    gxx[j] = 0;
                 }
 
                 else {
-                    res = (slope1 + slope2) / 2;
+                    gxx[j] = 2 / (dxx(xx[i + 1], xx[i]) / (yy[i + 1] - yy[i]) + dxx(xx[i], xx[i - 1]) / (yy[i] - yy[i - 1]));
                 }
-                return res;
             }
 
-            function fp0 (p0, p1, p2) {
-                var x0 = p0[0],
-                    x1 = p1[0],
-                    x2 = p2[0],
-                    y0 = p0[1],
-                    y1 = p1[1],
-                    y2 = p2[1];
-
-                    return 3 * (y1 - y0) / 2 / (x1 - x0) - fp(p0, p1, p2) / 2;
+            // Reset first derivative (slope) at first and last point
+            if (num == 1) {
+                // First point has 0 2nd derivative
+                gxx[0] = 3 / 2 * (yy[1] - yy[0]) / dxx(xx[1], xx[0]) - gxx[1] / 2;
             }
+            else if (num == nmax) {
+                // Last point has 0 2nd derivative
+                gxx[1] = 3 / 2 * (yy[nmax] - yy[nmax - 1]) / dxx(xx[nmax], xx[nmax - 1]) - gxx[0] / 2;
+            }   
 
-            function fpn (p0, p1, p2) {
-                var x0 = p0[0],
-                    x1 = p1[0],
-                    x2 = p2[0],
-                    y0 = p0[1],
-                    y1 = p1[1],
-                    y2 = p2[1];
+            // Calc second derivative at points
+            ggxx[0] = -2 * (gxx[1] + 2 * gxx[0]) / dxx(xx[num], xx[num - 1]) + 6 * (yy[num] - yy[num - 1]) / Math.pow(dxx(xx[num], xx[num - 1]), 2);
+            ggxx[1] = 2 * (2 * gxx[1] + gxx[0]) / dxx(xx[num], xx[num - 1]) - 6 * (yy[num] - yy[num - 1]) / Math.pow(dxx(xx[num], xx[num - 1]), 2);
 
-                    return 3 * (y2 - y1) / 2 / (x2 - x1) - fp(p0, p1, p2) / 2;
-            }
+            // Calc constants for cubic interpolation
+            D = 1 / 6 * (ggxx[1] - ggxx[0]) / dxx(xx[num], xx[num - 1]);
+            C = 1 / 2 * (xx[num] * ggxx[0] - xx[num - 1] * ggxx[1]) / dxx(xx[num], xx[num - 1]);
+            B = (yy[num] - yy[num - 1] - C * (Math.pow(xx[num], 2) - Math.pow(xx[num - 1], 2)) - D * (Math.pow(xx[num], 3) - Math.pow(xx[num - 1], 3))) / dxx(xx[num], xx[num - 1]);
+            A = yy[num - 1] - B * xx[num - 1] - C * Math.pow(xx[num - 1], 2) - D * Math.pow(xx[num - 1], 3);
 
-            fprimes.push(fp0(data[0], data[1], data[2]));
+            var increment = (xx[num] - xx[num - 1]) / steps;
+            var temp, tempx;
 
-            var temp;
-            for (var i=1; i<l-1; i++) {
-                temp = fp(data[i-1], data[i], data[i+1]);
-                fprimes.push(temp);
-            }
-            fprimes.push(fpn(data[l-3], data[l-2], data[l-1]));
-
-            return fprimes;
-        }
-
-        function computeCoeffs (fp, data) {
-            var fppm1 = [];
-            var fpp = [];
-            var a = [];
-            var b = [];
-            var c = [];
-            var d = [];
-            var y = [];
-
-            var ppm1, pp;
-
-            var xi, xim1, yi, yim1;
-            var l = fp.length;
-
-            // one equation for each interval.  # intervals = # points - 1
-            for (var i=1; i<l; i++) {
-                xi = data[i][0];
-                xim1 = data[i-1][0];
-                yi = data[i][1];
-                yim1 = data[i-1][1];
-
-                ppm1 = -2.0 * (fp[i] + 2.0*fp[i-1]) / (xi - xim1) + 6.0 * (yi - yim1) / Math.pow((xi - xim1), 2);
-                pp = 2.0 * (2.0 * fp[i] + fp[i-1]) / (xi - xim1) - 6.0 * (yi - yim1) / Math.pow((xi - xim1), 2);
-                fppm1.push (ppm1);
-                fpp.push (pp);
-
-                d.push( (pp - ppm1) / 6 / (xi - xim1) );
-                c.push( (xi * ppm1 - xim1 * pp) / 2 / (xi - xim1) );
-                b.push( ((yi - yim1) - c[i-1] * (Math.pow(xi, 2) - Math.pow(xim1, 2)) - d[i-1] * (Math.pow(xi, 3) - Math.pow(xim1, 3))) / (xi - xim1) );
-                a.push( yim1 - b[i-1]*xim1 - c[i-1]*Math.pow(xim1, 2) - d[i-1]*Math.pow(xim1, 3) );
-            }
-
-            return [a, b, c, d];
-        }
-
-        ///////
-        // End helper functions
-        //////
-
-        fprimes = computeFPrimes(gd);
-
-        m = computeCoeffs(fprimes, gd);
-
-        var temp, tempx;
-
-        for (var i=0, l=gd.length - 1; i<l; i++) {
-            var a = m[0][i], b = m[1][i], c = m[2][i], d = m[3][i];
-            var x0 = gd[i][0];
-            var x1 = gd[i+1][0];
-
-            var interval = (x1 - x0) / steps;
-            for (var j=0; j < steps; j++) {
+            for (var j = 0, l = steps; j < l; j++) {
                 temp = [];
-                tempx = x0 + j*interval;
+                tempx = xx[num - 1] + j * increment;
                 temp.push(tempx);
-                temp.push(getY(a, b, c, d, tempx));
+                temp.push(A + B * tempx + C * Math.pow(tempx, 2) + D * Math.pow(tempx, 3));
                 this.renderer._smoothedData.push(temp);
                 this.renderer._smoothedPlotData.push([xp(temp[0]), yp(temp[1])]);
             }
         }
 
+        this.renderer._smoothedData.push(gd[i]);
+        this.renderer._smoothedPlotData.push([xp(gd[i][0]), yp(gd[i][1])]);
+    }
+
+    ///////
+    // computeHermiteSmoothedData
+    // A hermite spline smoothing of the plot data.
+    // This implementation is derived from the one posted
+    // by krypin on the jqplot-users mailing list:
+    //
+    // http://groups.google.com/group/jqplot-users/browse_thread/thread/748be6a445723cea?pli=1
+    //
+    // with a blog post:
+    //
+    // http://blog.statscollector.com/a-plugin-renderer-for-jqplot-to-draw-a-hermite-spline/
+    //
+    // and download of the original plugin:
+    //
+    // http://blog.statscollector.com/a-plugin-renderer-for-jqplot-to-draw-a-hermite-spline/
+    //////////
+
+    // called with scope of series
+    function computeHermiteSmoothedData (gd) {
+        var smooth = this.renderer.smooth;
+        var tension = this.renderer.tension;
+        var dim = this.canvas.getWidth();
+        var xp = this._xaxis.series_p2u;
+        var yp = this._yaxis.series_p2u; 
+        var steps =null;
+        var _steps = null;
+        var a = null;
+        var a1 = null;
+        var a2 = null;
+        var slope = null;
+        var slope2 = null;
+        var temp = null;
+        var t, s, h1, h2, h3, h4;
+        var TiX, TiY, Ti1X, Ti1Y;
+        var Px, Py, p;
+        var sd = [];
+        var spd = [];
+        var dist = gd.length/dim;
+        var min, max, stretch, scale, shift;
+        if (!isNaN(parseFloat(smooth))) {
+            steps = parseFloat(smooth);
+        }
+        else {
+            steps = getSteps(dist, 0.5);
+        }
+        if (!isNaN(parseFloat(tension))) {
+            tension = parseFloat(tension);
+        }
+
+        for (var i=0, l = gd.length-1; i < l; i++) {
+
+            if (tension === null) {
+                slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
+
+                min = 0.3;
+                max = 0.6;
+                stretch = (max - min)/2.0;
+                scale = 2.5;
+                shift = -1.4;
+
+                temp = slope/scale + shift;
+
+                a1 = stretch * tanh(temp) - stretch * tanh(shift) + min;
+
+                // if have both left and right line segments, will use  minimum tension. 
+                if (i > 0) {
+                    slope2 = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
+                }
+                temp = slope2/scale + shift;
+
+                a2 = stretch * tanh(temp) - stretch * tanh(shift) + min;
+
+                a = (a1 + a2)/2.0;
+
+            }
+            else {
+                a = tension;
+            }
+            for (t=0; t < steps; t++) {
+                s = t / steps;
+                h1 = (1 + 2*s)*Math.pow((1-s),2);
+                h2 = s*Math.pow((1-s),2);
+                h3 = Math.pow(s,2)*(3-2*s);
+                h4 = Math.pow(s,2)*(s-1);     
+                
+                if (gd[i-1]) {  
+                    TiX = a * (gd[i+1][0] - gd[i-1][0]); 
+                    TiY = a * (gd[i+1][1] - gd[i-1][1]);
+                } else {
+                    TiX = a * (gd[i+1][0] - gd[i][0]); 
+                    TiY = a * (gd[i+1][1] - gd[i][1]);                                  
+                }
+                if (gd[i+2]) {  
+                    Ti1X = a * (gd[i+2][0] - gd[i][0]); 
+                    Ti1Y = a * (gd[i+2][1] - gd[i][1]);
+                } else {
+                    Ti1X = a * (gd[i+1][0] - gd[i][0]); 
+                    Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
+                }
+                
+                pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
+                pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
+                p = [pX, pY];
+
+                this.renderer._smoothedData.push(p);
+                this.renderer._smoothedPlotData.push([xp(pX), yp(pY)]);
+            }
+        }
         this.renderer._smoothedData.push(gd[l]);
         this.renderer._smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
     }
-
-
-
-
-    // called with scope of series
-    // function computeSmoothedData (gd) {
-    //     var smooth = this.renderer.smooth;
-    //     var tension = this.renderer.tension;
-    //     var dim = this.canvas.getWidth();
-    //     var xp = this._xaxis.series_p2u;
-    //     var yp = this._yaxis.series_p2u; 
-    //     var steps =null;
-    //     var _steps = null;
-    //     var a = null;
-    //     var a1 = null;
-    //     var a2 = null;
-    //     var slope = null;
-    //     var slope2 = null;
-    //     var temp = null;
-    //     var t, s, h1, h2, h3, h4;
-    //     var TiX, TiY, Ti1X, Ti1Y;
-    //     var Px, Py, p;
-    //     var sd = [];
-    //     var spd = [];
-    //     var dist = gd.length/dim;
-    //     var min, max, stretch, scale, shift;
-    //     if (!isNaN(parseFloat(smooth))) {
-    //         steps = parseFloat(smooth);
-    //     }
-    //     else {
-    //         steps = getSteps(dist, 0.5);
-    //     }
-    //     if (!isNaN(parseFloat(tension))) {
-    //         tension = parseFloat(tension);
-    //     }
-
-    //     for (var i=0, l = gd.length-1; i < l; i++) {
-    //         // if (_steps === null) {
-    //         //     steps = computeSteps(gd[i], gd[i+1]);
-    //         // }
-    //         // else {
-    //         //     steps = _steps;
-    //         // }
-    //         if (tension === null) {
-    //             slope = Math.abs((gd[i+1][1] - gd[i][1]) / (gd[i+1][0] - gd[i][0]));
-
-    //             min = 0.3;
-    //             max = 0.6;
-    //             stretch = (max - min)/2.0;
-    //             scale = 2.5;
-    //             shift = -1.4;
-
-    //             temp = slope/scale + shift;
-
-    //             a1 = stretch * tanh(temp) - stretch * tanh(shift) + min;
-
-    //             // if have both left and right line segments, will use  minimum tension. 
-    //             if (i > 0) {
-    //                 slope2 = Math.abs((gd[i][1] - gd[i-1][1]) / (gd[i][0] - gd[i-1][0]));
-    //             }
-    //             temp = slope2/scale + shift;
-
-    //             a2 = stretch * tanh(temp) - stretch * tanh(shift) + min;
-
-    //             a = (a1 + a2)/2.0;
-
-    //             // console.log('pt: %s, slope1: %s, slope2: %s, a1: %s, a2: %s, a: %s', i, slope, slope2, a1, a2, a);
-    //             // console.log('pt: %s, steps: %s, a: %s', i, steps, a);
-    //         }
-    //         else {
-    //             a = tension;
-    //         }
-    //         for (t=0; t < steps; t++) {
-    //             s = t / steps;
-    //             h1 = (1 + 2*s)*Math.pow((1-s),2);
-    //             h2 = s*Math.pow((1-s),2);
-    //             h3 = Math.pow(s,2)*(3-2*s);
-    //             h4 = Math.pow(s,2)*(s-1);     
-                
-    //             if (gd[i-1]) {  
-    //                 TiX = a * (gd[i+1][0] - gd[i-1][0]); 
-    //                 TiY = a * (gd[i+1][1] - gd[i-1][1]);
-    //             } else {
-    //                 TiX = a * (gd[i+1][0] - gd[i][0]); 
-    //                 TiY = a * (gd[i+1][1] - gd[i][1]);                                  
-    //             }
-    //             if (gd[i+2]) {  
-    //                 Ti1X = a * (gd[i+2][0] - gd[i][0]); 
-    //                 Ti1Y = a * (gd[i+2][1] - gd[i][1]);
-    //             } else {
-    //                 Ti1X = a * (gd[i+1][0] - gd[i][0]); 
-    //                 Ti1Y = a * (gd[i+1][1] - gd[i][1]);                                 
-    //             }
-                
-    //             pX = h1*gd[i][0] + h3*gd[i+1][0] + h2*TiX + h4*Ti1X;
-    //             pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
-    //             p = [pX, pY];
-
-    //             this.renderer._smoothedData.push(p);
-    //             this.renderer._smoothedPlotData.push([xp(pX), yp(pY)]);
-    //         }
-    //     }
-    //     this.renderer._smoothedData.push(gd[l]);
-    //     this.renderer._smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
-    // }
     
     // Method: setGridData
     // converts the user data values to grid coordinates and stores them
@@ -436,7 +402,12 @@
             }
         }
         if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 1) {
-            computeSmoothedData.call(this, this.gridData);
+            if (this.renderer.constrainSmoothing) {
+                computeConstrainedSmoothedData.call(this, this.gridData);
+            }
+            else {
+                computeHermiteSmoothedData.call(this, this.gridData);
+            }
         }
     };
     
@@ -468,7 +439,12 @@
             }
         }
         if (this._type === 'line' && this.renderer.smooth && gd.length > 1) {
-            computeSmoothedData.call(this, gd);
+            if (this.renderer.constrainSmoothing) {
+                computeConstrainedSmoothedData.call(this, gd);
+            }
+            else {
+                computeHermiteSmoothedData.call(this, gd);
+            }
         }
         return gd;
     };
