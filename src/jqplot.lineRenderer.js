@@ -56,16 +56,25 @@
         this.renderer._smoothedData = [];
         // this is smoothed data in plot units (plot coordinates), like plotData.
         this.renderer._smoothedPlotData = [];
+        this.renderer._hiBandGridData = [];
+        this.renderer._lowBandGridData = [];
+        this.renderer._hiBandSmoothedData = [];
+        this.renderer._lowBandSmoothedData = [];
 
         // prop: bands
         // Banding around line, e.g error bands or confidence intervals.
         this.renderer.bands = {
             show: false,
-            data: [],
+            hiData: [],
+            lowData: [],
             color: this.color,
             showLine: false,
             fill: true,
-            fillColor: this.fillColor
+            fillColor: null,
+            _min: null,
+            _max: null,
+            // can be 3 or '3%' or [1, -2] or ['2%', '-1.5%'']
+            interval: '5%'
         }
 
         // prop: bandData
@@ -97,21 +106,136 @@
             this.renderer.bands.show = false;
         }
 
-        // use bandData if no data specified in bands option
-        if (this.renderer.bands.data.length == 0) {
-            if (this.renderer.bandData.length == 2) {
-                this.renderer.bands.data.push(this.renderer.bandData[0]);
-                this.renderer.bands.data.push(this.renderer.bandData[1]);
+        if (this.renderer.bands.show) {
+            // use bandData if no data specified in bands option
+            if (this.renderer.bands.hiData.length == 0 || this.renderer.bands.lowData.length == 0) {
+                var bd = this.renderer.bandData;
+                if (bd.length == 2) {
+                    // detect upper or lower data
+                    var hi = (bd[0][0] > bd[1][0]) ? 0 : 1;
+                    var low = (hi) ? 0 : 1;
+                    this.renderer.bands.hiData = bd[hi];
+                    this.renderer.bands.lowData = bd[low];
+                }
+
+                else if (bd.length > 2) {
+                    // detect hi and low data
+                    var hi = (bd[0][0] > bd[0][1]) ? 0 : 1;
+                    var low = (hi) ? 0 : 1;
+                    for (var i=0, l=bd.length; i<l; i++) {
+                        this.renderer.bands.hiData.push(bd[i][hi]);
+                        this.renderer.bands.lowData.push(bd[i][low]);
+                    }
+                }
+
+                // don't have proper data, auto calculate
+                else {
+                    var intrv = this.renderer.bands.interval;
+                    var a = null;
+                    var b = null;
+                    var afunc = null;
+                    var bfunc = null;
+
+                    if ($.isArray(intrv)) {
+                        a = intrv[0];
+                        b = intrv[1];
+                    }
+                    else {
+                        a = intrv;
+                    }
+
+                    if (isNaN(a)) {
+                        // we have a string
+                        if (a.charAt(a.length - 1) === '%') {
+                            afunc = 'multiply';
+                            a = parseFloat(a)/100 + 1;
+                        }
+                    }
+
+                    else {
+                        a = parseFloat(a);
+                        afunc = 'add';
+                    }
+
+                    if (b !== null && isNaN(b)) {
+                        // we have a string
+                        if (b.charAt(b.length - 1) === '%') {
+                            bfunc = 'multiply';
+                            b = parseFloat(b)/100 + 1;
+                        }
+                    }
+
+                    else if (b !== null) {
+                        b = parseFloat(b);
+                        bfunc = 'add';
+                    }
+
+                    if (a !== null) {
+                        if (b === null) {
+                            b = -a;
+                            bfunc = afunc;
+                            if (bfunc === 'multiply') {
+                                b += 2;
+                            }
+                        }
+
+                        // make sure a always applies to hi band.
+                        if (a < b) {
+                            var temp = a;
+                            a = b;
+                            b = temp;
+                            temp = afunc;
+                            afunc = bfunc;
+                            bfunc = temp;
+                        }
+
+                        var d = this.data;
+                        for (var i=0, l = d.length; i < l; i++) {
+                            switch (afunc) {
+                                case 'add':
+                                    this.renderer.bands.hiData.push(d[i][1] + a);
+                                    break;
+                                case 'multiply':
+                                    this.renderer.bands.hiData.push(d[i][1] * a);
+                                    break;
+                            }
+                            switch (bfunc) {
+                                case 'add':
+                                    this.renderer.bands.lowData.push(d[i][1] + b);
+                                    break;
+                                case 'multiply':
+                                    this.renderer.bands.lowData.push(d[i][1] * b);
+                                    break;
+                            }
+                        }
+                    }
+
+                    else {
+                        this.renderer.bands.show = false;
+                    }
+                }
+
+                this.renderer.bands._max = $.jqplot.arrayMax(this.renderer.bands.hiData);
+                this.renderer.bands._min = $.jqplot.arrayMin(this.renderer.bands.lowData);
             }
 
-            else {
-                var bd = this.renderer.bandData;
-                for (var i=0, l=bd.length; i<l; i++) {
-                    this.renderer.bands.data[0].push(bd[i][0]);
-                    this.renderer.bands.data[1].push(bd[i][1]);
-                }
+            // one last check for proper data
+            if (this.renderer.bands.hiData.length != this.renderer.bands.lowData.length) {
+                this.renderer.bands.show = false;
+            }
+
+            if (this.renderer.bands.hiData.length != this.data.length) {
+                this.renderer.bands.show = false;
+            }
+
+            if (this.renderer.bands.fillColor === null) {
+                var c = $.jqplot.getColorComponents(this.renderer.bands.color);
+                // now adjust alpha to differentiate fill
+                c[3] = c[3] * 0.5;
+                this.renderer.bands.fillColor = 'rgba(' + c[0] +', '+ c[1] +', '+ c[2] +', '+ c[3] + ')';
             }
         }
+
 
         // smoothing is not compatible with stacked lines, disable
         if (this._stack) {
@@ -136,7 +260,7 @@
         this._areaPoints = [];
         this._boundingBox = [[],[]];
         
-        if (!this.isTrendline && this.fill) {
+        if (!this.isTrendline && this.fill || this.renderer.bands.show) {
         
             // prop: highlightMouseOver
             // True to highlight area on a filled plot when moused over.
@@ -157,7 +281,8 @@
             $.extend(true, this, {highlightMouseOver: lopts.highlightMouseOver, highlightMouseDown: lopts.highlightMouseDown, highlightColor: lopts.highlightColor});
             
             if (!this.highlightColor) {
-                this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
+                var fc = (this.renderer.bands.show) ? this.renderer.bands.fillColor : this.fillColor;
+                this.highlightColor = $.jqplot.computeHighlightColors(fc);
             }
             // turn off (disable) the highlighter plugin
             if (this.highlighter) {
@@ -214,6 +339,8 @@
         var steps =null;
         var _steps = null;
         var dist = gd.length/dim;
+        var _smoothedData = [];
+        var _smoothedPlotData = [];
 
         if (!isNaN(parseFloat(smooth))) {
             steps = parseFloat(smooth);
@@ -290,13 +417,15 @@
                 tempx = xx[num - 1] + j * increment;
                 temp.push(tempx);
                 temp.push(A + B * tempx + C * Math.pow(tempx, 2) + D * Math.pow(tempx, 3));
-                this.renderer._smoothedData.push(temp);
-                this.renderer._smoothedPlotData.push([xp(temp[0]), yp(temp[1])]);
+                _smoothedData.push(temp);
+                _smoothedPlotData.push([xp(temp[0]), yp(temp[1])]);
             }
         }
 
-        this.renderer._smoothedData.push(gd[i]);
-        this.renderer._smoothedPlotData.push([xp(gd[i][0]), yp(gd[i][1])]);
+        _smoothedData.push(gd[i]);
+        _smoothedPlotData.push([xp(gd[i][0]), yp(gd[i][1])]);
+
+        return [_smoothedData, _smoothedPlotData];
     }
 
     ///////
@@ -338,6 +467,8 @@
         var spd = [];
         var dist = gd.length/dim;
         var min, max, stretch, scale, shift;
+        var _smoothedData = [];
+        var _smoothedPlotData = [];
         if (!isNaN(parseFloat(smooth))) {
             steps = parseFloat(smooth);
         }
@@ -403,12 +534,14 @@
                 pY = h1*gd[i][1] + h3*gd[i+1][1] + h2*TiY + h4*Ti1Y;
                 p = [pX, pY];
 
-                this.renderer._smoothedData.push(p);
-                this.renderer._smoothedPlotData.push([xp(pX), yp(pY)]);
+                _smoothedData.push(p);
+                _smoothedPlotData.push([xp(pX), yp(pY)]);
             }
         }
-        this.renderer._smoothedData.push(gd[l]);
-        this.renderer._smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
+        _smoothedData.push(gd[l]);
+        _smoothedPlotData.push([xp(gd[l][0]), yp(gd[l][1])]);
+
+        return [_smoothedData, _smoothedPlotData];
     }
     
     // Method: setGridData
@@ -425,6 +558,11 @@
         this._prevGridData = [];
         this.renderer._smoothedData = [];
         this.renderer._smoothedPlotData = [];
+        this.renderer._hiBandGridData = [];
+        this.renderer._lowBandGridData = [];
+        this.renderer._hiBandSmoothedData = [];
+        this.renderer._lowBandSmoothedData = [];
+        var hasNull = false;
         for (var i=0, l=this.data.length; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
@@ -432,9 +570,11 @@
             }
             // else if there is a null, preserve it.
             else if (data[i][0] == null) {
+                hasNull = true;
                 this.gridData.push([null, yp.call(this._yaxis, data[i][1])]);
             }
             else if (data[i][1] == null) {
+                hasNull = true;
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), null]);
             }
             // if not a line series or if no nulls in data, push the converted point onto the array.
@@ -449,12 +589,50 @@
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
             }
         }
-        if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 1) {
+
+        // don't do smoothing or bands on broken lines.
+        if (hasNull) {
+            this.renderer.smooth = false;
+            if (this._type === 'liine') this.renderer.bands.show = false;
+        }
+
+        if (this._type === 'line' && this.renderer.bands.show) {
+            for (var i=0, l=this.data.length; i<l; i++) {
+                this.renderer._hiBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.hiData[i])]);
+                this.renderer._lowBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.lowData[i])]);
+            }
+        }
+
+        // calculate smoothed data if enough points and no nulls
+        if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 2) {
+            var ret;
             if (this.renderer.constrainSmoothing) {
-                computeConstrainedSmoothedData.call(this, this.gridData);
+                ret = computeConstrainedSmoothedData.call(this, this.gridData);
+                this.renderer._smoothedData = ret[0];
+                this.renderer._smoothedPlotData = ret[1];
+
+                if (this.renderer.bands.show) {
+                    ret = computeConstrainedSmoothedData.call(this, this.renderer._hiBandGridData);
+                    this.renderer._hiBandSmoothedData = ret[0];
+                    ret = computeConstrainedSmoothedData.call(this, this.renderer._lowBandGridData);
+                    this.renderer._lowBandSmoothedData = ret[0];
+                }
+
+                ret = null;
             }
             else {
-                computeHermiteSmoothedData.call(this, this.gridData);
+                ret = computeHermiteSmoothedData.call(this, this.gridData);
+                this.renderer._smoothedData = ret[0];
+                this.renderer._smoothedPlotData = ret[1];
+
+                if (this.renderer.bands.show) {
+                    ret = computeHermiteSmoothedData.call(this, this.renderer._hiBandGridData);
+                    this.renderer._hiBandSmoothedData = ret[0];
+                    ret = computeHermiteSmoothedData.call(this, this.renderer._lowBandGridData);
+                    this.renderer._lowBandSmoothedData = ret[0];
+                }
+
+                ret = null;
             }
         }
     };
@@ -473,6 +651,11 @@
         var pgd = [];
         this.renderer._smoothedData = [];
         this.renderer._smoothedPlotData = [];
+        this.renderer._hiBandGridData = [];
+        this.renderer._lowBandGridData = [];
+        this.renderer._hiBandSmoothedData = [];
+        this.renderer._lowBandSmoothedData = [];
+        var hasNull = false;
         for (var i=0; i<data.length; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
@@ -480,18 +663,57 @@
             }
             // else if there is a null, preserve it.
             else if (data[i][0] == null) {
+                hasNull = true;
                 gd.push([null, yp.call(this._yaxis, data[i][1])]);
             }
             else if (data[i][1] == null) {
+                hasNull = true;
                 gd.push([xp.call(this._xaxis, data[i][0]), null]);
             }
         }
-        if (this._type === 'line' && this.renderer.smooth && gd.length > 1) {
+
+        // don't do smoothing or bands on broken lines.
+        if (hasNull) {
+            this.renderer.smooth = false;
+            if (this._type === 'line') this.renderer.bands.show = false;
+        }
+
+        if (this._type === 'line' && this.renderer.bands.show) {
+            for (var i=0, l=this.data.length; i<l; i++) {
+                this.renderer._hiBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.hiData[i])]);
+                this.renderer._lowBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.lowData[i])]);
+            }
+        }
+
+        if (this._type === 'line' && this.renderer.smooth && gd.length > 2) {
+            var ret;
             if (this.renderer.constrainSmoothing) {
-                computeConstrainedSmoothedData.call(this, gd);
+                ret = computeConstrainedSmoothedData.call(this, gd);
+                this.renderer._smoothedData = ret[0];
+                this.renderer._smoothedPlotData = ret[1];
+
+                if (this.renderer.bands.show) {
+                    ret = computeConstrainedSmoothedData.call(this, this.renderer._hiBandGridData);
+                    this.renderer._hiBandSmoothedData = ret[0];
+                    ret = computeConstrainedSmoothedData.call(this, this.renderer._lowBandGridData);
+                    this.renderer._lowBandSmoothedData = ret[0];
+                }
+
+                ret = null;
             }
             else {
-                computeHermiteSmoothedData.call(this, gd);
+                ret = computeHermiteSmoothedData.call(this, gd);
+                this.renderer._smoothedData = ret[0];
+                this.renderer._smoothedPlotData = ret[1];
+
+                if (this.renderer.bands.show) {
+                    ret = computeHermiteSmoothedData.call(this, this.renderer._hiBandGridData);
+                    this.renderer._hiBandSmoothedData = ret[0];
+                    ret = computeHermiteSmoothedData.call(this, this.renderer._lowBandGridData);
+                    this.renderer._lowBandSmoothedData = ret[0];
+                }
+
+                ret = null;
             }
         }
         return gd;
@@ -661,6 +883,31 @@
                 }
                 else {
 
+                    if (this.renderer.bands.show) {
+                        var bdat;
+                        var bopts = $.extend(true, {}, opts);
+                        if (this.renderer.bands.showLine) {
+                            bdat = (this.renderer.smooth) ? this.renderer._hiBandSmoothedData : this.renderer._hiBandGridData;
+                            this.renderer.shapeRenderer.draw(ctx, bdat, opts);
+                            bdat = (this.renderer.smooth) ? this.renderer._lowBandSmoothedData : this.renderer._lowBandGridData;
+                            this.renderer.shapeRenderer.draw(ctx, bdat, bopts);
+                        }
+
+                        if (this.renderer.bands.fill) {
+                            if (this.renderer.smooth) {
+                                bdat = Array.concat(this.renderer._hiBandSmoothedData, this.renderer._lowBandSmoothedData.reverse());
+                            }
+                            else {
+                                bdat = Array.concat(this.renderer._hiBandGridData, this.renderer._lowBandGridData.reverse());
+                            }
+                            this._areaPoints = bdat;
+                            bopts.closePath = true;
+                            bopts.fill = true;
+                            bopts.fillStyle = this.renderer.bands.fillColor;
+                            this.renderer.shapeRenderer.draw(ctx, bdat, bopts);
+                        }
+                    }
+
                     if (shadow) {
                         this.renderer.shadowRenderer.draw(ctx, gd, opts);
                     }
@@ -685,6 +932,12 @@
                     ymin = p[1];
                 }
             }
+
+            if (this.renderer.bands.show) {
+                ymax = this._yaxis.series_u2p(this.renderer.bands._min);
+                ymin = this._yaxis.series_u2p(this.renderer.bands._max);
+            }
+
             this._boundingBox = [[xmin, ymax], [xmax, ymin]];
         
             // now draw the markers
@@ -745,6 +998,10 @@
         s._highlightedPoint = pidx;
         plot.plugins.lineRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColor};
+        if (s.renderer.bands.show) {
+            opts.fill = true,
+            opts.closePath = true;
+        }
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
         canvas = null;
     }

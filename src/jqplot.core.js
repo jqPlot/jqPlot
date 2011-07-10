@@ -695,6 +695,10 @@
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
             var d = s._plotData;
+            if (s._type === 'line' && s.renderer.bands.show && this.name !== 'xaxis' && this.name !== 'x2axis') {
+                d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
+            }
+
             var minyidx = 1, maxyidx = 1;
 
             if (s._type != null && s._type == 'ohlc') {
@@ -2899,7 +2903,7 @@
                         y = gridpos.y;
                         r = s.renderer;
                         if (s.show) {
-                            if (s.fill && (!plot.plugins.highlighter || !plot.plugins.highlighter.show)) {
+                            if ((s.fill || (s.renderer.bands.show && s.renderer.bands.fill)) && (!plot.plugins.highlighter || !plot.plugins.highlighter.show)) {
                                 // first check if it is in bounding box
                                 var inside = false;
                                 if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
@@ -2928,6 +2932,7 @@
                                 break;
                                 
                             }
+
                             else {
                                 t = s.markerRenderer.size/2+s.neighborThreshold;
                                 threshold = (t > 0) ? t : 0;
@@ -3272,10 +3277,14 @@
                 var sum = newrgb[0] + newrgb[1] + newrgb[2];
                 for (var j=0; j<3; j++) {
                     // when darkening, lowest color component can be is 60.
-                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                    newrgb[j] = (sum > 660) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
                     newrgb[j] = parseInt(newrgb[j], 10);
+                    (newrgb[j] > 255) ? 255 : newrgb[j];
                 }
-                ret.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+                // newrgb[3] = (rgba[3] > 0.4) ? rgba[3] * 0.4 : rgba[3] * 1.5;
+                // newrgb[3] = (rgba[3] > 0.5) ? 0.8 * rgba[3] - .1 : rgba[3] + 0.2;
+                newrgb[3] = 0.25 + 0.4 * rgba[3];
+                ret.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+newrgb[3]+')');
             }
         }
         else {
@@ -3284,10 +3293,16 @@
             var sum = newrgb[0] + newrgb[1] + newrgb[2];
             for (var j=0; j<3; j++) {
                 // when darkening, lowest color component can be is 60.
-                newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                // newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                // newrgb[j] = parseInt(newrgb[j], 10);
+                newrgb[j] = (sum > 660) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
                 newrgb[j] = parseInt(newrgb[j], 10);
+                (newrgb[j] > 255) ? 255 : newrgb[j];
             }
-            ret = 'rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')';
+            // newrgb[3] = (rgba[3] > 0.4) ? rgba[3] * 0.4 : rgba[3] * 1.5;
+            // newrgb[3] = (rgba[3] > 0.5) ? 0.8 * rgba[3] - .1 : rgba[3] + 0.2;
+            newrgb[3] = 0.25 + 0.4 * rgba[3];
+            ret = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+newrgb[3]+')';
         }
         return ret;
     };
