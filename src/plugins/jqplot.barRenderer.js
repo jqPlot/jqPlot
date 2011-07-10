@@ -483,7 +483,7 @@
         }                
         
         if (this.highlightColors.length == 0) {
-            this.highlightColors = computeHighlightColors(this._dataColors);
+            this.highlightColors = $.jqplot.computeHighlightColors(this._dataColors);
         }
         
         else if (typeof(this.highlightColors) == 'string') {
