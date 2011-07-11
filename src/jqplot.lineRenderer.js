@@ -38,6 +38,8 @@
     
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
+        // Group: Properties
+        //
         options = options || {};
         this._type='line';
         // prop: smooth
@@ -61,22 +63,6 @@
         this.renderer._hiBandSmoothedData = [];
         this.renderer._lowBandSmoothedData = [];
 
-        // prop: bands
-        // Banding around line, e.g error bands or confidence intervals.
-        this.renderer.bands = {
-            show: false,
-            hiData: [],
-            lowData: [],
-            color: this.color,
-            showLine: false,
-            fill: true,
-            fillColor: null,
-            _min: null,
-            _max: null,
-            // can be 3 or '3%' or [1, -2] or ['2%', '-1.5%'']
-            interval: '5%'
-        };
-
         // prop: bandData
         // An array shortcut to specify upper and lower bands around line.
         // Only y values are specified for band data, x values are always
@@ -91,6 +77,42 @@
         // [yl1, yu1] specifies the lower and upper y values for the 1st
         // data point and so on.
         this.renderer.bandData = [];
+
+        // namespace: bands
+        // Banding around line, e.g error bands or confidence intervals.
+        this.renderer.bands = {
+            // prop: show
+            // true to show the bands.  If bandData is supplied
+            // show will be set to true if not otherwise specified.
+            show: false,
+            // prop: hiData
+            // Array of data points for hi band.
+            hiData: [],
+            // prop: lowData
+            // Array of data points for low line.
+            lowData: [],
+            // prop: color
+            // color of lines at top and bottom of bands (defaults
+            // to line color).
+            color: this.color,
+            // prop: showLine
+            // True to show lines at top and bottom of bands.
+            showLine: false,
+            // prop: fill
+            // True to fill area between bands.
+            fill: true,
+            // prop: fillColor
+            // css color spec for filled area.  Default is same
+            // as  color property (defaults to line color).
+            fillColor: null,
+            _min: null,
+            _max: null,
+            // prop: interval
+            // User specified interval above and below line for bands.
+            // Can be a value like 3 or a string like '3%' 
+            // or an upper/lower array like [1, -2] or ['2%', '-1.5%'']
+            interval: '5%'
+        };
 
 
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
@@ -550,7 +572,7 @@
         return [_smoothedData, _smoothedPlotData];
     }
     
-    // Method: setGridData
+    // setGridData
     // converts the user data values to grid coordinates and stores them
     // in the gridData array.
     // Called with scope of a series.
@@ -643,7 +665,7 @@
         }
     };
     
-    // Method: makeGridData
+    // makeGridData
     // converts any arbitrary data values to grid coordinates and
     // returns them.  This method exists so that plugins can use a series'
     // linerenderer to generate grid data points without overwriting the

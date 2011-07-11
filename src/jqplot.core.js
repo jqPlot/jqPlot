@@ -1623,15 +1623,15 @@
         // The data should be in the form of an array of 2D or 1D arrays like
         // > [ [[x1, y1], [x2, y2],...], [y1, y2, ...] ].
         this.data = [];
-        // prop dataRenderer
+        // prop: dataRenderer
         // A callable which can be used to preprocess data passed into the plot.
         // Will be called with 2 arguments, the plot data and a reference to the plot.
         this.dataRenderer;
-        // prop dataRendererOptions
+        // prop: dataRendererOptions
         // Options that will be passed to the dataRenderer.
         // Can be of any type.
         this.dataRendererOptions;
-        // prop noDataIndicator
+        // prop: noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
         this.noDataIndicator = {    
             show: false,
