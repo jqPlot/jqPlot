@@ -3277,13 +3277,13 @@
                 var sum = newrgb[0] + newrgb[1] + newrgb[2];
                 for (var j=0; j<3; j++) {
                     // when darkening, lowest color component can be is 60.
-                    newrgb[j] = (sum > 660) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
+                    newrgb[j] = (sum > 660) ?  newrgb[j] * 0.85 : newrgb[j] + 20 + 0.2 * (255 - newrgb[j]);
                     newrgb[j] = parseInt(newrgb[j], 10);
                     (newrgb[j] > 255) ? 255 : newrgb[j];
                 }
                 // newrgb[3] = (rgba[3] > 0.4) ? rgba[3] * 0.4 : rgba[3] * 1.5;
                 // newrgb[3] = (rgba[3] > 0.5) ? 0.8 * rgba[3] - .1 : rgba[3] + 0.2;
-                newrgb[3] = 0.25 + 0.4 * rgba[3];
+                newrgb[3] = 0.25 + 0.35 * rgba[3];
                 ret.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+newrgb[3]+')');
             }
         }
@@ -3295,13 +3295,13 @@
                 // when darkening, lowest color component can be is 60.
                 // newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
                 // newrgb[j] = parseInt(newrgb[j], 10);
-                newrgb[j] = (sum > 660) ?  newrgb[j] * 0.8 : newrgb[j] + 0.4 * (255 - newrgb[j]);
+                newrgb[j] = (sum > 660) ?  newrgb[j] * 0.85 : newrgb[j] + 20 + 0.2 * (255 - newrgb[j]);
                 newrgb[j] = parseInt(newrgb[j], 10);
                 (newrgb[j] > 255) ? 255 : newrgb[j];
             }
             // newrgb[3] = (rgba[3] > 0.4) ? rgba[3] * 0.4 : rgba[3] * 1.5;
             // newrgb[3] = (rgba[3] > 0.5) ? 0.8 * rgba[3] - .1 : rgba[3] + 0.2;
-            newrgb[3] = 0.25 + 0.4 * rgba[3];
+            newrgb[3] = 0.25 + 0.35 * rgba[3];
             ret = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+newrgb[3]+')';
         }
         return ret;

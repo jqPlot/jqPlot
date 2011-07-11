@@ -895,10 +895,10 @@
 
                         if (this.renderer.bands.fill) {
                             if (this.renderer.smooth) {
-                                bdat = Array.concat(this.renderer._hiBandSmoothedData, this.renderer._lowBandSmoothedData.reverse());
+                                bdat = this.renderer._hiBandSmoothedData.concat(this.renderer._lowBandSmoothedData.reverse());
                             }
                             else {
-                                bdat = Array.concat(this.renderer._hiBandGridData, this.renderer._lowBandGridData.reverse());
+                                bdat = this.renderer._hiBandGridData.concat(this.renderer._lowBandGridData.reverse());
                             }
                             this._areaPoints = bdat;
                             bopts.closePath = true;
