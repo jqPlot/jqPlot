@@ -78,7 +78,7 @@
         // data point and so on.
         this.renderer.bandData = [];
 
-        // namespace: bands
+        // Group: bands
         // Banding around line, e.g error bands or confidence intervals.
         this.renderer.bands = {
             // prop: show
@@ -95,9 +95,9 @@
             // color of lines at top and bottom of bands (defaults
             // to line color).
             color: this.color,
-            // prop: showLine
+            // prop: showLines
             // True to show lines at top and bottom of bands.
-            showLine: false,
+            showLines: false,
             // prop: fill
             // True to fill area between bands.
             fill: true,
@@ -125,6 +125,11 @@
 
         // if we are given some band data, and bands aren't explicity set to false in options, turn them on.
         if (this.renderer.bandData.length > 1 && (!options.bands || options.bands.show == null)) {
+            this.renderer.bands.show = true;
+        }
+
+        // if we are given an interval, and bands aren't explicity set to false in options, turn them on.
+        else if (options.bands && options.bands.show == null && options.bands.interval != null) {
             this.renderer.bands.show = true;
         }
 
@@ -288,7 +293,8 @@
         this._boundingBox = [[],[]];
         
         if (!this.isTrendline && this.fill || this.renderer.bands.show) {
-        
+            // Group: Properties
+            //        
             // prop: highlightMouseOver
             // True to highlight area on a filled plot when moused over.
             // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
@@ -914,7 +920,7 @@
                     if (this.renderer.bands.show) {
                         var bdat;
                         var bopts = $.extend(true, {}, opts);
-                        if (this.renderer.bands.showLine) {
+                        if (this.renderer.bands.showLines) {
                             bdat = (this.renderer.smooth) ? this.renderer._hiBandSmoothedData : this.renderer._hiBandGridData;
                             this.renderer.shapeRenderer.draw(ctx, bdat, opts);
                             bdat = (this.renderer.smooth) ? this.renderer._lowBandSmoothedData : this.renderer._lowBandGridData;
