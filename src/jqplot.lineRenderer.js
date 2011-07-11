@@ -101,6 +101,11 @@
         
         $.extend(true, this.renderer, options);
 
+        // if we are given some band data, and bands aren't explicity set to false in options, turn them on.
+        if (this.renderer.bandData.length > 1 && (!options.bands || options.bands.show == null)) {
+            this.renderer.bands.show = true;
+        }
+
         // if plot is filled, turn off bands.
         if (this.fill) {
             this.renderer.bands.show = false;
