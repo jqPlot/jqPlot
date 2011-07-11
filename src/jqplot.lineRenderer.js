@@ -64,7 +64,7 @@
         this.renderer._lowBandSmoothedData = [];
 
         // prop: bandData
-        // An array shortcut to specify upper and lower bands around line.
+        // Data used to draw bands above/below a line.
         // Only y values are specified for band data, x values are always
         // assumed from the series data.
         //
@@ -82,36 +82,30 @@
         // Banding around line, e.g error bands or confidence intervals.
         this.renderer.bands = {
             // prop: show
-            // true to show the bands.  If bandData is supplied
-            // show will be set to true if not otherwise specified.
+            // true to show the bands.  If bandData or interval is
+            // supplied, show will be set to true by default.
             show: false,
-            // prop: hiData
-            // Array of data points for hi band.
             hiData: [],
-            // prop: lowData
-            // Array of data points for low line.
             lowData: [],
             // prop: color
-            // color of lines at top and bottom of bands (defaults
-            // to line color).
+            // color of lines at top and bottom of bands [default: series color].
             color: this.color,
             // prop: showLines
-            // True to show lines at top and bottom of bands.
+            // True to show lines at top and bottom of bands [default: false].
             showLines: false,
             // prop: fill
-            // True to fill area between bands.
+            // True to fill area between bands [default: true].
             fill: true,
             // prop: fillColor
-            // css color spec for filled area.  Default is same
-            // as  color property (defaults to line color).
+            // css color spec for filled area.  [default: series color].
             fillColor: null,
             _min: null,
             _max: null,
             // prop: interval
-            // User specified interval above and below line for bands.
+            // User specified interval above and below line for bands [default: '3%''].
             // Can be a value like 3 or a string like '3%' 
-            // or an upper/lower array like [1, -2] or ['2%', '-1.5%'']
-            interval: '5%'
+            // or an upper/lower array like [1, -2] or ['2%', '-1.5%']
+            interval: '3%'
         };
 
 
