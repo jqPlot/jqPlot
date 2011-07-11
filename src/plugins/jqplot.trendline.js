@@ -91,7 +91,7 @@
     // called witin scope of the legend object
     // current series passed in
     // must return null or an object {label:label, color:color}
-    function addTrendlineLegend(series) {;
+    function addTrendlineLegend(series) {
         var ret = null;
         if (series.trendline && series.trendline.show) {
             var lt = series.trendline.label.toString();

@@ -75,7 +75,7 @@
             _max: null,
             // can be 3 or '3%' or [1, -2] or ['2%', '-1.5%'']
             interval: '5%'
-        }
+        };
 
         // prop: bandData
         // An array shortcut to specify upper and lower bands around line.
@@ -367,6 +367,7 @@
             else return x1 - x0;
         }
 
+        var A, B, C, D;
         // loop through each line segment.  Have # points - 1 line segments.  Nmber segments starting at 1.
         var nmax = gd.length - 1;
         for (var num = 1, gdl = gd.length; num<gdl; num++) {
@@ -467,7 +468,7 @@
         var temp = null;
         var t, s, h1, h2, h3, h4;
         var TiX, TiY, Ti1X, Ti1Y;
-        var Px, Py, p;
+        var pX, pY, p;
         var sd = [];
         var spd = [];
         var dist = gd.length/dim;
@@ -742,7 +743,7 @@
                 if (fill) {
                     if (this.fillToZero) { 
                         // have to break line up into shapes at axis crossings
-                        negativeColor = this.negativeColor;
+                        var negativeColor = this.negativeColor;
                         if (! this.useNegativeColors) {
                             negativeColor = opts.fillStyle;
                         }
