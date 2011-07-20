@@ -528,16 +528,13 @@
                 else {
                     rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
                     rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
-                    this.min = rmin;
-                    this.max = rmax;
-                    range = this.max - this.min;
+                    range = rmax - rmin;
         
                     if (this.numberTicks == null){
                         // if tickInterval is specified by user, we will ignore computed maximum.
                         // max will be equal or greater to fit even # of ticks.
                         if (this.tickInterval != null) {
-                            this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
-                            this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                            this.numberTicks = Math.ceil((rmax - rmin)/this.tickInterval)+1;
                         }
                         else if (dim > 100) {
                             this.numberTicks = parseInt(3+(dim-100)/75, 10);
@@ -550,6 +547,16 @@
                     if (this.tickInterval == null) {
                         this.tickInterval = range / (this.numberTicks-1);
                     }
+                    
+                    if (this.max == null) {
+                        rmax = rmin + this.tickInterval*(this.numberTicks - 1);
+                    }        
+                    if (this.min == null) {
+                        rmin = rmax - this.tickInterval*(this.numberTicks - 1);
+                    }
+
+                    this.min = rmin;
+                    this.max = rmax;
                 }
                 
                 if (this.renderer.constructor == $.jqplot.LinearAxisRenderer && this._autoFormatString == '') {
