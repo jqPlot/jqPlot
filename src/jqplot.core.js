@@ -2095,6 +2095,9 @@
             this._sumx = 0;
             for (var i=0; i<this.series.length; i++) {
                 this.populatePlotData(this.series[i], i);
+                if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
+                    this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
+                }
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
                 //this.series[i].init(i, this.grid.borderWidth);

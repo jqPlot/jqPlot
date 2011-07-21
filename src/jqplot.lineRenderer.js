@@ -117,6 +117,8 @@
         
         $.extend(true, this.renderer, options);
 
+        this.renderer.options = options;
+
         // if we are given some band data, and bands aren't explicity set to false in options, turn them on.
         if (this.renderer.bandData.length > 1 && (!options.bands || options.bands.show == null)) {
             this.renderer.bands.show = true;
@@ -133,7 +135,7 @@
         }
 
         if (this.renderer.bands.show) {
-            this.renderer.initBands.call(this, options, plot);
+            this.renderer.initBands.call(this, this.renderer.options, plot);
         }
 
 
@@ -206,116 +208,117 @@
 
     $.jqplot.LineRenderer.prototype.initBands = function(options, plot) {
         // use bandData if no data specified in bands option
-        if (this.renderer.bands.hiData.length == 0 || this.renderer.bands.lowData.length == 0) {
-            var bd = this.renderer.bandData;
-            if (bd.length == 2) {
-                // detect upper or lower data
-                var hi = (bd[0][0] > bd[1][0]) ? 0 : 1;
-                var low = (hi) ? 0 : 1;
-                this.renderer.bands.hiData = bd[hi];
-                this.renderer.bands.lowData = bd[low];
-            }
-
-            else if (bd.length > 2) {
-                // detect hi and low data
-                var hi = (bd[0][0] > bd[0][1]) ? 0 : 1;
-                var low = (hi) ? 0 : 1;
-                for (var i=0, l=bd.length; i<l; i++) {
-                    this.renderer.bands.hiData.push(bd[i][hi]);
-                    this.renderer.bands.lowData.push(bd[i][low]);
-                }
-            }
-
-            // don't have proper data, auto calculate
-            else {
-                var intrv = this.renderer.bands.interval;
-                var a = null;
-                var b = null;
-                var afunc = null;
-                var bfunc = null;
-
-                if ($.isArray(intrv)) {
-                    a = intrv[0];
-                    b = intrv[1];
-                }
-                else {
-                    a = intrv;
-                }
-
-                if (isNaN(a)) {
-                    // we have a string
-                    if (a.charAt(a.length - 1) === '%') {
-                        afunc = 'multiply';
-                        a = parseFloat(a)/100 + 1;
-                    }
-                }
-
-                else {
-                    a = parseFloat(a);
-                    afunc = 'add';
-                }
-
-                if (b !== null && isNaN(b)) {
-                    // we have a string
-                    if (b.charAt(b.length - 1) === '%') {
-                        bfunc = 'multiply';
-                        b = parseFloat(b)/100 + 1;
-                    }
-                }
-
-                else if (b !== null) {
-                    b = parseFloat(b);
-                    bfunc = 'add';
-                }
-
-                if (a !== null) {
-                    if (b === null) {
-                        b = -a;
-                        bfunc = afunc;
-                        if (bfunc === 'multiply') {
-                            b += 2;
-                        }
-                    }
-
-                    // make sure a always applies to hi band.
-                    if (a < b) {
-                        var temp = a;
-                        a = b;
-                        b = temp;
-                        temp = afunc;
-                        afunc = bfunc;
-                        bfunc = temp;
-                    }
-
-                    var d = this.data;
-                    for (var i=0, l = d.length; i < l; i++) {
-                        switch (afunc) {
-                            case 'add':
-                                this.renderer.bands.hiData.push(d[i][1] + a);
-                                break;
-                            case 'multiply':
-                                this.renderer.bands.hiData.push(d[i][1] * a);
-                                break;
-                        }
-                        switch (bfunc) {
-                            case 'add':
-                                this.renderer.bands.lowData.push(d[i][1] + b);
-                                break;
-                            case 'multiply':
-                                this.renderer.bands.lowData.push(d[i][1] * b);
-                                break;
-                        }
-                    }
-                }
-
-                else {
-                    this.renderer.bands.show = false;
-                }
-            }
-
-            this.renderer.bands._max = $.jqplot.arrayMax(this.renderer.bands.hiData);
-            this.renderer.bands._min = $.jqplot.arrayMin(this.renderer.bands.lowData);
+        //var bd = this.renderer.bandData;
+        var bd = options.bandData || [];
+        this.renderer.bands.hiData = [];
+        this.renderer.bands.lowData = [];
+        if (bd.length == 2) {
+            // detect upper or lower data
+            var hi = (bd[0][0] > bd[1][0]) ? 0 : 1;
+            var low = (hi) ? 0 : 1;
+            this.renderer.bands.hiData = bd[hi];
+            this.renderer.bands.lowData = bd[low];
         }
+
+        else if (bd.length > 2) {
+            // detect hi and low data
+            var hi = (bd[0][0] > bd[0][1]) ? 0 : 1;
+            var low = (hi) ? 0 : 1;
+            for (var i=0, l=bd.length; i<l; i++) {
+                this.renderer.bands.hiData.push(bd[i][hi]);
+                this.renderer.bands.lowData.push(bd[i][low]);
+            }
+        }
+
+        // don't have proper data, auto calculate
+        else {
+            var intrv = this.renderer.bands.interval;
+            var a = null;
+            var b = null;
+            var afunc = null;
+            var bfunc = null;
+
+            if ($.isArray(intrv)) {
+                a = intrv[0];
+                b = intrv[1];
+            }
+            else {
+                a = intrv;
+            }
+
+            if (isNaN(a)) {
+                // we have a string
+                if (a.charAt(a.length - 1) === '%') {
+                    afunc = 'multiply';
+                    a = parseFloat(a)/100 + 1;
+                }
+            }
+
+            else {
+                a = parseFloat(a);
+                afunc = 'add';
+            }
+
+            if (b !== null && isNaN(b)) {
+                // we have a string
+                if (b.charAt(b.length - 1) === '%') {
+                    bfunc = 'multiply';
+                    b = parseFloat(b)/100 + 1;
+                }
+            }
+
+            else if (b !== null) {
+                b = parseFloat(b);
+                bfunc = 'add';
+            }
+
+            if (a !== null) {
+                if (b === null) {
+                    b = -a;
+                    bfunc = afunc;
+                    if (bfunc === 'multiply') {
+                        b += 2;
+                    }
+                }
+
+                // make sure a always applies to hi band.
+                if (a < b) {
+                    var temp = a;
+                    a = b;
+                    b = temp;
+                    temp = afunc;
+                    afunc = bfunc;
+                    bfunc = temp;
+                }
+
+                var d = this.data;
+                for (var i=0, l = d.length; i < l; i++) {
+                    switch (afunc) {
+                        case 'add':
+                            this.renderer.bands.hiData.push(d[i][1] + a);
+                            break;
+                        case 'multiply':
+                            this.renderer.bands.hiData.push(d[i][1] * a);
+                            break;
+                    }
+                    switch (bfunc) {
+                        case 'add':
+                            this.renderer.bands.lowData.push(d[i][1] + b);
+                            break;
+                        case 'multiply':
+                            this.renderer.bands.lowData.push(d[i][1] * b);
+                            break;
+                    }
+                }
+            }
+
+            else {
+                this.renderer.bands.show = false;
+            }
+        }
+
+        this.renderer.bands._max = $.jqplot.arrayMax(this.renderer.bands.hiData);
+        this.renderer.bands._min = $.jqplot.arrayMin(this.renderer.bands.lowData);
 
         // one last check for proper data
         if (this.renderer.bands.hiData.length != this.renderer.bands.lowData.length) {
