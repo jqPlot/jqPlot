@@ -107,7 +107,7 @@
             var idx = 0;
             // check to see if we need to reverse
             for (i=series.length-1; i>=0; i--) {
-                if (series[i]._stack || series[i].renderer.constructor == $.jqplot.BezierCurveRenderer){
+                if (nc == 1 && series[i]._stack || series[i].renderer.constructor == $.jqplot.BezierCurveRenderer){
                     reverse = true;
                 }
             }    
