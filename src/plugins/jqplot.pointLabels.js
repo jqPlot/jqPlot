@@ -316,7 +316,7 @@
                     elem.html(label);
                 }
                 var location = p.location;
-                if ((this.fillToZero && pd[i][1] < 0) || (this.waterfall && parseInt(label, 10)) < 0) {
+                if ((this.fillToZero && pd[i][1] < 0) || (this.fillToZero && this._type === 'bar' && this.barDirection === 'horizontal' && pd[i][0] < 0) || (this.waterfall && parseInt(label, 10)) < 0) {
                     location = oppositeLocations[locationIndicies[location]];
                 }
                 var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);
