@@ -463,10 +463,20 @@
                         }                    
                     }
                     
-                    points.push([xstart, base+this.barWidth/2]);
-                    points.push([xstart, base-this.barWidth/2]);
-                    points.push([gridData[i][0], base-this.barWidth/2]);
-                    points.push([gridData[i][0], base+this.barWidth/2]);
+
+                    if (!this.fillToZero || this._plotData[i][0] >= 0) {
+                        points.push([xstart, base + this.barWidth / 2]);
+                        points.push([xstart, base - this.barWidth / 2]);
+                        points.push([gridData[i][0], base - this.barWidth / 2]);
+                        points.push([gridData[i][0], base + this.barWidth / 2]);
+                    }
+                    else {
+                        points.push([gridData[i][0], base + this.barWidth / 2]);
+                        points.push([gridData[i][0], base - this.barWidth / 2]);
+                        points.push([xstart, base - this.barWidth / 2]);
+                        points.push([xstart, base + this.barWidth / 2]);
+                    }
+
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
