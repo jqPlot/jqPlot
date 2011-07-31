@@ -64,18 +64,29 @@
         this.renderer._lowBandSmoothedData = [];
 
         // prop: bandData
-        // Data used to draw bands above/below a line.
-        // Only y values are specified for band data, x values are always
-        // assumed from the series data.
+        // Data used to draw error bands or confidence intervals above/below a line.
         //
-        // Can be of form [[yl1, yl2, ...], [yu1, yu2, ...]] where
+        // bandData can be input in 3 forms.  jqPlot will figure out which is the
+        // low band line and which is the high band line for all forms:
+        // 
+        // A 2 dimensional array like [[yl1, yl2, ...], [yu1, yu2, ...]] where
         // [yl1, yl2, ...] are y values of the lower line and
         // [yu1, yu2, ...] are y values of the upper line.
+        // In this case there must be the same number of y data points as data points
+        // in the series and the bands will inherit the x values of the series.
+        //
+        // A 2 dimensional array like [[[xl1, yl1], [xl2, yl2], ...], [[xh1, yh1], [xh2, yh2], ...]]
+        // where [xl1, yl1] are x,y data points for the lower line and
+        // [xh1, yh1] are x,y data points for the high line.
+        // x values do not have to correspond to the x values of the series and can
+        // be of any arbitrary length.
         //
         // Can be of form [[yl1, yu1], [yl2, yu2], [yl3, yu3], ...] where
-        // there must be 3 or more array elements.  In this case, 
+        // there must be 3 or more arrays and there must be the same number of arrays
+        // as there are data points in the series.  In this case, 
         // [yl1, yu1] specifies the lower and upper y values for the 1st
-        // data point and so on.
+        // data point and so on.  The bands will inherit the x
+        // values from the series.
         this.renderer.bandData = [];
 
         // Group: bands
@@ -210,29 +221,82 @@
         // use bandData if no data specified in bands option
         //var bd = this.renderer.bandData;
         var bd = options.bandData || [];
-        this.renderer.bands.hiData = [];
-        this.renderer.bands.lowData = [];
+        var bands = this.renderer.bands;
+        bands.hiData = [];
+        bands.lowData = [];
+        var data = this.data;
+        bands._max = null;
+        bands._min = null;
+        // If 2 arrays, and each array greater than 2 elements, assume it is hi and low data bands of y values.
         if (bd.length == 2) {
-            // detect upper or lower data
-            var hi = (bd[0][0] > bd[1][0]) ? 0 : 1;
-            var low = (hi) ? 0 : 1;
-            this.renderer.bands.hiData = bd[hi];
-            this.renderer.bands.lowData = bd[low];
+            // Do we have an array of x,y values?
+            // like [[[1,1], [2,4], [3,3]], [[1,3], [2,6], [3,5]]]
+            if ($.isArray(bd[0][0])) {
+                // since an arbitrary array of points, spin through all of them to determine max and min lines.
+
+                var p;
+                var bdminidx = 0, bdmaxidx = 0;
+                for (var i = 0, l = bd[0].length; i<l; i++) {
+                    p = bd[0][i];
+                    if ((p[1] != null && p[1] > bands._max) || bands._max == null) {
+                        bands._max = p[1];
+                    }
+                    if ((p[1] != null && p[1] < bands._min) || bands._min == null) {
+                        bands._min = p[1];
+                    }
+                }
+                for (var i = 0, l = bd[1].length; i<l; i++) {
+                    p = bd[1][i];
+                    if ((p[1] != null && p[1] > bands._max) || bands._max == null) {
+                        bands._max = p[1];
+                        bdmaxidx = 1;
+                    }
+                    if ((p[1] != null && p[1] < bands._min) || bands._min == null) {
+                        bands._min = p[1];
+                        bdminidx = 1;
+                    }
+                }
+
+                if (bdmaxidx === bdminidx) {
+                    bands.show = false;
+                }
+
+                bands.hiData = bd[bdmaxidx];
+                bands.lowData = bd[bdminidx];
+            }
+            // else data is arrays of y values
+            // like [[1,4,3], [3,6,5]]
+            // must have same number of band data points as points in series
+            else if (bd[0].length === data.length && bd[1].length === data.length) {
+                var hi = (bd[0][0] > bd[1][0]) ? 0 : 1;
+                var low = (hi) ? 0 : 1;
+                for (var i=0, l=data.length; i < l; i++) {
+                    bands.hiData.push([data[i][0], bd[hi][i]]);
+                    bands.lowData.push([data[i][0], bd[low][i]]);
+                }
+            }
+
+            // we don't have proper data array, don't show bands.
+            else {
+                bands.show = false;
+            }
         }
 
-        else if (bd.length > 2) {
-            // detect hi and low data
+        // if more than 2 arrays, have arrays of [ylow, yhi] values.
+        // note, can't distinguish case of [[ylow, yhi], [ylow, yhi]] from [[ylow, ylow], [yhi, yhi]]
+        // this is assumed to be of the latter form.
+        else if (bd.length > 2 && !$.isArray(bd[0][0])) {
             var hi = (bd[0][0] > bd[0][1]) ? 0 : 1;
             var low = (hi) ? 0 : 1;
             for (var i=0, l=bd.length; i<l; i++) {
-                this.renderer.bands.hiData.push(bd[i][hi]);
-                this.renderer.bands.lowData.push(bd[i][low]);
+                bands.hiData.push([data[i][0], bd[i][hi]]);
+                bands.lowData.push([data[i][0], bd[i][low]]);
             }
         }
 
         // don't have proper data, auto calculate
         else {
-            var intrv = this.renderer.bands.interval;
+            var intrv = bands.interval;
             var a = null;
             var b = null;
             var afunc = null;
@@ -291,51 +355,60 @@
                     bfunc = temp;
                 }
 
-                var d = this.data;
-                for (var i=0, l = d.length; i < l; i++) {
+                for (var i=0, l = data.length; i < l; i++) {
                     switch (afunc) {
                         case 'add':
-                            this.renderer.bands.hiData.push(d[i][1] + a);
+                            bands.hiData.push([data[i][0], data[i][1] + a]);
                             break;
                         case 'multiply':
-                            this.renderer.bands.hiData.push(d[i][1] * a);
+                            bands.hiData.push([data[i][0], data[i][1] * a]);
                             break;
                     }
                     switch (bfunc) {
                         case 'add':
-                            this.renderer.bands.lowData.push(d[i][1] + b);
+                            bands.lowData.push([data[i][0], data[i][1] + b]);
                             break;
                         case 'multiply':
-                            this.renderer.bands.lowData.push(d[i][1] * b);
+                            bands.lowData.push([data[i][0], data[i][1] * b]);
                             break;
                     }
                 }
             }
 
             else {
-                this.renderer.bands.show = false;
+                bands.show = false;
             }
         }
 
-        this.renderer.bands._max = $.jqplot.arrayMax(this.renderer.bands.hiData);
-        this.renderer.bands._min = $.jqplot.arrayMin(this.renderer.bands.lowData);
+        var hd = bands.hiData;
+        var ld = bands.lowData;
+        for (var i = 0, l = hd.length; i<l; i++) {
+            if ((hd[i][1] != null && hd[i][1] > bands._max) || bands._max == null) {
+                bands._max = hd[i][1];
+            }
+        }
+        for (var i = 0, l = ld.length; i<l; i++) {
+            if ((ld[i][1] != null && ld[i][1] < bands._min) || bands._min == null) {
+                bands._min = ld[i][1];
+            }
+        }
 
         // one last check for proper data
-        if (this.renderer.bands.hiData.length != this.renderer.bands.lowData.length) {
-            this.renderer.bands.show = false;
-        }
+        // these don't apply any more since allowing arbitrary x,y values
+        // if (bands.hiData.length != bands.lowData.length) {
+        //     bands.show = false;
+        // }
 
-        if (this.renderer.bands.hiData.length != this.data.length) {
-            this.renderer.bands.show = false;
-        }
+        // if (bands.hiData.length != this.data.length) {
+        //     bands.show = false;
+        // }
 
-        if (this.renderer.bands.fillColor === null) {
-            var c = $.jqplot.getColorComponents(this.renderer.bands.color);
+        if (bands.fillColor === null) {
+            var c = $.jqplot.getColorComponents(bands.color);
             // now adjust alpha to differentiate fill
             c[3] = c[3] * 0.5;
-            this.renderer.bands.fillColor = 'rgba(' + c[0] +', '+ c[1] +', '+ c[2] +', '+ c[3] + ')';
+            bands.fillColor = 'rgba(' + c[0] +', '+ c[1] +', '+ c[2] +', '+ c[3] + ')';
         }
-    
     };
 
     function getSteps (d, f) {
@@ -598,6 +671,7 @@
         this.renderer._lowBandGridData = [];
         this.renderer._hiBandSmoothedData = [];
         this.renderer._lowBandSmoothedData = [];
+        var bands = this.renderer.bands;
         var hasNull = false;
         for (var i=0, l=this.data.length; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
@@ -629,13 +703,15 @@
         // don't do smoothing or bands on broken lines.
         if (hasNull) {
             this.renderer.smooth = false;
-            if (this._type === 'liine') this.renderer.bands.show = false;
+            if (this._type === 'liine') bands.show = false;
         }
 
-        if (this._type === 'line' && this.renderer.bands.show) {
-            for (var i=0, l=this.data.length; i<l; i++) {
-                this.renderer._hiBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.hiData[i])]);
-                this.renderer._lowBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.lowData[i])]);
+        if (this._type === 'line' && bands.show) {
+            for (var i=0, l=bands.hiData.length; i<l; i++) {
+                this.renderer._hiBandGridData.push([xp.call(this._xaxis, bands.hiData[i][0]), yp.call(this._yaxis, bands.hiData[i][1])]);
+            }
+            for (var i=0, l=bands.lowData.length; i<l; i++) {
+                this.renderer._lowBandGridData.push([xp.call(this._xaxis, bands.lowData[i][0]), yp.call(this._yaxis, bands.lowData[i][1])]);
             }
         }
 
@@ -647,7 +723,7 @@
                 this.renderer._smoothedData = ret[0];
                 this.renderer._smoothedPlotData = ret[1];
 
-                if (this.renderer.bands.show) {
+                if (bands.show) {
                     ret = computeConstrainedSmoothedData.call(this, this.renderer._hiBandGridData);
                     this.renderer._hiBandSmoothedData = ret[0];
                     ret = computeConstrainedSmoothedData.call(this, this.renderer._lowBandGridData);
@@ -661,7 +737,7 @@
                 this.renderer._smoothedData = ret[0];
                 this.renderer._smoothedPlotData = ret[1];
 
-                if (this.renderer.bands.show) {
+                if (bands.show) {
                     ret = computeHermiteSmoothedData.call(this, this.renderer._hiBandGridData);
                     this.renderer._hiBandSmoothedData = ret[0];
                     ret = computeHermiteSmoothedData.call(this, this.renderer._lowBandGridData);
@@ -691,6 +767,7 @@
         this.renderer._lowBandGridData = [];
         this.renderer._hiBandSmoothedData = [];
         this.renderer._lowBandSmoothedData = [];
+        var bands = this.renderer.bands;
         var hasNull = false;
         for (var i=0; i<data.length; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
@@ -711,13 +788,15 @@
         // don't do smoothing or bands on broken lines.
         if (hasNull) {
             this.renderer.smooth = false;
-            if (this._type === 'line') this.renderer.bands.show = false;
+            if (this._type === 'line') bands.show = false;
         }
 
-        if (this._type === 'line' && this.renderer.bands.show) {
-            for (var i=0, l=this.data.length; i<l; i++) {
-                this.renderer._hiBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.hiData[i])]);
-                this.renderer._lowBandGridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, this.renderer.bands.lowData[i])]);
+        if (this._type === 'line' && bands.show) {
+            for (var i=0, l=bands.hiData.length; i<l; i++) {
+                this.renderer._hiBandGridData.push([xp.call(this._xaxis, bands.hiData[i][0]), yp.call(this._yaxis, bands.hiData[i][1])]);
+            }
+            for (var i=0, l=bands.lowData.length; i<l; i++) {
+                this.renderer._lowBandGridData.push([xp.call(this._xaxis, bands.lowData[i][0]), yp.call(this._yaxis, bands.lowData[i][1])]);
             }
         }
 
@@ -728,7 +807,7 @@
                 this.renderer._smoothedData = ret[0];
                 this.renderer._smoothedPlotData = ret[1];
 
-                if (this.renderer.bands.show) {
+                if (bands.show) {
                     ret = computeConstrainedSmoothedData.call(this, this.renderer._hiBandGridData);
                     this.renderer._hiBandSmoothedData = ret[0];
                     ret = computeConstrainedSmoothedData.call(this, this.renderer._lowBandGridData);
@@ -742,7 +821,7 @@
                 this.renderer._smoothedData = ret[0];
                 this.renderer._smoothedPlotData = ret[1];
 
-                if (this.renderer.bands.show) {
+                if (bands.show) {
                     ret = computeHermiteSmoothedData.call(this, this.renderer._hiBandGridData);
                     this.renderer._hiBandSmoothedData = ret[0];
                     ret = computeHermiteSmoothedData.call(this, this.renderer._lowBandGridData);
