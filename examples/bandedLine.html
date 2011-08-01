@@ -11,6 +11,7 @@
     <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
     <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
     <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
+    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
 
  <style type="text/css">
     .jqplot-target {
@@ -43,6 +44,56 @@
 
 <script class="code" type="text/javascript">
 $(document).ready(function(){
+    // Band data in arrays of [x,y] values.
+    bdat = [[['7/1/2011', 8], ['7/2/2011', 9], ['7/3/2011', 8], ['7/4/2011', 13], ['7/5/2011', 11], ['7/6/2011', 13]], 
+    [['7/1/2011', 12], ['7/2/2011', 13], ['7/3/2011', 12], ['7/4/2011', 17], ['7/5/2011', 15], ['7/6/2011', 17]]];
+    
+    dat = [['7/1/2011', 10], ['7/2/2011', 11], ['7/3/2011', 10], ['7/4/2011', 15], ['7/5/2011', 13], ['7/6/2011', 15]];
+
+    plot01 = $.jqplot('chart01', [dat], $.extend(true, {}, myTheme, {
+        series: [{
+            rendererOptions: {
+                bandData: bdat
+            }
+        }],
+        axes: {
+            xaxis: {
+                renderer: $.jqplot.DateAxisRenderer
+            }
+        }
+    }));
+});
+</script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function(){
+    // Band data in arrays of [x,y] values.
+    // Here the low band line (1st array) has 5 points and the hi band line has 4 points.
+    bdat = [[['7/1/2011', 9], ['7/3/2011', 7], ['7/4/2011', 13], ['7/5/2011', 11], ['7/6/2011', 13]], 
+    [['7/1/2011', 12], ['7/3/2011', 14], ['7/4/2011', 18], ['7/6/2011', 16]]];
+    
+    dat = [['7/1/2011', 10], ['7/2/2011', 11], ['7/3/2011', 10], ['7/4/2011', 15], ['7/5/2011', 13], ['7/6/2011', 15]];
+
+    plot02 = $.jqplot('chart02', [dat], $.extend(true, {}, myTheme, {
+        series: [{
+            rendererOptions: {
+                bandData: bdat,
+
+                // turn on smoothing
+                smooth: true
+            }
+        }],
+        axes: {
+            xaxis: {
+                renderer: $.jqplot.DateAxisRenderer
+            }
+        }
+    }));
+});
+</script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function(){
     // data points for line.
     dat = [[0, 10], [1, 11], [2, 10], [3, 15], [4, 13], [5, 15]];
 
@@ -55,7 +106,8 @@ $(document).ready(function(){
                 // Set the band data on the series.
                 // Bands will be turned on automatically if
                 // valid band data is present.
-                bandData: bdat
+                bandData: bdat,
+                smooth: true
             }
         }]
     }));
@@ -76,8 +128,6 @@ $(document).ready(function(){
         {
             rendererOptions: {
                 bandData: bdat,
-
-                // turn on smoothing
                 smooth: true
             }
         }]
@@ -205,10 +255,24 @@ var myTheme = {
 
 <p>Bands (like confidence intervals or error bands) can be added to line charts through the "bands" option of the line renderer.  The band data can be automatically computed or manually assigned.  If assigned manually, the simpliest approach is to set the "rendererOptions: { bandData: [] }" array on the series.  Note that band data is taken into account when axes scale themselves so bands will not get clipped.</p>
 
+
+<p>Band data can be supplied as arrays of [x,y] values.  One array for the upper band line and one for the lower band line.</p>
+
+ <div id="chart01" style="height:300px; width:600px;"></div>
+    <pre class="code"></pre>
+
+
+<p>The number of points in the band data arrays does not have to correspond to the number of points in the data series.  Also, band data will be drawn as smoothed lines if the data series is smoothed.</p>
+
+ <div id="chart02" style="height:300px; width:600px;"></div>
+    <pre class="code"></pre>
+
+<p>In this example, band data is supplied as an array of arrays of y values for the low and hi bands.  X values for the bands are taken from the x values of the series.  The band data is of the form:  [ [y low 1, y hi 1], [y low 2, y hi 2], ... ] and there must be a corresponding array of low/hi y values for each x value in the data series.</p>
+
  <div id="chart1" style="height:300px; width:600px;"></div>
     <pre class="code"></pre>
 
-<p>The band data array is flexible.  It can be specified as an array of [low, hi] arrays (as above) or as an array of [low values], [hi values].  Additionally, the order of low/hi values does not matter as long as they are consistent.  jqPlot will figure out which is the low values and which are the high values.  Note that Bands applied to smoothed lines will also be smoothed.</p>
+<p>The band data can also be supplied as an array of [low y values], [hi y values].  In this case there must also be an equal number of low y values and hi y values as there are data points in the series.  X values for the low and hi bands will be taken from the series data.  Additionally, the order of low/hi values does not matter as long as they are consistent.  jqPlot will figure out which is the low values and which are the high values.</p>
 
  <div id="chart2" style="height:300px; width:600px;"></div>
     <pre class="code"></pre>
