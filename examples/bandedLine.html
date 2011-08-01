@@ -58,7 +58,10 @@ $(document).ready(function(){
         }],
         axes: {
             xaxis: {
-                renderer: $.jqplot.DateAxisRenderer
+                renderer: $.jqplot.DateAxisRenderer,
+                min: '7/1/2011',
+                max: '7/6/2011',
+                tickInterval: '1 day'
             }
         }
     }));
@@ -85,7 +88,10 @@ $(document).ready(function(){
         }],
         axes: {
             xaxis: {
-                renderer: $.jqplot.DateAxisRenderer
+                renderer: $.jqplot.DateAxisRenderer,
+                min: '7/1/2011',
+                max: '7/6/2011',
+                tickInterval: '1 day'
             }
         }
     }));
@@ -225,7 +231,7 @@ $(document).ready(function(){
 // smoothing is turned on.  Bands will be drawn with the same 
 // smoothing as the line.
 //////
-var myTheme = {
+myTheme = {
   grid: {
       drawBorder: false,
       shadow: false,
@@ -233,7 +239,7 @@ var myTheme = {
   },
   seriesDefaults: {
     shadow: false,
-    showMarker: false,
+    showMarker: false
   },
   axes: {
       xaxis: {
