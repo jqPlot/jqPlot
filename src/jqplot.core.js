@@ -3106,6 +3106,7 @@
             var evt = jQuery.Event('jqplotMouseEnter');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
+            evt.relatedTarget = ev.relatedTarget;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, p]);
         };
         
@@ -3115,6 +3116,7 @@
             var evt = jQuery.Event('jqplotMouseLeave');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
+            evt.relatedTarget = ev.relatedTarget;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, p]);
         };
         
