@@ -102,7 +102,7 @@
             
             this._elem = $(document.createElement('div'));
             this._elem.addClass('jqplot-axis jqplot-'+this.name);
-            this._elem.css('posiiton', 'absolute');
+            this._elem.css('position', 'absolute');
 
             
             if (this.name == 'xaxis' || this.name == 'x2axis') {
