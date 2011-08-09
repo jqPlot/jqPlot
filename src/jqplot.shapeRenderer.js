@@ -127,7 +127,14 @@
         }
         else if (points && points.length){
             var move = true;
-            for (var i=0; i<points.length; i++) {
+            var l = points.length;
+            if (opts.dashPattern) {
+                var pl;
+                var ang, rise, run, dashx, gapx, dashy, gapy;
+                var dashContinuation = 0;
+                var dashTotLen = dashPattern[0] + dashPattern[1];
+            }
+            for (var i=0; i<l; i++) {
                 // skip to the first non-null point and move to it.
                 if (points[i][0] != null && points[i][1] != null) {
                     if (move) {
@@ -135,7 +142,19 @@
                         move = false;
                     }
                     else {
-                        ctx.lineTo(points[i][0], points[i][1]);
+                        if (opts.dashedLine) {
+                            rise = points[i][1] - points[i-1][1];
+                            run = points[i][0] - points[i-1][0];
+                            pl = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
+                            ang = Math.atan(rise/run);
+                            dashx = Math.cos(ang) * opts.dashPattern[0];
+                            dashy = Math.sin(ang) * opts.dashPattern[0];
+                            gapx = Math.cos(ang) * opts.dashPattern[1];
+                            gapy = Math.sin(ang) * opts.dashPattern[1];
+                        }
+                        else {
+                            ctx.lineTo(points[i][0], points[i][1]);
+                        }
                     }
                 }
                 else {

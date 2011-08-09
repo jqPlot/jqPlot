@@ -42,6 +42,11 @@
         //
         options = options || {};
         this._type='line';
+        // prop: dashedLine
+        // True to draw dashed instead of solid line.
+        this.dashedLine = false;
+        // auto auto computes dash pattern.
+        this.dashPattern = 'auto';
         // prop: smooth
         // True to draw a smoothed (interpolated) line through the data points
         // with automatically computed number of smoothing points.
@@ -844,10 +849,33 @@
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
+        opts.dashedLine = (opts.dashedLine != undefined) ? opts.dashedLine : this.dashedLine;
+        opts.dashPattern = (opts.dashPattern != undefined) ? opts.dashPattern : this.dashPattern;
+        opts.dashSkip = false;
         var xmin, ymin, xmax, ymax;
         ctx.save();
         if (gd.length) {
             if (showLine) {
+                // if dashed line, see if we have to compute dashpattern
+                if (opts.dashedLine && opts.dashPattern === 'auto' ) {
+                    var l = gd.length;
+                    // get average pixels between points.
+                    var fact = parseInt(gd[l-1][0] - gd[0][0]) / l;
+                    if (fact >= 16) {
+                        opts.dashPattern = [8, 8];
+                    }
+                    else if (fact >= 6) {
+                        var a = parseInt(fact/2);
+                        var b = a + fact%2;
+                        opts.dashPattern = [a, b];
+                    }
+                    else {
+                        opts.dashPattern = [2, 3];
+                        opts.dashSkip = true;
+                    }
+
+                }
+
                 // if we fill, we'll have to add points to close the curve.
                 if (fill) {
                     if (this.fillToZero) { 
