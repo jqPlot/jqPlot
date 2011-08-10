@@ -42,11 +42,6 @@
         //
         options = options || {};
         this._type='line';
-        // prop: dashedLine
-        // True to draw dashed instead of solid line.
-        this.dashedLine = false;
-        // auto auto computes dash pattern.
-        this.dashPattern = 'auto';
         // prop: smooth
         // True to draw a smoothed (interpolated) line through the data points
         // with automatically computed number of smoothing points.
@@ -851,7 +846,7 @@
         var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
         opts.dashedLine = (opts.dashedLine != undefined) ? opts.dashedLine : this.dashedLine;
         opts.dashPattern = (opts.dashPattern != undefined) ? opts.dashPattern : this.dashPattern;
-        opts.dashSkip = false;
+        opts.dashPoints = false;
         var xmin, ymin, xmax, ymax;
         ctx.save();
         if (gd.length) {
@@ -864,16 +859,18 @@
                     if (fact >= 16) {
                         opts.dashPattern = [8, 8];
                     }
-                    else if (fact >= 6) {
+                    else if (fact >= 5) {
                         var a = parseInt(fact/2);
                         var b = a + fact%2;
                         opts.dashPattern = [a, b];
                     }
                     else {
-                        opts.dashPattern = [2, 3];
-                        opts.dashSkip = true;
+                        opts.dashPoints = true;
                     }
 
+                }
+                else if (!$.isArray(opts.dashPattern)) {
+                    opts.dashPoints = true;
                 }
 
                 // if we fill, we'll have to add points to close the curve.

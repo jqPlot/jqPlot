@@ -1104,6 +1104,11 @@
         // prop: lineCap
         // Canvas lineCap style at ends of line.
         this.lineCap = 'round';
+        // prop: dashedLine
+        // True to draw dashed instead of solid line.
+        this.dashedLine = false;
+        // auto auto computes dash pattern.
+        this.dashPattern = 'auto';
         // prop: shadow
         // wether or not to draw a shadow on the line
         this.shadow = true;

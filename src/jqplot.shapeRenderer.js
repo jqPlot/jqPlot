@@ -128,29 +128,74 @@
         else if (points && points.length){
             var move = true;
             var l = points.length;
-            if (opts.dashPattern) {
-                var pl;
-                var ang, rise, run, dashx, gapx, dashy, gapy;
-                var dashContinuation = 0;
-                var dashTotLen = dashPattern[0] + dashPattern[1];
+            var pl;
+            var ang, rise, run, dashx, gapx, dashy, gapy, ndashes, x, y;
+            var dashContinuation = 0;
+            var dashTotLen = 0;
+            if ($.isArray(opts.dashPattern)) {
+                dashTotLen = opts.dashPattern[0] + opts.dashPattern[1]; 
             }
             for (var i=0; i<l; i++) {
                 // skip to the first non-null point and move to it.
                 if (points[i][0] != null && points[i][1] != null) {
                     if (move) {
                         ctx.moveTo(points[i][0], points[i][1]);
+                        // if drawing dashed line and just drawing points, draw one here
+                        if (opts.dashedLine && opts.dashPoints) {
+                            ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
+                            ctx.fill();
+                            ctx.beginPath();
+                        }
                         move = false;
                     }
                     else {
                         if (opts.dashedLine) {
-                            rise = points[i][1] - points[i-1][1];
-                            run = points[i][0] - points[i-1][0];
-                            pl = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
-                            ang = Math.atan(rise/run);
-                            dashx = Math.cos(ang) * opts.dashPattern[0];
-                            dashy = Math.sin(ang) * opts.dashPattern[0];
-                            gapx = Math.cos(ang) * opts.dashPattern[1];
-                            gapy = Math.sin(ang) * opts.dashPattern[1];
+
+                            // is spacing such that we're just drawing points?
+                            if (opts.dashPoints) {
+                                ctx.moveTo(points[i][0], points[i][1]);
+                                ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
+                                ctx.fill();
+                                ctx.beginPath();
+                            }
+
+                            // do we have part of a dash left over from last interval?
+                            else {
+                                rise = points[i][1] - points[i-1][1];
+                                run = points[i][0] - points[i-1][0];
+                                pl = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
+                                ang = Math.atan(rise/run);
+                                dashx = Math.cos(ang) * opts.dashPattern[0];
+                                dashy = Math.sin(ang) * opts.dashPattern[0];
+                                gapx = Math.cos(ang) * opts.dashPattern[1];
+                                gapy = Math.sin(ang) * opts.dashPattern[1];
+
+                                if (dashContinuation > 0) {
+                                    if (dashContinuation <= pl) {
+                                        
+                                    }
+                                    else {
+                                        ctx.lineTo(points[i][0], points[i][1]);
+                                        dashContinuation -= pl;
+                                    }
+                                }
+
+                                else {
+                                    ndashes = parseInt(pl/dashTotLen);
+                                    x = points[i][0];
+                                    y = points[i][1];
+
+                                    for (var j=0; j<ndashes; j++) {
+                                        x += dashx;
+                                        y += dashy;
+                                        ctx.lineTo(x, y);
+                                        x += gapx;
+                                        y += gapy;
+                                        ctx.moveTo(x, y);
+                                    }
+                                    
+                                }
+                            }
                         }
                         else {
                             ctx.lineTo(points[i][0], points[i][1]);
@@ -159,6 +204,7 @@
                 }
                 else {
                     move = true;
+                    dashContinuation = 0;
                 }
             }
             if (closePath) {
