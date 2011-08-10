@@ -54,6 +54,7 @@
 
       plot1 = $.jqplot("chart1", [s1], {
         seriesDefaults:{
+            // dashedLine option turns on/off dashed lines.
             dashedLine: true,
             showMarker: false,
             shadow: false
@@ -70,6 +71,8 @@
 
       plot2 = $.jqplot("chart2", [s2], {
         seriesDefaults:{
+            // The dash pattern is auto computed by default.  
+            // The smaller the point spacing, the smaller the dashes.
             dashedLine: true,
             showMarker: false,
             shadow: false
@@ -86,6 +89,7 @@
 
       plot3 = $.jqplot("chart3", [s3], {
         seriesDefaults:{
+            // With lots of points, you have very small dashes.
             dashedLine: true,
             showMarker: false,
             shadow: false
@@ -103,6 +107,9 @@
       plot4 = $.jqplot("chart4", [s2], {
         seriesDefaults:{
             dashedLine: true,
+            // You can specify your own custom dashPattern to use.
+            // dashPattern must be of the form [dash length, gap length].
+            // lengths are in pixels.
             dashPattern: [3, 10],
             showMarker: false,
             shadow: false
