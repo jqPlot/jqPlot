@@ -132,7 +132,7 @@
             var ang, rise, run, dashx, gapx, dashy, gapy, ndashes, x, y;
             var dashContinuation = 0;
             var dashTotLen = 0;
-            if ($.isArray(opts.dashPattern)) {
+            if (opts.dashedLine && $.isArray(opts.dashPattern)) {
                 dashTotLen = opts.dashPattern[0] + opts.dashPattern[1]; 
             }
             for (var i=0; i<l; i++) {
