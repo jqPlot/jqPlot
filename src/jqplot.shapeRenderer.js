@@ -140,6 +140,7 @@
                 if (points[i][0] != null && points[i][1] != null) {
                     if (move) {
                         ctx.moveTo(points[i][0], points[i][1]);
+
                         // if drawing dashed line and just drawing points, draw one here
                         if (opts.dashedLine && opts.dashPoints) {
                             ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
@@ -182,8 +183,8 @@
 
                                 else {
                                     ndashes = parseInt(pl/dashTotLen);
-                                    x = points[i][0];
-                                    y = points[i][1];
+                                    x = points[i-1][0];
+                                    y = points[i-1][1];
 
                                     for (var j=0; j<ndashes; j++) {
                                         x += dashx;

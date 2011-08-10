@@ -856,17 +856,27 @@
                     var l = gd.length;
                     // get average pixels between points.
                     var fact = parseInt(gd[l-1][0] - gd[0][0]) / l;
-                    if (fact >= 16) {
-                        opts.dashPattern = [8, 8];
+                    var maxfact = 24, minfact = 4;
+                    var maxdash = 10, maxgap = 14;
+                    var mindash = 1, mingap = 3;
+                    var dslope = (maxdash - mindash)/(maxfact - minfact);
+                    var gslope = (maxgap - mingap)/(maxfact - minfact);
+                    var db = maxdash - dslope * maxfact;
+                    var gb = maxgap - gslope * maxfact;
+
+                    if (fact >= maxfact) {
+                        opts.dashPattern = [maxdash, maxgap];
                     }
-                    else if (fact >= 5) {
-                        var a = parseInt(fact/2);
-                        var b = a + fact%2;
+                    else if (fact >= minfact) {
+                        console.log(fact);
+                        var a = db + dslope * fact;
+                        var b = gb + gslope * fact;
                         opts.dashPattern = [a, b];
                     }
                     else {
                         opts.dashPoints = true;
                     }
+                    console.log(opts.dashPattern);
 
                 }
                 else if (!$.isArray(opts.dashPattern)) {
