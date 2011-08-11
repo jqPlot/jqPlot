@@ -37,7 +37,7 @@
     
 (function($) {
 
-    var dotlen = 1e-3;
+    var dotlen = 0.1;
 
     $.jqplot.LinePattern = function (ctx, pattern) {
 

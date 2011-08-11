@@ -296,7 +296,7 @@
         defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"],
         dashLength: 4,
         gapLength: 4,
-        dotGapLength: 2
+        dotGapLength: 2.5
     };
     
     
