@@ -293,7 +293,10 @@
         catchErrors: false,
         defaultTickFormatString: "%.1f",
         defaultColors: [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
-        defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"]
+        defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"],
+        dashLength: 4,
+        gapLength: 4,
+        dotGapLength: 2
     };
     
     
@@ -1104,13 +1107,12 @@
         // prop: lineCap
         // Canvas lineCap style at ends of line.
         this.lineCap = 'round';
-        // prop: dashedLine
-        // True to draw dashed instead of solid line.
-        this.dashedLine = false;
-        // auto auto computes dash pattern.
-        this.dashPattern = 'auto';
-        // prop: shadow
-        // wether or not to draw a shadow on the line
+        // prop: linePattern
+        // line pattern 'dashed', 'dotted', 'solid', some combination
+        // of '-' and '.' characters such as '.-.' or a numerical array like 
+        // [draw, skip, draw, skip, ...] such as [1, 10] to draw a dotted line, 
+        // [1, 10, 20, 10] to draw a dot-dash line, and so on.
+        this.linePattern = 'solid';
         this.shadow = true;
         // prop: shadowAngle
         // Shadow angle in degrees

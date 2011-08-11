@@ -156,7 +156,7 @@
         }
 
         // set the shape renderer options
-        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
+        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, linePattern:this.linePattern, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
@@ -168,7 +168,7 @@
         else {
             var shadow_offset = this.shadowOffset*Math.atan((this.lineWidth/2.5))/0.785398163;
         }
-        var sopts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        var sopts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, linePattern:this.linePattern, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
         this._boundingBox = [[],[]];
@@ -844,45 +844,10 @@
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
         var fillAndStroke = (opts.fillAndStroke != undefined) ? opts.fillAndStroke : this.fillAndStroke;
-        opts.dashedLine = (opts.dashedLine != undefined) ? opts.dashedLine : this.dashedLine;
-        opts.dashPattern = (opts.dashPattern != undefined) ? opts.dashPattern : this.dashPattern;
-        opts.dashPoints = false;
         var xmin, ymin, xmax, ymax;
         ctx.save();
         if (gd.length) {
             if (showLine) {
-                // if dashed line, see if we have to compute dashpattern
-                if (opts.dashedLine && opts.dashPattern === 'auto' ) {
-                    var l = gd.length;
-                    // get average pixels between points.
-                    var fact = parseInt(gd[l-1][0] - gd[0][0]) / l;
-                    var maxfact = 24, minfact = 3;
-                    var maxdash = 10, maxgap = 14;
-                    var mindash = 1, mingap = 4;
-                    var dslope = (maxdash - mindash)/(maxfact - minfact);
-                    var gslope = (maxgap - mingap)/(maxfact - minfact);
-                    var db = maxdash - dslope * maxfact;
-                    var gb = maxgap - gslope * maxfact;
-
-                    if (fact >= maxfact) {
-                        opts.dashPattern = [maxdash, maxgap];
-                    }
-                    else if (fact >= minfact) {
-                        console.log(fact);
-                        var a = db + dslope * fact;
-                        var b = gb + gslope * fact;
-                        opts.dashPattern = [a, b];
-                    }
-                    else {
-                        opts.dashPoints = true;
-                    }
-                    console.log(opts.dashPattern);
-
-                }
-                else if (!$.isArray(opts.dashPattern)) {
-                    opts.dashPoints = true;
-                }
-
                 // if we fill, we'll have to add points to close the curve.
                 if (fill) {
                     if (this.fillToZero) { 

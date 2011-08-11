@@ -57,7 +57,7 @@
     };
 
 
-    var files = ['jqplot.core.js', 'jqplot.linearTickGenerator.js', 'jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.axisLabelRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.shadowRenderer.js', 'jqplot.shapeRenderer.js', 'jqplot.sprintf.js', 'jsdate.js', 'jqplot.themeEngine.js'];
+    var files = ['jqplot.core.js', 'jqplot.linearTickGenerator.js', 'jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.axisLabelRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.linePattern.js', 'jqplot.shadowRenderer.js', 'jqplot.shapeRenderer.js', 'jqplot.sprintf.js', 'jsdate.js', 'jqplot.themeEngine.js'];
     var rn = getRootNode().root;
     for (var i=0; i<files.length; i++) {
         var pp = rn+files[i];

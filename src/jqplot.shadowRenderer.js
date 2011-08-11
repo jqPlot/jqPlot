@@ -86,118 +86,46 @@
         var alpha = (opts.alpha != null) ? opts.alpha : this.alpha;
         var depth = (opts.depth != null) ? opts.depth : this.depth;
         var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
+        var linePattern = (opts.linePattern != null) ? opts.linePattern : this.linePattern;
         ctx.lineWidth = (opts.lineWidth != null) ? opts.lineWidth : this.lineWidth;
         ctx.lineJoin = (opts.lineJoin != null) ? opts.lineJoin : this.lineJoin;
         ctx.lineCap = (opts.lineCap != null) ? opts.lineCap : this.lineCap;
         ctx.strokeStyle = opts.strokeStyle || this.strokeStyle || 'rgba(0,0,0,'+alpha+')';
         ctx.fillStyle = opts.fillStyle || this.fillStyle || 'rgba(0,0,0,'+alpha+')';
-        for (var k=0; k<depth; k++) {
+        for (var j=0; j<depth; j++) {
+            var ctxPattern = $.jqplot.LinePattern(ctx, linePattern);
             ctx.translate(Math.cos(this.angle*Math.PI/180)*offset, Math.sin(this.angle*Math.PI/180)*offset);
-            ctx.beginPath();
+            ctxPattern.beginPath();
             if (isarc) {
-                ctx.arc(points[0], points[1], points[2], points[3], points[4], true);  
-                if (closePath) {
-                    ctx.closePath();
-                }
-                if (fill) {
-                    ctx.fill();
-                }
-                else {
-                    ctx.stroke();
-                }              
+                ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                
             }
-            else if (points && points.length) {
+            else if (points && points.length){
                 var move = true;
-                var l = points.length;
-                var pl;
-                var ang, rise, run, dashx, gapx, dashy, gapy, ndashes, x, y;
-                var dashContinuation = 0;
-                var dashTotLen = 0;
-                if (opts.dashedLine && $.isArray(opts.dashPattern)) {
-                    dashTotLen = opts.dashPattern[0] + opts.dashPattern[1]; 
-                }
-                for (var i=0; i<l; i++) {
+                for (var i=0; i<points.length; i++) {
                     // skip to the first non-null point and move to it.
                     if (points[i][0] != null && points[i][1] != null) {
                         if (move) {
-                            ctx.moveTo(points[i][0], points[i][1]);
-
-                            // if drawing dashed line and just drawing points, draw one here
-                            if (opts.dashedLine && opts.dashPoints) {
-                                ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
-                                ctx.fill();
-                                ctx.beginPath();
-                            }
+                            ctxPattern.moveTo(points[i][0], points[i][1]);
                             move = false;
                         }
                         else {
-                            if (opts.dashedLine) {
-
-                                // is spacing such that we're just drawing points?
-                                if (opts.dashPoints) {
-                                    ctx.moveTo(points[i][0], points[i][1]);
-                                    ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
-                                    ctx.fill();
-                                    ctx.beginPath();
-                                }
-
-                                // do we have part of a dash left over from last interval?
-                                else {
-                                    rise = points[i][1] - points[i-1][1];
-                                    run = points[i][0] - points[i-1][0];
-                                    pl = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
-                                    ang = Math.atan(rise/run);
-                                    dashx = Math.cos(ang) * opts.dashPattern[0];
-                                    dashy = Math.sin(ang) * opts.dashPattern[0];
-                                    gapx = Math.cos(ang) * opts.dashPattern[1];
-                                    gapy = Math.sin(ang) * opts.dashPattern[1];
-
-                                    if (dashContinuation > 0) {
-                                        if (dashContinuation <= pl) {
-                                            
-                                        }
-                                        else {
-                                            ctx.lineTo(points[i][0], points[i][1]);
-                                            dashContinuation -= pl;
-                                        }
-                                    }
-
-                                    else {
-                                        ndashes = parseInt(pl/dashTotLen);
-                                        x = points[i-1][0];
-                                        y = points[i-1][1];
-
-                                        for (var j=0; j<ndashes; j++) {
-                                            x += dashx;
-                                            y += dashy;
-                                            ctx.lineTo(x, y);
-                                            x += gapx;
-                                            y += gapy;
-                                            ctx.moveTo(x, y);
-                                        }
-                                        
-                                    }
-                                }
-                            }
-                            else {
-                                ctx.lineTo(points[i][0], points[i][1]);
-                            }
+                            ctxPattern.lineTo(points[i][0], points[i][1]);
                         }
                     }
                     else {
                         move = true;
-                        dashContinuation = 0;
                     }
                 }
-                if (closePath) {
-                    ctx.closePath();
-                }
-                if (fill) {
-                    ctx.fill();
-                }
-                else {
-                    ctx.stroke();
-                }
+                
+            }
+            if (closePath) {
+                ctxPattern.closePath();
+            }
+            if (fill) {
+                ctx.fill();
+            }
+            else {
+                ctx.stroke();
             }
         }
         ctx.restore();

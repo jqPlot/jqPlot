@@ -36,6 +36,12 @@
     $.jqplot.ShapeRenderer = function(options){
         
         this.lineWidth = 1.5;
+        // prop: linePattern
+        // line pattern 'dashed', 'dotted', 'solid', some combination
+        // of '-' and '.' characters such as '.-.' or a numerical array like 
+        // [draw, skip, draw, skip, ...] such as [1, 10] to draw a dotted line, 
+        // [1, 10, 20, 10] to draw a dot-dash line, and so on.
+        this.linePattern = 'solid';
         // prop: lineJoin
         // How line segments of the shadow are joined.
         this.lineJoin = 'miter';
@@ -90,6 +96,8 @@
         var strokeRect = (opts.strokeRect != null) ? opts.strokeRect : this.strokeRect;
         var clearRect = (opts.clearRect != null) ? opts.clearRect : this.clearRect;
         var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
+        var linePattern = (opts.linePattern != null) ? opts.linePattern : this.linePattern;
+        var ctxPattern = $.jqplot.LinePattern(ctx, linePattern);
         ctx.lineWidth = opts.lineWidth || this.lineWidth;
         ctx.lineJoin = opts.lineJoin || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
@@ -127,108 +135,23 @@
         }
         else if (points && points.length){
             var move = true;
-            var l = points.length;
-            var pl;
-            var ang, rise, run, dashx, gapx, dashy, gapy, ndashes, x, y, xstart, ystart, seglen;
-            var xadj = 0, yadj = 0;
-            var dashContinuation = 0;
-            var drawDashes = true;
-            var dashTotLen = 0;
-            if (opts.dashedLine && $.isArray(opts.dashPattern)) {
-                dashTotLen = opts.dashPattern[0] + opts.dashPattern[1]; 
-            }
-            debugger;
-            for (var i=0; i<l; i++) {
+            for (var i=0; i<points.length; i++) {
                 // skip to the first non-null point and move to it.
                 if (points[i][0] != null && points[i][1] != null) {
                     if (move) {
-                        ctx.moveTo(points[i][0], points[i][1]);
-
-                        // if drawing dashed line and just drawing points, draw one here
-                        if (opts.dashedLine && opts.dashPoints) {
-                            ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
-                            ctx.fill();
-                            ctx.beginPath();
-                        }
+                        ctxPattern.moveTo(points[i][0], points[i][1]);
                         move = false;
                     }
                     else {
-                        if (opts.dashedLine) {
-
-                            // is spacing such that we're just drawing points?
-                            if (opts.dashPoints) {
-                                ctx.moveTo(points[i][0], points[i][1]);
-                                ctx.arc(points[i][0], points[i][1], 2, 0, 2*Math.PI, true);
-                                ctx.fill();
-                                ctx.beginPath();
-                            }
-
-                            // do we have part of a dash left over from last interval?
-                            else {
-                                rise = points[i][1] - points[i-1][1];
-                                run = points[i][0] - points[i-1][0];
-                                pl = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
-                                ang = Math.atan(rise/run);
-                                dashx = Math.cos(ang) * opts.dashPattern[0];
-                                dashy = Math.sin(ang) * opts.dashPattern[0];
-                                gapx = Math.cos(ang) * opts.dashPattern[1];
-                                gapy = Math.sin(ang) * opts.dashPattern[1];
-                                xadj = dashContinuation * Math.cos(ang);
-                                yadj = dashContinuation * Math.sin(ang);
-                                drawDashes = true;
-                                xstart = points[i-1][0] + xadj;
-                                ystart = points[i-1][1] + yadj;
-                                seglen = pl;
-
-                                if (dashContinuation > 0) {
-                                    if (dashContinuation <= pl) {
-                                        ctx.lineTo(xstart, ystart);
-                                        x = xstart + gapx;
-                                        y = ystart + gapy;
-                                        ctx.moveTo(x, y);
-                                        xstart = x;
-                                        ystart = y;
-                                        seglen = pl - dashContinuation;
-                                    }
-                                    else {
-                                        ctx.lineTo(points[i][0], points[i][1]);
-                                        dashContinuation -= pl;
-                                        drawDashes = false;
-                                    }
-                                }
-
-                                if (drawDashes) {
-                                    ndashes = parseInt(seglen/dashTotLen);
-                                    x = xstart;
-                                    y = ystart;
-
-                                    for (var j=0; j<ndashes; j++) {
-                                        x += dashx;
-                                        y += dashy;
-                                        ctx.lineTo(x, y);
-                                        x += gapx;
-                                        y += gapy;
-                                        ctx.moveTo(x, y);
-                                    }
-
-                                    // If we have more than 1 pixel left over, continue this dash.
-                                    dashContinuation = (seglen - dashTotLen*ndashes > 1) ? seglen - dashTotLen*ndashes : 0;
-                                    
-                                }
-                            }
-                        }
-                        else {
-                            ctx.lineTo(points[i][0], points[i][1]);
-                        }
+                        ctxPattern.lineTo(points[i][0], points[i][1]);
                     }
                 }
                 else {
                     move = true;
-                    dashContinuation = 0;
                 }
             }
             if (closePath) {
-                ctx.closePath();
+                ctxPattern.closePath();
             }
             if (fill) {
                 ctx.fill();
