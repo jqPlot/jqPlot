@@ -129,12 +129,15 @@
             var move = true;
             var l = points.length;
             var pl;
-            var ang, rise, run, dashx, gapx, dashy, gapy, ndashes, x, y;
+            var ang, rise, run, dashx, gapx, dashy, gapy, ndashes, x, y, xstart, ystart, seglen;
+            var xadj = 0, yadj = 0;
             var dashContinuation = 0;
+            var drawDashes = true;
             var dashTotLen = 0;
             if (opts.dashedLine && $.isArray(opts.dashPattern)) {
                 dashTotLen = opts.dashPattern[0] + opts.dashPattern[1]; 
             }
+            debugger;
             for (var i=0; i<l; i++) {
                 // skip to the first non-null point and move to it.
                 if (points[i][0] != null && points[i][1] != null) {
@@ -170,21 +173,34 @@
                                 dashy = Math.sin(ang) * opts.dashPattern[0];
                                 gapx = Math.cos(ang) * opts.dashPattern[1];
                                 gapy = Math.sin(ang) * opts.dashPattern[1];
+                                xadj = dashContinuation * Math.cos(ang);
+                                yadj = dashContinuation * Math.sin(ang);
+                                drawDashes = true;
+                                xstart = points[i-1][0] + xadj;
+                                ystart = points[i-1][1] + yadj;
+                                seglen = pl;
 
                                 if (dashContinuation > 0) {
                                     if (dashContinuation <= pl) {
-                                        
+                                        ctx.lineTo(xstart, ystart);
+                                        x = xstart + gapx;
+                                        y = ystart + gapy;
+                                        ctx.moveTo(x, y);
+                                        xstart = x;
+                                        ystart = y;
+                                        seglen = pl - dashContinuation;
                                     }
                                     else {
                                         ctx.lineTo(points[i][0], points[i][1]);
                                         dashContinuation -= pl;
+                                        drawDashes = false;
                                     }
                                 }
 
-                                else {
-                                    ndashes = parseInt(pl/dashTotLen);
-                                    x = points[i-1][0];
-                                    y = points[i-1][1];
+                                if (drawDashes) {
+                                    ndashes = parseInt(seglen/dashTotLen);
+                                    x = xstart;
+                                    y = ystart;
 
                                     for (var j=0; j<ndashes; j++) {
                                         x += dashx;
@@ -194,6 +210,9 @@
                                         y += gapy;
                                         ctx.moveTo(x, y);
                                     }
+
+                                    // If we have more than 1 pixel left over, continue this dash.
+                                    dashContinuation = (seglen - dashTotLen*ndashes > 1) ? seglen - dashTotLen*ndashes : 0;
                                     
                                 }
                             }

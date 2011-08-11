@@ -856,9 +856,9 @@
                     var l = gd.length;
                     // get average pixels between points.
                     var fact = parseInt(gd[l-1][0] - gd[0][0]) / l;
-                    var maxfact = 24, minfact = 4;
+                    var maxfact = 24, minfact = 3;
                     var maxdash = 10, maxgap = 14;
-                    var mindash = 1, mingap = 3;
+                    var mindash = 1, mingap = 4;
                     var dslope = (maxdash - mindash)/(maxfact - minfact);
                     var gslope = (maxgap - mingap)/(maxfact - minfact);
                     var db = maxdash - dslope * maxfact;
