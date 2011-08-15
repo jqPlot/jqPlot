@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <title>Bar Charts</title>
+  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <!-- END: load jqplot -->
+
+  <style type="text/css">
+    .jqplot-target {
+        margin-bottom: 2em;
+    }
+    
+    pre {
+        background: #D8F4DC;
+        border: 1px solid rgb(200, 200, 200);
+        padding-top: 1em;
+        padding-left: 3em;
+        padding-bottom: 1em;
+        margin-top: 1em;
+        margin-bottom: 4em;
+        
+    }
+    
+    p {
+        margin: 2em 0;
+    }
+    
+    .note {
+        font-size: 0.8em;
+    }
+
+    .jqplot-breakTick {
+        
+    }
+  </style>
+  
+  <script class="code" type="text/javascript">
+
+    $(document).ready(function () {
+      var s1 = [[0, 2], [1, 6], [2, 7], [3, 10]];
+
+      plot1 = $.jqplot("chart1", [s1], {
+        seriesDefaults:{
+        },
+        axes: {
+            xaxis: {
+            }
+        }
+      });
+    });
+
+    function getImage() {
+      var img = $('#chart1').jqplotToImage(0,0);
+      if (img) {
+        window.open (img.toDataURL("image/png"));
+      }
+    }
+
+
+</script>
+
+
+<script class="code" type="text/javascript" language="javascript">
+  
+ $(document).ready(function(){
+    $.jqplot.config.enablePlugins = true;
+    var line1 = [6.75, 14, 10.75, 5.125, 10];
+    var line2 = [1, 4, 5, 2, 2];
+
+    var tickers = ['2008-03-01', '2008-04-01', '2008-05-01', '2008-06-01', '2008-07-01'];
+    plot2 = $.jqplot('chart2', [line1, line2], {
+     stackSeries: true,
+     legend: {
+       show: true,
+       location: 'ne'
+     },
+     title: 'Data per month stack by user',
+     seriesDefaults: {
+       renderer: $.jqplot.BarRenderer,
+       rendererOptions: {
+          barWidth: 20
+       },
+        shadowAngle: 135
+     },
+     series: [{
+       label: 'User1'
+     },
+     {
+       label: 'User2'
+     }],
+     axes: {
+        xaxis: {
+         renderer: $.jqplot.CategoryAxisRenderer,
+                  ticks: tickers,
+                 rendererOptions: {
+                   tickRenderer: $.jqplot.CanvasAxisTickRenderer
+                 },
+         tickOptions: {
+           angle: -30
+         }
+        },
+       yaxis: {
+         min: 0
+       }
+     } 
+    });
+});
+
+</script>
+
+
+<script type="text/javascript">    
+    $(document).ready(function(){
+        $('script.code').each(function(index) {
+            $('pre.code').eq(index).text($(this).html());
+        });
+        $('script.common').each(function(index) {
+            $('pre.common').eq(index).html($(this).html());
+        });
+        $(document).unload(function() {$('*').unbind(); });
+    });
+</script> 
+    
+  </head>
+  <body>
+<?php include "nav.inc"; ?>
+        
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+
+    <button onclick="$('#chart1').jqplotViewImage();">View Image</button>
+    <button onclick="$('#chart1').jqplotSaveImage();">Save Image</button>
+
+    <pre class="code"></pre>
+        
+    <div id="chart2" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+
+    <button onclick="$('#chart2').jqplotViewImage();">View Image</button>
+    <button onclick="$('#chart2').jqplotSaveImage();">Save Image</button>
+
+    <pre class="code"></pre>
+
+
+
+  </body>
+</html>
