@@ -1048,7 +1048,7 @@
                 }
             }
 
-            if (this.renderer.bands.show) {
+            if (this.type === 'line' && this.renderer.bands.show) {
                 ymax = this._yaxis.series_u2p(this.renderer.bands._min);
                 ymin = this._yaxis.series_u2p(this.renderer.bands._max);
             }
@@ -1113,7 +1113,7 @@
         s._highlightedPoint = pidx;
         plot.plugins.lineRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColor};
-        if (s.renderer.bands.show) {
+        if (s.type === 'line' && s.renderer.bands.show) {
             opts.fill = true,
             opts.closePath = true;
         }
