@@ -309,12 +309,13 @@
             var rmin, rmax;
             var temp;
 
+            if (this.tickOptions == null || !this.tickOptions.formatString) {
+                this._overrideFormatString = true;
+            }
+
             // Doing complete autoscaling
             if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
                 // check to see if we can override tick format string with autocalculated one
-                if (this.tickOptions == null || !this.tickOptions.formatString) {
-                    this._overrideFormatString = true;
-                }
 
 
                 // Check if user must have tick at 0 or 100 and ensure they are in range.
@@ -526,6 +527,7 @@
                 // Use the default algorithm which pads each axis to make the chart
                 // centered nicely on the grid.
                 else {
+
                     rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
                     rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
                     range = rmax - rmin;
@@ -554,6 +556,8 @@
                     if (this.min == null) {
                         rmin = rmax - this.tickInterval*(this.numberTicks - 1);
                     }
+
+                    this._autoFormatString = $.jqplot.bestFormatString(this.tickInterval);
 
                     this.min = rmin;
                     this.max = rmax;
