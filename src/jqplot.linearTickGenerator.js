@@ -49,7 +49,7 @@
     // A good format string depends on the interval. If the interval is greater 
     // than 1 then there is no need to show any decimal digits. If it is < 1.0, then
     // use the magnitude of the interval to determine the number of digits to show.
-    $.jqplot.bestFormatString = function (interval)
+    function bestFormatString (interval)
     {
         var fstr;
         interval = Math.abs(interval);
@@ -115,9 +115,8 @@
         r[0] = Math.floor(axis_min / ss) * ss;  // min
         r[1] = Math.ceil(axis_max / ss) * ss;   // max
         r[2] = Math.round((r[1]-r[0])/ss+1.0);    // number of ticks
-        r[3] = $.jqplot.bestFormatString(ss);            // format string
+        r[3] = bestFormatString(ss);            // format string
         r[4] = ss;                              // tick Interval
-        console.log(r);
         return r;
     };
 

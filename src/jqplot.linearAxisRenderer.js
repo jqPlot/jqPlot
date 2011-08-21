@@ -522,6 +522,25 @@
                             this.max = this.min + rrange;
                         }
                     }
+
+                    // Compute a somewhat decent format string if it is needed.
+                    // get precision of interval and determine a format string.
+                    var sf = $.jqplot.getSignificantFigures(this.tickInterval);
+
+                    var fstr;
+
+                    // if we have only a whole number, use integer formatting
+                    if (sf.digitsLeft >= sf.significantDigits) {
+                        fstr = '%d';
+                    }
+
+                    else {
+                        var temp = Math.max(0, 5 - sf.digitsLeft);
+                        temp = Math.min(temp, sf.digitsRight);
+                        fstr = '%.'+ temp + 'f';
+                    }
+
+                    this._autoFormatString = fstr;
                 }
                 
                 // Use the default algorithm which pads each axis to make the chart
@@ -557,7 +576,24 @@
                         rmin = rmax - this.tickInterval*(this.numberTicks - 1);
                     }
 
-                    this._autoFormatString = $.jqplot.bestFormatString(this.tickInterval);
+                    // get precision of interval and determine a format string.
+                    var sf = $.jqplot.getSignificantFigures(this.tickInterval);
+
+                    var fstr;
+
+                    // if we have only a whole number, use integer formatting
+                    if (sf.digitsLeft >= sf.significantDigits) {
+                        fstr = '%d';
+                    }
+
+                    else {
+                        var temp = Math.max(0, 5 - sf.digitsLeft);
+                        temp = Math.min(temp, sf.digitsRight);
+                        fstr = '%.'+ temp + 'f';
+                    }
+
+
+                    this._autoFormatString = fstr;
 
                     this.min = rmin;
                     this.max = rmax;

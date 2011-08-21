@@ -284,4 +284,24 @@
     
     $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0&\' ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
+    $.jqplot.getSignificantFigures = function(number) {
+        var parts = String(Number(Math.abs(number)).toExponential()).split(/e|E/);
+        // total significant digits
+        var sd = (parts[0].indexOf('.') != -1) ? parts[0].length - 1 : parts[0].length;
+        var zeros = (parts[1] < 0) ? -parts[1] - 1 : 0;
+        // exponent
+        var expn = parseInt(parts[1]);
+        // digits to the left of the decimal place
+        var dleft = (expn + 1 > 0) ? expn + 1 : 0;
+        // digits to the right of the decimal place
+        var dright = (sd <= dleft) ? 0 : sd - expn - 1;
+        return {significantDigits: sd, digitsLeft: dleft, digitsRight: dright, zeros: zeros, exponent: expn} ;
+    };
+
+    $.jqplot.getPrecision = function(number) {
+        var arr = $.jqplot.getSignificantFigures(number);
+        var p = arr[1] - 1 - parseInt(arr[0][1]);
+        return p;
+    };
+
 })(jQuery);  
