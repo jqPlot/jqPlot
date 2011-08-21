@@ -60,10 +60,11 @@
 
         if (this.showSwatches) {
             td = $(document.createElement('td'));
-            td.addClass('jqplot-table-legend');
+            td.addClass('jqplot-table-legend jqplot-table-legend-swatch');
             td.css({textAlign: 'center', paddingTop: rs});
 
             div0 = $(document.createElement('div'));
+            div0.addClass('jqplot-table-legend-swatch-outline');
             div1 = $(document.createElement('div'));
             div1.addClass('jqplot-table-legend-swatch');
             div1.css({backgroundColor: color, borderColor: color});
@@ -76,7 +77,7 @@
         }
         if (this.showLabels) {
             td = $(document.createElement('td'));
-            td.addClass('jqplot-table-legend');
+            td.addClass('jqplot-table-legend jqplot-table-legend-label');
             td.css('paddingTop', rs);
             tr.append(td);
 

@@ -49,6 +49,7 @@
             var css = window.getComputedStyle ?  window.getComputedStyle(el) : el.currentStyle; // for IE < 9
             var left = x_offset + p.left + parseInt(css.marginLeft) + parseInt(css.borderLeftWidth) + parseInt(css.paddingLeft);
             var top = y_offset + p.top + parseInt(css.marginTop) + parseInt(css.borderTopWidth)+ parseInt(css.paddingTop);
+            // var left = x_offset + p.left + $(el).css('marginLeft') + $(el).css('borderLeftWidth') 
 
             if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip')) {
                 $(el).children().each(function() {
@@ -58,11 +59,61 @@
 
                 if (text) {
                     newContext.font = $(el).jqplotGetComputedFontStyle();
+                    newContext.fillStyle = $(el).css('color');
+                    // center text if necessary
+                    if ($(el).css('textAlign') === 'center') {
+                        left += (newCanvas.width - newContext.measureText(text).width)/2;
+                    }
                     newContext.fillText(text, left, top);
-                    // For debugging.
-                    //newContext.strokeRect(left, top, $(el).width(), $(el).height());
                 }
             }
+
+            // handle the standard table legend
+
+            else if (tagname === 'table' && $(el).hasClass('jqplot-table-legend')) {
+                newContext.strokeStyle = $(el).css('border-top-color');
+                newContext.fillStyle = $(el).css('background-color');
+                newContext.fillRect(left, top, $(el).innerWidth(), $(el).innerHeight());
+                newContext.strokeRect(left, top, $(el).innerWidth(), $(el).innerHeight());
+
+
+
+                // find all the swatches
+                $(el).find('div.jqplot-table-legend-swatch-outline').each(function() {
+                    // get the first div and stroke it
+                    var elem = $(this);
+                    newContext.strokeStyle = elem.css('border-top-color');
+                    var l = left + elem.position().left;
+                    var t = top + elem.position().top;
+                    newContext.strokeRect(l, t, elem.innerWidth(), elem.innerHeight());
+
+                    // now fill the swatch
+                    
+                    l += parseInt(elem.css('padding-left'));
+                    t += parseInt(elem.css('padding-top'));
+                    var h = elem.innerHeight() - 2 * parseInt(elem.css('padding-top'));
+                    var w = elem.innerWidth() - 2 * parseInt(elem.css('padding-left'));
+
+                    var swatch = elem.children('div.jqplot-table-legend-swatch');
+                    newContext.fillStyle = swatch.css('background-color');
+                    newContext.fillRect(l, t, w, h);
+                });
+
+
+                // now add text
+
+                $(el).find('td.jqplot-table-legend-label').each(function(){
+                    var elem = $(this);
+                    l = left + elem.position().left;
+                    t = top + elem.position().top;
+                    newContext.font = elem.jqplotGetComputedFontStyle();
+                    newContext.fillStyle = elem.css('color');
+                    newContext.fillText(elem.text(), l, t);
+                });
+
+                elem = null;
+            }
+
             else if (tagname == 'canvas') {
                 newContext.drawImage(el, left, top);
             }
