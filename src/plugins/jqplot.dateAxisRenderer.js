@@ -213,7 +213,6 @@
                             bd[j][1] = new $.jsDate(bd[j][1]).getTime();
                             if ((bd[j][1] != null && bd[j][1] > db.max) || db.max == null) {
                                 db.max = bd[j][1];
-                                console.log(db.max);
                             }
                         }
                     }
@@ -231,7 +230,6 @@
                             bd[j][1] = new $.jsDate(bd[j][1]).getTime();
                             if ((bd[j][1] != null && bd[j][1] < db.min) || db.min == null) {
                                 db.min = bd[j][1];
-                                console.log(db.min);
                             }
                         }
                     }
