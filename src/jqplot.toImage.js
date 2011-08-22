@@ -26,6 +26,9 @@
 
     $.fn.jqplotToImage = function(x_offset, y_offset) {
 
+        x_offset = (x_offset == null) ? 0 : x_offset;
+        y_offset = (y_offset == null) ? 0 : y_offset;
+
         if ($(this).width() == 0 || $(this).height() == 0) {
             return null;
         }
@@ -36,10 +39,52 @@
         }
         
         var newCanvas = document.createElement("canvas");
-        newCanvas.width = $(this).outerWidth() + Number(x_offset);
-        newCanvas.height = $(this).outerHeight() + Number(y_offset);
+        var h = $(this).outerHeight(true);
+        var w = $(this).outerWidth(true);
+        var plotleft = $(this).offset().left;
+        var plottop = $(this).offset().top;
+        var transx = 0, transy = 0;
+        // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
+
+        // have to check if any elements are hanging outside of plot area before rendering,
+        // since changing width of canvas will erase canvas.
+
+        var clses = ['jqplot-table-legend', 'jqplot-xaxis-tick', 'jqplot-x2axis-tick', 'jqplot-yaxis-tick', 'jqplot-y2axis-tick', 'jqplot-y3axis-tick', 
+        'jqplot-y4axis-tick', 'jqplot-y5axis-tick', 'jqplot-y6axis-tick', 'jqplot-y7axis-tick', 'jqplot-y8axis-tick', 'jqplot-y9axis-tick',
+        'jqplot-xaxis-label', 'jqplot-x2axis-label', 'jqplot-yaxis-label', 'jqplot-y2axis-label', 'jqplot-y3axis-label', 'jqplot-y4axis-label', 
+        'jqplot-y5axis-label', 'jqplot-y6axis-label', 'jqplot-y7axis-label', 'jqplot-y8axis-label', 'jqplot-y9axis-label' ];
+
+        var temptop, templeft, tempbottom, tempright;
+
+        for (i in clses) {
+            $(this).find('.'+clses[i]).each(function() {
+                temptop = $(this).offset().top - plottop;
+                templeft = $(this).offset().left - plotleft;
+                tempright = templeft + $(this).outerWidth(true);
+                tempbottom = temptop + $(this).outerHeight(true);
+                if (templeft < -transx) {
+                    w = w - transx - templeft;
+                    transx = -templeft;
+                }
+                if (temptop < -transy) {
+                    h = h - transy - temptop;
+                    transy = - temptop;
+                }
+                if (tempright > w) {
+                    w = tempright;
+                }
+                if (tempbottom > h) {
+                    h =  tempbottom;
+                }
+            })
+        }
+        // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
+
+        newCanvas.width = w + Number(x_offset);
+        newCanvas.height = h + Number(y_offset);
 
         var newContext = newCanvas.getContext("2d"); 
+        newContext.translate(transx, transy);
         newContext.textAlign = 'left';
         newContext.textBaseline = 'top';
 
@@ -62,7 +107,7 @@
                     newContext.fillStyle = $(el).css('color');
                     // center text if necessary
                     if ($(el).css('textAlign') === 'center') {
-                        left += (newCanvas.width - newContext.measureText(text).width)/2;
+                        left += (newCanvas.width - newContext.measureText(text).width)/2  - transx;
                     }
                     newContext.fillText(text, left, top);
                 }
@@ -104,8 +149,8 @@
 
                 $(el).find('td.jqplot-table-legend-label').each(function(){
                     var elem = $(this);
-                    l = left + elem.position().left;
-                    t = top + elem.position().top;
+                    var l = left + elem.position().left;
+                    var t = top + elem.position().top + parseInt(elem.css('padding-top'));
                     newContext.font = elem.jqplotGetComputedFontStyle();
                     newContext.fillStyle = elem.css('color');
                     newContext.fillText(elem.text(), l, t);

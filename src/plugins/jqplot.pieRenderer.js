@@ -670,17 +670,18 @@
 
 
                             td1 = $(document.createElement('td'));
-                            td1.addClass('jqplot-table-legend');
+                            td1.addClass('jqplot-table-legend jqplot-table-legend-swatch');
                             td1.css({textAlign: 'center', paddingTop: rs});
 
                             div0 = $(document.createElement('div'));
+                            div0.addClass('jqplot-table-legend-swatch-outline');
                             div1 = $(document.createElement('div'));
                             div1.addClass('jqplot-table-legend-swatch');
                             div1.css({backgroundColor: color, borderColor: color});
                             td1.append(div0.append(div1));
 
                             td2 = $(document.createElement('td'));
-                            td2.addClass('jqplot-table-legend');
+                            td2.addClass('jqplot-table-legend jqplot-table-legend-label');
                             td2.css('paddingTop', rs);
 
                             if (this.escapeHtml){
