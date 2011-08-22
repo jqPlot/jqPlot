@@ -33,7 +33,7 @@
 }
 </style>
 
-<script language="javascript" type="text/javascript">
+<script class="code" language="javascript" type="text/javascript">
 $(document).ready(function(){
 
     l2 = [11, 9, 5, 12, 14];
@@ -56,6 +56,23 @@ $(document).ready(function(){
        }
     });
     
+    $('#chart1b').bind('jqplotDataHighlight', 
+        function (ev, seriesIndex, pointIndex, data) {
+            $('#info1b').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+        }
+    );
+    
+    $('#chart1b').bind('jqplotDataUnhighlight', 
+        function (ev) {
+            $('#info1b').html('Nothing');
+        }
+    );
+});
+</script>
+ 
+ 
+<script class="code" language="javascript" type="text/javascript">
+$(document).ready(function(){   
     plot1c = $.jqplot('chart1c',[l5],{
        stackSeries: true,
        showMarker: false,
@@ -73,22 +90,10 @@ $(document).ready(function(){
             $('#info1c').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
         }
     );
-    
-    $('#chart1b').bind('jqplotDataHighlight', 
-        function (ev, seriesIndex, pointIndex, data) {
-            $('#info1b').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
-        }
-    );
-    
-    $('#chart1b').bind('jqplotDataUnhighlight', 
-        function (ev) {
-            $('#info1b').html('Nothing');
-        }
-    );
 });
-
-
 </script>
+
+<script type="text/javascript" src="example.js"></script>
   </head>
   <body>
 <?php include "nav.inc"; ?>

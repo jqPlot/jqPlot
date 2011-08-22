@@ -72,6 +72,18 @@
       legend:{show:true}      
     });   
 });</script>
+  
+<script class="code" type="text/javascript">$(document).ready(function(){  
+    plot7 = $.jqplot('pie7', [[["all", 10]]], {
+      seriesDefaults:{
+        renderer:$.jqplot.PieRenderer,
+        rendererOptions: {
+          showDataLabels: true
+        }
+      },
+      legend:{show:true}      
+    });   
+});</script>
 
   
 <script type="text/javascript">    
@@ -98,6 +110,8 @@
     <div id="pie5" style="margin-top:20px; margin-left:20px; width:400px; height:240px;"></div>
 <pre class="code"></pre>
     <div id="pie6" style="margin-top:20px; margin-left:20px; width:400px; height:240px;"></div>
+<pre class="code"></pre>
+    <div id="pie7" style="margin-top:20px; margin-left:20px; width:400px; height:240px;"></div>
 <pre class="code"></pre>
   </body>
 </html>

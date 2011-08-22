@@ -127,36 +127,15 @@
 </script>
 
 
-<script type="text/javascript">    
-    $(document).ready(function(){
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        });
-        $('script.common').each(function(index) {
-            $('pre.common').eq(index).html($(this).html());
-        });
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script> 
+<script type="text/javascript" src="example.js"></script>
     
   </head>
   <body>
 <?php include "nav.inc"; ?>
         
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
-
-    <button onclick="$('#chart1').jqplotViewImage();">View Image</button>
-    <button onclick="$('#chart1').jqplotSaveImage();">Save Image</button>
-
-    <pre class="code"></pre>
         
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
-
-    <button onclick="$('#chart2').jqplotViewImage();">View Image</button>
-    <button onclick="$('#chart2').jqplotSaveImage();">Save Image</button>
-
-    <pre class="code"></pre>
-
 
 
   </body>

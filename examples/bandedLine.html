@@ -213,17 +213,8 @@ $(document).ready(function(){
 </script>
 
 
-<script type="text/javascript">    
-    $(document).ready(function(){
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        });
-        $('script.common').each(function(index) {
-            $('pre.common').eq(index).html($(this).html());
-        });
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script>
+
+<script type="text/javascript" src="example.js"></script>
 
 <script class="code" type="text/javascript">
 ///////
