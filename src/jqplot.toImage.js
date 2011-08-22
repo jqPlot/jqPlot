@@ -44,6 +44,7 @@
         var plotleft = $(this).offset().left;
         var plottop = $(this).offset().top;
         var transx = 0, transy = 0;
+        // var tlw = tlh = tll = tlr = tlt = tlb = 0;
         // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
 
         // have to check if any elements are hanging outside of plot area before rendering,
@@ -60,8 +61,8 @@
             $(this).find('.'+clses[i]).each(function() {
                 temptop = $(this).offset().top - plottop;
                 templeft = $(this).offset().left - plotleft;
-                tempright = templeft + $(this).outerWidth(true);
-                tempbottom = temptop + $(this).outerHeight(true);
+                tempright = templeft + $(this).outerWidth(true) + transx;
+                tempbottom = temptop + $(this).outerHeight(true) + transy;
                 if (templeft < -transx) {
                     w = w - transx - templeft;
                     transx = -templeft;
@@ -76,6 +77,9 @@
                 if (tempbottom > h) {
                     h =  tempbottom;
                 }
+                // console.log(this.tagName);
+                // console.log(temptop, templeft, tempright, tempbottom);
+                // console.log(w, h, transx, transy);
             })
         }
         // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
@@ -119,7 +123,9 @@
                 newContext.strokeStyle = $(el).css('border-top-color');
                 newContext.fillStyle = $(el).css('background-color');
                 newContext.fillRect(left, top, $(el).innerWidth(), $(el).innerHeight());
-                newContext.strokeRect(left, top, $(el).innerWidth(), $(el).innerHeight());
+                if (parseInt($(el).css('border-top-width')) > 0) {
+                    newContext.strokeRect(left, top, $(el).innerWidth(), $(el).innerHeight());
+                }
 
 
 
