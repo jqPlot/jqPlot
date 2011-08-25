@@ -83,7 +83,7 @@
         return style.join(' ');
     };
 
-    $.fn.jqplotToImage = function(x_offset, y_offset) {
+    $.fn.jqplotToImageCanvas = function(x_offset, y_offset) {
 
         x_offset = (x_offset == null) ? 0 : x_offset;
         y_offset = (y_offset == null) ? 0 : y_offset;
@@ -100,8 +100,9 @@
         var newCanvas = document.createElement("canvas");
         var h = $(this).outerHeight(true);
         var w = $(this).outerWidth(true);
-        var plotleft = $(this).offset().left;
-        var plottop = $(this).offset().top;
+        var offs = $(this).offset();
+        var plotleft = offs.left;
+        var plottop = offs.top;
         var transx = 0, transy = 0;
         // var tlw = tlh = tll = tlr = tlt = tlb = 0;
         // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
@@ -256,19 +257,39 @@
         return newCanvas;
     };
 
-    $.fn.jqplotSaveImage = function() {
-        var imgCanvas = $(this).jqplotToImage(0,0);
+    $.fn.jqplotToImageStr = function(x_offset, y_offset) {
+        var imgCanvas = $(this).jqplotToImageCanvas(0,0);
         if (imgCanvas) {
-            var imgData = imgCanvas.toDataURL("image/png");
+            return imgCanvas.toDataURL("image/png");
+        }
+        else return null;
+    }
+
+    // create an <img> element and return it.
+    // Should work on canvas supporting browsers.
+    $.fn.jqplotToImageElem = function(x_offset, y_offset) {
+        var elem = document.createElement("img");
+        var str = $(this).jqplotToImageStr(x_offset, y_offset);
+        elem.src = str;
+        return elem;
+    };
+
+    // Not gauranteed to work, even on canvas supporting browsers due to 
+    // limitations with location.href and browser support.
+    $.fn.jqplotSaveImage = function() {
+        var imgData = $(this).jqplotToImageStr(0,0);
+        if (imgData) {
             window.location.href = imgData.replace("image/png", "image/octet-stream");
         }
 
     };
 
+    // Not gauranteed to work, even on canvas supporting browsers due to
+    // limitations with window.open and arbitrary data.
     $.fn.jqplotViewImage = function() {
-        var imgCanvas = $(this).jqplotToImage(0,0);
-        if (imgCanvas) {
-            window.open(imgCanvas.toDataURL("image/png"));
+        var imgData = $(this).jqplotToImageStr(0,0);
+        if (imgData) {
+            window.open(imgData);
         }
     };
     
