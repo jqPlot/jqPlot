@@ -83,10 +83,20 @@
         return style.join(' ');
     };
 
-    $.fn.jqplotToImageCanvas = function(x_offset, y_offset) {
 
-        x_offset = (x_offset == null) ? 0 : x_offset;
-        y_offset = (y_offset == null) ? 0 : y_offset;
+
+    /**
+     * Namespace: $.fn
+     * jQuery namespace to attach functions to jQuery elements.
+     *  
+     */
+
+    $.fn.jqplotToImageCanvas = function(options) {
+
+        options = options || {};
+        x_offset = (options.x_offset == null) ? 0 : options.x_offset;
+        y_offset = (options.y_offset == null) ? 0 : options.y_offset;
+        backgroundColor = (options.backgroundColor == null) ? 'rgb(255,255,255)' : options.backgroundColor;
 
         if ($(this).width() == 0 || $(this).height() == 0) {
             return null;
@@ -148,6 +158,12 @@
         newCanvas.height = h + Number(y_offset);
 
         var newContext = newCanvas.getContext("2d"); 
+
+        newContext.save();
+        newContext.fillStyle = backgroundColor;
+        newContext.fillRect(0,0, newCanvas.width, newCanvas.height);
+        newContext.restore();
+
         newContext.translate(transx, transy);
         newContext.textAlign = 'left';
         newContext.textBaseline = 'top';
@@ -257,8 +273,8 @@
         return newCanvas;
     };
 
-    $.fn.jqplotToImageStr = function(x_offset, y_offset) {
-        var imgCanvas = $(this).jqplotToImageCanvas(0,0);
+    $.fn.jqplotToImageStr = function(options) {
+        var imgCanvas = $(this).jqplotToImageCanvas(options);
         if (imgCanvas) {
             return imgCanvas.toDataURL("image/png");
         }
@@ -267,9 +283,9 @@
 
     // create an <img> element and return it.
     // Should work on canvas supporting browsers.
-    $.fn.jqplotToImageElem = function(x_offset, y_offset) {
+    $.fn.jqplotToImageElem = function(options) {
         var elem = document.createElement("img");
-        var str = $(this).jqplotToImageStr(x_offset, y_offset);
+        var str = $(this).jqplotToImageStr(options);
         elem.src = str;
         return elem;
     };
@@ -277,7 +293,7 @@
     // Not gauranteed to work, even on canvas supporting browsers due to 
     // limitations with location.href and browser support.
     $.fn.jqplotSaveImage = function() {
-        var imgData = $(this).jqplotToImageStr(0,0);
+        var imgData = $(this).jqplotToImageStr(options);
         if (imgData) {
             window.location.href = imgData.replace("image/png", "image/octet-stream");
         }

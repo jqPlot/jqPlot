@@ -155,7 +155,7 @@
     [18, 17, 539, "Audi"], [7, 89, 864, "BMW"], [2, 13, 1026, "Bugatti"]];
     
     plot2 = $.jqplot('chart2',[arr],{
-        title: 'Bubble Gradient Fills<sup>*</sup>',
+        title: 'Bubble Gradient Fills*',
         seriesDefaults:{
             renderer: $.jqplot.BubbleRenderer,
             rendererOptions: {
@@ -198,15 +198,7 @@
 });</script>
 
 
-<script type="text/javascript">
-    $(document).ready(function(){
-        
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        })
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script> 
+<script type="text/javascript" src="example.js"></script>
 
   </head>
   <body>

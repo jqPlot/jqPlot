@@ -32,3 +32,26 @@ pre.code {
 p {
     margin: 2em 0;
 }
+
+div.jqplot-image-container {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #999;
+    display: inline-block;
+    margin-top: 25px;
+}
+
+div.jqplot-image-container-header {
+    font-size: 1.0em;
+    font-weight: bold;
+    padding: 5px 15px;
+    background-color: #eee;
+}
+
+div.jqplot-image-container-content {
+    padding: 15px;
+}
+
+a.jqplot-image-container-close {
+    float: right;
+}
