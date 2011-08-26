@@ -67,10 +67,8 @@
 
     // Returns font style as abbreviation for "font" property.
     $.fn.jqplotGetComputedFontStyle = function() {
-        var css = window.getComputedStyle ?  window.getComputedStyle(this[0]) : this[0].currentStyle;;
-        var attrs = css['font-style'] 
-            ? ['font-style', 'font-weight', 'font-size', 'font-family']
-            : ['fontStyle', 'fontWeight', 'fontSize', 'fontFamily'];
+        var css = window.getComputedStyle ?  window.getComputedStyle(this[0]) : this[0].currentStyle;
+        var attrs = css['font-style'] ? ['font-style', 'font-weight', 'font-size', 'font-family'] : ['fontStyle', 'fontWeight', 'fontSize', 'fontFamily'];
         var style = [];
 
         for (var i=0 ; i < attrs.length; ++i) {
@@ -150,7 +148,7 @@
                 // console.log(this.tagName);
                 // console.log(temptop, templeft, tempright, tempbottom);
                 // console.log(w, h, transx, transy);
-            })
+            });
         }
         // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
 
@@ -278,8 +276,10 @@
         if (imgCanvas) {
             return imgCanvas.toDataURL("image/png");
         }
-        else return null;
-    }
+        else {
+            return null;
+        }
+    };
 
     // create an <img> element and return it.
     // Should work on canvas supporting browsers.

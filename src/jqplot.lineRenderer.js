@@ -466,8 +466,12 @@
         }
 
         function dxx(x1, x0) {
-            if (x1 - x0 == 0) return Math.pow(10,10);
-            else return x1 - x0;
+            if (x1 - x0 == 0) {
+                return Math.pow(10,10);
+            }
+            else {
+                return x1 - x0;
+            }
         }
 
         var A, B, C, D;
@@ -703,7 +707,9 @@
         // don't do smoothing or bands on broken lines.
         if (hasNull) {
             this.renderer.smooth = false;
-            if (this._type === 'liine') bands.show = false;
+            if (this._type === 'liine') {
+                bands.show = false;
+            }
         }
 
         if (this._type === 'line' && bands.show) {
@@ -788,7 +794,9 @@
         // don't do smoothing or bands on broken lines.
         if (hasNull) {
             this.renderer.smooth = false;
-            if (this._type === 'line') bands.show = false;
+            if (this._type === 'line') {
+                bands.show = false;
+            }
         }
 
         if (this._type === 'line' && bands.show) {
@@ -1114,7 +1122,7 @@
         plot.plugins.lineRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColor};
         if (s.type === 'line' && s.renderer.bands.show) {
-            opts.fill = true,
+            opts.fill = true;
             opts.closePath = true;
         }
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
