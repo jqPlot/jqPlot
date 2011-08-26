@@ -293,7 +293,7 @@
     // Not gauranteed to work, even on canvas supporting browsers due to 
     // limitations with location.href and browser support.
     $.fn.jqplotSaveImage = function() {
-        var imgData = $(this).jqplotToImageStr(options);
+        var imgData = $(this).jqplotToImageStr({});
         if (imgData) {
             window.location.href = imgData.replace("image/png", "image/octet-stream");
         }
@@ -303,7 +303,7 @@
     // Not gauranteed to work, even on canvas supporting browsers due to
     // limitations with window.open and arbitrary data.
     $.fn.jqplotViewImage = function() {
-        var imgData = $(this).jqplotToImageStr(0,0);
+        var imgData = $(this).jqplotToImageStr({});
         if (imgData) {
             window.open(imgData);
         }

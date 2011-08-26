@@ -8,6 +8,9 @@
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
+  <!--[if lt IE 9]>
+    <script type="text/javascript" src="../src/excanvas.js"></script>
+  <![endif]-->
   
   <!-- BEGIN: load jquery -->
   <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
@@ -121,15 +124,7 @@
        }
      } 
     });
-
-    $('#imgdiv').hide();
 });
-
-function makeImage() {
-  var imgelem = $('#chart1').jqplotToImageElem();
-  $('#imgdiv').append(imgelem);
-  $('#imgdiv').show();
-}
 
 </script>
 
@@ -141,11 +136,34 @@ function makeImage() {
 <?php include "nav.inc"; ?>
         
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:300px; height:200px;"></div>
-    <button onclick="makeImage();">Make Image</button>
-    <div id="imgdiv"></div>
         
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:300px; height:200px;"></div>
 
+<script type="text/javascript">
+$(document).ready(function(){
+
+    if (!$.jqplot.use_excanvas) {
+        $('div.jqplot-target').each(function(){
+            // Add a view image button
+            var btn = $(document.createElement('button'));
+            btn.text('View as PNG');
+            btn.bind('click', {chart: $(this)}, function(evt) {
+            evt.data.chart.jqplotViewImage();
+            });
+            $(this).after(btn);
+
+            // add a save image button
+            btn = $(document.createElement('button'));
+            btn.text('Save as PNG');
+            btn.bind('click', {chart: $(this)}, function(evt) {
+            evt.data.chart.jqplotSaveImage();
+            });
+            $(this).after(btn);
+            btn = null;
+        });
+    }
+});
+</script>
 
   </body>
 </html>
