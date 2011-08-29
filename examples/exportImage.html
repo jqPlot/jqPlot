@@ -3,13 +3,23 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=8"/>
 
   <title>Bar Charts</title>
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
+  <!--[if lt IE 7]>
+    <script type="text/javascript" src="../../flot/excanvas.js"></script>
+  <![endif]-->
+  <!--[if lt IE 7]>
+    <script type="text/javascript" src="../../explorercanvas/excanvas.js"></script>
+  <![endif]-->
   <!--[if lt IE 9]>
     <script type="text/javascript" src="../src/excanvas.js"></script>
+  <![endif]-->
+  <!--[if lt IE 7]>
+    <script type="text/javascript" src="../../flashcanvas/src/flashcanvas.js"></script>
   <![endif]-->
   
   <!-- BEGIN: load jquery -->
@@ -23,6 +33,7 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+<!--   // <script language="javascript" type="text/javascript" src="../src/canvasHack.js"></script> -->
   <!-- END: load jqplot -->
 
   <style type="text/css">
@@ -54,28 +65,20 @@
     }
   </style>
   
-  <script class="code" type="text/javascript">
+  <script class="nocode" type="text/javascript">
 
-    $(document).ready(function () {
-      var s1 = [[0, 2], [1, 6], [2, 7], [3, 10]];
+    // $(document).ready(function () {
+    //   var s1 = [[0, 2], [1, 6], [2, 7], [3, 10]];
 
-      plot1 = $.jqplot("chart1", [s1], {
-        seriesDefaults:{
-        },
-        axes: {
-            xaxis: {
-            }
-        }
-      });
-    });
-
-    function getImage() {
-      var img = $('#chart1').jqplotToImage(0,0);
-      if (img) {
-        window.open (img.toDataURL("image/png"));
-      }
-    }
-
+    //   plot1 = $.jqplot("chart1", [s1], {
+    //     seriesDefaults:{
+    //     },
+    //     axes: {
+    //         xaxis: {
+    //         }
+    //     }
+    //   });
+    // });
 
 </script>
 
@@ -99,24 +102,18 @@
        renderer: $.jqplot.BarRenderer,
        rendererOptions: {
           barWidth: 20
-       },
-        shadowAngle: 135
+       }
      },
-     series: [{
-       label: 'User1'
-     },
-     {
-       label: 'User2'
-     }],
+     series: [{ label: 'User1' },{ label: 'User2' }],
      axes: {
         xaxis: {
          renderer: $.jqplot.CategoryAxisRenderer,
                   ticks: tickers,
                  rendererOptions: {
-                   tickRenderer: $.jqplot.CanvasAxisTickRenderer
+                   // tickRenderer: $.jqplot.CanvasAxisTickRenderer
                  },
          tickOptions: {
-           angle: -30
+           // angle: -30
          }
         },
        yaxis: {
@@ -129,13 +126,13 @@
 </script>
 
 
-<script type="text/javascript" src="example.js"></script>
+<!-- <script type="text/javascript" src="example.js"></script> -->
     
   </head>
   <body>
 <?php include "nav.inc"; ?>
         
-    <div id="chart1" style="margin-top:20px; margin-left:20px; width:300px; height:200px;"></div>
+<!--     <div id="chart1" style="margin-top:20px; margin-left:20px; width:300px; height:200px;"></div> -->
         
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:300px; height:200px;"></div>
 
@@ -162,6 +159,8 @@ $(document).ready(function(){
             btn = null;
         });
     }
+
+    // $('body').CanvasHack();
 });
 </script>
 
