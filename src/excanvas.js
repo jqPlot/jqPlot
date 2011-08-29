@@ -1429,6 +1429,7 @@ if (!document.createElement('canvas').getContext) {
   CanvasGradient = CanvasGradient_;
   CanvasPattern = CanvasPattern_;
   DOMException = DOMException_;
+  _jqplotExcanvasVersion = 859;
 })();
 
 } // if

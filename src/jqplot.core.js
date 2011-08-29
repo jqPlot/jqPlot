@@ -248,7 +248,7 @@
         };
 
         this.freeCanvas = function(idx) {
-            if ($.jqplot.use_excanvas) {
+            if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
                 // excanvas can't be reused, but properly unset
                 window.G_vmlCanvasManager.uninitElement($.jqplot.CanvasManager.canvases[idx]);
                 $.jqplot.CanvasManager.canvases[idx] = null;
@@ -323,7 +323,13 @@
             
     $.jqplot.support_canvas_text = function() {
         if (typeof $.jqplot.support_canvas_text.result == 'undefined') {
-            $.jqplot.support_canvas_text.result = !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function'); 
+            if (window._jqplotExcanvasVersion !== undefined && window._jqplotExcanvasVersion > 9999) {
+                $.jqplot.support_canvas_text.result = true;
+            }
+            else {
+                $.jqplot.support_canvas_text.result = !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+            }
+             
         }
         return $.jqplot.support_canvas_text.result;
     };
@@ -1511,23 +1517,6 @@
         }
         var elem;
 
-        // if (this._elem) {
-        //     // Memory Leaks patch
-        //     if ($.jqplot.use_excanvas) {
-        //         window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
-        //     }
-        // }
-        // else {
-        //     // don't use the canvas manager with excanvas.
-        //     if ($.jqplot.use_excanvas) {
-        //         elem = document.createElement('canvas');
-        //     }
-        //     else {
-        //         elem = plot.canvasManager.getCanvas();
-        //     }
-
-        // }
-
         elem = plot.canvasManager.getCanvas();
         
         // if new plotDimensions supplied, use them.
@@ -1556,7 +1545,7 @@
     // Memory Leaks patch
     $.jqplot.GenericCanvas.prototype.resetCanvas = function() {
       if (this._elem) {
-        if ($.jqplot.use_excanvas) {
+        if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
            window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
         }
         
@@ -2119,7 +2108,7 @@
                   var el = t[i]._elem;
                   if (el) {
                     // if canvas renderer
-                    if ($.jqplot.use_excanvas) {
+                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
                       window.G_vmlCanvasManager.uninitElement(el.get(0));
                     }
                     el.emptyForce();
