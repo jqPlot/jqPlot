@@ -151,6 +151,7 @@
         this.bringSeriesToFront = false;
         this._tooltipElem;
         this.isHighlighting = false;
+        this.currentNeighbor = null;
 
         $.extend(true, this, options);
     };
@@ -393,8 +394,8 @@
         var c = plot.plugins.cursor;
         if (hl.show) {
             if (neighbor == null && hl.isHighlighting) {
-               var ctx = hl.highlightCanvas._ctx;
-               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                var ctx = hl.highlightCanvas._ctx;
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 if (hl.fadeTooltip) {
                     hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
                 }
@@ -404,12 +405,13 @@
                 if (hl.bringSeriesToFront) {
                     plot.restorePreviousSeriesOrder();
                 }
-               hl.isHighlighting = false;
-        	  ctx = null;
-            
+                hl.isHighlighting = false;
+                hl.currentNeighbor = null;
+                ctx = null;
             }
             else if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
                 hl.isHighlighting = true;
+                hl.currentNeighbor = neighbor;
                 if (hl.showMarker) {
                     draw(plot, neighbor);
                 }
@@ -419,6 +421,46 @@
                 if (hl.bringSeriesToFront) {
                     plot.moveSeriesToFront(neighbor.seriesIndex);
                 }
+            }
+            // check to see if we're highlighting the wrong point.
+            else if (neighbor != null && hl.isHighlighting && hl.currentNeighbor != neighbor) {
+                // highlighting the wrong point.
+
+                // if new series allows highlighting, highlight new point.
+                if (plot.series[neighbor.seriesIndex].showHighlight) {
+                    var ctx = hl.highlightCanvas._ctx;
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    hl.isHighlighting = true;
+                    hl.currentNeighbor = neighbor;
+                    if (hl.showMarker) {
+                        draw(plot, neighbor);
+                    }
+                    if (hl.showTooltip && (!c || !c._zoom.started)) {
+                        showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
+                    }
+                    if (hl.bringSeriesToFront) {
+                        plot.moveSeriesToFront(neighbor.seriesIndex);
+                    }                    
+                }
+
+                // else, turn off highlighting
+                // else {
+                //     var ctx = hl.highlightCanvas._ctx;
+                //     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                //     if (hl.fadeTooltip) {
+                //         hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
+                //     }
+                //     else {
+                //         hl._tooltipElem.hide();
+                //     }
+                //     if (hl.bringSeriesToFront) {
+                //         plot.restorePreviousSeriesOrder();
+                //     }
+                //     hl.isHighlighting = false;
+                //     hl.currentNeighbor = null;
+                //     ctx = null;
+                // }
+                
             }
         }
     }
