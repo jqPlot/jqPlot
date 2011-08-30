@@ -441,26 +441,7 @@
                     if (hl.bringSeriesToFront) {
                         plot.moveSeriesToFront(neighbor.seriesIndex);
                     }                    
-                }
-
-                // else, turn off highlighting
-                // else {
-                //     var ctx = hl.highlightCanvas._ctx;
-                //     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                //     if (hl.fadeTooltip) {
-                //         hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
-                //     }
-                //     else {
-                //         hl._tooltipElem.hide();
-                //     }
-                //     if (hl.bringSeriesToFront) {
-                //         plot.restorePreviousSeriesOrder();
-                //     }
-                //     hl.isHighlighting = false;
-                //     hl.currentNeighbor = null;
-                //     ctx = null;
-                // }
-                
+                }                
             }
         }
     }
