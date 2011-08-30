@@ -231,7 +231,7 @@
             for (i=0; i<userTicks.length; i++){
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
-                if (ut.constructor == Array) {
+                if ($.isArray(ut)) {
                     t.value = ut[0];
                     if (this.breakPoints) {
                         if (ut[0] == this.breakPoints[0]) {
@@ -253,6 +253,12 @@
                         t.label = ut[1];
                     }
                     t.setTick(ut[0], this.name);
+                    this._ticks.push(t);
+                }
+
+                else if ($.isPlainObject(ut)) {
+                    $.extend(true, t, ut);
+                    t.axis = this.name;
                     this._ticks.push(t);
                 }
                 

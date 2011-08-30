@@ -132,6 +132,12 @@
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
+
+                else if ($.isPlainObject(ut)) {
+                    $.extend(true, t, ut);
+                    t.axis = this.name;
+                    this._ticks.push(t);
+                }
                 
                 else {
                     t.value = ut;
