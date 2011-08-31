@@ -84,6 +84,7 @@
         this.type = null;
         this.gridStart = null;
         this.gridStop = null;
+        this.tooltipWidthFactor = 0;
         this.options = {           
             // prop: name
             // Optional name for the overlay object.
@@ -125,6 +126,11 @@
             // prop: showTooltip
             // Show a tooltip with data point values.
             showTooltip: false,
+            // prop: showTooltipPrecision
+            // Controls how close to line cursor must be to show tooltip.
+            // Higher number = closer to line, lower number = farther from line.
+            // 1.0 = cursor must be over line.
+            showTooltipPrecision: 0.6,
             // prop: tooltipLocation
             // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
             tooltipLocation: 'nw',
@@ -355,6 +361,7 @@
                     // style and shadow properties should be set before
                     // every draw of marker renderer.
                     mr.shadow = obj.options.shadow;
+                    obj.tooltipWidthFactor = obj.options.lineWidth / obj.options.showTooltipPrecision;
                     switch (obj.type) {
                         case 'line':
                             // style and shadow properties should be set before
@@ -610,23 +617,107 @@
         if (!this.plugins.canvasOverlay.deferDraw) {
             this.plugins.canvasOverlay.draw(this);
         }
+
+        var elem = document.createElement('div');
+        this.plugins.canvasOverlay._tooltipElem = $(elem);
+        elem = null;
+        this.plugins.canvasOverlay._tooltipElem.addClass('jqplot-canvasOverlay-tooltip');
+        this.plugins.canvasOverlay._tooltipElem.css({position:'absolute', display:'none'});
+        
+        this.eventCanvas._elem.before(this.plugins.canvasOverlay._tooltipElem);
     };
 
 
-    function isNearLine(point, lstart, lstop) {
+    function showTooltip(plot, obj, gridpos, datapos) {
+        var hl = plot.plugins.canvasOverlay;
+        var elem = hl._tooltipElem;
 
+        var opts = obj.options;
+
+        var str;
+        if (opts.tooltipAxes == 'both' || opts.tooltipAxes == 'xy') {
+            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
+        }
+        else if (opts.tooltipAxes == 'yx') {
+            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
+        }
+        else if (opts.tooltipAxes == 'x') {
+            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
+        }
+        else if (opts.tooltipAxes == 'y') {
+            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
+        } 
+
+
+        elem.html(str);
+
+        var fact = ms = 0;
+        
+        switch (opts.tooltipLocation) {
+            case 'nw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'n':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - ms;
+                break;
+            case 'ne':
+                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'e':
+                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + fact * ms;
+                break;
+            case 's':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + ms;
+                break;
+            case 'sw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + fact * ms;
+                break;
+            case 'w':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+        }
+        elem.css('left', x);
+        elem.css('top', y);
+        if (opts.fadeTooltip) {
+            // Fix for stacked up animations.  Thnanks Trevor!
+            elem.stop(true,true).fadeIn(opts.tooltipFadeSpeed);
+        }
+        else {
+            elem.show();
+        }
+        elem = null;
+        
+    }
+
+
+    function isNearLine(point, lstart, lstop, width) {
         // r is point to test, p and q are end points.
         rx = point[0];
         ry = point[1];
-        px = lstop[0];
-        py = lstop[1];
-        qx = lstart[0];
-        qy = lstart[1];
+        px = Math.round(lstop[0]);
+        py = Math.round(lstop[1]);
+        qx = Math.round(lstart[0]);
+        qy = Math.round(lstart[1]);
 
         var l = Math.sqrt(Math.pow(px-qx, 2) + Math.pow(py-qy, 2));
 
         // scale error term by length of line.
-        var eps = 0.1*l;
+        var eps = width*l;
         var res = Math.abs((qx-px) * (ry-py) - (qy-py) * (rx-px));
         var ret = (res < eps) ? true : false;
         return ret;
@@ -640,9 +731,28 @@
         var obj;
         for (var i=0; i<l; i++) {
             obj = objs[i];
-            var n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop);
-            if (n) {
-                console.log(n, obj.options.name, [gridpos.x, gridpos.y], obj.gridStart, obj.gridStop); 
+            if (obj.options.showTooltip) {
+                var n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
+                if (n) {
+                    console.log(n, obj.options.name);
+                    switch (obj.type) {
+                        case 'line':
+                            showTooltip(plot, obj, gridpos, datapos);
+                            break;
+
+                        case 'horizontalLine':
+                        case 'dashedHorizontalLine':
+                            showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
+                            break;
+
+                        case 'verticalLine':
+                        case 'dashedVerticalLine':
+                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }
