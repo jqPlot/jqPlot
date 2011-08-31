@@ -83,6 +83,10 @@
       * Format: '%.4g', Input: 12.0, Output: 12.00
       * Format: '%.4p', Input: 4.321e-5, Output: 4.321e-5
       * Format: '%.4g', Input: 4.321e-5, Output: 4.3210e-5
+      * 
+      * Example:
+      * >>> $.jqplot.sprintf('%.2f, %d', 23.3452, 43.23)
+      * "23.35, 43"
       */
     $.jqplot.sprintf = function() {
         function pad(str, len, chr, leftJustify) {
@@ -91,13 +95,13 @@
 
         }
 
-		function thousand_separate(value) {
-			var value_str = new String(value);
-			for (var i=10; i>0; i--) {
-				if (value_str == (value_str = value_str.replace(/^(\d+)(\d{3})/, "$1"+$.jqplot.sprintf.thousandsSeparator+"$2"))) break;
-			}
-			return value_str; 
-		}
+        function thousand_separate(value) {
+            var value_str = new String(value);
+            for (var i=10; i>0; i--) {
+                if (value_str == (value_str = value_str.replace(/^(\d+)(\d{3})/, "$1"+$.jqplot.sprintf.thousandsSeparator+"$2"))) break;
+            }
+            return value_str; 
+        }
 
         function justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace) {
             var diff = minWidth - value.length;
@@ -142,7 +146,7 @@
                 case '0': zeroPad = true; break;
                 case '#': prefixBaseX = true; break;
                 case '&': htmlSpace = true; break;
-				case '\'': thousandSeparation = true; break;
+                case '\'': thousandSeparation = true; break;
             }
 
             // parameters may be null, undefined, empty-string or real valued
@@ -207,7 +211,7 @@
               }
               var prefix = number < 0 ? '-' : positivePrefix;
               var number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
-			  value = prefix + pad(number_str, precision, '0', false);
+              value = prefix + pad(number_str, precision, '0', false);
               //value = prefix + pad(String(Math.abs(number)), precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
@@ -218,7 +222,7 @@
               }
               var prefix = number < 0 ? '-' : positivePrefix;
               var number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
-			  value = prefix + pad(number_str, precision, '0', false);
+              value = prefix + pad(number_str, precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
             case 'e':
@@ -280,7 +284,7 @@
         });
     };
 
-	$.jqplot.sprintf.thousandsSeparator = ',';
+    $.jqplot.sprintf.thousandsSeparator = ',';
     
     $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0&\' ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
