@@ -28,6 +28,7 @@
  * 
  */
 (function($) {
+    var objCounter = 0;
     // class: $.jqplot.CanvasOverlay
     $.jqplot.CanvasOverlay = function(opts){
         var options = opts || {};
@@ -81,6 +82,7 @@
 
 
     function LineBase() {
+        this.uid = null;
         this.type = null;
         this.gridStart = null;
         this.gridStop = null;
@@ -142,7 +144,7 @@
             tooltipFadeSpeed: "fast",
             // prop: tooltipOffset
             // Pixel offset of tooltip from the highlight.
-            tooltipOffset: 2,
+            tooltipOffset: 4,
             // prop: tooltipFormatString
             // Format string passed the x and y values of the cursor on the line.
             // e.g., 'Dogs: %.2f, Cats: %d'.
@@ -281,30 +283,35 @@
     
     $.jqplot.CanvasOverlay.prototype.addLine = function(opts) {
         var line = new Line(opts);
+        line.uid = objCounter++;
         this.objects.push(line);
         this.objectNames.push(line.options.name);
     };
     
     $.jqplot.CanvasOverlay.prototype.addHorizontalLine = function(opts) {
         var line = new HorizontalLine(opts);
+        line.uid = objCounter++;
         this.objects.push(line);
         this.objectNames.push(line.options.name);
     };
     
     $.jqplot.CanvasOverlay.prototype.addDashedHorizontalLine = function(opts) {
         var line = new DashedHorizontalLine(opts);
+        line.uid = objCounter++;
         this.objects.push(line);
         this.objectNames.push(line.options.name);
     };
     
     $.jqplot.CanvasOverlay.prototype.addVerticalLine = function(opts) {
         var line = new VerticalLine(opts);
+        line.uid = objCounter++;
         this.objects.push(line);
         this.objectNames.push(line.options.name);
     };
     
     $.jqplot.CanvasOverlay.prototype.addDashedVerticalLine = function(opts) {
         var line = new DashedVerticalLine(opts);
+        line.uid = objCounter++;
         this.objects.push(line);
         this.objectNames.push(line.options.name);
     };
@@ -629,66 +636,50 @@
 
 
     function showTooltip(plot, obj, gridpos, datapos) {
-        var hl = plot.plugins.canvasOverlay;
-        var elem = hl._tooltipElem;
+        var co = plot.plugins.canvasOverlay;
+        var elem = co._tooltipElem;
 
         var opts = obj.options;
+        console.log(datapos);
 
-        var str;
-        if (opts.tooltipAxes == 'both' || opts.tooltipAxes == 'xy') {
-            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
-        }
-        else if (opts.tooltipAxes == 'yx') {
-            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
-        }
-        else if (opts.tooltipAxes == 'x') {
-            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
-        }
-        else if (opts.tooltipAxes == 'y') {
-            str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
-        } 
-
-
-        elem.html(str);
-
-        var fact = ms = 0;
+        elem.html($.jqplot.sprintf(opts.tooltipFormatString, datapos[0], datapos[1]));
         
         switch (opts.tooltipLocation) {
             case 'nw':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
-                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
                 break;
             case 'n':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
-                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - ms;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true)
                 break;
             case 'ne':
-                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + fact * ms;
-                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
                 break;
             case 'e':
-                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + ms;
+                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset;
                 var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
                 break;
             case 'se':
-                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + fact * ms;
-                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + fact * ms;
+                var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset;
                 break;
             case 's':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
-                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + ms;
+                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset;
                 break;
             case 'sw':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
-                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + fact * ms;
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset;
                 break;
             case 'w':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - ms;
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset
                 var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
                 break;
             default: // same as 'nw'
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
-                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
+                var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
                 break;
         }
         elem.css('left', x);
@@ -701,7 +692,6 @@
             elem.show();
         }
         elem = null;
-        
     }
 
 
@@ -728,13 +718,21 @@
         var co = plot.plugins.canvasOverlay;
         var objs = co.objects;
         var l = objs.length;
-        var obj;
+        var obj, haveHighlight=false;
+        var elem;
         for (var i=0; i<l; i++) {
             obj = objs[i];
             if (obj.options.showTooltip) {
                 var n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
-                if (n) {
-                    console.log(n, obj.options.name);
+
+                // cases:
+                //    near line, no highlighting
+                //    near line, highliting on this line
+                //    near line, highlighting another line
+                //    not near any line, highlighting
+                //    not near any line, no highlighting
+
+                if (n && !co.isHighlighting) {
                     switch (obj.type) {
                         case 'line':
                             showTooltip(plot, obj, gridpos, datapos);
@@ -752,8 +750,27 @@
                         default:
                             break;
                     }
+                    haveHighlight = true;
+                    co.isHighlighting = true;
+                    co.highlightObjectIndex = i;
                 }
+                // if on line and already have tooltip, move it
+                else if (n)
             }
+        }
+
+        // if don't have any highlight, make sure tooltip is off
+        if (!haveHighlight && co.isHighlighting) {
+            elem = co._tooltipElem;
+            obj = co.getObject(co.highlightObjectIndex);
+            if (obj.fadeTooltip) {
+                elem.fadeOut(obj.tooltipFadeSpeed);
+            }
+            else {
+                elem.hide();
+            }
+            co.isHighlighting = false;
+            co.highlightObjectIndex = null;
         }
     }
     
