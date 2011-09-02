@@ -173,7 +173,7 @@ table.jqplot-cursor-tooltip {
     padding: 1px;
 }
 
-.jqplot-highlighter-tooltip {
+.jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
     white-space: nowrap;
