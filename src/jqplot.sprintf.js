@@ -87,6 +87,8 @@
       * Example:
       * >>> $.jqplot.sprintf('%.2f, %d', 23.3452, 43.23)
       * "23.35, 43"
+      * >>> $.jqplot.sprintf("no value: %n, decimal with thousands separator: %'d", 23.3452, 433524)
+      * "no value: , decimal with thousands separator: 433,524"
       */
     $.jqplot.sprintf = function() {
         function pad(str, len, chr, leftJustify) {
