@@ -246,7 +246,7 @@
             for (var i=1; i<opts.yvalues+1; i++) {
                 ystrs.push(yf(yfstr, neighbor.data[i]));
             }
-            if (opts.formatString) {
+            if (typeof opts.formatString === 'string') {
                 switch (opts.tooltipAxes) {
                     case 'both':
                     case 'xy':
@@ -307,18 +307,24 @@
         }
         else {
             var str;
-            if (opts.tooltipAxes == 'both' || opts.tooltipAxes == 'xy') {
-                str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
+            if (typeof opts.formatString ===  'string') {
+                str = $.jqplot.sprintf.apply($.jqplot.sprintf, [opts.formatString].concat(neighbor.data));
             }
-            else if (opts.tooltipAxes == 'yx') {
-                str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
+
+            else {
+                if (opts.tooltipAxes == 'both' || opts.tooltipAxes == 'xy') {
+                    str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
+                }
+                else if (opts.tooltipAxes == 'yx') {
+                    str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]) + opts.tooltipSeparator + $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
+                }
+                else if (opts.tooltipAxes == 'x') {
+                    str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
+                }
+                else if (opts.tooltipAxes == 'y') {
+                    str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
+                } 
             }
-            else if (opts.tooltipAxes == 'x') {
-                str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[0]);
-            }
-            else if (opts.tooltipAxes == 'y') {
-                str = $.jqplot.sprintf(opts.tooltipFormatString, neighbor.data[1]);
-            } 
         }
         if ($.isFunction(opts.tooltipContentEditor)) {
             // args str, seriesIndex, pointIndex are essential so the hook can look up
