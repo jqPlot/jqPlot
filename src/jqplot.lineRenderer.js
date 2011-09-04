@@ -158,16 +158,21 @@
         // set the shape renderer options
         var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, linePattern:this.linePattern, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
+
+        var shadow_offset = options.shadowOffset;
         // set the shadow renderer options
-        // scale the shadowOffset to the width of the line.
-        if (this.lineWidth > 2.5) {
-            var shadow_offset = this.shadowOffset* (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*0.6);
-            // var shadow_offset = this.shadowOffset;
+        if (shadow_offset == null) {
+            // scale the shadowOffset to the width of the line.
+            if (this.lineWidth > 2.5) {
+                shadow_offset = 1.25 * (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*0.6);
+                // var shadow_offset = this.shadowOffset;
+            }
+            // for skinny lines, don't make such a big shadow.
+            else {
+                shadow_offset = 1.25 * Math.atan((this.lineWidth/2.5))/0.785398163;
+            }
         }
-        // for skinny lines, don't make such a big shadow.
-        else {
-            var shadow_offset = this.shadowOffset*Math.atan((this.lineWidth/2.5))/0.785398163;
-        }
+        
         var sopts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, linePattern:this.linePattern, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
