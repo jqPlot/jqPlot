@@ -48,6 +48,9 @@
         // prop: breakTickLabel
         // Label to use at the axis break if breakPoints are specified.
         this.breakTickLabel = "&asymp;";
+        // prop: drawBaseline
+        // True to draw the axis baseline.
+        this.drawBaseline = true;
         // prop: forceTickAt0
         // This will ensure that there is always a tick mark at 0.
         // If data range is strictly positive or negative,

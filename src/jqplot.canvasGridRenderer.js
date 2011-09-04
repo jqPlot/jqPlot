@@ -104,15 +104,24 @@
                 var name = ax[i-1];
                 var axis = axes[name];
                 var ticks = axis._ticks;
+                var numticks = ticks.length;
                 if (axis.show) {
-                    for (var j=ticks.length; j>0; j--) {
+                    for (var j=numticks; j>0; j--) {
                         var t = ticks[j-1];
                         if (t.show) {
                             var pos = Math.round(axis.u2p(t.value)) + 0.5;
                             switch (name) {
                                 case 'xaxis':
-                                    // draw the grid line
+                                    // draw the grid line if we should
                                     if (t.showGridline && this.drawGridlines) {
+                                        drawLine(pos, this._top, pos, this._bottom);
+                                    }
+                                    // else if first tick and show y baseline
+                                    else if (j === 1 && axes.yaxis.show && axes.yaxis.drawBaseline) {
+                                        drawLine(pos, this._top, pos, this._bottom);
+                                    }
+                                    // else if last tick and show y2 baseline
+                                    else if (j === numticks && axes.y2axis.show && axes.y2axis.drawBaseline) {
                                         drawLine(pos, this._top, pos, this._bottom);
                                     }
                                     
@@ -152,6 +161,14 @@
                                     if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._right, pos, this._left, pos);
                                     }
+                                    // else if first tick and show x baseline
+                                    else if (j === 1 && axes.xaxis.show && axes.xaxis.drawBaseline) {
+                                        drawLine(this._right, pos, this._left, pos);
+                                    }
+                                    // else if last tick and show x2 baseline
+                                    else if (j === numticks && axes.x2axis.show && axes.x2axis.drawBaseline) {
+                                        drawLine(this._right, pos, this._left, pos);
+                                    }
                                     // draw the mark
                                     if (t.showMark && t.mark) {
                                         s = t.markSize;
@@ -187,6 +204,14 @@
                                     if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._bottom, pos, this._top);
                                     }
+                                    // else if first tick and show y baseline
+                                    else if (j === 1 && axes.yaxis.show && axes.yaxis.drawBaseline) {
+                                        drawLine(pos, this._bottom, pos, this._top);
+                                    }
+                                    // else if last tick and show y2 baseline
+                                    else if (j === numticks && axes.y2axis.show && axes.y2axis.drawBaseline) {
+                                        drawLine(pos, this._bottom, pos, this._top);
+                                    }
                                     // draw the mark
                                     if (t.showMark && t.mark) {
                                         s = t.markSize;
@@ -220,6 +245,14 @@
                                 case 'y2axis':
                                     // draw the grid line
                                     if (t.showGridline && this.drawGridlines) {
+                                        drawLine(this._left, pos, this._right, pos);
+                                    }
+                                    // else if first tick and show x baseline
+                                    else if (j === 1 && axes.xaxis.show && axes.xaxis.drawBaseline) {
+                                        drawLine(this._left, pos, this._right, pos);
+                                    }
+                                    // else if last tick and show x2 baseline
+                                    else if (j === numticks && axes.x2axis.show && axes.x2axis.drawBaseline) {
                                         drawLine(this._left, pos, this._right, pos);
                                     }
                                     // draw the mark

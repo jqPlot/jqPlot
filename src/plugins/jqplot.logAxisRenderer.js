@@ -62,11 +62,9 @@
     $.jqplot.LogAxisRenderer.prototype.constructor = $.jqplot.LogAxisRenderer;
     
     $.jqplot.LogAxisRenderer.prototype.init = function(options) {
-        // prop: tickRenderer
-        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
-        // See <$.jqplot.AxisTickRenderer>.
-        // this.tickRenderer = $.jqplot.AxisTickRenderer;
-        // this.labelRenderer = $.jqplot.AxisLabelRenderer;
+        // prop: drawBaseline
+        // True to draw the axis baseline.
+        this.drawBaseline = true;
         $.extend(true, this.renderer, options);
         for (var d in this.renderer.axisDefaults) {
             if (this[d] == null) {
