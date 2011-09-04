@@ -2597,6 +2597,21 @@
                 }
                 
                 // end of gridPadding adjustments.
+
+                // if user passed in gridDimensions option, check against calculated gridPadding
+                if (this.options.gridDimensions && $.isPlainObject(this.options.gridDimensions)) {
+                    var gdw = parseInt(this.options.gridDimensions.width, 10) || 0;
+                    var gdh = parseInt(this.options.gridDimensions.height, 10) || 0;
+                    var widthAdj = (this._width - gridPadding.left - gridPadding.right - gdw)/2;
+                    var heightAdj = (this._height - gridPadding.top - gridPadding.bottom - gdh)/2;
+
+                    if (heightAdj >= 0 && widthAdj >= 0) {
+                        gridPadding.top += heightAdj;
+                        gridPadding.bottom += heightAdj;
+                        gridPadding.left += widthAdj;
+                        gridPadding.right += widthAdj;
+                    }
+                }
                 var arr = ['top', 'bottom', 'left', 'right'];
                 for (var n in arr) {
                     if (this._gridPadding[arr[n]] == null && gridPadding[arr[n]] > 0) {
