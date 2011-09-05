@@ -2421,6 +2421,15 @@
         // Releases all resources occupied by the plot
         this.destroy = function() {
             this.canvasManager.freeAllCanvases();
+            if (this.eventCanvas) {
+                this.eventCanvas._elem.unbind();
+            }
+            // Couple of posts on Stack Overflow indicate that empty() doesn't
+            // always cear up the dom and release memory.  Sometimes setting
+            // innerHTML property to null is needed.  Particularly on IE, may 
+            // have to directly set it to null, bypassing jQuery.
+            this.target.empty();
+
             this.target[0].innerHTML = '';
         };
         
@@ -2461,10 +2470,12 @@
                 
                 // $.gcClear();
 
-                if (this._eventCanvas) {
+                if (this.eventCanvas) {
                     this.eventCanvas._elem.unbind();
                 }
-                this.target.unbind();
+                // Dont think I bind any events to the target, this shouldn't be necessary.
+                // It will remove user's events.
+                // this.target.unbind();
 
                 // Couple of posts on Stack Overflow indicate that empty() doesn't
                 // always cear up the dom and release memory.  Sometimes setting
@@ -2497,7 +2508,9 @@
             if (clear) {
                 this.canvasManager.freeAllCanvases();
                 this.eventCanvas._elem.unbind();
-                this.target.unbind();
+                // Dont think I bind any events to the target, this shouldn't be necessary.
+                // It will remove user's events.
+                // this.target.unbind();
                 this.target.empty();
             }
              for (var ax in this.axes) {
