@@ -802,7 +802,6 @@
                 }
             }
         }
-        this.eventCanvas._elem.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     // called with scope of plot
@@ -922,6 +921,7 @@
             this.eventCanvas._elem.before(this.plugins.funnelRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-funnelRenderer-highlight-canvas', this._plotDimensions, this));
         }
         var hctx = this.plugins.funnelRenderer.highlightCanvas.setContext();
+        this.eventCanvas._elem.bind('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     $.jqplot.preInitHooks.push(preInit);

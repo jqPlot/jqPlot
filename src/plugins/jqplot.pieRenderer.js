@@ -762,7 +762,6 @@
                 }
             }
         }
-        this.eventCanvas._elem.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     // called with scope of plot
@@ -883,6 +882,7 @@
         }
         
         var hctx = this.plugins.pieRenderer.highlightCanvas.setContext();
+        this.eventCanvas._elem.bind('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
     }
     
     $.jqplot.preInitHooks.push(preInit);
