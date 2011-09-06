@@ -633,26 +633,30 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     $.jqplot.CanvasOverlay.postPlotDraw = function() {
+        var co = this.plugins.canvasOverlay;
         // Memory Leaks patch    
-        if (this.plugins.canvasOverlay && this.plugins.canvasOverlay.highlightCanvas) {
-            this.plugins.canvasOverlay.highlightCanvas.resetCanvas();
-            this.plugins.canvasOverlay.highlightCanvas = null;
+        if (co && co.highlightCanvas) {
+            co.highlightCanvas.resetCanvas();
+            co.highlightCanvas = null;
         }
-        this.plugins.canvasOverlay.canvas = new $.jqplot.GenericCanvas();
+        co.canvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(this.plugins.canvasOverlay.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));
-        this.plugins.canvasOverlay.canvas.setContext();
-        if (!this.plugins.canvasOverlay.deferDraw) {
-            this.plugins.canvasOverlay.draw(this);
+        this.eventCanvas._elem.before(co.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));
+        co.canvas.setContext();
+        if (!co.deferDraw) {
+            co.draw(this);
         }
 
         var elem = document.createElement('div');
-        this.plugins.canvasOverlay._tooltipElem = $(elem);
+        co._tooltipElem = $(elem);
         elem = null;
-        this.plugins.canvasOverlay._tooltipElem.addClass('jqplot-canvasOverlay-tooltip');
-        this.plugins.canvasOverlay._tooltipElem.css({position:'absolute', display:'none'});
+        co._tooltipElem.addClass('jqplot-canvasOverlay-tooltip');
+        co._tooltipElem.css({position:'absolute', display:'none'});
         
-        this.eventCanvas._elem.before(this.plugins.canvasOverlay._tooltipElem);
+        this.eventCanvas._elem.before(co._tooltipElem);
+        this.eventCanvas._elem.bind('mouseleave', { elem: co._tooltipElem }, function (ev) { ev.data.elem.hide(); });
+
+        var co = null;
     };
 
 
