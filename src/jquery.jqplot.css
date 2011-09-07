@@ -130,11 +130,31 @@ td.jqplot-table-legend {
     vertical-align:middle;
 }
 
+/*
+These rules could be used instead of assigning
+element styles and relying on js object properties.
+*/
+
+/*
+td.jqplot-table-legend-swatch {
+    padding-top: 0.5em;
+    text-align: center;
+}
+
+tr.jqplot-table-legend:first td.jqplot-table-legend-swatch {
+    padding-top: 0px;
+}
+*/
+
 td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
     cursor: pointer;
 }
 
-td.jqplot-table-legend > div {
+.jqplot-table-legend .jqplot-series-hidden {
+    background-color: lightgray;
+}
+
+div.jqplot-table-legend-swatch-outline {
     border: 1px solid #cccccc;
     padding:1px;
 }

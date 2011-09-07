@@ -103,7 +103,7 @@
                 nc = 1;
             }
                 
-            var i, j, tr, td1, td2, lt, rs, div0, div1;
+            var i, j, tr, td1, td2, lt, rs, div, div0, div1;
             var idx = 0;
             // check to see if we need to reverse
             for (i=series.length-1; i>=0; i--) {
@@ -181,6 +181,13 @@
                             }
                             
                             if (this.seriesToggle) {
+
+                                // add an overlay for clicking series on/off
+                                // div0 = $(document.createElement('div'));
+                                // div0.addClass('jqplot-table-legend-overlay');
+                                // div0.css({position:'relative', left:0, top:0, height:'100%', width:'100%'});
+                                // tr.append(div0);
+
                                 var speed;
                                 if (typeof(this.seriesToggle) == 'string' || typeof(this.seriesToggle) == 'number') {
                                     if (!$.jqplot.use_excanvas || !this.disableIEFading) {
@@ -207,6 +214,18 @@
             }
         }
         return this._elem;
+    };
+
+    var handleToggle = function (ev) {
+        ev.data.series.toggleDisplay(ev);
+        if (ev.data.series.canvas._elem.hasClass('jqplot-series-hidden')) {
+            console.log('add');
+            $(this).parent().addClass('jqplot-series-hidden');
+        }
+        else {
+            console.log('remove');
+            $(this).parent().removeClass('jqplot-series-hidden');
+        }
     };
     
     // called with scope of plot.
