@@ -151,7 +151,7 @@ td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
 }
 
 .jqplot-table-legend .jqplot-series-hidden {
-    background-color: lightgray;
+    text-decoration: line-through;
 }
 
 div.jqplot-table-legend-swatch-outline {

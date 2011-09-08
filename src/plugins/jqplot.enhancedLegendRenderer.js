@@ -195,11 +195,11 @@
                                     }
                                 } 
                                 if (this.showSwatches) {
-                                    td1.bind('click', {series:s, speed:speed}, s.toggleDisplay);
+                                    td1.bind('click', {series:s, speed:speed}, handleToggle);
                                     td1.addClass('jqplot-seriesToggle');
                                 }
                                 if (this.showLabels)  {
-                                    td2.bind('click', {series:s, speed:speed}, s.toggleDisplay);
+                                    td2.bind('click', {series:s, speed:speed}, handleToggle);
                                     td2.addClass('jqplot-seriesToggle');
                                 }
                             }
@@ -219,11 +219,9 @@
     var handleToggle = function (ev) {
         ev.data.series.toggleDisplay(ev);
         if (ev.data.series.canvas._elem.hasClass('jqplot-series-hidden')) {
-            console.log('add');
             $(this).parent().addClass('jqplot-series-hidden');
         }
         else {
-            console.log('remove');
             $(this).parent().removeClass('jqplot-series-hidden');
         }
     };
