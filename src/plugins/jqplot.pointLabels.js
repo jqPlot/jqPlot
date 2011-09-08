@@ -138,7 +138,7 @@
     $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
         var options = $.extend(true, {}, seriesDefaults, opts);
         options.pointLabels = options.pointLabels || {};
-        if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal' && !options.pointLabels.location) {
+        if (this.renderer.constructor === $.jqplot.BarRenderer && this.barDirection === 'horizontal' && !options.pointLabels.location) {
             options.pointLabels.location = 'e';
         }
         // add a pointLabels attribute to the series plugins
@@ -153,14 +153,14 @@
         if (p.seriesLabelIndex != null) {
             labelIdx = p.seriesLabelIndex;
         }
-        else if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+        else if (this.renderer.constructor === $.jqplot.BarRenderer && this.barDirection === 'horizontal') {
             labelIdx = 0;
         }
         else {
-            labelIdx = this._plotData[0].length -1;
+            labelIdx = (this._plotData.length === 0) ? 0 : this._plotData[0].length -1;
         }
         p._labels = [];
-        if (p.labels.length == 0 || p.labelsFromSeries) {    
+        if (p.labels.length === 0 || p.labelsFromSeries) {    
             if (p.stackedValue) {
                 if (this._plotData.length && this._plotData[0].length){
                     // var idx = p.seriesLabelIndex || this._plotData[0].length -1;
@@ -171,7 +171,7 @@
             }
             else {
                 var d = this._plotData;
-                if (this.renderer.constructor == $.jqplot.BarRenderer && this.waterfall) {
+                if (this.renderer.constructor === $.jqplot.BarRenderer && this.waterfall) {
                     d = this._data;
                 }
                 if (d.length && d[0].length) {
