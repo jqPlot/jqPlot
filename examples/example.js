@@ -39,21 +39,23 @@ $(document).ready(function(){
 
             outerDiv = header = div = close = null;
 
-            var btn = $(document.createElement('button'));
-            btn.text('View Plot Image');
-            btn.addClass('jqplot-image-button');
-            btn.bind('click', {chart: $(this)}, function(evt) {
-                var imgelem = evt.data.chart.jqplotToImageElem();
-                var div = $(this).nextAll('div.jqplot-image-container').first();
-                div.children('div.jqplot-image-container-content').empty();
-                div.children('div.jqplot-image-container-content').append(imgelem);
-                div.show(500);
-                div = null;
-            });
+            if (!$.jqplot._noToImageButton) {
+                var btn = $(document.createElement('button'));
+                btn.text('View Plot Image');
+                btn.addClass('jqplot-image-button');
+                btn.bind('click', {chart: $(this)}, function(evt) {
+                    var imgelem = evt.data.chart.jqplotToImageElem();
+                    var div = $(this).nextAll('div.jqplot-image-container').first();
+                    div.children('div.jqplot-image-container-content').empty();
+                    div.children('div.jqplot-image-container-content').append(imgelem);
+                    div.show(500);
+                    div = null;
+                });
 
-            $(this).after(btn);
-            btn.after('<br />');
-            btn = null;
+                $(this).after(btn);
+                btn.after('<br />');
+                btn = null;
+            }
         });
     }
 });
