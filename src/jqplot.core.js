@@ -273,7 +273,7 @@
     // Convienence function that won't hang IE or FF without FireBug.
     $.jqplot.log = function() {
         if (window.console) {
-            console.log.apply(console, arguments);
+            window.console.log.apply(window.console, arguments);
         }
     };
         
@@ -323,7 +323,7 @@
             
     $.jqplot.support_canvas_text = function() {
         if (typeof $.jqplot.support_canvas_text.result == 'undefined') {
-            if (window._jqplotExcanvasVersion !== undefined && window._jqplotExcanvasVersion > 9999) {
+            if (window.G_vmlCanvasManager !== undefined && window.G_vmlCanvasManager._version > 887) {
                 $.jqplot.support_canvas_text.result = true;
             }
             else {
