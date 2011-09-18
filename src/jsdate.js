@@ -1275,7 +1275,8 @@
         var length = jsDate.matchers.length;
         var pattern,
             ms,
-            current = parsable;
+            current = parsable,
+            obj;
         while (i < length) {
             ms = Date.parse(current);
             if (!isNaN(ms)) {
@@ -1283,7 +1284,7 @@
             }
             pattern = jsDate.matchers[i];
             if (typeof pattern == 'function') {
-                var obj = pattern.call(jsDate, current);
+                obj = pattern.call(jsDate, current);
                 if (obj instanceof Date) {
                     return obj;
                 }
@@ -1390,10 +1391,10 @@
                     ny = cent + m3;
                 }
                 
-                var nm = inArray(match[2], jsDate.regional[this.locale]["monthNamesShort"]);
+                var nm = inArray(match[2], jsDate.regional[jsDate.regional.getLocale()]["monthNamesShort"]);
                 
                 if (nm == -1) {
-                    nm = inArray(match[2], jsDate.regional[this.locale]["monthNames"]);
+                    nm = inArray(match[2], jsDate.regional[jsDate.regional.getLocale()]["monthNames"]);
                 }
             
                 d.setFullYear(ny, nm, nd);
