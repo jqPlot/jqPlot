@@ -92,6 +92,13 @@
         // prop: highlightColors
         // an array of colors to use when highlighting a bar.
         this.highlightColors = [];
+        // prop: transposedData
+        // NOT IMPLEMENTED YET.  True if this is a horizontal bar plot and 
+        // x and y values are "transposed".  Tranposed, or "swapped", data is 
+        // required prior to rev. 894 builds of jqPlot with horizontal bars. 
+        // Allows backward compatability of bar renderer horizontal bars with 
+        // old style data sets.
+        this.transposedData = true;
         this._type = 'bar';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
@@ -152,7 +159,7 @@
         if (this.rendererOptions.waterfall == true) {
             this._data = $.extend(true, [], this.data);
             var sum = 0;
-            var pos = (!this.rendererOptions.barDirection || this.rendererOptions.barDirection == 'vertical') ? 1 : 0;
+            var pos = (!this.rendererOptions.barDirection || this.rendererOptions.barDirection === 'vertical' || this.transposedData === false) ? 1 : 0;
             for(var i=0; i<this.data.length; i++) {
                 sum += this.data[i][pos];
                 if (i>0) {
