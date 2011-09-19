@@ -296,7 +296,9 @@
         defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"],
         dashLength: 4,
         gapLength: 4,
-        dotGapLength: 2.5
+        dotGapLength: 2.5,
+        srcLocation: 'jqplot/src/',
+        pluginLocation: 'jqplot/src/plugins/'
     };
     
     
@@ -690,7 +692,12 @@
     
     Axis.prototype.resetScale = function(opts) {
         $.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
-        this.resetDataBounds();
+        if (this.renderer.resetDataBounds !== undefined) {
+            this.renderer.resetDataBounds();
+        }
+        else {
+            this.resetDataBounds();
+        }
     };
     
     Axis.prototype.resetDataBounds = function() {
