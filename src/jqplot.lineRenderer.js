@@ -712,7 +712,7 @@
         // don't do smoothing or bands on broken lines.
         if (hasNull) {
             this.renderer.smooth = false;
-            if (this._type === 'liine') {
+            if (this._type === 'line') {
                 bands.show = false;
             }
         }
