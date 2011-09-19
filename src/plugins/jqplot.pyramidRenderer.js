@@ -29,11 +29,21 @@
  */
 (function($) {
 
+    // if bar renderer is not loaded, load it since pyramid is subclass of bar.
+    // Note, have to block with synchronous request in order to execute bar renderer code.
+    if ($.jqplot.BarRenderer === undefined) {
+        $.ajax({
+            url: $.jqplot.pluginLocation + 'jqplot.BarRenderer.js',
+            dataType: "script",
+            async: false
+        });
+    }
+
     $.jqplot.PyramidRenderer = function(){
-        $.jqplot.LineRenderer.call(this);
+        $.jqplot.BarRenderer.call(this);
     };
     
-    $.jqplot.PyramidRenderer.prototype = new $.jqplot.LineRenderer();
+    $.jqplot.PyramidRenderer.prototype = new $.jqplot.BarRenderer();
     $.jqplot.PyramidRenderer.prototype.constructor = $.jqplot.PyramidRenderer;
     
     // called with scope of a series
@@ -44,6 +54,7 @@
         //
         // prop: barPadding
         this.barPadding = 10;
+        this.barWidth = null;
         // prop: fill
         // True to fill the bars.
         this.fill = true;
@@ -69,10 +80,20 @@
         this.renderer.options = options;
         // index of the currenty highlighted point, if any
         this._highlightedPoint = null;
+        // Array of actual data colors used for each data point.
+        this._dataColors = [];
+        this._barPoints = [];
+        
+        // set the shape renderer options
+        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
+        this.renderer.shapeRenderer.init(opts);
+        // set the shadow renderer options
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
+        this.renderer.shadowRenderer.init(sopts);
         
         // set highlight colors if none provided
         if (this.highlightColors.length === 0) {
-            for (var i=0, l=this.serieColors.length; i<l; i++){
+            for (var i=0, l=this.seriesColors.length; i<l; i++){
                 var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
                 var newrgb = [rgba[0], rgba[1], rgba[2]];
                 var sum = newrgb[0] + newrgb[1] + newrgb[2];
@@ -100,85 +121,200 @@
         var yp = this._yaxis.series_u2p;
         var data = this._plotData;
         var pdata = this._prevPlotData;
-        this.gridData = []; 
+        this.gridData = [];
+        this._prevGridData = [];
+
         var hasNull = false;
         for (var i=0, l=this.data.length; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
-                this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+                this.gridData.push([xp(data[i][1]), yp(data[i][0])]);
             }
             // else if there is a null, preserve it.
             else if (data[i][0] == null) {
                 hasNull = true;
-                this.gridData.push([null, yp.call(this._yaxis, data[i][1])]);
+                this.gridData.push([xp(data[i][1]), null]);
             }
             else if (data[i][1] == null) {
                 hasNull = true;
-                this.gridData.push([xp.call(this._xaxis, data[i][0]), null]);
+                this.gridData.push(null, [yp(data[i][0])]);
             }
             // if not a line series or if no nulls in data, push the converted point onto the array.
-            if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] != null) {
-                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
-            }
-            // else if there is a null, preserve it.
-            else if (pdata[i] != null && pdata[i][0] == null) {
-                this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
-            }  
-            else if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] == null) {
-                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
-            }
-        }
-
-        // don't do smoothing or bands on broken lines.
-        if (hasNull) {
-            this.renderer.smooth = false;
-            if (this._type === 'liine') {
-                bands.show = false;
-            }
-        }
-
-        if (this._type === 'line' && bands.show) {
-            for (var i=0, l=bands.hiData.length; i<l; i++) {
-                this.renderer._hiBandGridData.push([xp.call(this._xaxis, bands.hiData[i][0]), yp.call(this._yaxis, bands.hiData[i][1])]);
-            }
-            for (var i=0, l=bands.lowData.length; i<l; i++) {
-                this.renderer._lowBandGridData.push([xp.call(this._xaxis, bands.lowData[i][0]), yp.call(this._yaxis, bands.lowData[i][1])]);
-            }
-        }
-
-        // calculate smoothed data if enough points and no nulls
-        if (this._type === 'line' && this.renderer.smooth && this.gridData.length > 2) {
-            var ret;
-            if (this.renderer.constrainSmoothing) {
-                ret = computeConstrainedSmoothedData.call(this, this.gridData);
-                this.renderer._smoothedData = ret[0];
-                this.renderer._smoothedPlotData = ret[1];
-
-                if (bands.show) {
-                    ret = computeConstrainedSmoothedData.call(this, this.renderer._hiBandGridData);
-                    this.renderer._hiBandSmoothedData = ret[0];
-                    ret = computeConstrainedSmoothedData.call(this, this.renderer._lowBandGridData);
-                    this.renderer._lowBandSmoothedData = ret[0];
-                }
-
-                ret = null;
-            }
-            else {
-                ret = computeHermiteSmoothedData.call(this, this.gridData);
-                this.renderer._smoothedData = ret[0];
-                this.renderer._smoothedPlotData = ret[1];
-
-                if (bands.show) {
-                    ret = computeHermiteSmoothedData.call(this, this.renderer._hiBandGridData);
-                    this.renderer._hiBandSmoothedData = ret[0];
-                    ret = computeHermiteSmoothedData.call(this, this.renderer._lowBandGridData);
-                    this.renderer._lowBandSmoothedData = ret[0];
-                }
-
-                ret = null;
-            }
+            // if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] != null) {
+            //     this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
+            // }
+            // // else if there is a null, preserve it.
+            // else if (pdata[i] != null && pdata[i][0] == null) {
+            //     this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
+            // }  
+            // else if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] == null) {
+            //     this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
+            // }
         }
     };
+    
+    // makeGridData
+    // converts any arbitrary data values to grid coordinates and
+    // returns them.  This method exists so that plugins can use a series'
+    // linerenderer to generate grid data points without overwriting the
+    // grid data associated with that series.
+    // Called with scope of a series.
+    $.jqplot.PyramidRenderer.prototype.makeGridData = function(data, plot) {
+        // recalculate the grid data
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
+        var gd = [];
+        var pgd = [];
+        this.renderer._smoothedData = [];
+        this.renderer._smoothedPlotData = [];
+        this.renderer._hiBandGridData = [];
+        this.renderer._lowBandGridData = [];
+        this.renderer._hiBandSmoothedData = [];
+        this.renderer._lowBandSmoothedData = [];
+        var bands = this.renderer.bands;
+        var hasNull = false;
+        for (var i=0; i<data.length; i++) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
+                gd.push([xp(data[i][1]), yp(data[i][0])]);
+            }
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                hasNull = true;
+                gd.push([xp(data[i][1]), null]);
+            }
+            else if (data[i][1] == null) {
+                hasNull = true;
+                gd.push([null, yp(data[i][0])]);
+            }
+        }
+        return gd;
+    };
+
+
+    
+    $.jqplot.PyramidRenderer.prototype.draw = function(ctx, gridData, options) {
+        var i;
+        // Ughhh, have to make a copy of options b/c it may be modified later.
+        var opts = $.extend({}, options);
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
+        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
+        var xaxis = this.xaxis;
+        var yaxis = this.yaxis;
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
+        var pointx, pointy;
+        // clear out data colors.
+        this._dataColors = [];
+        this._barPoints = [];
+        
+        if (this.barWidth == null) {
+            this.renderer.setBarWidth.call(this);
+        }
+        
+        // var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
+        // var nvals = temp[0];
+        // var nseries = temp[1];
+        // var pos = temp[2];
+        var points = [];
+        
+        // this._barNudge = 0;
+
+        if (showLine) {
+            var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
+            var positiveColors = new $.jqplot.ColorGenerator(this.seriesColors);
+            var negativeColor = negativeColors.get(this.index);
+            if (! this.useNegativeColors) {
+                negativeColor = opts.fillStyle;
+            }
+            var positiveColor = opts.fillStyle;
+            var base;
+            var xstart; 
+            var ystart;
+            
+            for (var i=0; i<gridData.length; i++) {
+                if (this.data[i][0] == null) {
+                    continue;
+                }
+                points = [];
+                base = gridData[i][1];
+                xstart;
+                // not stacked and first series in stack
+
+                xstart = this._xaxis.series_u2p(0);
+
+                if (this._plotData[i][1] < 0) {
+                    if (this.varyBarColor && !this._stack) {
+                        if (this.useNegativeColors) {
+                            opts.fillStyle = negativeColors.next();
+                        }
+                        else {
+                            opts.fillStyle = positiveColors.next();
+                        }
+                    }
+                }
+                else {
+                    if (this.varyBarColor && !this._stack) {
+                        opts.fillStyle = positiveColors.next();
+                    }
+                    else {
+                        opts.fillStyle = positiveColor;
+                    }                    
+                }
+                
+
+                if (this._plotData[i][1] >= 0) {
+                    // points.push([xstart, base + this.barWidth / 2]);
+                    // points.push([xstart, base - this.barWidth / 2]);
+                    // points.push([gridData[i][1], base - this.barWidth / 2]);
+                    // points.push([gridData[i][1], base + this.barWidth / 2]);
+                    points = [xstart, base - this.barWidth/2, gridData[i][0] - xstart, this.barWidth];
+                }
+                else {
+                    // points.push([gridData[i][1], base + this.barWidth / 2]);
+                    // points.push([gridData[i][1], base - this.barWidth / 2]);
+                    // points.push([xstart, base - this.barWidth / 2]);
+                    // points.push([xstart, base + this.barWidth / 2]);
+                    points = [gridData[i][0], base - this.barWidth/2, xstart - gridData[i][0], this.barWidth];
+                }
+
+                this._barPoints.push(points);
+
+                if (shadow) {
+                    var sopts = $.extend(true, {}, opts);
+                    delete sopts.fillStyle;
+                    this.renderer.shadowRenderer.draw(ctx, points, sopts);
+                }
+                var clr = opts.fillStyle || this.color;
+                this._dataColors.push(clr);
+                this.renderer.shapeRenderer.draw(ctx, points, opts); 
+            }  
+        }        
+        
+        if (this.highlightColors.length == 0) {
+            this.highlightColors = $.jqplot.computeHighlightColors(this._dataColors);
+        }
+        
+        else if (typeof(this.highlightColors) == 'string') {
+            var temp = this.highlightColors;
+            this.highlightColors = [];
+            for (var i=0; i<this._dataColors.length; i++) {
+                this.highlightColors.push(temp);
+            }
+        }
+        
+    };
+
+
+
+    //////////
+    // Axis mods
+    //////////
+        
+    /////
+    // TO DO: fix this to handle backward x,y order.
+    ////
     
     $.jqplot.PyramidAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
@@ -194,6 +330,7 @@
         // Position of axis.  Values are: top, bottom , left, center, right.
         // By default, x and x2 axes are bottom, y axis is center.
         this.position = null;
+        this._type = 'pyramid';
 
         if (this.name.charAt(0) === 'x') {
             this.position = 'bottom';
@@ -206,8 +343,7 @@
         this.renderer.options = options;
 
     };
-        
-    
+
     $.jqplot.PyramidAxisRenderer.prototype.resetDataBounds = function() {
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
@@ -224,7 +360,7 @@
             var d = s._plotData;
             
             for (var j=0; j<d.length; j++) { 
-                if (this.name === 'xaxis' || this.name === 'x2axis') {
+                if (this.name.charAt(0) === 'x') {
                     tempxmin = Math.min(d[j][1], d[j][2]);
                     tempxmax = Math.max(d[j][1], d[j][2]);
                     if ((tempxmin !== null && tempxmin < db.min) || db.min === null) {
@@ -244,23 +380,6 @@
                     }
                 }              
             }
-
-            // Hack to not pad out bottom of plot unless user has specified a padding.
-            // every series will have a chance to set doforce to false.  once it is set to 
-            // false, it cannot be reset to true.
-
-            if (doforce && this._options.hasOwnProperty('forceTickAt0') && this._options.forceTickAt0 === false) {
-                doforce = false;
-            }
-
-            else if (doforce && (this._options.pad !== null || this._options.padMin !== null)) {
-                doforce = false;
-            }
-        }
-
-        if (doforce && db.min >= 0) {
-            this.padMin = 1.0;
-            this.forceTickAt0 = true;
         }
     };
     
