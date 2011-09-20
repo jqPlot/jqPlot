@@ -92,17 +92,17 @@
     // returned is an array containing [min, max, nTicks, format]
     $.jqplot.LinearTickGenerator = function(axis_min, axis_max, scalefact) {
         // if endpoints are equal try to include zero otherwise include one
-        if (axis_min == axis_max) {
-        axis_max = (axis_max) ? 0 : 1;
+        if (axis_min === axis_max) {
+            axis_max = (axis_max) ? 0 : 1;
         }
 
         scalefact = scalefact || 1.0;
 
         // make sure range is positive
         if (axis_max < axis_min) {
-        var a = axis_max;
-        axis_max = axis_min;
-        axis_min = a;
+            var a = axis_max;
+            axis_max = axis_min;
+            axis_min = a;
         }
 
         var ss = bestLinearInterval(axis_max - axis_min, scalefact);
@@ -119,5 +119,7 @@
         r[4] = ss;                              // tick Interval
         return r;
     };
+
+    $.jqplot.LinearTickGenerator.bestLinearInterval = bestLinearInterval;
 
 })(jQuery);

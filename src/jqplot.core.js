@@ -706,12 +706,14 @@
         var db = this._dataBounds;
         db.min = null;
         db.max = null;
+        var l, s, d;
         // check for when to force min 0 on bar series plots.
         var doforce = (this.show) ? true : false;
         for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            if (s._type === 'line' && s.renderer.bands.show && this.name !== 'xaxis' && this.name !== 'x2axis') {
+            s = this._series[i];
+            d = s._plotData;
+            l = d.length;
+            if (s._type === 'line' && s.renderer.bands.show && this.name.charAt(0) !== 'x') {
                 d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
             }
 
@@ -722,7 +724,7 @@
                 maxyidx = 2;
             }
             
-            for (var j=0; j<d.length; j++) { 
+            for (var j=0; j<l; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
                     if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
                         db.min = d[j][0];
