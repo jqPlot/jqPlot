@@ -83,6 +83,8 @@
         // Array of actual data colors used for each data point.
         this._dataColors = [];
         this._barPoints = [];
+        this.fillAxis = 'y';
+        this._primaryAxis = '_yaxis';
         
         // set the shape renderer options
         var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
@@ -107,8 +109,6 @@
         }
         
         this.highlightColorGenerator = new $.jqplot.ColorGenerator(this.highlightColors);
-
-        plot.preInitHooks.addOnce(preInit);
     };
     
     // setGridData
@@ -217,7 +217,9 @@
         // var nvals = temp[0];
         // var nseries = temp[1];
         // var pos = temp[2];
-        var points = [];
+        var points = [],
+            w,
+            h;
         
         // this._barNudge = 0;
 
@@ -269,17 +271,21 @@
                     // points.push([xstart, base - this.barWidth / 2]);
                     // points.push([gridData[i][1], base - this.barWidth / 2]);
                     // points.push([gridData[i][1], base + this.barWidth / 2]);
-                    points = [xstart, base - this.barWidth/2, gridData[i][0] - xstart, this.barWidth];
+                    w = gridData[i][0] - xstart;
+                    h = this.barWidth;
+                    points = [xstart, base - this.barWidth/2, w, h];
                 }
                 else {
                     // points.push([gridData[i][1], base + this.barWidth / 2]);
                     // points.push([gridData[i][1], base - this.barWidth / 2]);
                     // points.push([xstart, base - this.barWidth / 2]);
                     // points.push([xstart, base + this.barWidth / 2]);
-                    points = [gridData[i][0], base - this.barWidth/2, xstart - gridData[i][0], this.barWidth];
+                    w = xstart - gridData[i][0];;
+                    h = this.barWidth;
+                    points = [gridData[i][0], base - this.barWidth/2, w, h];
                 }
 
-                this._barPoints.push(points);
+                this._barPoints.push([[points[0], points[1] + h], [points[0], points[1]], [points[0] + w, points[1]], [points[0] + w, points[1] + h]]);
 
                 if (shadow) {
                     var sopts = $.extend(true, {}, opts);
@@ -464,6 +470,9 @@
             options.seriesDefaults.pointLabels = {show: false};
         }
     }
+
+    // Have to add hook here, becuase it needs called before series is inited.
+    $.jqplot.preInitHooks.push(preInit);
     
 
 })(jQuery);
