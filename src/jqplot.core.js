@@ -1605,6 +1605,9 @@
         this.hooks.push([ev, fn]);
     };
 
+
+    var _axisNames = ['yMidAxis', 'xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+
     /**
      * Class: jqPlot
      * Plot object returned by call to $.jqplot.  Handles parsing user options,
@@ -1664,7 +1667,7 @@
             // default options that will be applied to all axes.
             // see <Axis> for axes options.
             axesDefaults: {},
-            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}, y6axis:{}, y7axis:{}, y8axis:{}, y9axis:{}},
+            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}, y6axis:{}, y7axis:{}, y8axis:{}, y9axis:{}, yMidAxis:{}},
             // prop: seriesDefaults
             // default options that will be applied to all series.
             // see <Series> for series options.
@@ -1678,7 +1681,7 @@
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
         // See <Axis> for axis specific options.
-        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis')};
+        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis'), yMidAxis: new Axis('yMidAxis')};
         // prop: grid
         // See <Grid> for grid specific options.
         this.grid = new Grid();
@@ -1970,9 +1973,18 @@
                 this._sumx += this.series[i]._sumx;
             }
 
-            for (var name in this.axes) {
+            for (var i=0; i<12; i++) {
+                name = _axisNames[i];
                 this.axes[name]._plotDimensions = this._plotDimensions;
                 this.axes[name].init();
+                if (this.axes[name].borderColor == null) {
+                    if (name.charAt(0) !== 'x' && this.axes[name].useSeriesColor === true && this.axes[name].show) {
+                        this.axes[name].borderColor = this.axes[name]._series[0].color;
+                    }
+                    else {
+                        this.axes[name].borderColor = this.grid.borderColor;
+                    }
+                }
             }
             
             if (this.sortData) {
@@ -2109,7 +2121,8 @@
                 this._sumx += this.series[i]._sumx;
             }
             
-            for (var name in this.axes) {
+            for (var j=0; j<12; j++) {
+                name = _axisNames[j];
                 // Memory Leaks patch : clear ticks elements
                 var t = this.axes[name]._ticks;
                 for (var i = 0; i < t.length; i++) {
@@ -2294,7 +2307,8 @@
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
             this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
-            for (var n in this.axes) {
+            for (var i=0; i<12; i++) {
+                var n = _axisNames[i];
                 var axis = this.axes[n];
                 axis._options = $.extend(true, {}, this.options.axesDefaults, this.options.axes[n]);
                 $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
@@ -2393,18 +2407,11 @@
             // copy the grid and title options into this object.
             $.extend(true, this.grid, this.options.grid);
             // if axis border properties aren't set, set default.
-            for (var n in this.axes) {
+            for (var i=0; i<12; i++) {
+                var n = _axisNames[i];
                 var axis = this.axes[n];
                 if (axis.borderWidth == null) {
                     axis.borderWidth =this.grid.borderWidth;
-                }
-                if (axis.borderColor == null) {
-                    if (n != 'xaxis' && n != 'x2axis' && axis.useSeriesColor === true && axis.show) {
-                        axis.borderColor = axis._series[0].color;
-                    }
-                    else {
-                        axis.borderColor = this.grid.borderColor;
-                    }
                 }
             }
             
@@ -2589,7 +2596,9 @@
                 }
                 
                 var ax = this.axes;
-                for (var name in ax) {
+                // draw the yMidAxis first, so xaxis of pyramid chart can adjust itself if needed.
+                for (i=0; i<12; i++) {
+                    name = _axisNames[i];
                     this.target.append(ax[name].draw(this.baseCanvas._ctx, this));
                     ax[name].set();
                 }
@@ -2651,7 +2660,7 @@
                 for (i=8; i>0; i--) {
                     ax[ra[i-1]].pack({position:'absolute', top:0, right:this._gridPadding.right - rapad[i-1]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
                 }
-                // ax.y2axis.pack({position:'absolute', top:0, right:0}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+                ax.yMidAxis.pack({position:'relative', marginLeft: 'auto', marginRight: 'auto', zIndex:9, textAlign: 'center'}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
                 this.target.append(this.grid.createElement(this._gridPadding, this));
                 this.grid.draw();
@@ -2755,8 +2764,8 @@
             var plot = ev.data.plot;
             var go = plot.eventCanvas._elem.offset();
             var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-            var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
-            var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+            var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null, yMidAxis:null};
+            var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis', 'yMidAxis'];
             var ax = plot.axes;
             var n, axis;
             for (n=11; n>0; n--) {
