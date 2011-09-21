@@ -191,7 +191,24 @@
         return gd;
     };
 
-
+    $.jqplot.PyramidRenderer.prototype.setBarWidth = function() {
+        // need to know how many data values we have on the approprate axis and figure it out.
+        var i;
+        var nvals = 0;
+        var nseries = 0;
+        var paxis = this[this._primaryAxis];
+        var s, series, pos;
+        nvals = paxis.max - paxis.min;
+        var nticks = paxis.numberTicks;
+        var nbins = (nticks-1)/2;
+        // so, now we have total number of axis values.
+        if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
+            this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + 0.4);
+        }
+        else {
+            this.barWidth = Math.round((paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + 0.4);
+        }
+    };
     
     $.jqplot.PyramidRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;

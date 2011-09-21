@@ -172,7 +172,7 @@
         
         if (userTicks.length) {
             // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
-            for (i=0; i<userTicks.length; i++){
+            for (i=0, l=userTicks.length; i<l; i++){
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
                 if ($.isArray(ut)) {
@@ -210,27 +210,24 @@
             }
 
             // ticks will be on whole integers like 1, 2, 3, ... or 1, 4, 7, ...
-            // labels can be arbitrary strings, and will be pulled from the data.
-            var min = 1;
-            var max;
-            var vals = [0.5];
-            var labels = [''];
+            var min = this._dataBounds.min;
+            var max = this._dataBounds.max;
             var s = this._series[0];
             this.ticks = [];
-            var tidx = (this.name.charAt(0) === 'y') ? 0 : 1;
-            for (var j=0, l=s.data.length; j<l; j++) {
-                vals.push(j+1);
-                labels.push(s.data[j][tidx]);
-            }
-
-            max = j;
 
             var range = max - min;
-            // put a half interval before and after the data
-            this.min = min - 0.5;
-            this.max = max + 0.5;
+
+            // if range is a prime, will get only 2 ticks, expand range in that case.
+            var primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
+            if ($.inArray(range, primes) > -1) {
+                range += 1;
+                max += 1;
+            }
+
+            this.max = max;
+            this.min = min;
             
-            var maxVisibleTicks = parseInt(3+dim/20, 10);
+            var maxVisibleTicks = Math.round(2 + Math.pow((dim/35), 0.8));
 
             if (range + 1 <= maxVisibleTicks) {
                 this.numberTicks = range + 1;
@@ -251,10 +248,10 @@
                 }
             }
 
-            for (var i=0, l = vals.length; i<l; i+=this.tickInterval){
+            for (var i=0; i<this.numberTicks; i++) {
                 this.tickOptions.axis = this.name;
-                this.tickOptions.label = labels[i];
-                this.tickOptions.value = vals[i];
+                this.tickOptions.label = String (this.min + this.tickInterval * i);
+                this.tickOptions.value = this.min + this.tickInterval * i;
                 var t = new this.tickRenderer(this.tickOptions);
                 this._ticks.push(t);
                 t = null;
