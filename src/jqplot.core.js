@@ -692,12 +692,7 @@
     
     Axis.prototype.resetScale = function(opts) {
         $.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
-        if (this.renderer.resetDataBounds !== undefined) {
-            this.renderer.resetDataBounds();
-        }
-        else {
-            this.resetDataBounds();
-        }
+        this.resetDataBounds();
     };
     
     Axis.prototype.resetDataBounds = function() {
