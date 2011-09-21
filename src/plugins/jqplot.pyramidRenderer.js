@@ -33,7 +33,7 @@
     // Note, have to block with synchronous request in order to execute bar renderer code.
     if ($.jqplot.BarRenderer === undefined) {
         $.ajax({
-            url: $.jqplot.pluginLocation + 'jqplot.BarRenderer.js',
+            url: $.jqplot.pluginLocation + 'jqplot.barRenderer.js',
             dataType: "script",
             async: false
         });
@@ -312,143 +312,14 @@
         
     };
 
-
-
-    //////////
-    // Axis mods
-    //////////
-        
-    /////
-    // TO DO: fix this to handle backward x,y order.
-    ////
-    
-    $.jqplot.PyramidAxisRenderer = function() {
-        $.jqplot.LinearAxisRenderer.call(this);
-    };
-    
-    $.jqplot.PyramidAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
-    $.jqplot.PyramidAxisRenderer.prototype.constructor = $.jqplot.PyramidAxisRenderer;
-        
-    $.jqplot.PyramidAxisRenderer.prototype.init = function(options){
-        // Group: Properties
-        //
-        // prop: position
-        // Position of axis.  Values are: top, bottom , left, center, right.
-        // By default, x and x2 axes are bottom, y axis is center.
-        this.position = null;
-        this._type = 'pyramid';
-
-        if (this.name.charAt(0) === 'x') {
-            this.position = 'bottom';
-        }
-        else {
-            this.position = 'center';
-        }
-        
-        $.extend(true, this, options);
-        this.renderer.options = options;
-
-    };
-
-    $.jqplot.PyramidAxisRenderer.prototype.resetDataBounds = function() {
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        var db = this._dataBounds;
-        db.min = null;
-        db.max = null;
-        var tempxmin;
-        var tempxmax;
-        var tempy;
-        // check for when to force min 0 on bar series plots.
-        var doforce = (this.show) ? true : false;
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name.charAt(0) === 'x') {
-                    tempxmin = Math.min(d[j][1], d[j][2]);
-                    tempxmax = Math.max(d[j][1], d[j][2]);
-                    if ((tempxmin !== null && tempxmin < db.min) || db.min === null) {
-                        db.min = tempxmin;
-                    }
-                    if ((tempxmax !== null && tempxmax > db.max) || db.max === null) {
-                        db.max = tempxmax;
-                    }
-                }              
-                else {
-                    tempy = d[j][0];
-                    if ((tempy !== null && tempy < db.min) || db.min === null) {
-                        db.min = tempy;
-                    }
-                    if ((tempy !== null && tempy > db.max) || db.max === null) {
-                        db.max = tempy;
-                    }
-                }              
-            }
-        }
-    };
-    
-    // called with scope of axis
-    $.jqplot.PyramidAxisRenderer.prototype.draw = function(ctx, plot) {
-        if (this.show) {
-            // populate the axis label and value properties.
-            // createTicks is a method on the renderer, but
-            // call it within the scope of the axis.
-            this.renderer.createTicks.call(this);
-            // fill a div with axes labels in the right direction.
-            // Need to pregenerate each axis to get it's bounds and
-            // position it and the labels correctly on the plot.
-            var dim=0;
-            var temp;
-            // Added for theming.
-            if (this._elem) {
-                // Memory Leaks patch
-                //this._elem.empty();
-                this._elem.emptyForce();
-                this._elem = null;
-            }
-            
-            this._elem = $(document.createElement('div'));
-            this._elem.addClass('jqplot-axis jqplot-pyramid-'+this.name);
-            this._elem.css('position', 'absolute');
-
-            
-            if (this.name == 'xaxis' || this.name == 'x2axis') {
-                this._elem.width(this._plotDimensions.width);
-            }
-            else {
-                this._elem.height(this._plotDimensions.height);
-            }
-            
-            // create a _label object.
-            this.labelOptions.axis = this.name;
-            this._label = new this.labelRenderer(this.labelOptions);
-            if (this._label.show) {
-                var elem = this._label.draw(ctx, plot);
-                elem.appendTo(this._elem);
-                elem = null;
-            }
-    
-            var t = this._ticks;
-            var tick;
-            for (var i=0; i<t.length; i++) {
-                tick = t[i];
-                if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    this._elem.append(tick.draw(ctx, plot));
-                }
-            }
-            tick = null;
-            t = null;
-        }
-        return this._elem;
-    };
         
     // setup default renderers for axes and legend so user doesn't have to
     // called with scope of plot
     function preInit(target, data, options) {
         options = options || {};
         options.axesDefaults = options.axesDefaults || {};
+        options.axes = options.axes || {};
+        options.axes.yaxis = options.axes.yaxis || {};
         options.legend = options.legend || {};
         options.seriesDefaults = options.seriesDefaults || {};
         // only set these if there is a pie series
@@ -465,7 +336,7 @@
         }
         
         if (setopts) {
-            options.axesDefaults.renderer = $.jqplot.PyramidAxisRenderer;
+            options.axes.yaxis.renderer = $.jqplot.PyramidAxisRenderer;
             options.legend.show = false;
             options.seriesDefaults.pointLabels = {show: false};
         }
