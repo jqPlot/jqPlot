@@ -2790,6 +2790,7 @@
                 s = series[i];
                 switch (s.renderer.constructor) {
                     case $.jqplot.BarRenderer:
+                    case $.jqplot.PyramidRenderer:
                         x = gridpos.x;
                         y = gridpos.y;
                         for (j=0; j<s._barPoints.length; j++) {
