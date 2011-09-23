@@ -324,9 +324,6 @@
 
             // Doing complete autoscaling
             if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
-                // check to see if we can override tick format string with autocalculated one
-
-
                 // Check if user must have tick at 0 or 100 and ensure they are in range.
                 // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
                 if (this.forceTickAt0) {
@@ -347,11 +344,9 @@
                     }
                 }
 
-                // console.log(this.name);
                 var threshold = 30;
                 var tdim = Math.max(dim, threshold+1);
                 var scalefact =  (tdim-threshold)/300.0;
-                // scalefact = 1;
                 var ret = $.jqplot.LinearTickGenerator(min, max, scalefact); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
@@ -365,19 +360,11 @@
                     ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact);
                 }
 
-
-                // if (ret[2] > max_number_ticks) {
-                //     ret[4] = Math.ceil(r[2]/max_number_ticks) * ret[4];
-                    
-                // }
-
                 this.min = ret[0];
                 this.max = ret[1];
                 this.numberTicks = ret[2];
                 this._autoFormatString = ret[3];
-                //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
                 this.tickInterval = ret[4];
-                // console.log('numberticks: %s, interval: %s', ret[2], ret[4]);
             }
 
             // User has specified some axis scale related option, can use auto algorithm
