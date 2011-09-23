@@ -81,6 +81,7 @@
         ctx.save();
         var opts = (options != null) ? options : {};
         var fill = (opts.fill != null) ? opts.fill : this.fill;
+        var fillRect = (opts.fillRect != null) ? opts.fillRect : this.fillRect;
         var closePath = (opts.closePath != null) ? opts.closePath : this.closePath;
         var offset = (opts.offset != null) ? opts.offset : this.offset;
         var alpha = (opts.alpha != null) ? opts.alpha : this.alpha;
@@ -98,6 +99,11 @@
             ctxPattern.beginPath();
             if (isarc) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                
+            }
+            else if (fillRect) {
+                if (fillRect) {
+                    ctx.fillRect(points[0], points[1], points[2], points[3]);
+                }
             }
             else if (points && points.length){
                 var move = true;
