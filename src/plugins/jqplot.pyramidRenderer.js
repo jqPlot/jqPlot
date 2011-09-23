@@ -74,8 +74,14 @@
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
             options.highlightMouseOver = false;
         }
+
+        this._positiveSeries = true;
         
         $.extend(true, this, options);
+
+        // if (this.fill === false) {
+        //     this.shadow = false;
+        // }
         
         this.renderer.options = options;
         // index of the currenty highlighted point, if any
@@ -85,30 +91,30 @@
         this._barPoints = [];
         this.fillAxis = 'y';
         this._primaryAxis = '_yaxis';
+        this._xnudge = 0;
         
         // set the shape renderer options
-        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
+        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill, lineWidth: this.lineWidth};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
-        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
-        this.renderer.shadowRenderer.init(sopts);
-        
-        // set highlight colors if none provided
-        if (this.highlightColors.length === 0) {
-            for (var i=0, l=this.seriesColors.length; i<l; i++){
-                var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
-                var newrgb = [rgba[0], rgba[1], rgba[2]];
-                var sum = newrgb[0] + newrgb[1] + newrgb[2];
-                for (var j=0; j<3; j++) {
-                    // when darkening, lowest color component can be is 60.
-                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
-                    newrgb[j] = parseInt(newrgb[j], 10);
-                }
-                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+        var shadow_offset = options.shadowOffset;
+        // set the shadow renderer options
+        if (shadow_offset == null) {
+            // scale the shadowOffset to the width of the line.
+            if (this.lineWidth > 2.5) {
+                shadow_offset = 1.25 * (1 + (Math.atan((this.lineWidth/2.5))/0.785398163 - 1)*0.6);
+                // var shadow_offset = this.shadowOffset;
+            }
+            // for skinny lines, don't make such a big shadow.
+            else {
+                shadow_offset = 1.25 * Math.atan((this.lineWidth/2.5))/0.785398163;
             }
         }
-        
-        this.highlightColorGenerator = new $.jqplot.ColorGenerator(this.highlightColors);
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill, lineWidth: this.lineWidth};
+        this.renderer.shadowRenderer.init(sopts);
+
+        plot.postDrawHooks.addOnce(postPlotDraw);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
     };
     
     // setGridData
@@ -123,33 +129,38 @@
         var pdata = this._prevPlotData;
         this.gridData = [];
         this._prevGridData = [];
+        var l = data.length;
+        var adjust = false;
+        var i;
 
-        var hasNull = false;
-        for (var i=0, l=this.data.length; i < l; i++) {
+        // if any data values are < 0,  consider this a negative series
+        for (i = 0; i < l; i++) {
+            if (data[i][1] < 0) {
+                this._positiveSeries = false;
+            }
+        }
+
+        if (this._yaxis.name === 'yMidAxis' && this._positiveSeries) {
+            this._xnudge = this._xaxis.max/1000.0;
+            adjust = true;
+        }
+
+        for (i = 0; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
                 this.gridData.push([xp(data[i][1]), yp(data[i][0])]);
             }
             // else if there is a null, preserve it.
             else if (data[i][0] == null) {
-                hasNull = true;
                 this.gridData.push([xp(data[i][1]), null]);
             }
             else if (data[i][1] == null) {
-                hasNull = true;
                 this.gridData.push(null, [yp(data[i][0])]);
             }
-            // if not a line series or if no nulls in data, push the converted point onto the array.
-            // if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] != null) {
-            //     this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
-            // }
-            // // else if there is a null, preserve it.
-            // else if (pdata[i] != null && pdata[i][0] == null) {
-            //     this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
-            // }  
-            // else if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] == null) {
-            //     this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
-            // }
+            // finally, adjust x grid data if have to
+            if (data[i][1] === 0 && adjust) {
+                this.gridData[i][0] = xp(this._xnudge);
+            }
         }
     };
     
@@ -164,30 +175,40 @@
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
         var gd = [];
-        var pgd = [];
-        this.renderer._smoothedData = [];
-        this.renderer._smoothedPlotData = [];
-        this.renderer._hiBandGridData = [];
-        this.renderer._lowBandGridData = [];
-        this.renderer._hiBandSmoothedData = [];
-        this.renderer._lowBandSmoothedData = [];
-        var bands = this.renderer.bands;
-        var hasNull = false;
-        for (var i=0; i<data.length; i++) {
+        var l = data.length;
+        var adjust = false;
+        var i;
+
+        // if any data values are < 0,  consider this a negative series
+        for (i = 0; i < l; i++) {
+            if (data[i][1] < 0) {
+                this._positiveSeries = false;
+            }
+        }
+
+        if (this._yaxis.name === 'yMidAxis' && this._positiveSeries) {
+            this._xnudge = this._xaxis.max/1000.0;
+            adjust = true;
+        }
+
+        for (i = 0; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
                 gd.push([xp(data[i][1]), yp(data[i][0])]);
             }
             // else if there is a null, preserve it.
             else if (data[i][0] == null) {
-                hasNull = true;
                 gd.push([xp(data[i][1]), null]);
             }
             else if (data[i][1] == null) {
-                hasNull = true;
                 gd.push([null, yp(data[i][0])]);
             }
+            // finally, adjust x grid data if have to
+            if (data[i][1] === 0 && adjust) {
+                gd[i][0] = xp(this._xnudge);
+            }
         }
+
         return gd;
     };
 
@@ -206,7 +227,13 @@
             this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + 0.4);
         }
         else {
-            this.barWidth = Math.round((paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + 0.4);
+            if (this.fill) {
+                var fact = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding;
+            }
+            else {
+                var fact = (paxis._offsets.min - paxis._offsets.max) / nvals;
+            }
+            this.barWidth = Math.round(fact + 0.4);
         }
     };
     
@@ -217,8 +244,6 @@
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
-        var xaxis = this.xaxis;
-        var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
         var pointx, pointy;
@@ -226,7 +251,7 @@
         this._dataColors = [];
         this._barPoints = [];
         
-        if (this.barWidth == null) {
+        if (this.renderer.options.barWidth == null) {
             this.renderer.setBarWidth.call(this);
         }
         
@@ -249,19 +274,17 @@
             }
             var positiveColor = opts.fillStyle;
             var base;
-            var xstart; 
+            var xstart = this._xaxis.series_u2p(this._xnudge);; 
             var ystart;
+            var bw2 = this.barWidth/2.0;
             
-            for (var i=0; i<gridData.length; i++) {
+            for (var i=0, l=gridData.length; i<l; i++) {
                 if (this.data[i][0] == null) {
                     continue;
                 }
                 points = [];
                 base = gridData[i][1];
-                xstart;
                 // not stacked and first series in stack
-
-                xstart = this._xaxis.series_u2p(0);
 
                 if (this._plotData[i][1] < 0) {
                     if (this.varyBarColor && !this._stack) {
@@ -282,32 +305,39 @@
                     }                    
                 }
                 
+                if (this.fill) {
+                    if (this._plotData[i][1] >= 0) {
+                        // xstart = this._xaxis.series_u2p(this._xnudge);
+                        w = gridData[i][0] - xstart;
+                        h = this.barWidth;
+                        points = [xstart, base - bw2, w, h];
+                    }
+                    else {
+                        // xstart = this._xaxis.series_u2p(0);
+                        w = xstart - gridData[i][0];;
+                        h = this.barWidth;
+                        points = [gridData[i][0], base - bw2, w, h];
+                    }
 
-                if (this._plotData[i][1] >= 0) {
-                    // points.push([xstart, base + this.barWidth / 2]);
-                    // points.push([xstart, base - this.barWidth / 2]);
-                    // points.push([gridData[i][1], base - this.barWidth / 2]);
-                    // points.push([gridData[i][1], base + this.barWidth / 2]);
-                    w = gridData[i][0] - xstart;
-                    h = this.barWidth;
-                    points = [xstart, base - this.barWidth/2, w, h];
+                    this._barPoints.push([[points[0], points[1] + h], [points[0], points[1]], [points[0] + w, points[1]], [points[0] + w, points[1] + h]]);
                 }
+
                 else {
-                    // points.push([gridData[i][1], base + this.barWidth / 2]);
-                    // points.push([gridData[i][1], base - this.barWidth / 2]);
-                    // points.push([xstart, base - this.barWidth / 2]);
-                    // points.push([xstart, base + this.barWidth / 2]);
-                    w = xstart - gridData[i][0];;
-                    h = this.barWidth;
-                    points = [gridData[i][0], base - this.barWidth/2, w, h];
+                    if (i === 0) {
+                        points = [[xstart, gridData[i][1]], [gridData[i][0], gridData[i][1]], [gridData[i][0], gridData[i][1] - bw2]];
+                    }
+                    else if (i === l-1) {
+                        points = [[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], gridData[i][1]], [xstart, gridData[i][1]]];
+                    }
+                    else {
+                        points = [[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], gridData[i][1] - bw2]];
+                    }
                 }
-
-                this._barPoints.push([[points[0], points[1] + h], [points[0], points[1]], [points[0] + w, points[1]], [points[0] + w, points[1] + h]]);
 
                 if (shadow) {
-                    var sopts = $.extend(true, {}, opts);
-                    delete sopts.fillStyle;
-                    this.renderer.shadowRenderer.draw(ctx, points, sopts);
+                    // var sopts = $.extend(true, {}, opts);
+                    // delete sopts.fillStyle;
+                    this.renderer.shadowRenderer.draw(ctx, points);
                 }
                 var clr = opts.fillStyle || this.color;
                 this._dataColors.push(clr);
@@ -320,10 +350,9 @@
         }
         
         else if (typeof(this.highlightColors) == 'string') {
-            var temp = this.highlightColors;
             this.highlightColors = [];
             for (var i=0; i<this._dataColors.length; i++) {
-                this.highlightColors.push(temp);
+                this.highlightColors.push(this.highlightColors);
             }
         }
         
@@ -335,8 +364,7 @@
     function preInit(target, data, options) {
         options = options || {};
         options.axesDefaults = options.axesDefaults || {};
-        options.axes = options.axes || {};
-        options.axes.yaxis = options.axes.yaxis || {};
+        options.grid = options.grid || {};
         options.legend = options.legend || {};
         options.seriesDefaults = options.seriesDefaults || {};
         // only set these if there is a pie series
@@ -353,9 +381,72 @@
         }
         
         if (setopts) {
-            options.axes.yaxis.renderer = $.jqplot.PyramidAxisRenderer;
+            options.axesDefaults.renderer = $.jqplot.PyramidAxisRenderer;
+            options.grid.renderer = $.jqplot.PyramidGridRenderer;
             options.legend.show = false;
             options.seriesDefaults.pointLabels = {show: false};
+        }
+    }
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        // Memory Leaks patch    
+        if (this.plugins.pyramidRenderer && this.plugins.pyramidRenderer.highlightCanvas) {
+
+            this.plugins.pyramidRenderer.highlightCanvas.resetCanvas();
+            this.plugins.pyramidRenderer.highlightCanvas = null;
+        }
+         
+        this.plugins.pyramidRenderer = {highlightedSeriesIndex:null};
+        this.plugins.pyramidRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.pyramidRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pyramidRenderer-highlight-canvas', this._plotDimensions, this));
+        this.plugins.pyramidRenderer.highlightCanvas.setContext();
+        this.eventCanvas._elem.bind('mouseleave', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
+    }  
+    
+    function highlight (plot, sidx, pidx, points) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.pyramidRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.pyramidRenderer.highlightedSeriesIndex = sidx;
+        var opts = {fillStyle: s.highlightColors[pidx], fillRect: false};
+        s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+        canvas = null;
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.pyramidRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.pyramidRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+        canvas =  null;
+    }
+    
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt1 = jQuery.Event('jqplotDataMouseOver');
+            evt1.pageX = ev.pageX;
+            evt1.pageY = ev.pageY;
+            plot.target.trigger(evt1, ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pyramidRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
         }
     }
 

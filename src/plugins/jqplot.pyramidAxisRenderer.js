@@ -43,7 +43,14 @@
         // Position of axis.  Values are: top, bottom , left, center, right.
         // By default, x and x2 axes are bottom, y axis is center.
         this.position = null;
+        // prop: drawBaseline
+        // True to draw the axis baseline.
+        this.drawBaseline = true;
+        this.baselineWidth = null;
+        this.baselineColor = null;
         this._type = 'pyramid';
+        this._splitAxis = false;
+        this._splitLength = null;
 
         if (this.name.charAt(0) === 'x') {
             this.position = 'bottom';
@@ -66,31 +73,28 @@
         var db = this._dataBounds;
         db.min = null;
         db.max = null;
-        var tempxmin;
-        var tempxmax;
-        var tempy;
+        var temp;
         for (var i=0; i<this._series.length; i++) {
             var s = this._series[i];
             var d = s._plotData;
             
-            for (var j=0; j<d.length; j++) { 
+            for (var j=0, l=d.length; j<l; j++) { 
                 if (this.name.charAt(0) === 'x') {
-                    tempxmin = Math.min(d[j][1], d[j][2]);
-                    tempxmax = Math.max(d[j][1], d[j][2]);
-                    if ((tempxmin !== null && tempxmin < db.min) || db.min === null) {
-                        db.min = tempxmin;
+                    temp = d[j][1];
+                    if ((temp !== null && temp < db.min) || db.min === null) {
+                        db.min = temp;
                     }
-                    if ((tempxmax !== null && tempxmax > db.max) || db.max === null) {
-                        db.max = tempxmax;
+                    if ((temp !== null && temp > db.max) || db.max === null) {
+                        db.max = temp;
                     }
                 }              
                 else {
-                    tempy = d[j][0];
-                    if ((tempy !== null && tempy < db.min) || db.min === null) {
-                        db.min = tempy;
+                    temp = d[j][0];
+                    if ((temp !== null && temp < db.min) || db.min === null) {
+                        db.min = temp;
                     }
-                    if ((tempy !== null && tempy > db.max) || db.max === null) {
-                        db.max = tempy;
+                    if ((temp !== null && temp > db.max) || db.max === null) {
+                        db.max = temp;
                     }
                 }              
             }
@@ -103,7 +107,7 @@
             // populate the axis label and value properties.
             // createTicks is a method on the renderer, but
             // call it within the scope of the axis.
-            this.renderer.createTicks.call(this);
+            this.renderer.createTicks.call(this, plot);
             // fill a div with axes labels in the right direction.
             // Need to pregenerate each axis to get it's bounds and
             // position it and the labels correctly on the plot.
@@ -152,29 +156,57 @@
         return this._elem;
     };   
 
+    // Note, primes can be found on http://primes.utm.edu/
+    var _primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
+
+    var _primesHash = {};
+
+    for (var i =0, l = _primes.length; i < l; i++) {
+        _primesHash[_primes[i]] = _primes[i];
+    }
+
     // called with scope of axis
-    $.jqplot.PyramidAxisRenderer.prototype.createTicks = function() {
+    $.jqplot.PyramidAxisRenderer.prototype.createTicks = function(plot) {
         // we're are operating on an axis here
         var ticks = this._ticks;
         var userTicks = this.ticks;
         // databounds were set on axis initialization.
         var db = this._dataBounds;
-        var dim, interval;
-        var min, max;
-        var pos1, pos2;
-        var tt, i;
+        var dim;
+        var interval;
+        var min;
+        var max;
+        var range;
+        var pos1;
+        var pos2;
+        var tt;
+        var i;
+        var s;
         // get a copy of user's settings for min/max.
         var userMin = this.min;
         var userMax = this.max;
+        var ut;
+        var t;
+        var threshold;
+        var tdim;
+        var scalefact;
+        var ret;
+        var tumin;
+        var tumax;
+        var maxVisibleTicks;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
+
+        // if (this.name === 'yMidAxis') {
+        //     this.tickOptions._styles = {position: 'relative'};
+        // }
         
         if (userTicks.length) {
             // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
             for (i=0, l=userTicks.length; i<l; i++){
-                var ut = userTicks[i];
-                var t = new this.tickRenderer(this.tickOptions);
+                ut = userTicks[i];
+                t = new this.tickRenderer(this.tickOptions);
                 if ($.isArray(ut)) {
                     t.value = ut[0];
                     t.label = ut[1];
@@ -204,60 +236,373 @@
         else {
             if (this.name.charAt(0) === 'x') {
                 dim = this._plotDimensions.width;
+                // make sure x axis is symetric about 0.
+                var tempmax = Math.max(db.max, Math.abs(db.min));
+                var tempmin = Math.min(db.min, -tempmax);
+                min = ((this.min != null) ? this.min : tempmin);
+                max = ((this.max != null) ? this.max : tempmax);
+                range = max - min;
+
+                threshold = 30;
+                tdim = Math.max(dim, threshold+1);
+                scalefact =  (tdim-threshold)/300.0;
+                ret = $.jqplot.LinearTickGenerator(min, max, scalefact); 
+                // calculate a padded max and min, points should be less than these
+                // so that they aren't too close to the edges of the plot.
+                // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
+                tumin = min + range*(this.padMin - 1);
+                tumax = max - range*(this.padMax - 1);
+
+                if (min <=tumin || max >= tumax) {
+                    tumin = min - range*(this.padMin - 1);
+                    tumax = max + range*(this.padMax - 1);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact);
+                }
+
+                this.min = ret[0];
+                this.max = ret[1];
+                this.numberTicks = ret[2];
+                this._autoFormatString = ret[3];
+                this.tickInterval = ret[4];
             }
             else {
                 dim = this._plotDimensions.height;
-            }
 
-            // ticks will be on whole integers like 1, 2, 3, ... or 1, 4, 7, ...
-            var min = this._dataBounds.min;
-            var max = this._dataBounds.max;
-            var s = this._series[0];
-            this.ticks = [];
+                // ticks will be on whole integers like 1, 2, 3, ... or 1, 4, 7, ...
+                min = db.min;
+                max = db.max;
+                s = this._series[0];
+                this.ticks = [];
 
-            var range = max - min;
+                range = max - min;
 
-            // if range is a prime, will get only 2 ticks, expand range in that case.
-            var primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
-            if ($.inArray(range, primes) > -1) {
-                range += 1;
-                max += 1;
-            }
+                // if range is a prime, will get only 2 ticks, expand range in that case.
+                if (_primesHash[range]) {
+                    range += 1;
+                    max += 1;
+                }
 
-            this.max = max;
-            this.min = min;
-            
-            var maxVisibleTicks = Math.round(2 + Math.pow((dim/35), 0.8));
+                this.max = max;
+                this.min = min;
+                
+                maxVisibleTicks = Math.round(2.0 + dim/55);
 
-            if (range + 1 <= maxVisibleTicks) {
-                this.numberTicks = range + 1;
-                this.tickInterval = 1.0;
-            }
+                if (range + 1 <= maxVisibleTicks) {
+                    this.numberTicks = range + 1;
+                    this.tickInterval = 1.0;
+                }
 
-            else {
-                // figure out a round number of ticks to skip in every interval
-                // range / ti + 1 = nt
-                // ti = range / (nt - 1)
-                for (var i=maxVisibleTicks; i>1; i--) {
-                    if (range/(i - 1) === Math.round(range/(i - 1))) {
-                        this.numberTicks = i;
-                        this.tickInterval = range/(i - 1);
-                        break;
+                else {
+                    // figure out a round number of ticks to skip in every interval
+                    // range / ti + 1 = nt
+                    // ti = range / (nt - 1)
+                    for (var i=maxVisibleTicks; i>1; i--) {
+                        if (range/(i - 1) === Math.round(range/(i - 1))) {
+                            this.numberTicks = i;
+                            this.tickInterval = range/(i - 1);
+                            break;
+                        }
+                        
                     }
-                    
                 }
             }
 
-            for (var i=0; i<this.numberTicks; i++) {
+            var labelval;
+            for (i=0; i<this.numberTicks; i++) {
                 this.tickOptions.axis = this.name;
-                this.tickOptions.label = String (this.min + this.tickInterval * i);
+                labelval = this.min + this.tickInterval * i;
+                if (this.name.charAt(0) === 'x') {
+                    labelval = Math.abs(labelval);
+                }
+                this.tickOptions.label = String (labelval);
                 this.tickOptions.value = this.min + this.tickInterval * i;
-                var t = new this.tickRenderer(this.tickOptions);
+                t = new this.tickRenderer(this.tickOptions);
                 this._ticks.push(t);
-                t = null;
+                // for x axis, if y axis is in middle, add a symetrical 0 tick
+                if (this.name.charAt(0) === 'x' && plot.axes.yMidAxis.show && this.tickOptions.value === 0) {
+                    this._splitAxis = true;
+                    this._splitLength = plot.axes.yMidAxis.getWidth();
+                    t.value = -0.1;
+                    t = new this.tickRenderer(this.tickOptions);
+                    this._ticks.push(t);
+                    t.value = 0.1;
+                }
             }
+            t = null;
         }
 
         ticks = null;
     };
+    
+    // called with scope of axis
+    $.jqplot.PyramidAxisRenderer.prototype.set = function() { 
+        var dim = 0;
+        var temp;
+        var w = 0;
+        var h = 0;
+        var i;
+        var t;
+        var tick;
+        var lshow = (this._label == null) ? false : this._label.show;
+        if (this.show) {
+            t = this._ticks;
+            l = t.length;
+            tick;
+            for (i=0; i<l; i++) {
+                tick = t[i];
+                if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    if (this.name.charAt(0) === 'x') {
+                        temp = tick._elem.outerHeight(true);
+                    }
+                    else {
+                        temp = tick._elem.outerWidth(true);
+                    }
+                    if (temp > dim) {
+                        dim = temp;
+                    }
+                }
+            }
+
+            if (this.name === 'yMidAxis') {
+                for (i=0; i<l; i++) {
+                    tick = t[i];
+                    temp = (dim - tick._elem.outerWidth(true))/2.0;
+                    tick._elem.css('left', temp);
+                }
+            }
+            tick = null;
+            t = null;
+            
+            if (lshow) {
+                w = this._label._elem.outerWidth(true);
+                h = this._label._elem.outerHeight(true); 
+            }
+            if (this.name == 'xaxis') {
+                dim = dim + h;
+                this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
+            }
+            else if (this.name == 'x2axis') {
+                dim = dim + h;
+                this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
+            }
+            else if (this.name == 'yaxis') {
+                dim = dim + w;
+                this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w+'px');
+                }
+            }
+            else {
+                dim = dim + w;
+                this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w+'px');
+                }
+            }
+        }  
+    };
+    
+    $.jqplot.PyramidAxisRenderer.prototype.pack = function(pos, offsets) { 
+        // Add defaults for repacking from resetTickValues function.
+        pos = pos || {};
+        offsets = offsets || this._offsets;
+        
+        var ticks = this._ticks;
+        var max = this.max;
+        var min = this.min;
+        var offmax = offsets.max;
+        var offmin = offsets.min;
+        var lshow = (this._label == null) ? false : this._label.show;
+        
+        for (var p in pos) {
+            this._elem.css(p, pos[p]);
+        }
+        
+        this._offsets = offsets;
+        // pixellength will be + for x axes and - for y axes becasue pixels always measured from top left.
+        var pixellength = offmax - offmin;
+        var unitlength = max - min;
+        var sl = this._splitLength;
+        
+        // point to unit and unit to point conversions references to Plot DOM element top left corner.
+        if (this._splitAxis) {
+            pixellength -= this._splitLength;
+            
+            // don't know that this one is correct.
+            this.p2u = function(p){
+                return (p - offmin) * unitlength / pixellength + min;
+            };
+        
+            this.u2p = function(u){
+                if (u <= 0) {
+                    return (u - min) * pixellength / unitlength + offmin;
+                }
+                else {
+                    return (u - min) * pixellength / unitlength + offmin + sl;
+                }
+            };
+                
+            this.series_u2p = function(u){
+                if (u <= 0) {
+                    return (u - min) * pixellength / unitlength;
+                }
+                else {
+                    return (u - min) * pixellength / unitlength + sl;
+                }
+            };
+
+            // don't know that this one is correct.
+            this.series_p2u = function(p){
+                return p * unitlength / pixellength + min;
+            };
+        }
+        else {
+            this.p2u = function(p){
+                return (p - offmin) * unitlength / pixellength + min;
+            };
+        
+            this.u2p = function(u){
+                return (u - min) * pixellength / unitlength + offmin;
+            };
+                
+            if (this.name.charAt(0) === 'x'){
+                this.series_u2p = function(u){
+                    return (u - min) * pixellength / unitlength;
+                };
+                this.series_p2u = function(p){
+                    return p * unitlength / pixellength + min;
+                };
+            }
+        
+            else {
+                this.series_u2p = function(u){
+                    return (u - max) * pixellength / unitlength;
+                };
+                this.series_p2u = function(p){
+                    return p * unitlength / pixellength + max;
+                };
+            }
+        }
+        
+        if (this.show) {
+            if (this.name.charAt(0) === 'x') {
+                for (var i=0; i<ticks.length; i++) {
+                    var t = ticks[i];
+                    if (t.show && t.showLabel) {
+                        var shim;
+                        
+                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            // will need to adjust auto positioning based on which axis this is.
+                            var temp = (this.name == 'xaxis') ? 1 : -1;
+                            switch (t.labelPosition) {
+                                case 'auto':
+                                    // position at end
+                                    if (temp * t.angle < 0) {
+                                        shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    }
+                                    // position at start
+                                    else {
+                                        shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'end':
+                                    shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                                case 'start':
+                                    shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    break;
+                                case 'middle':
+                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                                default:
+                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                            }
+                        }
+                        else {
+                            shim = -t.getWidth()/2;
+                        }
+                        var val = this.u2p(t.value) + shim + 'px';
+                        t._elem.css('left', val);
+                        t.pack();
+                    }
+                }
+                if (lshow) {
+                    var w = this._label._elem.outerWidth(true);
+                    this._label._elem.css('left', offmin + pixellength/2 - w/2 + 'px');
+                    if (this.name == 'xaxis') {
+                        this._label._elem.css('bottom', '0px');
+                    }
+                    else {
+                        this._label._elem.css('top', '0px');
+                    }
+                    this._label.pack();
+                }
+            }
+            else {
+                for (var i=0; i<ticks.length; i++) {
+                    var t = ticks[i];
+                    if (t.show && t.showLabel) {                        
+                        var shim;
+                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            // will need to adjust auto positioning based on which axis this is.
+                            var temp = (this.name == 'yaxis') ? 1 : -1;
+                            switch (t.labelPosition) {
+                                case 'auto':
+                                    // position at end
+                                case 'end':
+                                    if (temp * t.angle < 0) {
+                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                    }
+                                    else {
+                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'start':
+                                    if (t.angle > 0) {
+                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                    }
+                                    else {
+                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'middle':
+                                    // if (t.angle > 0) {
+                                    //     shim = -t.getHeight()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    // }
+                                    // else {
+                                    //     shim = -t.getHeight()/2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    // }
+                                    shim = -t.getHeight()/2;
+                                    break;
+                                default:
+                                    shim = -t.getHeight()/2;
+                                    break;
+                            }
+                        }
+                        else {
+                            shim = -t.getHeight()/2;
+                        }
+                        
+                        var val = this.u2p(t.value) + shim + 'px';
+                        t._elem.css('top', val);
+                        t.pack();
+                    }
+                }
+                if (lshow) {
+                    var h = this._label._elem.outerHeight(true);
+                    this._label._elem.css('top', offmax - pixellength/2 - h/2 + 'px');
+                    if (this.name == 'yaxis') {
+                        this._label._elem.css('left', '0px');
+                    }
+                    else {
+                        this._label._elem.css('right', '0px');
+                    }   
+                    this._label.pack();
+                }
+            }
+        }
+
+        ticks = null;
+    }
 })(jQuery);

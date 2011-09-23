@@ -784,8 +784,11 @@
         var plot = ev.data.plot;
         var go = plot.eventCanvas._elem.offset();
         var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-        var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null};
-        var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+        //////
+        // TO DO: handle yMidAxis
+        //////
+        var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null, yMidAxis:null};
+        var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis', 'yMidAxis'];
         var ax = plot.axes;
         var n, axis;
         for (n=11; n>0; n--) {
