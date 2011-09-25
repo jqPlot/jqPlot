@@ -2141,7 +2141,7 @@
                 
                 this.axes[name]._plotDimensions = this._plotDimensions;
                 this.axes[name]._ticks = [];
-                this.axes[name].renderer.init.call(this.axes[name], {});
+                // this.axes[name].renderer.init.call(this.axes[name], {});
             }
             
             if (this.sortData) {
