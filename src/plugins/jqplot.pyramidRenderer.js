@@ -75,7 +75,7 @@
             options.highlightMouseOver = false;
         }
 
-        this._positiveSeries = true;
+        this.side = 'right';
         
         $.extend(true, this, options);
 
@@ -94,7 +94,7 @@
         this._xnudge = 0;
         
         // set the shape renderer options
-        var opts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill, lineWidth: this.lineWidth};
+        var opts = {lineJoin:'miter', lineCap:'butt', fill:this.fill, fillRect:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill, lineWidth: this.lineWidth};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
         var shadow_offset = options.shadowOffset;
@@ -110,11 +110,18 @@
                 shadow_offset = 1.25 * Math.atan((this.lineWidth/2.5))/0.785398163;
             }
         }
-        var sopts = {lineJoin:'miter', lineCap:'round', fill:this.fill, fillRect:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill, lineWidth: this.lineWidth};
+        var sopts = {lineJoin:'miter', lineCap:'butt', fill:this.fill, fillRect:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill, lineWidth: this.lineWidth};
         this.renderer.shadowRenderer.init(sopts);
 
         plot.postDrawHooks.addOnce(postPlotDraw);
         plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+
+        // if this is the left side of pyramid, set y values to negative.
+        if (this.side === 'left') {
+            for (var i=0, l=this.data.length; i<l; i++) {
+                this.data[i][1] = -Math.abs(this.data[i][1]);
+            }
+        }
     };
     
     // setGridData
@@ -136,12 +143,12 @@
         // if any data values are < 0,  consider this a negative series
         for (i = 0; i < l; i++) {
             if (data[i][1] < 0) {
-                this._positiveSeries = false;
+                this.side = 'left';
             }
         }
 
-        if (this._yaxis.name === 'yMidAxis' && this._positiveSeries) {
-            this._xnudge = this._xaxis.max/1000.0;
+        if (this._yaxis.name === 'yMidAxis' && this.side === 'right') {
+            this._xnudge = this._xaxis.max/2000.0;
             adjust = true;
         }
 
@@ -182,12 +189,12 @@
         // if any data values are < 0,  consider this a negative series
         for (i = 0; i < l; i++) {
             if (data[i][1] < 0) {
-                this._positiveSeries = false;
+                this.side = 'left';
             }
         }
 
-        if (this._yaxis.name === 'yMidAxis' && this._positiveSeries) {
-            this._xnudge = this._xaxis.max/1000.0;
+        if (this._yaxis.name === 'yMidAxis' && this.side === 'right') {
+            this._xnudge = this._xaxis.max/2000.0;
             adjust = true;
         }
 
@@ -224,16 +231,16 @@
         var nbins = (nticks-1)/2;
         // so, now we have total number of axis values.
         if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
-            this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + 0.4);
+            this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + Math.pow(3, -Math.abs(this.barPadding)));
         }
         else {
             if (this.fill) {
-                var fact = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding;
+                var fact = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + Math.pow(3, -Math.abs(this.barPadding));
             }
             else {
                 var fact = (paxis._offsets.min - paxis._offsets.max) / nvals;
             }
-            this.barWidth = Math.round(fact + 0.4);
+            this.barWidth = Math.round(fact);
         }
     };
     
@@ -275,14 +282,15 @@
             var positiveColor = opts.fillStyle;
             var base;
             var xstart = this._xaxis.series_u2p(this._xnudge);; 
-            var ystart;
+            var ystart = this._yaxis.series_u2p(this._yaxis.min);
+            var yend = this._yaxis.series_u2p(this._yaxis.max);
             var bw2 = this.barWidth/2.0;
+            var points = [];
             
             for (var i=0, l=gridData.length; i<l; i++) {
                 if (this.data[i][0] == null) {
                     continue;
                 }
-                points = [];
                 base = gridData[i][1];
                 // not stacked and first series in stack
 
@@ -320,28 +328,36 @@
                     }
 
                     this._barPoints.push([[points[0], points[1] + h], [points[0], points[1]], [points[0] + w, points[1]], [points[0] + w, points[1] + h]]);
+
+                    if (shadow) {
+                        this.renderer.shadowRenderer.draw(ctx, points);
+                    }
+                    var clr = opts.fillStyle || this.color;
+                    this._dataColors.push(clr);
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
                 }
 
                 else {
                     if (i === 0) {
-                        points = [[xstart, gridData[i][1]], [gridData[i][0], gridData[i][1]], [gridData[i][0], gridData[i][1] - bw2]];
+                        points =[[xstart, ystart], [gridData[i][0], ystart], [gridData[i][0], gridData[i][1] - bw2]];
                     }
-                    else if (i === l-1) {
-                        points = [[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], gridData[i][1]], [xstart, gridData[i][1]]];
-                    }
-                    else {
-                        points = [[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], gridData[i][1] - bw2]];
-                    }
-                }
 
-                if (shadow) {
-                    // var sopts = $.extend(true, {}, opts);
-                    // delete sopts.fillStyle;
-                    this.renderer.shadowRenderer.draw(ctx, points);
+                    else if (i < l-1) {
+                        points = points.concat([[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], gridData[i][1] - bw2]]);
+                    } 
+
+                    // finally, draw the line
+                    else {
+                        points = points.concat([[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], yend], [xstart, yend]]);
+                    
+                        if (shadow) {
+                            this.renderer.shadowRenderer.draw(ctx, points);
+                        }
+                        var clr = opts.fillStyle || this.color;
+                        this._dataColors.push(clr);
+                        this.renderer.shapeRenderer.draw(ctx, points, opts);
+                    }
                 }
-                var clr = opts.fillStyle || this.color;
-                this._dataColors.push(clr);
-                this.renderer.shapeRenderer.draw(ctx, points, opts); 
             }  
         }        
         
