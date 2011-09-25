@@ -63,7 +63,7 @@
         // prop: showLabel
         // wether or not to show the label.
         this.showLabel = true;
-        this.label = '';
+        this.label = null;
         this.value = null;
         this._styles = {};
         // prop: formatter
@@ -111,7 +111,7 @@
     };
     
     $.jqplot.AxisTickRenderer.prototype.draw = function() {
-        if (!this.label) {
+        if (this.label === null) {
             this.label = this.prefix + this.formatter(this.formatString, this.value);
         }
         var style = {position: 'absolute'};
