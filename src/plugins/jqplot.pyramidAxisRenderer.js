@@ -53,13 +53,6 @@
         this._splitAxis = false;
         this._splitLength = null;
         this.category = false;
-
-        if (this.name.charAt(0) === 'x') {
-            this.position = 'bottom';
-        }
-        else {
-            this.position = 'center';
-        }
         
         $.extend(true, this, options);
         this.renderer.options = options;
@@ -148,7 +141,7 @@
             var tick;
             for (var i=0; i<t.length; i++) {
                 tick = t[i];
-                if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                if (tick.show && tick.showLabel && (!tick.isMinorTick)) {
                     this._elem.append(tick.draw(ctx, plot));
                 }
             }
@@ -160,8 +153,6 @@
 
     // Note, primes can be found on http://primes.utm.edu/
     var _primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
-
-    var _primeFactors = [[], [], [2], [3], [2, 2], [5], [2, 3], [7], [2, 2, 2], [3, 3], [2, 5], [11], [2, 2, 3], [13], [2, 7], [3, 5], [2, 2, 2, 2], [17], [2, 3, 3], [19], [2, 2, 5], [3, 7], [2, 11], [23], [2, 2, 2, 3], [5, 5], [2, 13], [3, 3, 3], [2, 2, 7], [29], [2, 3, 5], [31], [2, 2, 2, 2, 2], [3, 11], [2, 17], [5, 7], [2, 2, 3, 3], [37], [2, 19], [3, 13], [2, 2, 2, 5], [41], [2, 3, 7], [43], [2, 2, 11], [3, 3, 5], [2, 23], [47], [2, 2, 2, 2, 3], [7, 7], [2, 5, 5], [3, 17], [2, 2, 13], [53], [2, 3, 3, 3], [5, 11], [2, 2, 2, 7], [3, 19], [2, 29], [59], [2, 2, 3, 5], [61], [2, 31], [3, 3, 7], [2, 2, 2, 2, 2, 2], [5, 13], [2, 3, 11], [67], [2, 2, 17], [3, 23], [2, 5, 7], [71], [2, 2, 2, 3, 3], [73], [2, 37], [3, 5, 5], [2, 2, 19], [7, 11], [2, 3, 13], [79], [2, 2, 2, 2, 5], [3, 3, 3, 3], [2, 41], [83], [2, 2, 3, 7], [5, 17], [2, 43], [3, 29], [2, 2, 2, 11], [89], [2, 3, 3, 5], [7, 13], [2, 2, 23], [3, 31], [2, 47], [5, 19], [2, 2, 2, 2, 2, 3], [97], [2, 7, 7], [3, 3, 11], [2, 2, 5, 5], [101], [2, 3, 17], [103], [2, 2, 2, 13], [3, 5, 7], [2, 53], [107], [2, 2, 3, 3, 3], [109], [2, 5, 11], [3, 37], [2, 2, 2, 2, 7], [113], [2, 3, 19], [5, 23], [2, 2, 29], [3, 3, 13], [2, 59], [7, 17], [2, 2, 2, 3, 5], [11, 11], [2, 61], [3, 41], [2, 2, 31], [5, 5, 5], [2, 3, 3, 7], [127], [2, 2, 2, 2, 2, 2, 2], [3, 43], [2, 5, 13], [131], [2, 2, 3, 11], [7, 19], [2, 67], [3, 3, 3, 5], [2, 2, 2, 17], [137], [2, 3, 23], [139], [2, 2, 5, 7], [3, 47], [2, 71], [11, 13], [2, 2, 2, 2, 3, 3], [5, 29], [2, 73], [3, 7, 7], [2, 2, 37], [149], [2, 3, 5, 5], [151], [2, 2, 2, 19], [3, 3, 17], [2, 7, 11], [5, 31], [2, 2, 3, 13], [157], [2, 79], [3, 53], [2, 2, 2, 2, 2, 5], [7, 23], [2, 3, 3, 3, 3], [163], [2, 2, 41], [3, 5, 11], [2, 83], [167], [2, 2, 2, 3, 7], [13, 13], [2, 5, 17], [3, 3, 19], [2, 2, 43], [173], [2, 3, 29], [5, 5, 7], [2, 2, 2, 2, 11], [3, 59], [2, 89], [179], [2, 2, 3, 3, 5], [181], [2, 7, 13], [3, 61], [2, 2, 2, 23], [5, 37], [2, 3, 31], [11, 17], [2, 2, 47], [3, 3, 3, 7], [2, 5, 19], [191], [2, 2, 2, 2, 2, 2, 3], [193], [2, 97], [3, 5, 13], [2, 2, 7, 7], [197], [2, 3, 3, 11], [199]];
 
 
     var _primesHash = {};
@@ -242,29 +233,43 @@
             this.max = this._ticks[this.numberTicks-1].value;
             this.tickInterval = (this.max - this.min) / (this.numberTicks - 1);
 
-            // check if we have too many ticks
-            dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
-            maxVisibleTicks = Math.round(2.0 + dim/this.tickSpacingFactor);
-
-            if (this.numberTicks > maxVisibleTicks) {
-                // check for number of ticks we can skip
-                temp = this.numberTicks - 1;
-                for (i=2; i<temp; i++) {
-                    if (temp % i === 0 && temp/i < maxVisibleTicks) {
-                        skip = i-1;
-                        break;
+            // use user specified tickInterval if there is one
+            if (this._options.tickInterval) {
+                // hide every tick except for ticks on interval
+                var ti = this._options.tickInterval;
+                for (i=0; i<this.numberTicks; i++) {
+                    if (i%ti !== 0) {
+                        // this._ticks[i].show = false;
+                        this._ticks[i].isMinorTick = true;
                     }
                 }
+            }
 
-                if (skip !== null) {
-                    var count = 1;
-                    for (i=1, l=this._ticks.length; i<l; i++) {
-                        if (count <= skip) {
-                            this._ticks[i].show = false;
-                            count += 1;
+            else {
+                // check if we have too many ticks
+                dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
+                maxVisibleTicks = Math.round(2.0 + dim/this.tickSpacingFactor);
+
+                if (this.numberTicks > maxVisibleTicks) {
+                    // check for number of ticks we can skip
+                    temp = this.numberTicks - 1;
+                    for (i=2; i<temp; i++) {
+                        if (temp % i === 0 && temp/i < maxVisibleTicks) {
+                            skip = i-1;
+                            break;
                         }
-                        else {
-                            count = 1;
+                    }
+
+                    if (skip !== null) {
+                        var count = 1;
+                        for (i=1, l=this._ticks.length; i<l; i++) {
+                            if (count <= skip) {
+                                this._ticks[i].show = false;
+                                count += 1;
+                            }
+                            else {
+                                count = 1;
+                            }
                         }
                     }
                 }
@@ -431,10 +436,9 @@
         if (this.show) {
             t = this._ticks;
             l = t.length;
-            tick;
             for (i=0; i<l; i++) {
                 tick = t[i];
-                if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                if (!tick._breakTick && tick.show && tick.showLabel && !tick.isMinorTick) {
                     if (this.name.charAt(0) === 'x') {
                         temp = tick._elem.outerHeight(true);
                     }
@@ -463,17 +467,24 @@
                 w = this._label._elem.outerWidth(true);
                 h = this._label._elem.outerHeight(true); 
             }
-            if (this.name == 'xaxis') {
+            if (this.name === 'xaxis') {
                 dim = dim + h;
                 this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
             }
-            else if (this.name == 'x2axis') {
+            else if (this.name === 'x2axis') {
                 dim = dim + h;
                 this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
             }
-            else if (this.name == 'yaxis') {
+            else if (this.name === 'yaxis') {
                 dim = dim + w;
                 this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w+'px');
+                }
+            }
+            else if (this.name === 'yMidAxis') {
+                dim = dim + w;
+                this._elem.css({'width':dim+'px', top:'0px'});
                 if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
                     this._label._elem.css('width', w+'px');
                 }
@@ -628,7 +639,7 @@
             else {
                 for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
-                    if (t.show && t.showLabel) {                        
+                    if (t.show && t.showLabel && !t.isMinorTick) {                        
                         var shim;
                         if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
                             // will need to adjust auto positioning based on which axis this is.

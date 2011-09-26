@@ -2660,7 +2660,8 @@
                 for (i=8; i>0; i--) {
                     ax[ra[i-1]].pack({position:'absolute', top:0, right:this._gridPadding.right - rapad[i-1]}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
                 }
-                ax.yMidAxis.pack({position:'relative', marginLeft: 'auto', marginRight: 'auto', zIndex:9, textAlign: 'center'}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
+                var ltemp = (this._width - this._gridPadding.left - this._gridPadding.right)/2.0 + this._gridPadding.left - ax.yMidAxis.getWidth()/2.0;
+                ax.yMidAxis.pack({position:'absolute', top:0, left:ltemp, zIndex:9, textAlign: 'center'}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
             
                 this.target.append(this.grid.createElement(this._gridPadding, this));
                 this.grid.draw();

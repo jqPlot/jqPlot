@@ -38,6 +38,22 @@
     $.jqplot.PyramidGridRenderer.prototype = new $.jqplot.CanvasGridRenderer();
     $.jqplot.PyramidGridRenderer.prototype.constructor = $.jqplot.PyramidGridRenderer;
     
+    // called with context of Grid object
+    $.jqplot.CanvasGridRenderer.prototype.init = function(options) {
+        this._ctx;
+        this.plotBands = {
+            show: false,
+            color: 'rgb(230, 219, 179)'
+            axis: 'y',
+            start: 0,
+            interval: 10
+        }
+        $.extend(true, this, options);
+        // set the shadow renderer options
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:false, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.shadowWidth, closePath:false, strokeStyle:this.shadowColor};
+        this.renderer.shadowRenderer.init(sopts);
+    };
+    
     $.jqplot.PyramidGridRenderer.prototype.draw = function() {
         this._ctx = this._elem.get(0).getContext("2d");
         var ctx = this._ctx;
@@ -47,12 +63,52 @@
         var xnudge = axes.xaxis.max/1000.0;
         var xp0 = xp(0);
         var xpn = xp(xnudge);
+        var ax = ['xaxis', 'yaxis', 'x2axis', 'y2axis','yMidAxis'];
         // Add the grid onto the grid canvas.  This is the bottom most layer.
         ctx.save();
         ctx.clearRect(0, 0, this._plotDimensions.width, this._plotDimensions.height);
         ctx.fillStyle = this.backgroundColor || this.background;
 
         ctx.fillRect(this._left, this._top, this._width, this._height);
+
+        if (this.plotBands.show) {
+            ctx.save();
+            ctx.fillStyle = this.plotBands.color;
+            var axis;
+            var x, y, w, h;
+            // find axis to work with
+            if (this.plotBands.axis.charAt(0) === 'x') {
+                if (axes.xaxis.show) {
+                    axis = axes.xaxis;
+                }
+                else if (axes.x2axis.show) {
+                    axis = axes.x2axis;
+                }
+            }
+            else if (this.plotBands.axis.charAt(0) === 'y') {
+                if (axes.yaxis.show) {
+                    axis = axes.yaxis;
+                }
+                else if (axes.y2axis.show) {
+                    axis = axes.y2axis;
+                }
+                else if (axes.yMidAxis.show) {
+                    axis = axes.yMidAxis;
+                }
+            }
+
+            if (axis !== undefined) {
+                // draw some rectangles
+                for (var i = this.plotBands.start; i <= axis.max; i += 2 * this.plotBands.interval) {
+                    if (axis.name.charAt(0) === 'y') {
+                        x = 0;
+                        y = axis.series_u2p(i);
+                        w = this._width;
+                        h = 
+                    }
+                }
+            }
+        }
         
         ctx.save();
         ctx.lineJoin = 'miter';
@@ -60,7 +116,6 @@
         ctx.lineWidth = this.gridLineWidth;
         ctx.strokeStyle = this.gridLineColor;
         var b, e, s, m;
-        var ax = ['xaxis', 'yaxis', 'x2axis', 'y2axis','yMidAxis'];
         for (var i=5; i>0; i--) {
             var name = ax[i-1];
             var axis = axes[name];
@@ -114,12 +169,12 @@
                         switch (name) {
                             case 'xaxis':
                                 // draw the grid line if we should
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && (!t.isMinorTick || axis.showMinorTicks)) {
                                     drawLine(pos, this._top, pos, this._bottom);
                                 }
                                 
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && (!t.isMinorTick || axis.showMinorTicks)) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -151,12 +206,12 @@
                                 break;
                             case 'yaxis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && (!t.isMinorTick || axis.showMinorTicks)) {
                                     drawLine(this._right, pos, this._left, pos);
                                 }
 
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && (!t.isMinorTick || axis.showMinorTicks)) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -187,12 +242,12 @@
                                 break;
                             case 'yMidAxis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && (!t.isMinorTick || axis.showMinorTicks)) {
                                     drawLine(this._left, pos, xp0, pos);
                                     drawLine(xpn, pos, this._right, pos);
                                 }
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && (!t.isMinorTick || axis.showMinorTicks)) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -216,12 +271,12 @@
                                 break;
                             case 'x2axis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && (!t.isMinorTick || axis.showMinorTicks)) {
                                     drawLine(pos, this._bottom, pos, this._top);
                                 }
 
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && (!t.isMinorTick || axis.showMinorTicks)) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -252,12 +307,12 @@
                                 break;
                             case 'y2axis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && (!t.isMinorTick || axis.showMinorTicks)) {
                                     drawLine(this._left, pos, this._right, pos);
                                 }
 
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && (!t.isMinorTick || axis.showMinorTicks)) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
