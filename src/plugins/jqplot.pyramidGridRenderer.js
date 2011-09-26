@@ -43,9 +43,9 @@
         this._ctx;
         this.plotBands = {
             show: false,
-            color: 'rgb(230, 219, 179)'
+            color: 'rgb(230, 219, 179)',
             axis: 'y',
-            start: 0,
+            start: null,
             interval: 10
         }
         $.extend(true, this, options);
@@ -73,19 +73,17 @@
 
         if (this.plotBands.show) {
             ctx.save();
-            ctx.fillStyle = this.plotBands.color;
+            var pb = this.plotBands;
+            ctx.fillStyle = pb.color;
             var axis;
             var x, y, w, h;
             // find axis to work with
-            if (this.plotBands.axis.charAt(0) === 'x') {
+            if (pb.axis.charAt(0) === 'x') {
                 if (axes.xaxis.show) {
                     axis = axes.xaxis;
                 }
-                else if (axes.x2axis.show) {
-                    axis = axes.x2axis;
-                }
             }
-            else if (this.plotBands.axis.charAt(0) === 'y') {
+            else if (pb.axis.charAt(0) === 'y') {
                 if (axes.yaxis.show) {
                     axis = axes.yaxis;
                 }
@@ -99,15 +97,28 @@
 
             if (axis !== undefined) {
                 // draw some rectangles
-                for (var i = this.plotBands.start; i <= axis.max; i += 2 * this.plotBands.interval) {
+                var start = pb.start;
+                if (start === null) {
+                    start = axis.min;
+                }
+                for (var i = start; i < axis.max; i += 2 * pb.interval) {
                     if (axis.name.charAt(0) === 'y') {
-                        x = 0;
-                        y = axis.series_u2p(i);
-                        w = this._width;
-                        h = 
+                        x = this._left;
+                        y = axis.series_u2p(i + pb.interval) + this._top;
+                        w = this._right - this._left;
+                        h = axis.series_u2p(start) - axis.series_u2p(start + pb.interval);
+                        ctx.fillRect(x, y, w, h);
                     }
+                    // else {
+                    //     y = 0;
+                    //     x = axis.series_u2p(i);
+                    //     h = this._height;
+                    //     w = axis.series_u2p(start + pb.interval) - axis.series_u2p(start);
+                    // }
+
                 }
             }
+            ctx.restore();
         }
         
         ctx.save();

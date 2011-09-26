@@ -230,17 +230,23 @@
         var nticks = paxis.numberTicks;
         var nbins = (nticks-1)/2;
         // so, now we have total number of axis values.
+        var temp = (this.barPadding === 0) ? 1.0 : 0;
         if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
-            this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + Math.pow(3, -Math.abs(this.barPadding)));
+            // this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + 1.2*Math.pow(4, -Math.abs(this.barPadding)));
+            // this.barWidth = Math.round((paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + temp);
+            this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding + temp;
         }
         else {
             if (this.fill) {
-                var fact = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + Math.pow(3, -Math.abs(this.barPadding));
+                // var fact = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + 1.2*Math.pow(4, -Math.abs(this.barPadding));
+                // var fact = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + temp);
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding + temp;
             }
             else {
-                var fact = (paxis._offsets.min - paxis._offsets.max) / nvals;
+                // var fact = (paxis._offsets.min - paxis._offsets.max) / nvals;
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals;
             }
-            this.barWidth = Math.round(fact);
+            // this.barWidth = Math.round(fact);
         }
     };
     
