@@ -31,19 +31,19 @@
 
     // if bar renderer is not loaded, load it since pyramid is subclass of bar.
     // Note, have to block with synchronous request in order to execute bar renderer code.
-    if ($.jqplot.BarRenderer === undefined) {
-        $.ajax({
-            url: $.jqplot.pluginLocation + 'jqplot.barRenderer.js',
-            dataType: "script",
-            async: false
-        });
-    }
+    // if ($.jqplot.BarRenderer === undefined) {
+    //     $.ajax({
+    //         url: $.jqplot.pluginLocation + 'jqplot.barRenderer.js',
+    //         dataType: "script",
+    //         async: false
+    //     });
+    // }
 
     $.jqplot.PyramidRenderer = function(){
-        $.jqplot.BarRenderer.call(this);
+        $.jqplot.LineRenderer.call(this);
     };
     
-    $.jqplot.PyramidRenderer.prototype = new $.jqplot.BarRenderer();
+    $.jqplot.PyramidRenderer.prototype = new $.jqplot.LineRenderer();
     $.jqplot.PyramidRenderer.prototype.constructor = $.jqplot.PyramidRenderer;
     
     // called with scope of a series

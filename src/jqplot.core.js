@@ -863,7 +863,9 @@
         // CSS style for the margin which will override any style sheet setting.
         // The default will be taken from the stylesheet.
         this.marginLeft = null;
-        
+        // prop: escapeHtml
+        // True to escape special characters with their html entity equivalents
+        // in legend text.  "<" becomes &lt; and so on, so html tags are not rendered.
         this.escapeHtml = false;
         this._series = [];
         
@@ -1035,6 +1037,10 @@
         // prop: rendererOptions
         // renderer specific options passed to the renderer.
         this.rendererOptions = {};   
+        // prop: escapeHtml
+        // True to escape special characters with their html entity equivalents
+        // in title text.  "<" becomes &lt; and so on, so html tags are not rendered.
+        this.escapeHtml = false;
     }
     
     Title.prototype = new $.jqplot.ElemContainer();

@@ -72,7 +72,7 @@
             if (this.fontSize) {
                 styles['fontSize'] = this.fontSize;
             }
-            if (this.textAlign) {
+            if (typeof this.textAlign === 'string') {
                 styles['textAlign'] = this.textAlign;
             }
             else {
@@ -89,7 +89,12 @@
             }
 
             this._elem.css(styles);
-            this._elem.text(this.text);
+            if (this.escapeHtml) {
+                this._elem.text(this.text);
+            }
+            else {
+                this._elem.html(this.text);
+            }
 
 
             // styletext += (this._plotWidth) ? 'width:'+this._plotWidth+'px;' : '';
