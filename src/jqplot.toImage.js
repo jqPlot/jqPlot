@@ -176,14 +176,52 @@
             return lineheight;
         }
 
-        function writeWrappedText (el, context, text, left, top) {
+        function writeWrappedText (el, context, text, left, top, canvasWidth) {
             var lineheight = getLineheight(el);
             var tagwidth = $(el).innerWidth();
             var tagheight = $(el).innerHeight();
+            var words = text.split(/\s+/);
+            var wl = words.length;
+            var w = '';
+            var breaks = [];
+            var temptop = top;
+            var templeft = left;
 
+            for (var i=0; i<wl; i++) {
+                w += words[i];
+                if (context.measureText(w).width > tagwidth) {
+                    breaks.push(i);
+                    w = '';
+                }   
+            }
+            if (breaks.length === 0) {
+                context.fillText(text, left, top);
+            }
+            else {
+                w = words.slice(0, breaks[0]).join(' ');
+                // center text if necessary
+                if ($(el).css('textAlign') === 'center') {
+                    templeft = left + (canvasWidth - context.measureText(w).width)/2  - transx;
+                }
+                context.fillText(w, templeft, temptop);
+                temptop += lineheight;
+                for (var i=1, l=breaks.length; i<l; i++) {
+                    w = words.slice(breaks[i-1], breaks[i]).join(' ');
+                    // center text if necessary
+                    if ($(el).css('textAlign') === 'center') {
+                        templeft = left + (canvasWidth - context.measureText(w).width)/2  - transx;
+                    }
+                    context.fillText(w, templeft, temptop);
+                    temptop += lineheight;
+                }
+                w = words.slice(breaks[i-1], words.length).join(' ');
+                // center text if necessary
+                if ($(el).css('textAlign') === 'center') {
+                    templeft = left + (canvasWidth - context.measureText(w).width)/2  - transx;
+                }
+                context.fillText(w, templeft, temptop)
+            }
 
-
-            
         }
 
         function _jqpToImage(el, x_offset, y_offset) {
@@ -192,6 +230,7 @@
             var css = window.getComputedStyle ?  window.getComputedStyle(el) : el.currentStyle; // for IE < 9
             var left = x_offset + p.left + parseInt(css.marginLeft) + parseInt(css.borderLeftWidth) + parseInt(css.paddingLeft);
             var top = y_offset + p.top + parseInt(css.marginTop) + parseInt(css.borderTopWidth)+ parseInt(css.paddingTop);
+            var w = newCanvas.width;
             // var left = x_offset + p.left + $(el).css('marginLeft') + $(el).css('borderLeftWidth') 
 
             if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip')) {
@@ -203,13 +242,8 @@
                 if (text) {
                     newContext.font = $(el).jqplotGetComputedFontStyle();
                     newContext.fillStyle = $(el).css('color');
-                    // center text if necessary
-                    if ($(el).css('textAlign') === 'center') {
-                        left += (newCanvas.width - newContext.measureText(text).width)/2  - transx;
-                    }
 
-                    // writeWrappedText(el, newContext, text, left, top);
-                    newContext.fillText(text, left, top);
+                    writeWrappedText(el, newContext, text, left, top, w);
                 }
             }
 
