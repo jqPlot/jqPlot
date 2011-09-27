@@ -29,15 +29,25 @@
  */
 (function($) {
 
-    // if bar renderer is not loaded, load it since pyramid is subclass of bar.
+    // Need to ensure pyramid axis and grid renderers are loaded.
+    // You should load these with script tags in the html head, that is more efficient
+    // as the browser will cache the request.
     // Note, have to block with synchronous request in order to execute bar renderer code.
-    // if ($.jqplot.BarRenderer === undefined) {
-    //     $.ajax({
-    //         url: $.jqplot.pluginLocation + 'jqplot.barRenderer.js',
-    //         dataType: "script",
-    //         async: false
-    //     });
-    // }
+    if ($.jqplot.PyramidAxisRenderer === undefined) {
+        $.ajax({
+            url: $.jqplot.pluginLocation + 'jqplot.pyramidAxisRenderer.js',
+            dataType: "script",
+            async: false
+        });
+    }
+    
+    if ($.jqplot.PyramidGridRenderer === undefined) {
+        $.ajax({
+            url: $.jqplot.pluginLocation + 'jqplot.pyramidGridRenderer.js',
+            dataType: "script",
+            async: false
+        });
+    }
 
     $.jqplot.PyramidRenderer = function(){
         $.jqplot.LineRenderer.call(this);
@@ -399,7 +409,6 @@
         if (setopts) {
             options.axesDefaults.renderer = $.jqplot.PyramidAxisRenderer;
             options.grid.renderer = $.jqplot.PyramidGridRenderer;
-            options.legend.show = false;
             options.seriesDefaults.pointLabels = {show: false};
         }
     }
