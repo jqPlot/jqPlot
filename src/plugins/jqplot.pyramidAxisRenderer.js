@@ -483,10 +483,12 @@
                 }
             }
             else if (this.name === 'yMidAxis') {
-                dim = dim + w;
+                // don't include width of label at all in width of axis?
+                // dim = (dim > w) ? dim : w;
+                var temp = dim/2.0 - w/2.0;
                 this._elem.css({'width':dim+'px', top:'0px'});
                 if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
-                    this._label._elem.css('width', w+'px');
+                    this._label._elem.css({width: w, left: temp, top: 0});
                 }
             }
             else {
@@ -688,11 +690,13 @@
                 }
                 if (lshow) {
                     var h = this._label._elem.outerHeight(true);
-                    this._label._elem.css('top', offmax - pixellength/2 - h/2 + 'px');
+                    if (this.name !== 'yMidAxis') {
+                        this._label._elem.css('top', offmax - pixellength/2 - h/2 + 'px');
+                    }
                     if (this.name == 'yaxis') {
                         this._label._elem.css('left', '0px');
                     }
-                    else {
+                    else if (this.name !== 'yMidAxis') {
                         this._label._elem.css('right', '0px');
                     }   
                     this._label.pack();
