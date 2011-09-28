@@ -186,7 +186,11 @@
                 }   
             }
             if (breaks.length === 0) {
-                context.fillText(text, left, top);
+                // center text if necessary
+                if ($(el).css('textAlign') === 'center') {
+                    templeft = left + (canvasWidth - context.measureText(w).width)/2  - transx;
+                }
+                context.fillText(text, templeft, top);
             }
             else {
                 w = words.slice(0, breaks[0]).join(' ');
