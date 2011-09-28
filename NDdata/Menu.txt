@@ -66,6 +66,11 @@ Group: API Documentation  {
       File: Axis Label Renderer  (no auto-title, jqplot.axisLabelRenderer.js)
       File: Theme Engine  (no auto-title, jqplot.themeEngine.js)
       File: fn  (jqplot.toImage.js)
+      File: jqplot.LineAxisRenderer  (jqplot.lineAxisRenderer.js)
+      File: jquery-1.4.2.js  (jquery-1.4.2.js)
+      File: jquery-1.4.3.js  (jquery-1.4.3.js)
+      File: jquery-1.6.1.js  (jquery-1.6.1.js)
+      File: jquery-1.6.4.js  (jquery-1.6.4.js)
       }  # Group: Core Renderers
 
    Group: Plugins  {
@@ -76,7 +81,7 @@ Group: API Documentation  {
       File: Bubble Renderer  (no auto-title, plugins/jqplot.bubbleRenderer.js)
       File: Canvas Axis Label Renderer  (no auto-title, plugins/jqplot.canvasAxisLabelRenderer.js)
       File: Canvas Axis TickRenderer  (no auto-title, plugins/jqplot.canvasAxisTickRenderer.js)
-      File: Canvas Overlay  (plugins/jqplot.canvasOverlay.js)
+      File: Canvas Overlay  (no auto-title, plugins/jqplot.canvasOverlay.js)
       File: Category Axis Renderer  (no auto-title, plugins/jqplot.categoryAxisRenderer.js)
       File: ciParser  (no auto-title, plugins/jqplot.ciParser.js)
       File: Cursor  (no auto-title, plugins/jqplot.cursor.js)
@@ -95,6 +100,8 @@ Group: API Documentation  {
       File: Pie Renderer  (no auto-title, plugins/jqplot.pieRenderer.js)
       File: Point Labels  (no auto-title, plugins/jqplot.pointLabels.js)
       File: Trendline  (no auto-title, plugins/jqplot.trendline.js)
+      File: CanvasGridRenderer  (plugins/jqplot.pyramidGridRenderer.js)
+      File: jqplot.pyramidAxisRenderer.js  (plugins/jqplot.pyramidAxisRenderer.js)
       }  # Group: Plugins
 
    }  # Group: API Documentation
@@ -110,5 +117,6 @@ Group: Index  {
    Function Index: Functions
    Hook Index: Hooks
    File Index: Files
+   Variable Index: Variables
    }  # Group: Index
 
