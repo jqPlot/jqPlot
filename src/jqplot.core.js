@@ -2490,7 +2490,7 @@
                 
                 // $.gcClear();
 
-                if (this.eventCanvas) {
+                if (this.eventCanvas && this.eventCanvas._elem) {
                     this.eventCanvas._elem.unbind();
                 }
                 // Dont think I bind any events to the target, this shouldn't be necessary.
