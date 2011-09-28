@@ -219,10 +219,15 @@
     var handleToggle = function (ev) {
         ev.data.series.toggleDisplay(ev);
         if (ev.data.series.canvas._elem.hasClass('jqplot-series-hidden')) {
-            $(this).parent().addClass('jqplot-series-hidden');
+            $(this).addClass('jqplot-series-hidden');
+            $(this).next('.jqplot-table-legend-label').addClass('jqplot-series-hidden');
+            $(this).prev('.jqplot-table-legend-swatch').addClass('jqplot-series-hidden');
+
         }
         else {
-            $(this).parent().removeClass('jqplot-series-hidden');
+            $(this).removeClass('jqplot-series-hidden');
+            $(this).next('.jqplot-table-legend-label').removeClass('jqplot-series-hidden');
+            $(this).prev('.jqplot-table-legend-swatch').removeClass('jqplot-series-hidden');
         }
     };
     
