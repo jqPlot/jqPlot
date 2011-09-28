@@ -47,7 +47,7 @@
             axis: 'y',
             start: null,
             interval: 10
-        }
+        };
         $.extend(true, this, options);
         // set the shadow renderer options
         var sopts = {lineJoin:'miter', lineCap:'round', fill:false, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.shadowWidth, closePath:false, strokeStyle:this.shadowColor};

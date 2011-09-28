@@ -150,7 +150,7 @@
             // Format string passed the x and y values of the cursor on the line.
             // e.g., 'Dogs: %.2f, Cats: %d'.
             tooltipFormatString: '%d, %d'
-        }
+        };
     }
 
     /**
@@ -675,7 +675,7 @@
                 break;
             case 'n':
                 x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true)/2;
-                y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true)
+                y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
                 break;
             case 'ne':
                 x = gridpos[0] + plot._gridPadding.left + opts.tooltipOffset;
@@ -698,7 +698,7 @@
                 y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset;
                 break;
             case 'w':
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset
+                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
                 y = gridpos[1] + plot._gridPadding.top - elem.outerHeight(true)/2;
                 break;
             default: // same as 'nw'
@@ -722,12 +722,12 @@
 
     function isNearLine(point, lstart, lstop, width) {
         // r is point to test, p and q are end points.
-        rx = point[0];
-        ry = point[1];
-        px = Math.round(lstop[0]);
-        py = Math.round(lstop[1]);
-        qx = Math.round(lstart[0]);
-        qy = Math.round(lstart[1]);
+        var rx = point[0];
+        var ry = point[1];
+        var px = Math.round(lstop[0]);
+        var py = Math.round(lstop[1]);
+        var qx = Math.round(lstart[0]);
+        var qy = Math.round(lstart[1]);
 
         var l = Math.sqrt(Math.pow(px-qx, 2) + Math.pow(py-qy, 2));
 

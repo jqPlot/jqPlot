@@ -81,8 +81,6 @@
         return style.join(' ');
     };
 
-
-
     /**
      * Namespace: $.fn
      * jQuery namespace to attach functions to jQuery elements.
@@ -92,9 +90,9 @@
     $.fn.jqplotToImageCanvas = function(options) {
 
         options = options || {};
-        x_offset = (options.x_offset == null) ? 0 : options.x_offset;
-        y_offset = (options.y_offset == null) ? 0 : options.y_offset;
-        backgroundColor = (options.backgroundColor == null) ? 'rgb(255,255,255)' : options.backgroundColor;
+        var x_offset = (options.x_offset == null) ? 0 : options.x_offset;
+        var y_offset = (options.y_offset == null) ? 0 : options.y_offset;
+        var backgroundColor = (options.backgroundColor == null) ? 'rgb(255,255,255)' : options.backgroundColor;
 
         if ($(this).width() == 0 || $(this).height() == 0) {
             return null;
@@ -112,8 +110,6 @@
         var plotleft = offs.left;
         var plottop = offs.top;
         var transx = 0, transy = 0;
-        // var tlw = tlh = tll = tlr = tlt = tlb = 0;
-        // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
 
         // have to check if any elements are hanging outside of plot area before rendering,
         // since changing width of canvas will erase canvas.
@@ -125,7 +121,7 @@
 
         var temptop, templeft, tempbottom, tempright;
 
-        for (i in clses) {
+        for (var i in clses) {
             $(this).find('.'+clses[i]).each(function() {
                 temptop = $(this).offset().top - plottop;
                 templeft = $(this).offset().left - plotleft;
@@ -145,12 +141,8 @@
                 if (tempbottom > h) {
                     h =  tempbottom;
                 }
-                // console.log(this.tagName);
-                // console.log(temptop, templeft, tempright, tempbottom);
-                // console.log(w, h, transx, transy);
             });
         }
-        // console.log("chart: height: %s, width: %s, left: %s, top: %s, transx: %s, transy: %s", h, w, plotleft, plottop, transx, transy);
 
         newCanvas.width = w + Number(x_offset);
         newCanvas.height = h + Number(y_offset);
@@ -172,7 +164,6 @@
             if (isNaN(lineheight)) {
                 lineheight = parseInt($(el).css('font-size')) * 1.2;
             }
-
             return lineheight;
         }
 
@@ -219,7 +210,7 @@
                 if ($(el).css('textAlign') === 'center') {
                     templeft = left + (canvasWidth - context.measureText(w).width)/2  - transx;
                 }
-                context.fillText(w, templeft, temptop)
+                context.fillText(w, templeft, temptop);
             }
 
         }
@@ -257,8 +248,6 @@
                     newContext.strokeRect(left, top, $(el).innerWidth(), $(el).innerHeight());
                 }
 
-
-
                 // find all the swatches
                 $(el).find('div.jqplot-table-legend-swatch-outline').each(function() {
                     // get the first div and stroke it
@@ -280,7 +269,6 @@
                     newContext.fillRect(l, t, w, h);
                 });
 
-
                 // now add text
 
                 $(el).find('td.jqplot-table-legend-label').each(function(){
@@ -292,7 +280,7 @@
                     newContext.fillText(elem.text(), l, t);
                 });
 
-                elem = null;
+                var elem = null;
             }
 
             else if (tagname == 'canvas') {

@@ -291,7 +291,7 @@
             }
             var positiveColor = opts.fillStyle;
             var base;
-            var xstart = this._xaxis.series_u2p(this._xnudge);; 
+            var xstart = this._xaxis.series_u2p(this._xnudge);
             var ystart = this._yaxis.series_u2p(this._yaxis.min);
             var yend = this._yaxis.series_u2p(this._yaxis.max);
             var bw2 = this.barWidth/2.0;
@@ -332,7 +332,7 @@
                     }
                     else {
                         // xstart = this._xaxis.series_u2p(0);
-                        w = xstart - gridData[i][0];;
+                        w = xstart - gridData[i][0];
                         h = this.barWidth;
                         points = [gridData[i][0], base - bw2, w, h];
                     }

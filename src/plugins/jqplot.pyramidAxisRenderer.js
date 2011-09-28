@@ -191,7 +191,7 @@
         var tumax;
         var maxVisibleTicks;
         var val;
-        var sklip = null;
+        var skip = null;
         var temp;
         
         // if we already have ticks, use them.
@@ -705,5 +705,5 @@
         }
 
         ticks = null;
-    }
+    };
 })(jQuery);
