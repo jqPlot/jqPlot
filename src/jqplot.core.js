@@ -707,7 +707,6 @@
         for (var i=0; i<this._series.length; i++) {
             s = this._series[i];
             d = s._plotData;
-            l = d.length;
             if (s._type === 'line' && s.renderer.bands.show && this.name.charAt(0) !== 'x') {
                 d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
             }
@@ -719,7 +718,7 @@
                 maxyidx = 2;
             }
             
-            for (var j=0; j<l; j++) { 
+            for (var j=0, l=d.length; j<l; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
                     if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
                         db.min = d[j][0];
