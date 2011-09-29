@@ -2,7 +2,7 @@
   <?php
     $dh  = opendir('./');
     while (false !== ($filename = readdir($dh))) {
-        if (preg_match('/^[a-z0-9]+\.html$/i', $filename)) {
+        if (preg_match('/^[a-z0-9][a-z0-9_\-]+\.html$/i', $filename)) {
           $files[] = $filename;
         }
     }
