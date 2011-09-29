@@ -1375,7 +1375,7 @@ if (!document.createElement('canvas').getContext) {
       case null:
       case '':
         this.repetition_ = 'repeat';
-        break
+        break;
       case 'repeat-x':
       case 'repeat-y':
       case 'no-repeat':

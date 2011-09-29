@@ -159,6 +159,7 @@
         <echo message="Building minified sources with YUI Compressor" />
         <mkdir dir="${DIST_DIR}/temp" />
         <mkdir dir="${DIST_DIR}/plugins/temp" />
+        <echo message="minifing file: jquery.jqplot.js" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
             <include name="jquery.jqplot.js" />
@@ -172,6 +173,7 @@
           <mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
         </apply>
         <!-- Ipanema patch : patched excanvas minified -->
+        <echo message="minifying file: excanvas.js" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
             <include name="excanvas.js" />
@@ -184,6 +186,7 @@
           <targetfile />
           <mapper type="glob" from="excanvas.js" to="temp/excanvas.min.js" />
         </apply>
+        <echo message="minifing file: jquery.jqplot.css" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
             <include name="jquery.jqplot.css" />
@@ -196,6 +199,7 @@
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
         </apply>
+        <echo message="minifing plugin files" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins">
             <include name="jqplot.*.js" />
