@@ -188,7 +188,9 @@
                         axes[ax]._ticks = [];
                         // fake out tick creation algorithm to make sure original auto
                         // computed format string is used if _overrideFormatString is true
-                        axes[ax]._autoFormatString = c._zoom.axes[ax].tickFormatString;
+                        if (c._zoom.axes[ax] !== undefined) {
+                            axes[ax]._autoFormatString = c._zoom.axes[ax].tickFormatString;
+                        }
                     }
                     this.redraw();
                 }
@@ -385,6 +387,18 @@
                             
                             if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
                                 var ret = $.jqplot.LinearTickGenerator(newmin, newmax);
+
+                                // if new minimum is less than "true" minimum of axis display, adjust it
+                                if (ret[0] < axes[ax].min + axes[ax].tickInset * axes[ax].tickInterval) {
+                                    ret[0] += ret[4];
+                                    ret[2] -= 1;
+                                }
+
+                                // if new maximum is greater than "true" max of axis display, adjust it
+                                if (ret[1] > axes[ax].max - axes[ax].tickInset * axes[ax].tickInterval) {
+                                    ret[1] -= ret[4];
+                                    ret[2] -= 1;
+                                }
                                 axes[ax].min = ret[0];
                                 axes[ax].max = ret[1];
                                 axes[ax]._autoFormatString = ret[3];
