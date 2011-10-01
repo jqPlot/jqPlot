@@ -30,7 +30,6 @@
 (function($) {
     // class: $.jqplot.LinearAxisRenderer
     // The default jqPlot axis renderer, creating a numeric axis.
-    // The renderer has no additional options beyond the <Axis> object.
     $.jqplot.LinearAxisRenderer = function() {
     };
     
@@ -51,6 +50,12 @@
         // prop: drawBaseline
         // True to draw the axis baseline.
         this.drawBaseline = true;
+        // prop: baselineWidth
+        // width of the baseline in pixels.
+        this.baselineWidth = null;
+        // prop: baselineColor
+        // CSS color spec for the baseline.
+        this.baselineColor = null;
         // prop: forceTickAt0
         // This will ensure that there is always a tick mark at 0.
         // If data range is strictly positive or negative,
@@ -69,6 +74,12 @@
         // This has know effect when any of the following options
         // are set:  autoscale, min, max, numberTicks or tickInterval.
         this.forceTickAt100 = false;
+        // prop: tickInset
+        // Controls the amount to inset the first and last ticks from 
+        // the edges of the grid, in multiples of the tick interval.
+        // 0 is no inset, 0.5 is one half a tick interval, 1 is a full
+        // tick interval, etc.
+        this.tickInset = 0;
         this._autoFormatString = '';
         this._overrideFormatString = false;
         $.extend(true, this, options);
@@ -140,10 +151,10 @@
     
     // called with scope of an axis
     $.jqplot.LinearAxisRenderer.prototype.reset = function() {
-        this.min = this._min;
-        this.max = this._max;
-        this.tickInterval = this._tickInterval;
-        this.numberTicks = this._numberTicks;
+        this.min = this._options.min;
+        this.max = this._options.max;
+        this.tickInterval = this._options.tickInterval;
+        this.numberTicks = this._options.numberTicks;
         this._autoFormatString = '';
         if (this._overrideFormatString && this.tickOptions && this.tickOptions.formatString) {
             this.tickOptions.formatString = '';
@@ -686,6 +697,12 @@
                 t = null;
             }
         }
+
+        if (this.tickInset) {
+            this.min = this.min - this.tickInset * this.tickInterval;
+            this.max = this.max + this.tickInset * this.tickInterval;
+        }
+
         ticks = null;
     };
     

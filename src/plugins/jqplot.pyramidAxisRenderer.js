@@ -46,7 +46,11 @@
         // prop: drawBaseline
         // True to draw the axis baseline.
         this.drawBaseline = true;
+        // prop: baselineWidth
+        // width of the baseline in pixels.
         this.baselineWidth = null;
+        // prop: baselineColor
+        // CSS color spec for the baseline.
         this.baselineColor = null;
         this.tickSpacingFactor = 25;
         this._type = 'pyramid';

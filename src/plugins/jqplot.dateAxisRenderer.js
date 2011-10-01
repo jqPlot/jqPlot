@@ -126,6 +126,21 @@
         // this.tickRenderer = $.jqplot.AxisTickRenderer;
         // this.labelRenderer = $.jqplot.AxisLabelRenderer;
         this.tickOptions.formatter = $.jqplot.DateTickFormatter;
+        // prop: tickInset
+        // Controls the amount to inset the first and last ticks from 
+        // the edges of the grid, in multiples of the tick interval.
+        // 0 is no inset, 0.5 is one half a tick interval, 1 is a full
+        // tick interval, etc.
+        this.tickInset = 0;
+        // prop: drawBaseline
+        // True to draw the axis baseline.
+        this.drawBaseline = true;
+        // prop: baselineWidth
+        // width of the baseline in pixels.
+        this.baselineWidth = null;
+        // prop: baselineColor
+        // CSS color spec for the baseline.
+        this.baselineColor = null;
         this.daTickInterval = null;
         this._daTickInterval = null;
 		
@@ -257,10 +272,14 @@
     
     // called with scope of an axis
     $.jqplot.DateAxisRenderer.prototype.reset = function() {
-        this.min = this._min;
-        this.max = this._max;
-        this.tickInterval = this._tickInterval;
-        this.numberTicks = this._numberTicks;
+        this.min = this._options.min;
+        this.max = this._options.max;
+        this.tickInterval = this._options.tickInterval;
+        this.numberTicks = this._options.numberTicks;
+        this._autoFormatString = '';
+        if (this._overrideFormatString && this.tickOptions && this.tickOptions.formatString) {
+            this.tickOptions.formatString = '';
+        }
         this.daTickInterval = this._daTickInterval;
         // this._ticks = this.__ticks;
     };
@@ -466,10 +485,16 @@
             }
         }
 
+        if (this.tickInset) {
+            this.min = this.min - this.tickInset * this.tickInterval;
+            this.max = this.max + this.tickInset * this.tickInterval;
+        }
 
         if (this._daTickInterval == null) {
             this._daTickInterval = this.daTickInterval;    
         }
+
+        ticks = null;
     };
    
 })(jQuery);
