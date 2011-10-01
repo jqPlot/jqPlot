@@ -85,6 +85,7 @@
         // Major ticks are ticks supplied by user or auto computed.
         // Minor ticks cannot be created by user.
         this.minorTicks = 0;
+        this.alignAxes = false;
         this._autoFormatString = '';
         this._overrideFormatString = false;
         $.extend(true, this, options);
@@ -96,6 +97,9 @@
                 this.breakPoints = null;
             }
         }
+        if (this.numberTicks < 2) {
+            this.numberTicks = 2;
+        }
         this.resetDataBounds();
     };
     
@@ -105,7 +109,7 @@
             // populate the axis label and value properties.
             // createTicks is a method on the renderer, but
             // call it within the scope of the axis.
-            this.renderer.createTicks.call(this);
+            this.renderer.createTicks.call(this, plot);
             // fill a div with axes labels in the right direction.
             // Need to pregenerate each axis to get it's bounds and
             // position it and the labels correctly on the plot.
@@ -225,7 +229,7 @@
     };    
     
     // called with scope of axis
-    $.jqplot.LinearAxisRenderer.prototype.createTicks = function() {
+    $.jqplot.LinearAxisRenderer.prototype.createTicks = function(plot) {
         // we're are operating on an axis here
         var ticks = this._ticks;
         var userTicks = this.ticks;
@@ -339,7 +343,7 @@
             }
 
             // Doing complete autoscaling
-            if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
+            if (this.min == null && this.max == null && this.tickInterval == null && !this.autoscale) {
                 // Check if user must have tick at 0 or 100 and ensure they are in range.
                 // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
                 if (this.forceTickAt0) {
@@ -363,21 +367,24 @@
                 var threshold = 30;
                 var tdim = Math.max(dim, threshold+1);
                 var scalefact =  (tdim-threshold)/300.0;
-                var ret = $.jqplot.LinearTickGenerator(min, max, scalefact); 
+                var ret = $.jqplot.LinearTickGenerator(min, max, scalefact, this.numberTicks); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
                 var tumin = min + range*(this.padMin - 1);
                 var tumax = max - range*(this.padMax - 1);
 
-                if (min <=tumin || max >= tumax) {
+                // if they're equal, we shouldn't have to do anything, right?
+                // if (min <=tumin || max >= tumax) {
+                if (min <tumin || max > tumax) {
                     tumin = min - range*(this.padMin - 1);
                     tumax = max + range*(this.padMax - 1);
-                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact, this.numberTicks);
                 }
 
                 this.min = ret[0];
                 this.max = ret[1];
+                // if numberTicks specified, it should return the same.
                 this.numberTicks = ret[2];
                 this._autoFormatString = ret[3];
                 this.tickInterval = ret[4];
