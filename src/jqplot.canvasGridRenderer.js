@@ -135,11 +135,11 @@
                         switch (name) {
                             case 'xaxis':
                                 // draw the grid line if we should
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && ((!t.isMinorTick && axis.drawMajorGridlines) || (t.isMinorTick && axis.drawMinorGridlines)) ) {
                                     drawLine(pos, this._top, pos, this._bottom);
                                 }
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && ((!t.isMinorTick && axis.drawMajorTickMarks) || (t.isMinorTick && axis.drawMinorTickMarks)) ) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -171,11 +171,11 @@
                                 break;
                             case 'yaxis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && ((!t.isMinorTick && axis.drawMajorGridlines) || (t.isMinorTick && axis.drawMinorGridlines)) ) {
                                     drawLine(this._right, pos, this._left, pos);
                                 }
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && ((!t.isMinorTick && axis.drawMajorTickMarks) || (t.isMinorTick && axis.drawMinorTickMarks)) ) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -206,11 +206,11 @@
                                 break;
                             case 'x2axis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && ((!t.isMinorTick && axis.drawMajorGridlines) || (t.isMinorTick && axis.drawMinorGridlines)) ) {
                                     drawLine(pos, this._bottom, pos, this._top);
                                 }
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && ((!t.isMinorTick && axis.drawMajorTickMarks) || (t.isMinorTick && axis.drawMinorTickMarks)) ) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -241,11 +241,11 @@
                                 break;
                             case 'y2axis':
                                 // draw the grid line
-                                if (t.showGridline && this.drawGridlines) {
+                                if (t.showGridline && this.drawGridlines && ((!t.isMinorTick && axis.drawMajorGridlines) || (t.isMinorTick && axis.drawMinorGridlines)) ) {
                                     drawLine(this._left, pos, this._right, pos);
                                 }
                                 // draw the mark
-                                if (t.showMark && t.mark) {
+                                if (t.showMark && t.mark && ((!t.isMinorTick && axis.drawMajorTickMarks) || (t.isMinorTick && axis.drawMinorTickMarks)) ) {
                                     s = t.markSize;
                                     m = t.mark;
                                     var pos = Math.round(axis.u2p(t.value)) + 0.5;

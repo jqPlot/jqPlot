@@ -498,10 +498,10 @@
         this.showLabel = true;
         // prop: min
         // minimum value of the axis (in data units, not pixels).
-        this.min=null;
+        this.min = null;
         // prop: max
         // maximum value of the axis (in data units, not pixels).
-        this.max=null;
+        this.max = null;
         // prop: autoscale
         // DEPRECATED
         // the default scaling algorithm produces superior results.
@@ -548,8 +548,19 @@
         this.showTickMarks = true;
         // prop: showMinorTicks
         // Wether or not to show minor ticks.  This is renderer dependent.
-        // The default <$.jqplot.LinearAxisRenderer> does not have minor ticks.
         this.showMinorTicks = true;
+        // prop: drawMajorGridlines
+        // True to draw gridlines for major axis ticks.
+        this.drawMajorGridlines = true;
+        // prop: drawMinorGridlines
+        // True to draw gridlines for minor ticks.
+        this.drawMinorGridlines = false;
+        // prop: drawMajorTickMarks
+        // True to draw tick marks for major axis ticks.
+        this.drawMajorTickMarks = true;
+        // prop: drawMinorTickMarks
+        // True to draw tick marks for minor ticks.  This is renderer dependent.
+        this.drawMinorTickMarks = true;
         // prop: useSeriesColor
         // Use the color of the first series associated with this axis for the
         // tick marks and line bordering this axis.

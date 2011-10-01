@@ -80,6 +80,11 @@
         // 0 is no inset, 0.5 is one half a tick interval, 1 is a full
         // tick interval, etc.
         this.tickInset = 0;
+        // prop: minorTicks
+        // Number of ticks to add between "major" ticks.
+        // Major ticks are ticks supplied by user or auto computed.
+        // Minor ticks cannot be created by user.
+        this.minorTicks = 0;
         this._autoFormatString = '';
         this._overrideFormatString = false;
         $.extend(true, this, options);
@@ -687,13 +692,23 @@
                 this.tickOptions.formatString = this._autoFormatString;
             }
 
+            var t, to;
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
-                var t = new this.tickRenderer(this.tickOptions);
+                t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
 
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
+
+                if (i < this.numberTicks - 1) {
+                    for (var j=0; j<this.minorTicks; j++) {
+                        tt += this.tickInterval/(this.minorTicks+1);
+                        to = $.extend(true, {}, this.tickOptions, {name:this.name, value:tt, label:'', isMinorTick:true});
+                        t = new this.tickRenderer(to);
+                        this._ticks.push(t);
+                    }
+                }
                 t = null;
             }
         }
