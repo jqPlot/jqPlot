@@ -503,11 +503,8 @@
         // maximum value of the axis (in data units, not pixels).
         this.max=null;
         // prop: autoscale
-        // Autoscale the axis min and max values to provide sensible tick spacing.
-        // If axis min or max are set, autoscale will be turned off.
-        // The numberTicks, tickInterval and pad options do work with 
-        // autoscale, although tickInterval has not been tested yet.
-        // padMin and padMax do nothing when autoscale is on.
+        // DEPRECATED
+        // the default scaling algorithm produces superior results.
         this.autoscale = false;
         // prop: pad
         // Padding to extend the range above and below the data bounds.
