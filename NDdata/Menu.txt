@@ -66,10 +66,7 @@ Group: API Documentation  {
       File: Axis Label Renderer  (no auto-title, jqplot.axisLabelRenderer.js)
       File: Theme Engine  (no auto-title, jqplot.themeEngine.js)
       File: fn  (jqplot.toImage.js)
-      File: jquery-1.4.2.js  (jquery-1.4.2.js)
-      File: jquery-1.4.3.js  (jquery-1.4.3.js)
-      File: jquery-1.6.1.js  (jquery-1.6.1.js)
-      File: jquery-1.6.4.js  (jquery-1.6.4.js)
+      File: jqplot.lineAxisRenderer.js  (jqplot.lineAxisRenderer.js)
       }  # Group: Core Renderers
 
    Group: Plugins  {
@@ -116,6 +113,5 @@ Group: Index  {
    Function Index: Functions
    Hook Index: Hooks
    File Index: Files
-   Variable Index: Variables
    }  # Group: Index
 

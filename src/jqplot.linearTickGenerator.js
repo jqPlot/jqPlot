@@ -105,7 +105,8 @@
         var residual = minimum / magnitude;
         var interval;
         // "nicest" ranges are 1, 2, 5 or powers of these.
-        if (magnitude < 100) {
+        // for magnitudes below 1, only allow these. 
+        if (magnitude < 1) {
             if (residual > 5) {
                 interval = 10 * magnitude;
             }
@@ -119,7 +120,7 @@
                 interval = magnitude;
             }
         }
-        // for large ranges, allow intervals like 300, 400 or powers of these.
+        // for large ranges (whole integers), allow intervals like 3, 4 or powers of these.
         // this helps a lot with poor choices for number of ticks. 
         else {
             if (residual > 5) {
@@ -174,9 +175,6 @@
         else if (f<=16.0) {
             fact = 2;
         }
-        // else if (f<=20.0) {
-        //     fact = 3;
-        // }
         else {
             fact = 5;
         } 
@@ -249,7 +247,7 @@
         var r = [];
         var ss = bestLinearInterval(axis_max - axis_min, scalefact);
         
-        if (numberTicks === undefined) {
+        if (numberTicks == null) {
 
             // Figure out the axis min, max and number of ticks
             // the min and max will be some multiple of the tick interval,
@@ -263,8 +261,6 @@
         }
 
         else {
-            // console.log('number ticks: ', numberTicks);
-            // console.log('axis_min: %s, axis_max: %s', axis_min, axis_max);
             var tempr = [];
 
             // Figure out the axis min, max and number of ticks
@@ -277,8 +273,6 @@
             tempr[3] = bestFormatString(ss);            // format string
             tempr[4] = ss;                              // tick Interval
 
-            // console.log('tempr: ', tempr);
-
             // first, see if we happen to get the right number of ticks
             if (tempr[2] === numberTicks) {
                 r = tempr;
@@ -287,7 +281,6 @@
             else {
 
                 var newti = bestInterval(tempr[1] - tempr[0], numberTicks);
-                // console.log('new ti: ', newti);
 
                 r[0] = tempr[0];
                 r[2] = numberTicks;
@@ -296,8 +289,6 @@
                 r[1] = r[0] + (r[2] - 1) * r[4];        // max
             }
         }
-
-        // console.log('r is: ', r);
 
         return r;
     };

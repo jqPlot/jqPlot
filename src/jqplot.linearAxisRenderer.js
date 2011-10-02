@@ -85,9 +85,10 @@
         // Major ticks are ticks supplied by user or auto computed.
         // Minor ticks cannot be created by user.
         this.minorTicks = 0;
-        this.alignAxes = false;
+        this.alignTicks = false;
         this._autoFormatString = '';
         this._overrideFormatString = false;
+        this._scalefact = 1.0;
         $.extend(true, this, options);
         if (this.breakPoints) {
             if (!$.isArray(this.breakPoints)) {
@@ -97,7 +98,7 @@
                 this.breakPoints = null;
             }
         }
-        if (this.numberTicks < 2) {
+        if (this.numberTicks != null && this.numberTicks < 2) {
             this.numberTicks = 2;
         }
         this.resetDataBounds();
@@ -317,6 +318,19 @@
             else {
                 dim = this._plotDimensions.height;
             }
+
+            var _numberTicks = this.numberTicks;
+
+            // if aligning this axis, use number of ticks from previous axis.
+            // Do I need to reset somehow if alignTicks is changed and then graph is replotted??
+            if (this.alignTicks) {
+                if (this.name === 'x2axis' && plot.axes.xaxis.show) {
+                    _numberTicks = plot.axes.xaxis.numberTicks;
+                }
+                else if (this.name.charAt(0) === 'y' && this.name !== 'yaxis' && this.name !== 'yMidAxis' && plot.axes.yaxis.show) {
+                    _numberTicks = plot.axes.yaxis.numberTicks;
+                }
+            }
             
             // // if min, max and number of ticks specified, user can't specify interval.
             // if (!this.autoscale && this.min != null && this.max != null && this.numberTicks != null) {
@@ -366,8 +380,8 @@
 
                 var threshold = 30;
                 var tdim = Math.max(dim, threshold+1);
-                var scalefact =  (tdim-threshold)/300.0;
-                var ret = $.jqplot.LinearTickGenerator(min, max, scalefact, this.numberTicks); 
+                this._scalefact =  (tdim-threshold)/300.0;
+                var ret = $.jqplot.LinearTickGenerator(min, max, this._scalefact, _numberTicks); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
@@ -379,7 +393,7 @@
                 if (min <tumin || max > tumax) {
                     tumin = min - range*(this.padMin - 1);
                     tumax = max + range*(this.padMax - 1);
-                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact, this.numberTicks);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, this._scalefact, _numberTicks);
                 }
 
                 this.min = ret[0];

@@ -384,18 +384,33 @@
                                 newmin = dp;
                                 newmax = start[ax];
                             }
+
+                            var curax = axes[ax];
+
+                            var _numberTicks = null;
+
+                            // if aligning this axis, use number of ticks from previous axis.
+                            // Do I need to reset somehow if alignTicks is changed and then graph is replotted??
+                            if (curax.alignTicks) {
+                                if (curax.name === 'x2axis' && plot.axes.xaxis.show) {
+                                    _numberTicks = plot.axes.xaxis.numberTicks;
+                                }
+                                else if (curax.name.charAt(0) === 'y' && curax.name !== 'yaxis' && curax.name !== 'yMidAxis' && plot.axes.yaxis.show) {
+                                    _numberTicks = plot.axes.yaxis.numberTicks;
+                                }
+                            }
                             
                             if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
-                                var ret = $.jqplot.LinearTickGenerator(newmin, newmax);
+                                var ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks);
 
                                 // if new minimum is less than "true" minimum of axis display, adjust it
-                                if (ret[0] < axes[ax].min + axes[ax].tickInset * axes[ax].tickInterval) {
+                                if (axes[ax].tickInset && ret[0] < axes[ax].min + axes[ax].tickInset * axes[ax].tickInterval) {
                                     ret[0] += ret[4];
                                     ret[2] -= 1;
                                 }
 
                                 // if new maximum is greater than "true" max of axis display, adjust it
-                                if (ret[1] > axes[ax].max - axes[ax].tickInset * axes[ax].tickInterval) {
+                                if (axes[ax].tickInset && ret[1] > axes[ax].max - axes[ax].tickInset * axes[ax].tickInterval) {
                                     ret[1] -= ret[4];
                                     ret[2] -= 1;
                                 }
