@@ -97,6 +97,56 @@
     };
 
     // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
+    // it is based soley on the range and number of ticks.  So if user specifies
+    // number of ticks, use this.
+    function bestInterval(range, numberTicks) {
+        var minimum = range / (numberTicks - 1);
+        var magnitude = Math.pow(10, Math.floor(Math.log(minimum) / Math.LN10));
+        var residual = minimum / magnitude;
+        var interval;
+        // "nicest" ranges are 1, 2, 5 or powers of these.
+        if (magnitude < 100) {
+            if (residual > 5) {
+                interval = 10 * magnitude;
+            }
+            else if (residual > 2) {
+                interval = 5 * magnitude;
+            }
+            else if (residual > 1) {
+                interval = 2 * magnitude;
+            }
+            else {
+                interval = magnitude;
+            }
+        }
+        // for large ranges, allow intervals like 300, 400 or powers of these.
+        // this helps a lot with poor choices for number of ticks. 
+        else {
+            if (residual > 5) {
+                interval = 10 * magnitude;
+            }
+            else if (residual > 4) {
+                interval = 5 * magnitude;
+            }
+            else if (residual > 3) {
+                interval = 4 * magnitude;
+            }
+            else if (residual > 2) {
+                interval = 3 * magnitude;
+            }
+            else if (residual > 1) {
+                interval = 2 * magnitude;
+            }
+            else {
+                interval = magnitude;
+            }
+        }
+
+        return interval;
+    }
+
+    // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
+    // it is based soley on the range of data, number of ticks must be computed later.
     function bestLinearInterval(range, scalefact) {
         var expv = Math.floor(Math.log(range)/Math.LN10);
         var magnitude = Math.pow(10, expv);
@@ -134,7 +184,6 @@
         return fact*magnitude; 
     }
 
-    // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
     function bestLinearComponents(range, scalefact) {
         var expv = Math.floor(Math.log(range)/Math.LN10);
         var magnitude = Math.pow(10, expv);
@@ -198,9 +247,9 @@
         }
 
         var r = [];
+        var ss = bestLinearInterval(axis_max - axis_min, scalefact);
         
         if (numberTicks === undefined) {
-            var ss = bestLinearInterval(axis_max - axis_min, scalefact);
 
             // Figure out the axis min, max and number of ticks
             // the min and max will be some multiple of the tick interval,
@@ -216,7 +265,6 @@
         else {
             // console.log('number ticks: ', numberTicks);
             // console.log('axis_min: %s, axis_max: %s', axis_min, axis_max);
-            var ss = bestLinearInterval(axis_max - axis_min, scalefact);
             var tempr = [];
 
             // Figure out the axis min, max and number of ticks
@@ -231,228 +279,22 @@
 
             // console.log('tempr: ', tempr);
 
+            // first, see if we happen to get the right number of ticks
             if (tempr[2] === numberTicks) {
                 r = tempr;
             }
 
             else {
-                // returns interval, factor, magnitude
-                var c = bestLinearComponents(axis_max - axis_min, scalefact);
-                var m = Math;
 
-                // var mag = c[2];
-                // var magExp = Math.floor(Math.log(mag)/Math.LN10);
+                var newti = bestInterval(tempr[1] - tempr[0], numberTicks);
+                // console.log('new ti: ', newti);
 
-                // get an exact tick interval
-                var exactti = (axis_max - axis_min) / (numberTicks - 1);
-                var exacttiExp = Math.floor(Math.log(exactti)/Math.LN10);
-
-                // approximate where the new min will be
-                // var temp_min = Math.floor(axis_min / exactti) * exactti;
-                // var temp_min = Math.floor(axis_min / Math.pow(10, exacttiExp)) * Math.powexactti;
-
-                var minExp = m.floor(m.log(axis_min)/m.LN10);
-                var maxExp = m.floor(m.log(axis_max)/m.LN10);
-
-                // console.log('minExp: %s, exacttiExp: %s', minExp, exacttiExp);
-
-                minExp = minExp > 0 ? minExp : minExp + 1;
-                // exacttiExp = exacttiExp > 0 ? exacttiExp : exacttiExp + 1;
-                // var tempmin = m.floor(axis_min/m.pow(10, minExp)) * m.pow(10, minExp);
-                var tempmin = m.floor(axis_min/m.pow(10, exacttiExp)) * m.pow(10, exacttiExp);
-                var tempmax = m.ceil(axis_max/m.pow(10, maxExp-1)) * m.pow(10, maxExp-1);
-                var tempmax = m.ceil(axis_max/m.pow(10, exacttiExp)) * m.pow(10, exacttiExp);
-
-                // var tti = (axis_max - temp_min) / (numberTicks - 1);
-                var tti = (tempmax - tempmin) / (numberTicks - 1);
-
-                var ttiExp = Math.floor(Math.log(tti)/Math.LN10);
-
-                // var precisionExp = (ttiExp > 0) ? ttiExp - 1 : ttiExp; //magExp - 1 - ttiExp;
-
-                // var tempti = tti * Math.pow(10, precisionExp);
-
-                if (ttiExp < 0) {
-                    var newti = Math.ceil(tti/Math.pow(10, ttiExp)) * Math.pow(10, ttiExp);
-                }
-                // else if (ttiExp < 2) {
-                //     var newti = Math.ceil(tti);
-                // }
-                else {
-                    var newti = Math.ceil(tti/Math.pow(10, ttiExp-1)) * Math.pow(10, ttiExp-1);
-                }
-                // var newti = Math.ceil(tti/Math.pow(10, ttiExp-1)) * Math.pow(10, ttiExp-1);
-
-                // console.log('tempmin: %s, range: %s, exactti: %s, tti: %s, ttiExp: %s, newti: %s', temp_min, axis_max-temp_min, exactti, tti, ttiExp, newti);
-                // console.log('tempmin: %s, minExp: %s, tempmax: %s, maxExp: %s, exacttiExp: %s, tti: %s, newti: %s', tempmin, minExp, tempmax, maxExp, exacttiExp, tti, newti);
-
-                r[4] = newti;
-                // r[0] = Math.floor(axis_min/r[4]) * r[4];
-                // r[0] = Math.floor(axis_min / Math.pow(10, ttiExp)) * Math.pow(10, ttiExp);
-                r[0] = tempmin;
+                r[0] = tempr[0];
                 r[2] = numberTicks;
-                r[3] = bestFormatString(r[4]);
+                r[4] = newti;
+                r[3] = bestFormatString(newti);
                 r[1] = r[0] + (r[2] - 1) * r[4];        // max
-                
             }
-
-            // Not enough ticks, add some
-            // else if (tempr[2] < numberTicks) {
-            //     console.log('too few');
-            //     // returns interval, factor, magnitude
-            //     var c = bestLinearComponents(axis_max - axis_min, scalefact);
-            //     console.log('max: %s, min: %s, scale: %s', axis_max, axis_min, scalefact);
-            //     console.log('interval: %s, factor: %s, magnitude: %s', c[0], c[1], c[2]);
-            //     // the offset we would get by simply adding more ticks;
-            //     var error = numberTicks - tempr[2] * ss;
-
-            //     var ntmult = Math.ceil(numberTicks / tempr[2]);
-
-            //     var range = tempr[1] - tempr[0];
-
-            //     var curf = c[1];
-            //     var curti = c[0];
-            //     var curnt = tempr[2];
-
-            //     var count = 0;
-
-            //     function getMoreTicks(f, mag, r) {
-            //         // try to adjust factor and see what we get
-            //         var newf = _getLowerFactor(f);
-            //         var newti = newf * mag;
-            //         var newnt = r / newti + 1;
-            //         // new factor, tickInterval, numberTicks
-            //         return [newf, newti, newnt];
-            //     }
-
-            //     function findMoreTicks(f, mag, r) {
-            //         var getMore = getMoreTicks(f, mag, r);
-            //         console.log('getting some more: ', getMore);
-
-            //         if (count < 2*(ntmult+1)) {
-            //             if (getMore[2] < numberTicks) {
-            //                 curf = getMore[0];
-            //                 curti = getMore[1];
-            //                 curnt = getMore[2];
-            //                 count++;
-            //                 getMore = findMoreTicks(getMore[0], mag, r);
-            //             }
-
-            //             else if (getMore[2] > numberTicks) {
-            //                 getMore = [curf, curti, curnt];
-            //             }
-            //         }
-
-            //         return getMore;
-            //     }
-
-            //     // Try getting more ticks at nice interval.
-            //     // return:
-            //     //          0: factor
-            //     //          1: tick interval
-            //     //          2: number ticks
-            //     var gotMore = findMoreTicks(c[1], c[2], range);
-            //     console.log('got more: ', gotMore);
-
-            //     // Have 3 conditions now.
-            //     //
-            //     // gotMore has too many ticks, add some more ticks at existing interval and expand max.
-            //     if (gotMore[2] > numberTicks) {
-            //         r[0] = Math.floor(axis_min / ss) * ss;  // min
-            //         r[2] = numberTicks;                     // number of ticks
-            //         r[3] = bestFormatString(ss);            // format string
-            //         r[4] = ss;                              // tick Interval
-            //         r[1] = r[0] + (r[2] - 1) * r[4];        // max
-            //     }
-
-            //     // gotMore has just enough ticks, use them.
-            //     else if (gotMore[2] === numberTicks) {
-            //         r[0] = Math.floor(axis_min / gotMore[1]) * gotMore[1];  // minimum
-            //         r[1] = Math.ceil(axis_max / gotMore[1]) * gotMore[1];   // maximum
-            //         r[2] = numberTicks;                                     // number ticks
-            //         r[3] = bestFormatString(gotMore[1]);                    // format string
-            //         r[4] = gotMore[1];                                      // tick interval
-            //         r[1] = r[0] + (r[2] - 1) * r[4];                        // max
-            //     }
-
-            //     // gotMore doesn't have enough ticks, add some at gotMore interval.
-            //     else {
-            //         r[0] = Math.floor(axis_min / gotMore[1]) * gotMore[1];  // minimum
-            //         r[2] = numberTicks;                                     // number of ticks
-            //         r[3] = bestFormatString(gotMore[1]);                    // format string
-            //         r[4] = gotMore[1];                                      // tick interval
-            //         r[1] = r[0] + (r[2] - 1) * r[4];                        // max
-            //     }
-                
-            // }
-
-            // // too many ticks, take away some
-            // else {
-            //     console.log('too many');
-            //     // returns interval, factor, magnitude
-            //     var c = bestLinearComponents(axis_max - axis_min, scalefact);
-            //     console.log('max: %s, min: %s, scale: %s', axis_max, axis_min, scalefact);
-            //     console.log('interval: %s, factor: %s, magnitude: %s', c[0], c[1], c[2]);
-            //     // the offset we would get by simply adding more ticks;
-            //     var error = numberTicks - tempr[2] * ss;
-
-            //     var ntmult = Math.ceil(numberTicks / tempr[2]);
-            //     var count = 0;
-
-            //     var range = tempr[1] - tempr[0];
-
-            //     function getLessTicks(f, mag, r) {
-            //         // try to adjust factor and see what we get
-            //         var newf = _getHigherFactor(f);
-            //         var newti = newf * mag;
-            //         var newnt = Math.round(r / newti + 1);
-            //         // new factor, tickInterval, numberTicks
-            //         return [newf, newti, newnt];
-            //     }
-
-            //     function findLessTicks(f, mag, r) {
-            //         var getLess = getLessTicks(f, mag, r);
-            //         console.log('getting less: ', getLess);
-
-            //         if (count < 2 * (ntmult+1)) {
-
-            //             if (getLess[2] > numberTicks) {
-            //                 count++;
-            //                 getLess = findLessTicks(getLess[0], mag, r);
-            //             }
-                        
-            //         }
-
-            //         return  getLess;
-            //     }
-
-            //     // Try getting more ticks at nice interval.
-            //     // return:
-            //     //          0: factor
-            //     //          1: tick interval
-            //     //          2: number ticks
-            //     var gotLess = findLessTicks(c[1], c[2], range);
-            //     console.log('got less: ', gotLess);
-
-            //     //
-            //     // gotLess has too few ticks, add some more ticks at gotless interval and expand max.
-            //     if (gotLess[2] < numberTicks) {
-            //         r[0] = Math.floor(axis_min / gotLess[1]) * gotLess[1];  // min
-            //         r[2] = numberTicks;                     // number of ticks
-            //         r[3] = bestFormatString(ss);            // format string
-            //         r[4] = gotLess[1];                              // tick Interval
-            //         r[1] = r[0] + (r[2] - 1) * r[4];        // max
-            //     }
-
-            //     // gotLess has just enough ticks, use them.
-            //     else if (gotLess[2] === numberTicks) {
-            //         r[0] = Math.floor(axis_min / gotLess[1]) * gotLess[1];  // minimum
-            //         r[2] = numberTicks;                                     // number ticks
-            //         r[3] = bestFormatString(gotLess[1]);                    // format string
-            //         r[4] = gotLess[1];                                      // tick interval
-            //         r[1] = r[0] + (r[2] - 1) * r[4];        // max
-            //     }
-            // }
         }
 
         // console.log('r is: ', r);
@@ -461,6 +303,7 @@
     };
 
     $.jqplot.LinearTickGenerator.bestLinearInterval = bestLinearInterval;
+    $.jqplot.LinearTickGenerator.bestInterval = bestInterval;
     $.jqplot.LinearTickGenerator.bestLinearComponents = bestLinearComponents;
 
 })(jQuery);
