@@ -8,7 +8,6 @@
 
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
-    <loadfile property="version" srcfile="version.txt" /> 
     <property file="dist.props" />
     
     <!-- misc. properties -->
@@ -43,6 +42,8 @@
         <copy todir="${BUILD_DIR}">
           <fileset dir="${SRC_DIR}">
             <include name="*" />
+            <!-- for some reason version.txt not copied over -->
+            <include name="version.txt" />
             <exclude name="jquery.jqplot.js" />
             <exclude name="jsl.conf" />
           </fileset>
@@ -129,6 +130,7 @@
           <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
           <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
           <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
+          <fileset dir="${BUILD_DIR}" includes="version.txt" />
           <fileset dir="" includes="*.php" />
           <fileset dir="" includes="style.css" />
           <fileset dir="" includes="README.txt" />

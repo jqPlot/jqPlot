@@ -2480,36 +2480,7 @@
             this.target.trigger('jqplotPreReplot');
             
             if (clear) {
-                this.canvasManager.freeAllCanvases();
-                // Memory Leaks patch
-                // this.target.find("table.jqplot-table-legend,table.jqplot-legend").each( function() {
-                //     $(this).unbind();
-
-                //     $(this).find(".jqplot-seriesToggle").each( function() {
-                //         $(this).unbind();
-                //     });
-                //     $.gcCollect(this);
-                // });
-                
-                // this.target.find(".jqplot-title").each( function() {
-                //     $(this).unbind();
-                //     $.gcCollect(this);
-                // });
-                
-                // $.gcClear();
-
-                if (this.eventCanvas && this.eventCanvas._elem) {
-                    this.eventCanvas._elem.unbind();
-                }
-                // Dont think I bind any events to the target, this shouldn't be necessary.
-                // It will remove user's events.
-                // this.target.unbind();
-
-                // Couple of posts on Stack Overflow indicate that empty() doesn't
-                // always cear up the dom and release memory.  Sometimes setting
-                // innerHTML property to null is needed.  Particularly on IE, may 
-                // have to directly set it to null, bypassing jQuery.
-                this.target.empty();
+                this.destroy();
             }
             this.reInitialize();
             if (resetAxes) {
