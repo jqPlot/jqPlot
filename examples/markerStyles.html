@@ -13,25 +13,25 @@
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
 	
-	<script type="text/javascript" language="javascript">
-		$(document).ready(function(){
-      $.jqplot.config.enablePlugins = true;
-		  
-    var l1 = [2,5,8,1,9,7];
-    var l2 = [9,13,11];
-    var l3 = [7,6,5,3,2,5];
-    var l4 = [15, 12, 19, 14, 9, 15];
+	<script type="text/javascript" class="code" language="javascript">
+    $(document).ready(function(){
+        var l1 = [2,5,8,1,9,7];
+        var l2 = [9,13,11];
+        var l3 = [7,6,5,3,2,5];
+        var l4 = [15, 12, 19, 14, 9, 15];
 
 
-    plot = $.jqplot('chart1', [l1, l2, l3, l4], { 
-        series: [
-          {markerOptions:{style:'x'}},
-          {markerOptions:{style:'dash'}},
-          {markerOptions:{style:'plus'}}], 
-        legend:{show:true}
+        var plot = $.jqplot('chart1', [l1, l2, l3, l4], { 
+            series: [
+              {markerOptions:{style:'x'}},
+              {markerOptions:{style:'dash'}},
+              {markerOptions:{style:'plus'}}], 
+            legend:{show:true}
+        });
     });
-});
 </script>
+
+<script type="text/javascript" src="example.js"></script>
 		
 </head>
 <body>

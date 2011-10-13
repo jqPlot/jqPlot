@@ -1,4 +1,4 @@
-<div class="examplenav">
+<div class="example-nav">
   <?php
     $dh  = opendir('./');
     while (false !== ($filename = readdir($dh))) {
@@ -16,8 +16,6 @@
     
     for ($i=0; $i<$fcount; $i++) {
       if ($curfile == $files[$i]) {
-        $prevfile = $files[$i-1];
-        $nextfile = $files[$i+1];
         if ($i == 0) {
           $prevfile = $files[$fcount-1];
           $nextfile = $files[1];
@@ -25,6 +23,10 @@
         elseif ($i == $fcount-1) {
           $prevfile = $files[$i-1];
           $nextfile = $files[0];
+        }
+        else {
+          $prevfile = $files[$i-1];
+          $nextfile = $files[$i+1];
         }
       }  
     }
