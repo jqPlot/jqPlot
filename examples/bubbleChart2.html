@@ -202,7 +202,9 @@
 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>Bubble charts represent 3 dimensional data.  Data is passed in to a bubble chart as a series of [x, y, radius, &lt;label or object&gt;].  The optional fourth element of the data point can either be either a label string or an object having 'label' and/or 'color' properties to assign to the bubble.</p>
 
 <p>By default, all bubbles are scaled according to the size of the plot area.  The radius value in the data point will be adjusted to fit the bubbles in the chart.  If the "autoscaleBubbles" option is set to false, the radius value in the data will be taken as a literal pixel value for the radius of the points.</p>
@@ -241,5 +243,7 @@
 
 <div id="chart3" class="plot" style="width:600px;height:400px;"></div>
 <pre class="code"></pre>
-  </body>
+  
+  </div>
+</body>
 </html>

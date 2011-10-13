@@ -338,10 +338,14 @@ function stopit() {
 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <div id="chart1" style="margin:20px;height:400px; width:800px;"></div>
 <div id="pricePointer" style="display:none;"></div>
 <button onclick="startit(data)">Start</button>
 <button onclick="stopit()">Stop</button>
-  </body>
+  
+  </div>
+</body>
 </html>

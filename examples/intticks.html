@@ -159,7 +159,9 @@ $(document).ready(function(){
 </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>Tests of enhancements to axis tick generation algorithm.  Axis now checks to see if the tick interval (delta between ticks) is less than the precision of the tick format string.  If it is, it will try to increase the tick interval, number of ticks or change the axis minimum or maximum so that it is at least as great as the tick label precision.</p>
 
 <p>Note, if the user has specified the axis tickInterval, numberTicks, min or max options, the algorithm may not be able to produce the desired ticks.</p>
@@ -174,5 +176,7 @@ $(document).ready(function(){
 <div id="chart6" class="plot" style="width:400px;height:300px;"></div>
 <div id="chart7" class="plot" style="width:400px;height:300px;"></div>
 <div id="chart8" class="plot" style="width:400px;height:300px;"></div>
-  </body>
+  
+  </div>
+</body>
 </html>

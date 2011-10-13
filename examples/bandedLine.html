@@ -248,7 +248,9 @@ myTheme = {
 
  </head>
  <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 
 <p>Bands (like confidence intervals or error bands) can be added to line charts through the "bands" option of the line renderer.  The band data can be automatically computed or manually assigned.  If assigned manually, the simpliest approach is to set the "rendererOptions: { bandData: [] }" array on the series.  Note that band data is taken into account when axes scale themselves so bands will not get clipped.</p>
 
@@ -300,5 +302,7 @@ myTheme = {
 
     <pre class="code"></pre>
 
- </body>
+ 
+  </div>
+</body>
  </html>

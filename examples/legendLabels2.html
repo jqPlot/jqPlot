@@ -221,7 +221,9 @@
 <script type="text/javascript" src="example.js"></script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 
 <p>This example demonstrates how to use the legend "location: 'outsideGrid'" option.  This option will place the legend outside of the grid but inside of the plot target.  It will shrink the grid to accommodate the plot target.  Borders have been added to the plot target container elements to clarify how the legend is drawn in each case.</p>
 
@@ -237,5 +239,7 @@
 
 <div id="chart6" class="plot" style="width:500px;height:300px;"></div>
     
-  </body>
+  
+  </div>
+</body>
 </html>

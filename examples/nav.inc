@@ -1,4 +1,4 @@
-<div class="nav">
+<div class="examplenav">
   <?php
     $dh  = opendir('./');
     while (false !== ($filename = readdir($dh))) {

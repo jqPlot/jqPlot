@@ -69,7 +69,9 @@
   </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>This example demonstrates how to update a point in a series and then redraw just that series.  You can select a series, a point and change it's x and y value with the form below the chart.</p>
 
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:360px; height:300px;"></div>
@@ -118,5 +120,7 @@
 
 
 <p> Note that the redrawSeries method does not do any axes scaling or redraw any other elements on the chart.  It is intended to be a lightweight method to redraw just one series.  Also note, if no series Index is passed in as the second parameter to drawSeries, it will redraw all series without rescaling or redrawing other plot elements.</p>
-  </body>
+  
+  </div>
+</body>
 </html>

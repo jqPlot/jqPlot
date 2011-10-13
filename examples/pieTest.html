@@ -97,7 +97,9 @@
 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
     <p>This page tests for 3 conditions.  Plotting pies with a slice that begins at 0 and ends at and near 2*pi (360 degrees), disabling the trendline plugin on pies, and plotting a pie that has a 0 value (or a very small value relative to other values) in the data set.</p>
     <div id="pie1" style="margin-top:20px; margin-left:20px; width:200px; height:200px;"></div>
 <pre class="code"></pre>
@@ -113,5 +115,7 @@
 <pre class="code"></pre>
     <div id="pie7" style="margin-top:20px; margin-left:20px; width:400px; height:240px;"></div>
 <pre class="code"></pre>
-  </body>
+  
+  </div>
+</body>
 </html>

@@ -111,7 +111,9 @@ $(document).ready(function(){
 </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 
 <p>A meter gauge plot shows a data value in a speedometer style gauge.  The "series" in consists of a single data value that positions the needle on the gauge.  The span of the gauge will be automatically determined, or can be set with the "min" and "max" values in the "rendererOptions" of the series.  The plot below also specifies a chart title and a "label" for the gauge.</p>
 
@@ -128,5 +130,7 @@ $(document).ready(function(){
 <p>The inner and outer radii of the interval band can also be specified with the "intervalInnerRadius" and "intervalOuterRadius" options.  In the plot below, the "labelPosition" option was set to "bottom" to put the gauge label below the plot.  The "labelHeightAdjust" option was set to -5 to raise the label slightly (5 pixels) to place it closer to the gauge.</p>
 <p>The gauge automatically resizes to best fit the container.  The font size of the tick labels and gauge labels do not size to the container, however.  The font size of the tick labels can be controlled by styling the css ".jqplot-meterGauge-ticks" class and the gauge label by the "jqplot-meterGauge-label" class.</p>
 <div id="chart4" class="plot" style="width:500px;height:300px;"></div>
-  </body>
+  
+  </div>
+</body>
 </html>

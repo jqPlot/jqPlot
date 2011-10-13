@@ -141,7 +141,9 @@
   </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
       
       <p>Mekko charts make a number of customizations to the series, axes and legend.  You can create a Mekko chart by including the renderers:</p>
 <pre>
@@ -220,5 +222,7 @@ legend:{
 </pre>
 
     <div id="chart3" style="width:500px; height:300px;"></div>
-  </body>
+  
+  </div>
+</body>
 </html>

@@ -100,7 +100,9 @@
 
  </head>
  <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 
  <div id="GraphContainer" style="height:500px; width:900px;"></div>
  <label for="interval">Update Inverval (ms):</label><input type="text" name="interval" id="interval" value="500" /><br />
@@ -110,5 +112,7 @@
  graph" />
  <input type="button" onclick="StopGraphLoop();" value="Stop" />
 
- </body>
+ 
+  </div>
+</body>
  </html>

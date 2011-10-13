@@ -247,7 +247,9 @@
     
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
     <p>To create bar plots, you have to include the "jqplot.barRenderer.js" file in your source.</p>
 
     <p>Below is a default bar plot.  Bars will highlight on mouseover.  Events are triggered when you mouseover a bar and also when you click on a bar.  Here We capture the 'jqplotDataClick' event and display the clicked series index, point index and data values. When series data is assigned as a 1-dimensional array as in this example, jqPlot automatically converts it into a 2-dimensional array for plotting.  So a series defined as [2, 6, 7, 10] will become [[1,2], [2,6], [3,7], [4,10]].<p>
@@ -292,5 +294,7 @@
 <pre class="code"></pre>
 
 
-  </body>
+  
+  </div>
+</body>
 </html>

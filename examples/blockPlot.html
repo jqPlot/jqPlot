@@ -106,7 +106,9 @@ $(document).ready(function(){
 </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>Below is an example block plot.  This plot also uses the Enhanced Legend Renderer plugin.  Clicking on an item in the legend will toggle display of the appropriate series.</p>
     <div id="chart1" class="plot" style="width:500px;height:300px;margin-bottom:30px;"></div>
 <p>Blocks can be moved by selecting the series, the point, and an optional duration parameter.  If specified, duration will animate the movement.  Duration is either a number in milliseconds, or the keywords 'fast' or 'slow'.  Higher numbers will cause a slower animation.</p>
@@ -145,5 +147,7 @@ $(document).ready(function(){
     
     <div id="chart2" class="plot" style="width:500px;height:300px;margin-bottom:30px;"></div>
     
-  </body>
+  
+  </div>
+</body>
 </html>

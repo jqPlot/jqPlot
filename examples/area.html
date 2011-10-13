@@ -96,7 +96,9 @@ $(document).ready(function(){
 <script type="text/javascript" src="example.js"></script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 
 <p>Area charts support highlighting and mouse events by default.  The options and handlers and callbacks are essentially the same as with bar, pie, donut and funnel charts.  One notable exception for area charts is that no data point index will be provided to the callback and the entire data set for the highlighted area will be returned.  This is because the area is not associated with one particular data point, but with the entire data set of the series.</p>
 
@@ -109,5 +111,7 @@ $(document).ready(function(){
 <div><span>You Clicked: </span><span id="info1c">Nothing yet</span></div>
 
 <div id="chart1c" class="plot" style="width:400px;height:260px;"></div>
-  </body>
+  
+  </div>
+</body>
 </html>

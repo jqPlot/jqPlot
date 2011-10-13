@@ -134,7 +134,9 @@
 		
 </head>
 <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 
 <div class="jqPlot" id="chart1" style="height:400px; width:600px;"></div>
 
@@ -142,6 +144,8 @@
 
 <div class="jqPlot" id="chart2" style="height:400px; width:600px;"></div>
 <button onclick="plot2.resetZoom()">Reset</button>
+
+  </div>
 </body>
 
 

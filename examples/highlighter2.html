@@ -54,9 +54,13 @@ $.jqplot.eventListenerHooks.push(['jqplotMouseMove', myMove]);
 </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>This page demonstrates creating your own custom highlighter by attaching a callback to the 'jqplotMouseMove' event.</p>
 <div id="chart1" class="plot" style="width:500px;height:300px;"></div>
 
-  </body>
+  
+  </div>
+</body>
 </html>

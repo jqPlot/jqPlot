@@ -123,12 +123,16 @@
 </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
     <p>Waterfall chart using default bar colors.</p>
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
     <pre id="code_1" class="code-block"></pre>
     <p>Waterfall chart using custom colors and "useNegativeColors" set to "false".</p>
     <div id="chart2" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
     <pre id="code_2" class="code-block"></pre>
-  </body>
+  
+  </div>
+</body>
 </html>

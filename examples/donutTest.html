@@ -45,7 +45,9 @@
     
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <div id="code"></div>
     <p>To create donut plots, you have to include the "jqplot.donutRenderer.js" file in your source.  You can view the javascript that generated these plots by clicking the "View Code" button below.</p>
     <button id="seecode" onclick="$('#code').dialog('open');">View Code</button>
@@ -80,5 +82,7 @@
         
 <p>A simple line chart is added to test for imcompatabilities.</p>
         <div id="chart6" style="margin-top:20px; margin-left:20px; width:100px; height:100px;"></div>
-  </body>
+  
+  </div>
+</body>
 </html>

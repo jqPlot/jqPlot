@@ -188,7 +188,9 @@
 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>The following charts demonstrate some options of the EnhancedLegendRendrer. Some of the enhancements are:</p>
 <ul>
     <li>Control of number of rows and/or columns.</li>
@@ -213,5 +215,7 @@
 <p>The fourth chart is a pie plot.  Pie plots use their own legend renderer, since a pie plot is only 1 series.  The pie legend renderer has also been updated to handle custom rows/columns, although it is not clickable.</p>
 <div id="chart4" class="plot" style="width:500px;height:300px;"></div>
     
-  </body>
+  
+  </div>
+</body>
 </html>

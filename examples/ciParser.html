@@ -95,7 +95,9 @@
 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>JSON data formatted according the the City Index API spec can be read in directly by jqPlot thorugh the use of the dataRenderer option and a custom ciParser data renderer.  The ciParser data renderer will translate either a JSON encoded string or JSON object.</p>
 
 <p>To use the the ciParser, include the <code>jqplot.json2.js</code> and <code>jqplot.ciParser.js</code> files.  Specify the <code>$.jqplot.ciParser</code> as the renderer in the plot's "dataRenderer" option.  The City Index JSON data can then be passed into the jqplot function as shown in the examples below:</p>
@@ -106,5 +108,7 @@
 <p>This example uses the same City Index data format, but passes in a JSON object instead of a string.</p>
 <div id="chart4" style="height:200px; width:400px;"></div>
 <pre class="code"></pre>
-  </body>
+  
+  </div>
+</body>
 </html>

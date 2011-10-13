@@ -64,7 +64,9 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>The Bezier curve renderer can distinguish between two different input data formats.  This first example has the data passed in as 2 data points, the second one defining the Bezier curve to the end point.  With this format, non-default axes renderers will require specifying the minimum and maximum on the axes.</p>
 <pre>
     [[xstart, ystart], [cp1x, cp1y, cp2x, cp2y, xend, yend]];
@@ -90,6 +92,8 @@ $(document).ready(function(){
     plot3.series[2].data[1][0] = 1265900400000
     plot3.drawSeries(2)
 </pre>
+
+  </div>
 </body>
 
 

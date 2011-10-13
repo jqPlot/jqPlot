@@ -77,7 +77,9 @@
 </script> 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>Example of the "prefix" axis tick option.  This option adds a prefix to the tick label if and only if no formatString option is specified.</p>
     <div id="chartdiv" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
     <pre id="code_1" class="code-block"></pre>
@@ -85,5 +87,7 @@
     <p>A new configuration option, $.jqplot.config.defaultTickFormatString, has been added as well.  When no user formatString is specified, linear axes previously used a hard coded '%.1f' default format string.  The config option controls this default format string.  This allows an alternative way to format tick labels, with or without a prefix, if no formatString option is specified.</p>
     <div id="chartdiv2" style="margin-top:20px; margin-left:20px; width:500px; height:300px;"></div>
     <pre id="code_2" class="code-block"></pre>
-  </body>
+  
+  </div>
+</body>
 </html>

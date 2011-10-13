@@ -124,7 +124,9 @@
   
 </head>
 <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
   
   <p class="description">This page demonstrates placing plots within jQuery UI widgets. Tab 2 and tab 3 contain plots.  Using a combination of alternate sizing specification and the jqplot "replot" method the plots are properly displayed when their containers are shown.</p>
   
@@ -187,5 +189,7 @@
   Note in the ui.index and plot._drawCount properties in the tabsshow callback.  ui.index gives the index of the activated tab.  plot._drawCount keeps track of how many times the plot was visibly drawn (or redrawn/replotted).  Generally, replot only needs to be called the first time the plot is visibly drawn, hence the check for plot._drawCount == 0.
   </p>  
            
-  </body>
+  
+  </div>
+</body>
 </html>

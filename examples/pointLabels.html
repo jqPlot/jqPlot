@@ -84,7 +84,9 @@ $(document).ready(function(){
 
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
     <p>Click and drag to zoom.  Double click on plot or click "Reset Zoom" button to reset zoom.</p>
 <div id="chart" style="height:300px; width:600px;"></div>
 <div style="padding-top:20px">
@@ -93,5 +95,7 @@ $(document).ready(function(){
 
 <div id="chart2" style="height:300px; width:600px;"></div>
 </div>
-  </body>
+  
+  </div>
+</body>
 </html>

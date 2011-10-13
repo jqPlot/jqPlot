@@ -289,7 +289,9 @@ function switch35() {
 </script>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>jqPlot has basic theming support for commonly styled atributes of plot elements.  Upon creation, each plot will have a "themeEngine" that controls modificaition, adding, removing and activating of plot themes.  In addition, each plot will have a "Default" theme which corresponds to the styling of the plot at plot creation.<p>
     
 <p>Creation of new themes is easy.  A "style" object is created with properties for the various plot elements to be styles.  Attached to each of those is an ojbect with the actual styling properties.  A simple style object might look like:</p>
@@ -477,5 +479,7 @@ function switch35() {
 </select>
 </p>
 
-  </body>
+  
+  </div>
+</body>
 </html>

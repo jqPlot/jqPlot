@@ -212,7 +212,9 @@ $(document).ready(function(){
     
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
         
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
     <button onclick="lineup()">Up</button>
@@ -224,5 +226,7 @@ $(document).ready(function(){
     <pre class="code"></pre>
 
 
-  </body>
+  
+  </div>
+</body>
 </html>

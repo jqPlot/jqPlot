@@ -75,7 +75,9 @@
 </style>
   </head>
   <body>
-<?php include "nav.inc"; ?>
+    <?php include "topbanner.php"; ?>
+    <div class="example-content">
+    <?php include "nav.inc"; ?>
 <p>Setting custom gridPadding on charts.  The red border indicates the plot target container.  By default, the grid will size itself to fit axes, titles, etc. within the plot target.  This values will be overridden if a "gridPadding" option is specified.</p>
 <p>The default computed gridPadding:</p>
     <div id="chart1a"></div>
@@ -89,5 +91,7 @@
 <p>Just specify padding on the sides we need, defaults used for others:</p>
     <div id="chart3"></div>
     <pre class="code"></pre>
-  </body>
+  
+  </div>
+</body>
 </html>
