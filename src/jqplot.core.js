@@ -2449,7 +2449,7 @@
         // Releases all resources occupied by the plot
         this.destroy = function() {
             this.canvasManager.freeAllCanvases();
-            if (this.eventCanvas) {
+            if (this.eventCanvas && this.eventCanvas._elem) {
                 this.eventCanvas._elem.unbind();
             }
             // Couple of posts on Stack Overflow indicate that empty() doesn't
