@@ -1,9 +1,10 @@
 <div class="example-nav">
   <?php
-    $dh  = opendir('./');
-    while (false !== ($filename = readdir($dh))) {
-        if (preg_match('/^[a-z0-9][a-z0-9_\-]+\.html$/i', $filename)) {
-          $files[] = $filename;
+    $tmpnames = scandir('./');
+    
+    foreach( $tmpnames as $value) {
+        if (preg_match('/^[a-z0-9][a-z0-9_\-]+\.html$/i', $value)) {
+          $files[] = $value;
         }
     }
     $fcount = count($files);
@@ -11,7 +12,6 @@
     $curfile = end($parts);
     $prevfile = '';
     $nextfile = '';
-    // echo $fcount, $curfile;
     // print_r($files);
     
     for ($i=0; $i<$fcount; $i++) {

@@ -206,7 +206,9 @@
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
         </apply>
+
         <echo message="minifing plugin files" />
+
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins">
             <include name="jqplot.*.js" />
@@ -237,21 +239,39 @@
           </filterchain>
         </copy>
         
+        <echo message="doing regex replacements" />
+
         <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
-			<fileset dir="${DIST_DIR}">
-				<include name="jquery.jqplot.js"/>
-				<include name="jquery.jqplot.min.js"/>
-				<include name="jqplot.*.js"/>
-				<include name="jqplot.*.min.js" />
-			</fileset>
-		</replaceregexp>
+    			<fileset dir="${DIST_DIR}">
+    				<include name="jquery.jqplot.js"/>
+    				<include name="jquery.jqplot.min.js"/>
+    				<include name="jqplot.*.js"/>
+    				<include name="jqplot.*.min.js" />
+    			</fileset>
+    		</replaceregexp>
         
         <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
-			<fileset dir="${DIST_DIR}/plugins">
-				<include name="jqplot.*.js"/>
-				<include name="jqplot.*.min.js" />
-			</fileset>
-		</replaceregexp>
+    			<fileset dir="${DIST_DIR}/plugins">
+    				<include name="jqplot.*.js"/>
+    				<include name="jqplot.*.min.js" />
+    			</fileset>
+    		</replaceregexp>
+        
+        <replaceregexp match='jquery.js' replace='jquery.min.js' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='jquery.jqplot.css' replace='jquery.jqplot.min.css' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='jqplot.(\w+).js' replace='jqplot.\1.min.js' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='jquery.jqplot.js' replace='jquery.jqplot.min.js' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
         
         <delete dir="${DIST_DIR}/plugins/temp" />
         

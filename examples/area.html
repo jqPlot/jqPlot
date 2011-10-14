@@ -10,21 +10,18 @@
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
   <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
+  <script type="text/javascript" src="../src/jquery.js"></script>
   <!-- END: load jquery -->
   
   <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.donutRenderer.js"></script>
-<!--  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.funnelRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
--->
+  <script type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+  <script type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+  <script type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
+  <script type="text/javascript" src="../src/plugins/jqplot.donutRenderer.js"></script>
+
   <!-- END: load jqplot -->
 
 <style type="text/css">
@@ -36,13 +33,13 @@
 <script class="code" language="javascript" type="text/javascript">
 $(document).ready(function(){
 
-    l2 = [11, 9, 5, 12, 14];
-    l3 = [4, 8, 5, 3, 6];
-    l4 = [12, 6, 13, 11, 2];
-    l5 = [4, -3, 3, 6, 2, -2];    
+    var l2 = [11, 9, 5, 12, 14];
+    var l3 = [4, 8, 5, 3, 6];
+    var l4 = [12, 6, 13, 11, 2];
+    var l5 = [4, -3, 3, 6, 2, -2];    
 
     
-    plot1b = $.jqplot('chart1b',[l2, l3, l4],{
+    var plot1b = $.jqplot('chart1b',[l2, l3, l4],{
        stackSeries: true,
        showMarker: false,
        seriesDefaults: {
@@ -73,7 +70,7 @@ $(document).ready(function(){
  
 <script class="code" language="javascript" type="text/javascript">
 $(document).ready(function(){   
-    plot1c = $.jqplot('chart1c',[l5],{
+    var plot1c = $.jqplot('chart1c',[l5],{
        stackSeries: true,
        showMarker: false,
        seriesDefaults: {

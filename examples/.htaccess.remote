@@ -3,3 +3,4 @@
 
 # This works for dreamhost (php as fast cgi)
 AddType php-cgi .php .html .htm
+
