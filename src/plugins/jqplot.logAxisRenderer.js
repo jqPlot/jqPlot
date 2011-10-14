@@ -48,13 +48,12 @@
         //
         // Properties
         //
-        /// base - the logarithmic base, commonly 2, 10 or Math.E
-        // tickDistribution - 'even' or 'power'.  'even' gives equal pixel
-        // spacing of the ticks on the plot.  'power' gives ticks in powers
-        // of 10.
+        // base - the logarithmic base, commonly 2, 10 or Math.E
+        // tickDistribution - Deprecated.  "power" distribution of ticks
+        // always used.  Option has no effect.
         this.axisDefaults = {
             base : 10,
-            tickDistribution :'even'
+            tickDistribution :'power'
         };
     };
     
@@ -65,38 +64,50 @@
         // prop: drawBaseline
         // True to draw the axis baseline.
         this.drawBaseline = true;
-        $.extend(true, this.renderer, options);
+        // prop: minorTicks
+        // Number of ticks to add between "major" ticks.
+        // Major ticks are ticks supplied by user or auto computed.
+        // Minor ticks cannot be created by user.
+        this.minorTicks = 'auto';
+
+        $.extend(true, this, options);
+
+        this._autoFormatString = '%d';
+        this._overrideFormatString = false;
+
         for (var d in this.renderer.axisDefaults) {
             if (this[d] == null) {
                 this[d] = this.renderer.axisDefaults[d];
             }
         }
-        var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s.data;
+        // var db = this._dataBounds;
+        // // Go through all the series attached to this axis and find
+        // // the min/max bounds for this axis.
+        // for (var i=0; i<this._series.length; i++) {
+        //     var s = this._series[i];
+        //     var d = s.data;
             
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
-                        db.min = d[j][1];
-                    }
-                    if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
-                        db.max = d[j][1];
-                    }
-                }               
-            }
-        }
+        //     for (var j=0; j<d.length; j++) { 
+        //         if (this.name == 'xaxis' || this.name == 'x2axis') {
+        //             if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
+        //                 db.min = d[j][0];
+        //             }
+        //             if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
+        //                 db.max = d[j][0];
+        //             }
+        //         }              
+        //         else {
+        //             if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
+        //                 db.min = d[j][1];
+        //             }
+        //             if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
+        //                 db.max = d[j][1];
+        //             }
+        //         }               
+        //     }
+        // }
+
+        this.resetDataBounds();
     };
     
     $.jqplot.LogAxisRenderer.prototype.createTicks = function() {
@@ -181,106 +192,118 @@
             if (this.max != null && this.max <= 0) {
                 throw('log axis maximum must be greater than 0');
             }
-            // if (this.pad >1.99) this.pad = 1.99;
+
+            function findCeil (val) {
+                var order = Math.pow(10, Math.floor(Math.log(val)/Math.LN10));
+                return Math.ceil(val/order) * order;
+            }
+
+            function findFloor(val) {
+                var order = Math.pow(10, Math.floor(Math.log(val)/Math.LN10));
+                return Math.floor(val/order) * order;
+            }
+
             var range = max - min;
             var rmin, rmax;
 
-            if (this.tickDistribution == 'even') {                    
-                rmin = (this.min != null) ? this.min : min - min*((this.padMin-1)/2);
-                rmax = (this.max != null) ? this.max : max + max*((this.padMax-1)/2);
-                this.min = rmin;
-                this.max = rmax;
-                range = this.max - this.min;            
-        
-                if (this.numberTicks == null){
-                    if (dim > 100) {
-                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
-                    }
-                    else {
+            // for power distribution, open up range to get a nice power of axis.renderer.base.
+            // power distribution won't respect the user's min/max settings.
+            rmin = Math.pow(this.base, Math.floor(Math.log(min*(2-this.padMin))/Math.log(this.base)));
+            rmax = Math.pow(this.base, Math.ceil(Math.log(max*this.padMax)/Math.log(this.base)));
+
+            var order = Math.log(rmin)/Math.LN10;
+
+            if (this.tickOptions == null || !this.tickOptions.formatString) {
+                this._overrideFormatString = true;
+            }
+
+            this.min = rmin;
+            this.max = rmax;
+            range = this.max - this.min;            
+
+            var fittedTicks = 0;
+            var minorTicks = (this.minorTicks === 'auto') ? 0 : this.minorTicks;
+            if (this.numberTicks == null){
+                if (dim > 100) {
+                    this.numberTicks = Math.round(Math.log(this.max/this.min)/Math.log(this.base) + 1);
+                    if (this.numberTicks < 2) {
                         this.numberTicks = 2;
                     }
+                    if (minorTicks === 0) {
+                        var temp = dim/(this.numberTicks - 1);
+                        if (temp < 140) {
+                            minorTicks = 1;
+                        }
+                        else if (temp < 200) {
+                            minorTicks = 3;
+                        }
+                        else {
+                            minorTicks = 4;
+                        }
+                    }
                 }
-    
-                var u = Math.pow(this.base, (1/(this.numberTicks-1)*Math.log(this.max/this.min)/Math.log(this.base)));
-                for (var i=0; i<this.numberTicks; i++){
-                    tt = this.min * Math.pow(u, i);
-                    var t = new this.tickRenderer(this.tickOptions);
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
+                else {
+                    this.numberTicks = 2;
+                    if (minorTicks === 0) {
+                        minorTicks = 1;
                     }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
-                    t.setTick(tt, this.name);
-                    this._ticks.push(t);
+                }
+            }
+
+            // Adjust format string for case with 3 ticks where we'll have like 1, 2.5, 5, 7.5, 10
+            if (order <= 0 && minorTicks === 3) {
+                var temp = -order - 1;
+                this._autoFormatString = '%.'+ temp.toString() + 'f';
+            }
+
+            // Adjust format string for values less than 1.
+            else if (order < 0) {
+                this._autoFormatString = '%.'+ (-order).toString() + 'f';
+            }
+
+            var to, t, val, tt1, spread, interval;
+            for (var i=0; i<this.numberTicks; i++){
+                tt = Math.pow(this.base, i - this.numberTicks + 1) * this.max;
+
+                t = new this.tickRenderer(this.tickOptions);
+            
+                if (this._overrideFormatString) {
+                    t.formatString = this._autoFormatString;
                 }
                 
-            }
-            
-            else if (this.tickDistribution == 'power'){
-                // for power distribution, open up range to get a nice power of axis.renderer.base.
-                // power distribution won't respect the user's min/max settings.
-                rmin = Math.pow(this.base, Math.ceil(Math.log(min*(2-this.padMin))/Math.log(this.base))-1);
-                rmax = Math.pow(this.base, Math.floor(Math.log(max*this.padMax)/Math.log(this.base))+1);
-                this.min = rmin;
-                this.max = rmax;
-                range = this.max - this.min;            
-        
-                var fittedTicks = 0;
-                var minorTicks = 0;
-                if (this.numberTicks == null){
-                    if (dim > 100) {
-                        this.numberTicks = Math.round(Math.log(this.max/this.min)/Math.log(this.base) + 1);
-                        if (this.numberTicks < 2) {
-                            this.numberTicks = 2;
-                        }
-                        fittedTicks = parseInt(3+(dim-100)/75, 10);
-                    }
-                    else {
-                        this.numberTicks = 2;
-                        fittedTicks = 2;
-                    }
-                    // if we don't have enough ticks, add some intermediate ticks
-                    // how many to have between major ticks.
-                    if (this.numberTicks < fittedTicks-1) {
-                        minorTicks = Math.floor(fittedTicks/this.numberTicks);
-                    }
+                if (!this.showTicks) {
+                    t.showLabel = false;
+                    t.showMark = false;
                 }
+                else if (!this.showTickMarks) {
+                    t.showMark = false;
+                }
+                t.setTick(tt, this.name);
+                this._ticks.push(t);
 
-                for (var i=0; i<this.numberTicks; i++){
-                    tt = Math.pow(this.base, i - this.numberTicks + 1) * this.max;
-                    var t = new this.tickRenderer(this.tickOptions);
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
-                    t.setTick(tt, this.name);
-                    this._ticks.push(t);
+                if (minorTicks && i<this.numberTicks-1) {
+                    tt1 = Math.pow(this.base, i - this.numberTicks + 2) * this.max;
+                    spread = tt1 - tt;
+                    interval = tt1 / (minorTicks+1);
+                    for (var j=minorTicks-1; j>=0; j--) {
+                        val = tt1-interval*(j+1);
+                        t = new this.tickRenderer(this.tickOptions);
             
-                    if (minorTicks && i<this.numberTicks-1) {
-                        var tt1 = Math.pow(this.base, i - this.numberTicks + 2) * this.max;
-                        var spread = tt1 - tt;
-                        var interval = tt1 / (minorTicks+1);
-                        for (var j=minorTicks-1; j>=0; j--) {
-                            var val = tt1-interval*(j+1);
-                            var t = new this.tickRenderer(this.tickOptions);
-                            if (!this.showTicks) {
-                                t.showLabel = false;
-                                t.showMark = false;
-                            }
-                            else if (!this.showTickMarks) {
-                                t.showMark = false;
-                            }
-                            t.setTick(val, this.name);
-                            this._ticks.push(t);
+                        if (this._overrideFormatString && this._autoFormatString != '') {
+                            t.formatString = this._autoFormatString;
                         }
-                    }       
-                }                    
-            }       
+                        if (!this.showTicks) {
+                            t.showLabel = false;
+                            t.showMark = false;
+                        }
+                        else if (!this.showTickMarks) {
+                            t.showMark = false;
+                        }
+                        t.setTick(val, this.name);
+                        this._ticks.push(t);
+                    }
+                }       
+            }     
         }
     };
     

@@ -331,19 +331,6 @@
                     _numberTicks = plot.axes.yaxis.numberTicks;
                 }
             }
-            
-            // // if min, max and number of ticks specified, user can't specify interval.
-            // if (!this.autoscale && this.min != null && this.max != null && this.numberTicks != null) {
-            //     console.log('doing this');
-            //     this.tickInterval = null;
-            // }
-            
-            // if max, min, and interval specified and interval won't fit, ignore interval.
-            // if (this.min != null && this.max != null && this.tickInterval != null) {
-            //     if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
-            //         this.tickInterval = null;
-            //     }
-            // }
         
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
