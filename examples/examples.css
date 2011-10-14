@@ -10,7 +10,7 @@ div.logo {
   padding: 0px;
   margin-bottom: 30px;
   top: 0px;
-  background-image: url('../images/logo.jpg');
+  background-image: url('./images/logo.jpg');
   background-repeat: no-repeat;
   background-color: #292929;
 }
