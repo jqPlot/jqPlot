@@ -278,6 +278,7 @@
     };
         
     $.jqplot.config = {
+        addDomReference: false,
         enablePlugins:false,
         defaultHeight:300,
         defaultWidth:400,
@@ -1579,22 +1580,25 @@
     
     $.jqplot.HooksManager = function () {
         this.hooks =[];
+        this.args = [];
     };
     
-    $.jqplot.HooksManager.prototype.addOnce = function(fn) {
-        var havehook = false, i;
-        for (i=0; i<this.hooks.length; i++) {
+    $.jqplot.HooksManager.prototype.addOnce = function(fn, args) {
+        var havehook = false;
+        for (var i=0, l=this.hooks.length; i<l; i++) {
             if (this.hooks[i][0] == fn) {
                 havehook = true;
             }
         }
         if (!havehook) {
             this.hooks.push(fn);
+            this.args.push(args);
         }
     };
     
-    $.jqplot.HooksManager.prototype.add = function(fn) {
+    $.jqplot.HooksManager.prototype.add = function(fn, args) {
         this.hooks.push(fn);
+        this.args.push(args);
     };
     
     $.jqplot.EventListenerManager = function () {
@@ -1603,7 +1607,7 @@
     
     $.jqplot.EventListenerManager.prototype.addOnce = function(ev, fn) {
         var havehook = false, h, i;
-        for (i=0; i<this.hooks.length; i++) {
+        for (i=0, l=this.hooks.length; i<l; i++) {
             h = this.hooks[i];
             if (h[0] == ev && h[1] == fn) {
                 havehook = true;
@@ -1636,6 +1640,14 @@
         // >     title: 'A Plot'
         // > }
         //
+        // prop: axes
+        // up to 4 axes are supported, each with it's own options, 
+        // See <Axis> for axis specific options.
+        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis'), yMidAxis: new Axis('yMidAxis')};
+        this.baseCanvas = new $.jqplot.GenericCanvas();
+        // true to intercept right click events and fire a 'jqplotRightClick' event.
+        // this will also block the context menu.
+        this.captureRightClick = false;
         // prop: data
         // user's data.  Data should *NOT* be specified in the options object,
         // but be passed in as the second argument to the $.jqplot() function.
@@ -1651,8 +1663,47 @@
         // Options that will be passed to the dataRenderer.
         // Can be of any type.
         this.dataRendererOptions;
+        this.defaults = {
+            // prop: axesDefaults
+            // default options that will be applied to all axes.
+            // see <Axis> for axes options.
+            axesDefaults: {},
+            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}, y6axis:{}, y7axis:{}, y8axis:{}, y9axis:{}, yMidAxis:{}},
+            // prop: seriesDefaults
+            // default options that will be applied to all series.
+            // see <Series> for series options.
+            seriesDefaults: {},
+            series:[]
+        };
+        // prop: defaultAxisStart
+        // 1-D data series are internally converted into 2-D [x,y] data point arrays
+        // by jqPlot.  This is the default starting value for the missing x or y value.
+        // The added data will be a monotonically increasing series (e.g. [1, 2, 3, ...])
+        // starting at this value.
+        this.defaultAxisStart = 1;
+        // this.doCustomEventBinding = true;
+        // prop: drawIfHidden
+        // True to execute the draw method even if the plot target is hidden.
+        // Generally, this should be false.  Most plot elements will not be sized/
+        // positioned correclty if renderered into a hidden container.  To render into
+        // a hidden container, call the replot method when the container is shown.
+        this.drawIfHidden = false;
+        this.eventCanvas = new $.jqplot.GenericCanvas();
+        // prop; fontFamily
+        // css spec for the font-family attribute.  Default for the entire plot.
+        this.fontFamily;
+        // prop: fontSize
+        // css spec for the font-size attribute.  Default for the entire plot.
+        this.fontSize;
+        // prop: grid
+        // See <Grid> for grid specific options.
+        this.grid = new Grid();
+        // prop: legend
+        // see <$.jqplot.TableLegendRenderer>
+        this.legend = new Legend();
         // prop: noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         this.noDataIndicator = {    
             show: false,
             indicator: 'Loading Data...',
@@ -1671,100 +1722,51 @@
                 }
             }
         };
-        // The id of the dom element to render the plot into
-        this.targetId = null;
-        // the jquery object for the dom target.
-        this.target = null; 
-        this.defaults = {
-            // prop: axesDefaults
-            // default options that will be applied to all axes.
-            // see <Axis> for axes options.
-            axesDefaults: {},
-            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}, y6axis:{}, y7axis:{}, y8axis:{}, y9axis:{}, yMidAxis:{}},
-            // prop: seriesDefaults
-            // default options that will be applied to all series.
-            // see <Series> for series options.
-            seriesDefaults: {},
-            series:[]
-        };
+        // container to hold all of the merged options.  Convienence for plugins.
+        this.options = {};
+        this.previousSeriesStack = [];
+        // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
+        this.plugins = {};
         // prop: series
         // Array of series object options.
         // see <Series> for series specific options.
         this.series = [];
-        // prop: axes
-        // up to 4 axes are supported, each with it's own options, 
-        // See <Axis> for axis specific options.
-        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis'), yMidAxis: new Axis('yMidAxis')};
-        // prop: grid
-        // See <Grid> for grid specific options.
-        this.grid = new Grid();
-        // prop: legend
-        // see <$.jqplot.TableLegendRenderer>
-        this.legend = new Legend();
-        this.baseCanvas = new $.jqplot.GenericCanvas();
         // array of series indicies. Keep track of order
         // which series canvases are displayed, lowest
         // to highest, back to front.
         this.seriesStack = [];
-        this.previousSeriesStack = [];
-        this.eventCanvas = new $.jqplot.GenericCanvas();
-        this._width = null;
-        this._height = null; 
-        this._plotDimensions = {height:null, width:null};
-        this._gridPadding = {top:null, right:null, bottom:null, left:null};
-        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10};
-        // a shortcut for axis syncTicks options.  Not implemented yet.
-        this.syncXTicks = true;
-        // a shortcut for axis syncTicks options.  Not implemented yet.
-        this.syncYTicks = true;
         // prop: seriesColors
         // Ann array of CSS color specifications that will be applied, in order,
         // to the series in the plot.  Colors will wrap around so, if their
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
         this.seriesColors = $.jqplot.config.defaultColors;
-        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on
         // having sorted data.
         this.sortData = true;
-        var seriesColorsIndex = 0;
+        // prop: stackSeries
+        // true or false, creates a stack or "mountain" plot.
+        // Not all series renderers may implement this option.
+        this.stackSeries = false;
+        // a shortcut for axis syncTicks options.  Not implemented yet.
+        this.syncXTicks = true;
+        // a shortcut for axis syncTicks options.  Not implemented yet.
+        this.syncYTicks = true;
+        // the jquery object for the dom target.
+        this.target = null; 
+        // The id of the dom element to render the plot into
+        this.targetId = null;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
         this.textColor;
-        // prop; fontFamily
-        // css spec for the font-family attribute.  Default for the entire plot.
-        this.fontFamily;
-        // prop: fontSize
-        // css spec for the font-size attribute.  Default for the entire plot.
-        this.fontSize;
         // prop: title
         // Title object.  See <Title> for specific options.  As a shortcut, you
         // can specify the title option as just a string like: title: 'My Plot'
         // and this will create a new title object with the specified text.
         this.title = new Title();
-        // container to hold all of the merged options.  Convienence for plugins.
-        this.options = {};
-        // prop: stackSeries
-        // true or false, creates a stack or "mountain" plot.
-        // Not all series renderers may implement this option.
-        this.stackSeries = false;
-        // prop: defaultAxisStart
-        // 1-D data series are internally converted into 2-D [x,y] data point arrays
-        // by jqPlot.  This is the default starting value for the missing x or y value.
-        // The added data will be a monotonically increasing series (e.g. [1, 2, 3, ...])
-        // starting at this value.
-        this.defaultAxisStart = 1;
-        // array to hold the cumulative stacked series data.
-        // used to ajust the individual series data, which won't have access to other
-        // series data.
-        this._stackData = [];
-        // array that holds the data to be plotted. This will be the series data
-        // merged with the the appropriate data from _stackData according to the stackAxis.
-        this._plotData = [];
-        // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
-        this.plugins = {};
+        
         // Count how many times the draw method has been called while the plot is visible.
         // Mostly used to test if plot has never been dran (=0), has been successfully drawn
         // into a visible container once (=1) or draw more than once into a visible container.
@@ -1772,21 +1774,25 @@
         // After plot has been visibly drawn once, it generally doesn't need redrawn if its
         // container is hidden and shown.
         this._drawCount = 0;
-        // this.doCustomEventBinding = true;
-        // prop: drawIfHidden
-        // True to execute the draw method even if the plot target is hidden.
-        // Generally, this should be false.  Most plot elements will not be sized/
-        // positioned correclty if renderered into a hidden container.  To render into
-        // a hidden container, call the replot method when the container is shown.
-        this.drawIfHidden = false;
-        // true to intercept right click events and fire a 'jqplotRightClick' event.
-        // this will also block the context menu.
-        this.captureRightClick = false;
-        this.themeEngine = new $.jqplot.ThemeEngine();
         // sum of y values for all series in plot.
         // used in mekko chart.
         this._sumy = 0;
         this._sumx = 0;
+        // array to hold the cumulative stacked series data.
+        // used to ajust the individual series data, which won't have access to other
+        // series data.
+        this._stackData = [];
+        // array that holds the data to be plotted. This will be the series data
+        // merged with the the appropriate data from _stackData according to the stackAxis.
+        this._plotData = [];
+        this._width = null;
+        this._height = null; 
+        this._plotDimensions = {height:null, width:null};
+        this._gridPadding = {top:null, right:null, bottom:null, left:null};
+        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10};
+
+        this._addDomReference = $.jqplot.config.addDomReference;
+
         this.preInitHooks = new $.jqplot.HooksManager();
         this.postInitHooks = new $.jqplot.HooksManager();
         this.preParseOptionsHooks = new $.jqplot.HooksManager();
@@ -1809,7 +1815,11 @@
         this.negativeColorGenerator = new $.jqplot.ColorGenerator();
 
         this.canvasManager = new $.jqplot.CanvasManager();
+
+        this.themeEngine = new $.jqplot.ThemeEngine();
         
+        var seriesColorsIndex = 0;
+
         // Group: methods
         //
         // method: init
@@ -1827,6 +1837,13 @@
             
             this.targetId = '#'+target;
             this.target = $('#'+target);
+
+            //////
+            // Add a reference to plot
+            //////
+            if (this._addDomReference) {
+                this.target.data('jqplot_plot', this);
+            }
             // remove any error class that may be stuck on target.
             this.target.removeClass('jqplot-error');
             if (!this.target.get(0)) {
@@ -2049,45 +2066,6 @@
             // reason, set it by other means.  Plot must not have
             // a display:none attribute, however.
             
-            //
-            // Wont have options here
-            /*
-            if (!this.target.height()) {
-                var h;
-                if (options && options.height) {
-                    h = parseInt(options.height, 10);
-                }
-                else if (this.target.attr('data-height')) {
-                    h = parseInt(this.target.attr('data-height'), 10);
-                }
-                else {
-                    h = parseInt($.jqplot.config.defaultHeight, 10);
-                }
-                this._height = h;
-                this.target.css('height', h+'px');
-            }
-            else {
-                this._height = this.target.height();
-            }
-            if (!this.target.width()) {
-                var w;
-                if (options && options.width) {
-                    w = parseInt(options.width, 10);
-                }
-                else if (this.target.attr('data-width')) {
-                    w = parseInt(this.target.attr('data-width'), 10);
-                }
-                else {
-                    w = parseInt($.jqplot.config.defaultWidth, 10);
-                }
-                this._width = w;
-                this.target.css('width', w+'px');
-            }
-            else {
-                this._width = this.target.width();
-            }
-            */
-            
             this._height = this.target.height();
             this._width = this.target.width();
             
@@ -2170,10 +2148,6 @@
         function sortData(series) {
             var d, sd, pd, ppd, ret;
             for (var i=0; i<series.length; i++) {
-                // d = series[i].data;
-                // sd = series[i]._stackData;
-                // pd = series[i]._plotData;
-                // ppd = series[i]._prevPlotData;
                 var check;
                 var bat = [series[i].data, series[i]._stackData, series[i]._plotData, series[i]._prevPlotData];
                 for (var n=0; n<4; n++) {
@@ -2188,9 +2162,6 @@
                         }
                         if (check) {
                             d.sort(function(a,b) { return a[1] - b[1]; });
-                            // sd.sort(function(a,b) { return a[1] - b[1]; });
-                            // pd.sort(function(a,b) { return a[1] - b[1]; });
-                            // ppd.sort(function(a,b) { return a[1] - b[1]; });
                         }
                     }
                     else {
@@ -2202,9 +2173,6 @@
                         }
                         if (check) {
                             d.sort(function(a,b) { return a[0] - b[0]; });
-                            // sd.sort(function(a,b) { return a[0] - b[0]; });
-                            // pd.sort(function(a,b) { return a[0] - b[0]; });
-                            // ppd.sort(function(a,b) { return a[0] - b[0]; });
                         }
                     }
                 }
@@ -2270,13 +2238,6 @@
                 series._sumx += series.data[i][0];
             }
         };
-
-        // this.setData = function(seriesIndex, newdata) {
-        //     // if newdata is null, assume all data is passed in as first argument
-        //     if (newdata == null) {
-                
-        //     }
-        // };
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -2539,7 +2500,7 @@
                     $.jqplot.preDrawHooks[i].call(this);
                 }
                 for (i=0; i<this.preDrawHooks.hooks.length; i++) {
-                    this.preDrawHooks.hooks[i].call(this);
+                    this.preDrawHooks.hooks[i].apply(this, this.preDrawSeriesHooks.args[i]);
                 }
                 // create an underlying canvas to be used for special features.
                 this.target.append(this.baseCanvas.createElement({left:0, right:0, top:0, bottom:0}, 'jqplot-base-canvas', null, this));
@@ -2716,7 +2677,7 @@
                 }
 
                 for (var i=0; i<this.postDrawHooks.hooks.length; i++) {
-                    this.postDrawHooks.hooks[i].call(this);
+                    this.postDrawHooks.hooks[i].apply(this, this.postDrawHooks.args[i]);
                 }
             
                 if (this.target.is(':visible')) {
