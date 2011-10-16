@@ -231,10 +231,10 @@
                     }
                     if (minorTicks === 0) {
                         var temp = dim/(this.numberTicks - 1);
-                        if (temp < 140) {
+                        if (temp < 160) {
                             minorTicks = 1;
                         }
-                        else if (temp < 200) {
+                        else if (temp < 220) {
                             minorTicks = 3;
                         }
                         else {
