@@ -54,7 +54,9 @@
         var ticks = ['a', 'b', 'c', 'd'];
         
         plot1 = $.jqplot('chart1', [s1], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
+            animate: !$.jqplot.use_excanvas,
             seriesDefaults:{
                 renderer:$.jqplot.BarRenderer,
                 pointLabels: { show: true }
@@ -81,7 +83,8 @@
         var ticks = ['a', 'b', 'c', 'd'];
         
         plot2 = $.jqplot('chart2', [s1, s2], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
             seriesDefaults: {
                 renderer:$.jqplot.BarRenderer,
                 pointLabels: { show: true }
@@ -109,7 +112,8 @@
     
   <script class="code" type="text/javascript">$(document).ready(function(){
         plot2b = $.jqplot('chart2b', [[[2,1], [4,2], [6,3], [3,4]], [[5,1], [1,2], [3,3], [4,4]], [[4,1], [7,2], [1,3], [2,4]]], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
             seriesDefaults: {
                 renderer:$.jqplot.BarRenderer,
                 pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
@@ -148,7 +152,8 @@
         var s2 = [7, 5, 3, 2];
         var s3 = [14, 9, 3, 8];
         plot3 = $.jqplot('chart3', [s1, s2, s3], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
             stackSeries: true,
             captureRightClick: true,
             seriesDefaults:{
@@ -174,7 +179,8 @@
     
   <script class="code" type="text/javascript">$(document).ready(function(){
         plot4 = $.jqplot('chart4', [[[2,1], [6,2], [7,3], [10,4]], [[7,1], [5,2],[3,3],[2,4]], [[14,1], [9,2], [9,3], [8,4]]], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
             stackSeries: true,
             captureRightClick: true,
             seriesDefaults:{
@@ -201,7 +207,8 @@
     
   <script class="code" type="text/javascript">$(document).ready(function(){
         plot5 = $.jqplot('chart5', [[[2,1], [null,2], [7,3], [10,4]]], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
             captureRightClick: true,
             seriesDefaults:{
                 renderer:$.jqplot.BarRenderer,
@@ -234,7 +241,8 @@
 		var ticks = ['a', 'b', 'c', 'd'];
 
 		plot7 = $.jqplot('chart7', [s1], {
-            animate: true,
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8).
+            // excanvas is too slow to handle this many animations.
 			seriesDefaults:{
 				renderer:$.jqplot.BarRenderer,
 				rendererOptions: { fillToZero: true },

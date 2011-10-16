@@ -1584,6 +1584,7 @@
     };
     
     $.jqplot.HooksManager.prototype.addOnce = function(fn, args) {
+        args = args || [];
         var havehook = false;
         for (var i=0, l=this.hooks.length; i<l; i++) {
             if (this.hooks[i][0] == fn) {
@@ -1597,6 +1598,7 @@
     };
     
     $.jqplot.HooksManager.prototype.add = function(fn, args) {
+        args = args || [];
         this.hooks.push(fn);
         this.args.push(args);
     };
@@ -2695,22 +2697,24 @@
 
                 var temps, 
                     tempr,
-                    sel = '.jqplot-point-label';
+                    sel,
+                    _els;
                 // ughh.  ideally would hide all series then show them.
                 for (i=0, l=this.series.length; i<l; i++) {
                     temps = this.series[i];
                     tempr = temps.renderer;
+                    sel = '.jqplot-point-label.jqplot-series-'+i;
                     if (tempr.animation && tempr.animation._supported && tempr.animation.show && this._drawCount < 2) {
-                        this.target.find(sel).hide();
+                        _els = this.target.find(sel);
+                        _els.hide();
                         temps.canvas._elem.hide();
                         temps.shadowCanvas._elem.hide();
-                        temps.canvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed, 
-                            function(){ 
-                                $(this).parent().find(sel).fadeIn(500);
-                             } );
+                        temps.canvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed);
                         temps.shadowCanvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed);
+                        _els.fadeIn(tempr.animation.speed*0.8);
                     }
                 }
+                _els = null;
             
                 this.target.trigger('jqplotPostDraw', [this]);
             }
