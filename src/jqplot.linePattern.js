@@ -30,7 +30,7 @@
 
  /**
   * The following dashed line support contributed by Cory Sharp.
-  * After implementing an inferior method, Cory responded with a generous
+  * After I implemented an inferior method, Cory responded with a generous
   * contribution of code and input which proved a more powerful and
   * elegant solution.
   */
