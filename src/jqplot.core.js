@@ -1609,7 +1609,7 @@
     
     $.jqplot.EventListenerManager.prototype.addOnce = function(ev, fn) {
         var havehook = false, h, i;
-        for (i=0, l=this.hooks.length; i<l; i++) {
+        for (var i=0, l=this.hooks.length; i<l; i++) {
             h = this.hooks[i];
             if (h[0] == ev && h[1] == fn) {
                 havehook = true;

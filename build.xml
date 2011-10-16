@@ -95,6 +95,7 @@
         <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
+            <include name="jqplot.effects.*.js" />
             <include name="jsdate.js" />
             <exclude name="jqplot.core.js" />
           </fileset>
@@ -103,6 +104,7 @@
         <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
+            <include name="jqplot.effects.*.js" />
             <include name="jsdate.js" />
             <exclude name="jqplot.sprintf.js" />
           </fileset>
@@ -116,8 +118,12 @@
               <include name="jsdate.js" />
               <exclude name="jqplot.core.js" />
               <exclude name="jqplot.sprintf.js" />
+              <exclude name="jqplot.effects.core.js" />
+              <exclude name="jqplot.effects.blind.js" />
             </fileset>
             <fileset dir="${BUILD_DIR}" includes="jqplot.sprintf.js" />
+            <fileset dir="${BUILD_DIR}" includes="jqplot.effects.core.js" />
+            <fileset dir="${BUILD_DIR}" includes="jqplot.effects.blind.js" />
         </concat>
         
     </target>

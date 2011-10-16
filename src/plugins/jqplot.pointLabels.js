@@ -144,10 +144,6 @@
         // add a pointLabels attribute to the series plugins
         this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
         this.plugins.pointLabels.setLabels.call(this);
-
-        if (this.renderer.animation && this.renderer.animation._supported && this.renderer.animation.show) {
-            
-        }
     };
     
     // called with scope of series
