@@ -135,7 +135,7 @@
     var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
     
     // called with scope of a series
-    $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
+    $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts, plot){
         var options = $.extend(true, {}, seriesDefaults, opts);
         options.pointLabels = options.pointLabels || {};
         if (this.renderer.constructor === $.jqplot.BarRenderer && this.barDirection === 'horizontal' && !options.pointLabels.location) {
@@ -144,6 +144,10 @@
         // add a pointLabels attribute to the series plugins
         this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
         this.plugins.pointLabels.setLabels.call(this);
+
+        if (this.renderer.animation && this.renderer.animation._supported && this.renderer.animation.show) {
+            
+        }
     };
     
     // called with scope of series
@@ -263,7 +267,7 @@
     };
     
     // called with scope of series
-    $.jqplot.PointLabels.draw = function (sctx, options) {
+    $.jqplot.PointLabels.draw = function (sctx, options, plot) {
         var p = this.plugins.pointLabels;
         // set labels again in case they have changed.
         p.setLabels.call(this);
@@ -342,9 +346,18 @@
                 if (ell - et < scl || elt - et < sct || elr + et > scr || elb + et > scb) {
                     elem.remove();
                 }
+
                 elem = null;
                 helem = null;
             }
+
+            // finally, animate them if the series is animated
+            // if (this.renderer.animation && this.renderer.animation._supported && this.renderer.animation.show && plot._drawCount < 2) {
+            //     var sel = '.jqplot-point-label.jqplot-series-'+this.index;
+            //     $(sel).hide();
+            //     $(sel).fadeIn(1000);
+            // }
+
         }
     };
     

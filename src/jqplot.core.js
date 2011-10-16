@@ -1087,7 +1087,7 @@
         // >        {yaxis: 'y2axis', shadow: false, label:'bad line'}
         // >    ]
         // > }
-        
+
         // prop: show
         // wether or not to draw the series.
         this.show = true;
@@ -1338,7 +1338,7 @@
         }
         
         for (j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
-            $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
+            $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options, plot);
         }
         
         sctx = opts = plot = j = data = gridData = null;
@@ -1640,6 +1640,11 @@
         // >     title: 'A Plot'
         // > }
         //
+
+        // prop: animate
+        // True to animate the series on initial plot draw (renderer dependent).
+        // Actual animation functionality must be supported in the renderer.
+        this.animate = false;
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
         // See <Axis> for axis specific options.
@@ -2263,6 +2268,7 @@
                 $.jqplot.preParseOptionsHooks[i].call(this, options);
             }
             this.options = $.extend(true, {}, this.defaults, options);
+            this.animate = this.options.animate;
             this.stackSeries = this.options.stackSeries;
             if (this.options.seriesColors) {
                 this.seriesColors = this.options.seriesColors;
@@ -2331,7 +2337,7 @@
                 for (var j=0; j<this.preParseSeriesOptionsHooks.hooks.length; j++) {
                     this.preParseSeriesOptionsHooks.hooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
                 }
-                $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i]);
+                $.extend(true, temp, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
                 var dir = 'vertical';
                 if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal' && temp.transposeData === true) {
                     dir = 'horizontal';
@@ -2495,11 +2501,14 @@
         this.draw = function(){
             if (this.drawIfHidden || this.target.is(':visible')) {
                 this.target.trigger('jqplotPreDraw');
-                var i, j;
-                for (i=0; i<$.jqplot.preDrawHooks.length; i++) {
+                var i,
+                    j,
+                    l,
+                    tempseries;
+                for (i=0, l=$.jqplot.preDrawHooks.length; i<l; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
                 }
-                for (i=0; i<this.preDrawHooks.hooks.length; i++) {
+                for (i=0, l=this.preDrawHooks.length; i<l; i++) {
                     this.preDrawHooks.hooks[i].apply(this, this.preDrawSeriesHooks.args[i]);
                 }
                 // create an underlying canvas to be used for special features.
@@ -2612,7 +2621,7 @@
                 this.grid.draw();
                 
                 // put the shadow canvases behind the series canvases so shadows don't overlap on stacked bars.
-                for (i=0; i<this.series.length; i++) {
+                for (i=0, l=this.series.length; i<l; i++) {
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
@@ -2621,7 +2630,7 @@
                     this.series[j].shadowCanvas._elem.data('seriesIndex', j);
                 }
                 
-                for (i=0; i<this.series.length; i++) {
+                for (i=0, l=this.series.length; i<l; i++) {
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
@@ -2659,29 +2668,48 @@
                 }
             
                 // register event listeners on the overlay canvas
-                for (var i=0; i<$.jqplot.eventListenerHooks.length; i++) {
+                for (var i=0, l=$.jqplot.eventListenerHooks.length; i<l; i++) {
                     // in the handler, this will refer to the eventCanvas dom element.
                     // make sure there are references back into plot objects.
                     this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
                 }
             
                 // register event listeners on the overlay canvas
-                for (var i=0; i<this.eventListenerHooks.hooks.length; i++) {
+                for (var i=0, l=this.eventListenerHooks.hooks.length; i<l; i++) {
                     // in the handler, this will refer to the eventCanvas dom element.
                     // make sure there are references back into plot objects.
                     this.eventCanvas._elem.bind(this.eventListenerHooks.hooks[i][0], {plot:this}, this.eventListenerHooks.hooks[i][1]);
                 }
 
-                for (var i=0; i<$.jqplot.postDrawHooks.length; i++) {
+                for (var i=0, l=$.jqplot.postDrawHooks.length; i<l; i++) {
                     $.jqplot.postDrawHooks[i].call(this);
                 }
 
-                for (var i=0; i<this.postDrawHooks.hooks.length; i++) {
+                for (var i=0, l=this.postDrawHooks.hooks.length; i<l; i++) {
                     this.postDrawHooks.hooks[i].apply(this, this.postDrawHooks.args[i]);
                 }
             
                 if (this.target.is(':visible')) {
                     this._drawCount += 1;
+                }
+
+                var temps, 
+                    tempr,
+                    sel = '.jqplot-point-label';
+                // ughh.  ideally would hide all series then show them.
+                for (i=0, l=this.series.length; i<l; i++) {
+                    temps = this.series[i];
+                    tempr = temps.renderer;
+                    if (tempr.animation && tempr.animation._supported && tempr.animation.show && this._drawCount < 2) {
+                        this.target.find(sel).hide();
+                        temps.canvas._elem.hide();
+                        temps.shadowCanvas._elem.hide();
+                        temps.canvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed, 
+                            function(){ 
+                                $(this).parent().find(sel).fadeIn(500);
+                             } );
+                        temps.shadowCanvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed);
+                    }
                 }
             
                 this.target.trigger('jqplotPostDraw', [this]);

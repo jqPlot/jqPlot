@@ -42,6 +42,12 @@
         //
         options = options || {};
         this._type='line';
+        this.renderer.animation = {
+            show: false,
+            direction: 'left',
+            speed: 2500,
+            _supported: true
+        };
         // prop: fillTo
         // Index of another series.  Fill between this series
         // and the fillTo series.  This will override the "fill" option.

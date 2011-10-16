@@ -19,8 +19,7 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script> 
-  <script type="text/javascript" src="./jquery-ui/js/jquery.effects.core.min.js"></script>
-  <script type="text/javascript" src="./jquery-ui/js/jquery.effects.blind.min.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script> 
   <!-- END: load jqplot -->
 
   <style type="text/css">
@@ -61,6 +60,7 @@
       [2007, 12800], [2008, 13200], [2009, 12600], [2010, 13100]];
 
       plot1 = $.jqplot("chart1", [s2, s1], {
+        animate: true,
         cursor: {
             show: true,
             zoom: true,
@@ -69,6 +69,9 @@
         },
         series:[
           {
+            pointLabels: {
+              show: true
+            },
             renderer: $.jqplot.BarRenderer,
             showHighlight: false,
             yaxis: 'y2axis',
@@ -95,11 +98,17 @@
               }
             },
             yaxis: {
+              tickOptions: {
+                formatString: "$%'d"
+              },
               rendererOptions: {
                 forceTickAt0: true
               }
             },
             y2axis: {
+              tickOptions: {
+                formatString: "$%'d"
+              },
               rendererOptions: {
                 // align the ticks on the y2 axis with the y axis.
                 alignTicks: true,
@@ -111,17 +120,10 @@
             show: true, 
             showLabel: true, 
             tooltipAxes: 'y',
-            sizeAdjust: 7.5 , tooltipLocation : 'ne' , formatString:"$%'i"}
+            sizeAdjust: 7.5 , tooltipLocation : 'ne'
+          }
       });
-
-      // Add animation to the bars and line.
-      // use jquery-ui to initially hide the canvases for the series.
-      // Then use the 'blind' effect to show the canvases.
-
-      plot1.series[0].canvas._elem.hide();
-      plot1.series[1].canvas._elem.hide();
-      plot1.series[0].canvas._elem.show('blind', {direction: 'down'}, 2000);
-      plot1.series[1].canvas._elem.show('blind', {direction: 'left'}, 2000);
+      
     });
 
 

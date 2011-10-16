@@ -10,6 +10,10 @@
  * Depends:
  *	jquery.effects.core.js
  */
+
+ //////
+ // jquery ui blind effect used for series animation in jqplot.
+ //////
 (function( $ ) {
 
 var rvertical = /up|down|vertical/,
