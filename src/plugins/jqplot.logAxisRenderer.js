@@ -80,37 +80,11 @@
                 this[d] = this.renderer.axisDefaults[d];
             }
         }
-        // var db = this._dataBounds;
-        // // Go through all the series attached to this axis and find
-        // // the min/max bounds for this axis.
-        // for (var i=0; i<this._series.length; i++) {
-        //     var s = this._series[i];
-        //     var d = s.data;
-            
-        //     for (var j=0; j<d.length; j++) { 
-        //         if (this.name == 'xaxis' || this.name == 'x2axis') {
-        //             if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
-        //                 db.min = d[j][0];
-        //             }
-        //             if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
-        //                 db.max = d[j][0];
-        //             }
-        //         }              
-        //         else {
-        //             if ((d[j][1] != null && d[j][1] < db.min) || db.min == null) {
-        //                 db.min = d[j][1];
-        //             }
-        //             if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
-        //                 db.max = d[j][1];
-        //             }
-        //         }               
-        //     }
-        // }
 
         this.resetDataBounds();
     };
     
-    $.jqplot.LogAxisRenderer.prototype.createTicks = function() {
+    $.jqplot.LogAxisRenderer.prototype.createTicks = function(plot) {
         // we're are operating on an axis here
         var ticks = this._ticks;
         var userTicks = this.ticks;
@@ -175,8 +149,8 @@
                 dim = this._plotDimensions.height;
             }
         
-            min = ((this.min != null) ? this.min : db.min);
-            max = ((this.max != null) ? this.max : db.max);
+            min = ((this.min != null) ? this.min : db.min * (2 - this.padMin));
+            max = ((this.max != null) ? this.max : db.max * this.padMax);
             
             // if min and max are same, space them out a bit
             if (min == max) {
@@ -208,10 +182,10 @@
 
             // for power distribution, open up range to get a nice power of axis.renderer.base.
             // power distribution won't respect the user's min/max settings.
-            rmin = Math.pow(this.base, Math.floor(Math.log(min*(2-this.padMin))/Math.log(this.base)));
-            rmax = Math.pow(this.base, Math.ceil(Math.log(max*this.padMax)/Math.log(this.base)));
+            rmin = Math.pow(this.base, Math.floor(Math.log(min)/Math.log(this.base)));
+            rmax = Math.pow(this.base, Math.ceil(Math.log(max)/Math.log(this.base)));
 
-            var order = Math.log(rmin)/Math.LN10;
+            var order = Math.round(Math.log(rmin)/Math.LN10);
 
             if (this.tickOptions == null || !this.tickOptions.formatString) {
                 this._overrideFormatString = true;
@@ -223,18 +197,22 @@
 
             var fittedTicks = 0;
             var minorTicks = (this.minorTicks === 'auto') ? 0 : this.minorTicks;
+            var numberTicks;
             if (this.numberTicks == null){
-                if (dim > 100) {
-                    this.numberTicks = Math.round(Math.log(this.max/this.min)/Math.log(this.base) + 1);
-                    if (this.numberTicks < 2) {
-                        this.numberTicks = 2;
+                if (dim > 140) {
+                    numberTicks = Math.round(Math.log(this.max/this.min)/Math.log(this.base) + 1);
+                    if (numberTicks < 2) {
+                        numberTicks = 2;
                     }
                     if (minorTicks === 0) {
-                        var temp = dim/(this.numberTicks - 1);
-                        if (temp < 160) {
+                        var temp = dim/(numberTicks - 1);
+                        if (temp < 100) {
+                            minorTicks = 0
+                        }
+                        else if (temp < 190) {
                             minorTicks = 1;
                         }
-                        else if (temp < 220) {
+                        else if (temp < 250) {
                             minorTicks = 3;
                         }
                         else {
@@ -243,27 +221,35 @@
                     }
                 }
                 else {
-                    this.numberTicks = 2;
+                    numberTicks = 2;
                     if (minorTicks === 0) {
                         minorTicks = 1;
                     }
+                    minorTicks = 0
                 }
             }
+            else {
+                numberTicks = this.numberTicks;
+            }
 
+            if (order >= 0 && minorTicks !== 3) {
+                this._autoFormatString = '%d';
+            }
             // Adjust format string for case with 3 ticks where we'll have like 1, 2.5, 5, 7.5, 10
-            if (order <= 0 && minorTicks === 3) {
-                var temp = -order - 1;
-                this._autoFormatString = '%.'+ temp.toString() + 'f';
+            else if (order <= 0 && minorTicks === 3) {
+                var temp = -(order - 1);
+                this._autoFormatString = '%.'+ Math.abs(order-1) + 'f';
             }
 
             // Adjust format string for values less than 1.
             else if (order < 0) {
-                this._autoFormatString = '%.'+ (-order).toString() + 'f';
+                var temp = -order;
+                this._autoFormatString = '%.'+ Math.abs(order) + 'f';
             }
 
             var to, t, val, tt1, spread, interval;
-            for (var i=0; i<this.numberTicks; i++){
-                tt = Math.pow(this.base, i - this.numberTicks + 1) * this.max;
+            for (var i=0; i<numberTicks; i++){
+                tt = Math.pow(this.base, i - numberTicks + 1) * this.max;
 
                 t = new this.tickRenderer(this.tickOptions);
             
@@ -281,8 +267,8 @@
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
 
-                if (minorTicks && i<this.numberTicks-1) {
-                    tt1 = Math.pow(this.base, i - this.numberTicks + 2) * this.max;
+                if (minorTicks && i<numberTicks-1) {
+                    tt1 = Math.pow(this.base, i - numberTicks + 2) * this.max;
                     spread = tt1 - tt;
                     interval = tt1 / (minorTicks+1);
                     for (var j=minorTicks-1; j>=0; j--) {
