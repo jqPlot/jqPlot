@@ -305,9 +305,7 @@
     };
 
     $.jqplot.getPrecision = function(number) {
-        var arr = $.jqplot.getSignificantFigures(number);
-        var p = arr[1] - 1 - parseInt(arr[0][1]);
-        return p;
+        return $.jqplot.getSignificantFigures(number).digitsRight;
     };
 
 })(jQuery);  

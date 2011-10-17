@@ -100,6 +100,7 @@
     // it is based soley on the range and number of ticks.  So if user specifies
     // number of ticks, use this.
     function bestInterval(range, numberTicks) {
+        numberTicks = numberTicks || 7;
         var minimum = range / (numberTicks - 1);
         var magnitude = Math.pow(10, Math.floor(Math.log(minimum) / Math.LN10));
         var residual = minimum / magnitude;
@@ -149,6 +150,7 @@
     // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
     // it is based soley on the range of data, number of ticks must be computed later.
     function bestLinearInterval(range, scalefact) {
+        scalefact = scalefact || 1;
         var expv = Math.floor(Math.log(range)/Math.LN10);
         var magnitude = Math.pow(10, expv);
         // 0 < f < 10

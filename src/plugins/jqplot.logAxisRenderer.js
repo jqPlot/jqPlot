@@ -90,7 +90,8 @@
         var userTicks = this.ticks;
         var name = this.name;
         var db = this._dataBounds;
-        var dim, interval;
+        var dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
+        var interval;
         var min, max;
         var pos1, pos2;
         var tt, i;
@@ -141,14 +142,7 @@
         }
         
         // we don't have any ticks yet, let's make some!
-        else {
-            if (name == 'xaxis' || name == 'x2axis') {
-                dim = this._plotDimensions.width;
-            }
-            else {
-                dim = this._plotDimensions.height;
-            }
-        
+        else if (this.min == null && this.max == null) {
             min = (this.min != null) ? this.min : db.min * (2 - this.padMin);
             max = (this.max != null) ? this.max : db.max * this.padMax;
             
@@ -202,7 +196,6 @@
             this.max = rmax;
             var range = this.max - this.min;            
 
-            var fittedTicks = 0;
             var minorTicks = (this.minorTicks === 'auto') ? 0 : this.minorTicks;
             var numberTicks;
             if (this.numberTicks == null){
@@ -297,6 +290,52 @@
                     }
                 }       
             }     
+        }
+
+        // min and max are set as would be the case with zooming
+        else if (this.min != null && this.max != null) {
+            var opts;
+            // don't have an interval yet, pick one that gives the most
+            // "round" ticks we can get.
+            if (this.numberTicks == null && this.tickInterval == null) {
+                var threshold = 30;
+                var tdim = Math.max(dim, threshold+1);
+                var nttarget =  Math.ceil((tdim-threshold)/35 + 1);
+
+                // run through possible number to ticks and see which interval is best
+                var low = Math.floor(nttarget/2);
+                var hi = Math.ceil(nttarget*1.5);
+                var facts = [];
+                var ntarr = [];
+                var r = (this.max - this.min);
+
+                for (var i=0, l=hi-low+1, i<l; i++) {
+                    ntarr.push(low + i);
+                    facts.push($.jqplot.getSignificantFigures(r/(low+i-1)).digitsLeft);
+                }
+            }
+
+            // for loose zoom, number ticks and interval are also set.
+            if (this.numberTicks != null && this.tickInterval != null) {
+                for (var i=0; i<this.numberTicks; i++) {
+                    opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: this.min + i * this.tickInterval});
+                    t = new this.tickRenderer(opts);
+                    
+                    if (this._overrideFormatString && this._autoFormatString != '') {
+                        t.formatString = this._autoFormatString;
+                    }
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    this._ticks.push(t);
+                }
+            }
+
+            
         }
     };
     

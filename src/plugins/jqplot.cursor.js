@@ -400,7 +400,7 @@
                                 }
                             }
                             
-                            if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
+                            if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.LogAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
                                 var ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks);
 
                                 // if new minimum is less than "true" minimum of axis display, adjust it
