@@ -200,7 +200,7 @@
 
             this.min = rmin;
             this.max = rmax;
-            range = this.max - this.min;            
+            var range = this.max - this.min;            
 
             var fittedTicks = 0;
             var minorTicks = (this.minorTicks === 'auto') ? 0 : this.minorTicks;
@@ -214,7 +214,7 @@
                     if (minorTicks === 0) {
                         var temp = dim/(numberTicks - 1);
                         if (temp < 100) {
-                            minorTicks = 0
+                            minorTicks = 0;
                         }
                         else if (temp < 190) {
                             minorTicks = 1;
@@ -232,7 +232,7 @@
                     if (minorTicks === 0) {
                         minorTicks = 1;
                     }
-                    minorTicks = 0
+                    minorTicks = 0;
                 }
             }
             else {
