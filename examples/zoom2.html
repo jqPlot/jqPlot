@@ -53,10 +53,10 @@ plot = $.jqplot('chart', [goog], {
           tickOptions:{formatString:"%Y/%#m/%#d"}
         },
         yaxis: {
-            renderer: $.jqplot.LogAxisRenderer
+            // renderer: $.jqplot.LogAxisRenderer
         }
     },
-    cursor:{zoom:true},
+    cursor:{ zoom: true, looseZoom: true},
     highlighter:{show:true}
 });
   });

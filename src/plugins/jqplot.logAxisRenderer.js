@@ -149,8 +149,8 @@
                 dim = this._plotDimensions.height;
             }
         
-            min = ((this.min != null) ? this.min : db.min * (2 - this.padMin));
-            max = ((this.max != null) ? this.max : db.max * this.padMax);
+            min = (this.min != null) ? this.min : db.min * (2 - this.padMin);
+            max = (this.max != null) ? this.max : db.max * this.padMax;
             
             // if min and max are same, space them out a bit
             if (min == max) {
@@ -177,13 +177,20 @@
                 return Math.floor(val/order) * order;
             }
 
-            var range = max - min;
+            // var range = max - min;
             var rmin, rmax;
 
             // for power distribution, open up range to get a nice power of axis.renderer.base.
             // power distribution won't respect the user's min/max settings.
-            rmin = Math.pow(this.base, Math.floor(Math.log(min)/Math.log(this.base)));
-            rmax = Math.pow(this.base, Math.ceil(Math.log(max)/Math.log(this.base)));
+            rmin = (this.min != null) ? this.min : Math.pow(this.base, Math.floor(Math.log(min)/Math.log(this.base)));
+            rmax = (this.max != null) ? this.max : Math.pow(this.base, Math.ceil(Math.log(max)/Math.log(this.base)));
+
+            // if min and max are same, space them out a bit
+            if (rmin === rmax) {
+                var adj = 0.05;
+                rmin = rmin*(1-adj);
+                rmax = rmax*(1+adj);
+            }
 
             var order = Math.round(Math.log(rmin)/Math.LN10);
 

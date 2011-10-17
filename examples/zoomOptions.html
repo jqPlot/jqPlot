@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Simple Test</title>
+  <title>Zoom Options</title>
   <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
   
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
@@ -14,7 +14,7 @@
   
   <!-- BEGIN: load jqplot -->
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+<!--   // <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script> -->
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
@@ -52,21 +52,21 @@ var goog = [["6/22/2009",425.32],["6/15/2009",420.09],["6/8/2009",424.84],["6/1/
               tickOptions:{formatString:"%Y/%#m/%#d"}
             },
             yaxis: {
-                renderer: $.jqplot.LogAxisRenderer,
-                tickOptions:{formatString:'$%.2f'}
+                // renderer: $.jqplot.LogAxisRenderer,
+                tickOptions:{prefix: '$'}
             }
         },
-        cursor:{zoom:true},
+        cursor:{zoom:true, looseZoom: true},
         highlighter:{show:true}
     };
 
     plot1 = $.jqplot('chart1', [goog], opts);
 
-    opts.cursor = {zoom:true, constrainOutsideZoom: false};
+    opts.cursor = {zoom:true, looseZoom: true, constrainOutsideZoom: false};
 
     plot2 = $.jqplot('chart2', [goog], opts);
 
-    opts.cursor = {zoom:true, showTooltip:true, followMouse: true, showTooltipOutsideZoom: true, constrainOutsideZoom: false};
+    opts.cursor = {zoom:true, looseZoom: true, showTooltip:true, followMouse: true, showTooltipOutsideZoom: true, constrainOutsideZoom: false};
     
     plot3 = $.jqplot('chart3', [goog], opts);
   });
