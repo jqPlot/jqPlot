@@ -23,10 +23,11 @@
   }
   
   	#resizable1, #resizable2 { 
-      width: 400px; 
-      height: 300px;
+      width: 440px; 
+      height: 330px;
       margin-top: 2em;
       margin-bottom: 2em;
+      padding: 1.2em;
   	}
 	
     
@@ -66,7 +67,11 @@
       title: "Lines",
       legend:{show:true, location:'se'},
       seriesDefaults:{trendline:{show:true, type:"exp"}},
-      axes:{yaxis:{renderer:$.jqplot.LogAxisRenderer}}
+      axes:{
+        yaxis:{
+          renderer:$.jqplot.LogAxisRenderer
+        }
+      }
     };
     
     
@@ -122,7 +127,7 @@
   <td>
 
 <div id="resizable2" class="ui-widget-content">
-    <div id="chart2" style="height:288px; width:384px;"></div>
+    <div id="chart2" style="height:96%; width:96%;"></div>
 </div>
 </td>
 <td>
