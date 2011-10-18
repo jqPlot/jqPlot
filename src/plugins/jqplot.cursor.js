@@ -94,8 +94,8 @@
         this.zoomTarget = false;
         // prop: looseZoom
         // Will expand zoom range to provide more rounded tick values.
-        // Works only with linear axes and date axes.
-        this.looseZoom = false;
+        // Works only with linear, log and date axes.
+        this.looseZoom = true;
         // prop: clickReset
         // Will reset plot zoom if single click on plot without drag.
         this.clickReset = false;
