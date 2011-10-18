@@ -148,8 +148,9 @@
         
         // we don't have any ticks yet, let's make some!
         else if (this.min == null && this.max == null) {
-            min = (this.min != null) ? this.min : db.min * (2 - this.padMin);
-            max = (this.max != null) ? this.max : db.max * this.padMax;
+            console.log('nulls.  scalefact: %s', this._scalefact);
+            min = db.min * (2 - this.padMin);
+            max = db.max * this.padMax;
             
             // if min and max are same, space them out a bit
             if (min == max) {
@@ -181,15 +182,15 @@
 
             // for power distribution, open up range to get a nice power of axis.renderer.base.
             // power distribution won't respect the user's min/max settings.
-            rmin = (this.min != null) ? this.min : Math.pow(this.base, Math.floor(Math.log(min)/Math.log(this.base)));
-            rmax = (this.max != null) ? this.max : Math.pow(this.base, Math.ceil(Math.log(max)/Math.log(this.base)));
+            rmin = Math.pow(this.base, Math.floor(Math.log(min)/Math.log(this.base)));
+            rmax = Math.pow(this.base, Math.ceil(Math.log(max)/Math.log(this.base)));
 
-            // if min and max are same, space them out a bit
-            if (rmin === rmax) {
-                var adj = 0.05;
-                rmin = rmin*(1-adj);
-                rmax = rmax*(1+adj);
-            }
+            // // if min and max are same, space them out a bit
+            // if (rmin === rmax) {
+            //     var adj = 0.05;
+            //     rmin = rmin*(1-adj);
+            //     rmax = rmax*(1+adj);
+            // }
 
             var order = Math.round(Math.log(rmin)/Math.LN10);
 
@@ -302,6 +303,7 @@
 
         // min and max are set as would be the case with zooming
         else if (this.min != null && this.max != null) {
+            console.log('Not nulls.  scalefact: %s', this._scalefact);
             var opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: null});
             var nt, ti;
             // don't have an interval yet, pick one that gives the most
@@ -312,9 +314,9 @@
                 var nttarget =  Math.ceil((tdim-threshold)/35 + 1);
 
                 var ret = $.jqplot.LinearTickGenerator.bestConstrainedInterval(this.min, this.max, nttarget);
+                console.log('no ticks, ret: %s', ret);
 
                 this._autoFormatString = ret[3];
-                console.log(reg[3]);
                 nt = ret[2];
                 ti = ret[4];
 
@@ -338,6 +340,7 @@
 
             // for loose zoom, number ticks and interval are also set.
             else if (this.numberTicks != null && this.tickInterval != null) {
+                console.log('have tick params. min: %s, max: %s, numberTicks: %s, tickInterval: %s', this.min, this.max, this.numberTicks, this.tickInterval);
                 nt = this.numberTicks;
                 for (var i=0; i<nt; i++) {
                     opts.value = this.min + i * this.tickInterval;

@@ -352,7 +352,8 @@
         var zaxes = c._zoom.axes;
         var start = zaxes.start;
         var end = zaxes.end;
-        var min, max, dp, span;
+        var min, max, dp, span,
+            newmin, newmax, curax, _numberTicks, ret;
         var ctx = plot.plugins.cursor.zoomCanvas._ctx;
         // don't zoom if zoom area is too small (in pixels)
         if ((c.constrainZoomTo == 'none' && Math.abs(gridpos.x - c._zoom.start[0]) > 6 && Math.abs(gridpos.y - c._zoom.start[1]) > 6) || (c.constrainZoomTo == 'x' && Math.abs(gridpos.x - c._zoom.start[0]) > 6) ||  (c.constrainZoomTo == 'y' && Math.abs(gridpos.y - c._zoom.start[1]) > 6)) {
@@ -373,8 +374,7 @@
 
                     if ((c.constrainZoomTo == 'none') || (c.constrainZoomTo == 'x' && ax.charAt(0) == 'x') || (c.constrainZoomTo == 'y' && ax.charAt(0) == 'y')) {   
                         dp = datapos[ax];
-                        if (dp != null) {  
-                            var newmin, newmax;         
+                        if (dp != null) {           
                             if (dp > start[ax]) { 
                                 newmin = start[ax];
                                 newmax = dp;
@@ -385,9 +385,9 @@
                                 newmax = start[ax];
                             }
 
-                            var curax = axes[ax];
+                            curax = axes[ax];
 
-                            var _numberTicks = null;
+                            _numberTicks = null;
 
                             // if aligning this axis, use number of ticks from previous axis.
                             // Do I need to reset somehow if alignTicks is changed and then graph is replotted??
@@ -401,7 +401,8 @@
                             }
                             
                             if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.LogAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
-                                var ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks);
+
+                                ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks, logAxisMin);
 
                                 // if new minimum is less than "true" minimum of axis display, adjust it
                                 if (axes[ax].tickInset && ret[0] < axes[ax].min + axes[ax].tickInset * axes[ax].tickInterval) {
@@ -414,6 +415,14 @@
                                     ret[1] -= ret[4];
                                     ret[2] -= 1;
                                 }
+
+                                // for log axes, don't fall below current minimum, this will look bad and can't have 0 in range anyway.
+                                if (axes[ax].renderer.constructor === $.jqplot.LogAxisRenderer && ret[0] < axes[ax].min) {
+                                    // remove a tick and shift min up
+                                    ret[0] += ret[4];
+                                    ret[2] -= 1;
+                                }
+
                                 axes[ax].min = ret[0];
                                 axes[ax].max = ret[1];
                                 axes[ax]._autoFormatString = ret[3];
