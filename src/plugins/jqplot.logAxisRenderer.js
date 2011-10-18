@@ -99,7 +99,7 @@
 
         var threshold = 30;
         // For some reason scalefactor is screwing up ticks.
-        // this._scalefact =  (Math.max(dim, threshold+1) - threshold)/200;
+        this._scalefact =  (Math.max(dim, threshold+1) - threshold)/300;
 
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
@@ -148,7 +148,6 @@
         
         // we don't have any ticks yet, let's make some!
         else if (this.min == null && this.max == null) {
-            console.log('nulls.  scalefact: %s', this._scalefact);
             min = db.min * (2 - this.padMin);
             max = db.max * this.padMax;
             
@@ -256,6 +255,10 @@
                 this._autoFormatString = '%.'+ Math.abs(order) + 'f';
             }
 
+            else {
+                this._autoFormatString = '%d';
+            }
+
             var to, t, val, tt1, spread, interval;
             for (var i=0; i<numberTicks; i++){
                 tt = Math.pow(this.base, i - numberTicks + 1) * this.max;
@@ -303,7 +306,6 @@
 
         // min and max are set as would be the case with zooming
         else if (this.min != null && this.max != null) {
-            console.log('Not nulls.  scalefact: %s', this._scalefact);
             var opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: null});
             var nt, ti;
             // don't have an interval yet, pick one that gives the most
@@ -314,7 +316,6 @@
                 var nttarget =  Math.ceil((tdim-threshold)/35 + 1);
 
                 var ret = $.jqplot.LinearTickGenerator.bestConstrainedInterval(this.min, this.max, nttarget);
-                console.log('no ticks, ret: %s', ret);
 
                 this._autoFormatString = ret[3];
                 nt = ret[2];
@@ -340,7 +341,6 @@
 
             // for loose zoom, number ticks and interval are also set.
             else if (this.numberTicks != null && this.tickInterval != null) {
-                console.log('have tick params. min: %s, max: %s, numberTicks: %s, tickInterval: %s', this.min, this.max, this.numberTicks, this.tickInterval);
                 nt = this.numberTicks;
                 for (var i=0; i<nt; i++) {
                     opts.value = this.min + i * this.tickInterval;

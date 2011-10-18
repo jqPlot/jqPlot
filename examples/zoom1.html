@@ -2,6 +2,7 @@
 
 <html>
 <head>
+    <title>Zooming with Log Axes</title>
   <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
   <link rel="stylesheet" type="text/css" href="examples.css" />
   
@@ -31,13 +32,11 @@
     div.jqplot-cursor-legend-swatch {
 /*      width: 15px;*/
     }
-  </style>
-  
-  <script type="text/javascript" class="code">
-    $(document).ready(function(){
-      // $.jqplot.config.enablePlugins = true;
-      
-    var goog = [["6/22/2009",425.32], ["6/8/2009",424.84], ["5/26/2009",417.23], ["5/11/2009",390], 
+  </style>   
+
+<script type="text/javascript" class="code">
+$(document).ready(function(){
+    goog = [["6/22/2009",425.32], ["6/8/2009",424.84], ["5/26/2009",417.23], ["5/11/2009",390], 
     ["4/27/2009",393.69], ["4/13/2009",392.24], ["3/30/2009",369.78], ["3/16/2009",330.16], ["3/2/2009",308.57], 
     ["2/17/2009",346.45], ["2/2/2009",371.28], ["1/20/2009",324.7], ["1/5/2009",315.07], ["12/22/2008",300.36], 
     ["12/8/2008",315.76], ["11/24/2008",292.96], ["11/10/2008",310.02], ["10/27/2008",359.36], ["10/13/2008",372.54],
@@ -48,11 +47,10 @@
     ["12/31/2007",657], ["12/17/2007",696.69], ["12/3/2007",714.87], ["11/19/2007",676.7], ["11/5/2007",663.97], 
     ["10/22/2007",674.6], ["10/8/2007",637.39], ["9/24/2007",567.27], ["9/10/2007",528.75], ["8/27/2007",515.25]];
 
-
-    plot2 = $.jqplot('chart2', [goog], { 
-        // title: 'Google, Inc.', 
+    var plot1 = $.jqplot('chart1', [goog], { 
+        title: 'Google, Inc.', 
         series: [{ 
-            // label: 'Google, Inc.', 
+            label: 'Google, Inc.', 
             neighborThreshold: -1 
         }], 
         axes: { 
@@ -64,7 +62,35 @@
             }, 
             yaxis: {  
                 renderer: $.jqplot.LogAxisRenderer,
-                // tickOptions:{ prefix: '$' } 
+                tickOptions:{ prefix: '$' } 
+            } 
+        }, 
+        cursor:{
+            show: true, 
+            zoom: true
+        } 
+    });
+});
+</script>
+
+<script type="text/javascript" class="code">
+$(document).ready(function(){    
+    plot2 = $.jqplot('chart2', [goog], { 
+        title: 'Google, Inc.', 
+        series: [{ 
+            label: 'Google, Inc.', 
+            neighborThreshold: -1 
+        }], 
+        axes: { 
+            xaxis: { 
+                renderer:$.jqplot.DateAxisRenderer, 
+                min:'August 1, 2007', 
+                tickInterval: '4 months', 
+                tickOptions:{formatString:'%Y/%#m/%#d'} 
+            }, 
+            yaxis: {  
+                renderer: $.jqplot.LogAxisRenderer,
+                tickOptions:{ prefix: '$' } 
             } 
         }, 
         cursor:{
@@ -83,7 +109,8 @@
     <div class="example-content">
     <?php include "nav.inc"; ?>
 
-<div id="chart2" style="height:400px; width:600px;"></div>
+    <div id="chart1" style="height:200px; width:600px;"></div>
+    <div id="chart2" style="height:500px; width:600px;"></div>
 
   </div>
 </body>

@@ -402,7 +402,7 @@
                             
                             if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.LogAxisRenderer || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
 
-                                ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks, logAxisMin);
+                                ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks);
 
                                 // if new minimum is less than "true" minimum of axis display, adjust it
                                 if (axes[ax].tickInset && ret[0] < axes[ax].min + axes[ax].tickInset * axes[ax].tickInterval) {
