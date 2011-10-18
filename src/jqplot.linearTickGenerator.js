@@ -96,6 +96,52 @@
         }
     };
 
+    // Given a fixed minimum and maximum and a target number ot ticks
+    // figure out the best interval and 
+    // return min, max, number ticks, format string and tick interval
+    function bestConstrainedInterval(min, max, nttarget) {
+        // run through possible number to ticks and see which interval is best
+        var low = Math.floor(nttarget/2);
+        var hi = Math.ceil(nttarget*1.5);
+        var badness = Number.MAX_VALUE;
+        var r = (max - min);
+        var temp;
+        var sd;
+        var bestNT;
+        var fsd;
+        var fs;
+        var gsf = $.jqplot.getSignificantFigures;
+        var currentNT;
+        var bestPrec;
+
+        for (var i=0, l=hi-low+1; i<l; i++) {
+            currentNT = low + i;
+            temp = r/(currentNT-1);
+            sd = gsf(temp);
+
+            temp = Math.abs(nttarget - currentNT) + sd.digitsRight;
+            if (temp < badness) {
+                badness = temp;
+                bestNT = currentNT
+                bestPrec = sd.digitsRight;
+            }
+            else if (temp === badness) {
+                // let nicer ticks trump number ot ticks
+                if (sd.digitsRight < bestPrec) {
+                    bestNT = currentNT;
+                    bestPrec = sd.digitsRight;
+                }
+            }
+
+        }
+
+        fsd = Math.max(bestPrec, Math.max(gsf(min).digitsRight, gsf(max).digitsRight));
+        fs = '%.' + fsd + 'f';
+        temp = r / (bestNT - 1);
+        // min, max, number ticks, format string, tick interval
+        return [min, max, bestNT, fs, temp];
+    }
+
     // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
     // it is based soley on the range and number of ticks.  So if user specifies
     // number of ticks, use this.
@@ -298,5 +344,6 @@
     $.jqplot.LinearTickGenerator.bestLinearInterval = bestLinearInterval;
     $.jqplot.LinearTickGenerator.bestInterval = bestInterval;
     $.jqplot.LinearTickGenerator.bestLinearComponents = bestLinearComponents;
+    $.jqplot.LinearTickGenerator.bestConstrainedInterval = bestConstrainedInterval;
 
 })(jQuery);

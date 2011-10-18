@@ -215,8 +215,11 @@
                         else if (temp < 250) {
                             minorTicks = 3;
                         }
-                        else {
+                        else if (temp < 600) {
                             minorTicks = 4;
+                        }
+                        else {
+                            minorTicks = 9;
                         }
                     }
                 }
@@ -294,7 +297,8 @@
 
         // min and max are set as would be the case with zooming
         else if (this.min != null && this.max != null) {
-            var opts;
+            var opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: null});
+            var nt, ti;
             // don't have an interval yet, pick one that gives the most
             // "round" ticks we can get.
             if (this.numberTicks == null && this.tickInterval == null) {
@@ -302,23 +306,14 @@
                 var tdim = Math.max(dim, threshold+1);
                 var nttarget =  Math.ceil((tdim-threshold)/35 + 1);
 
-                // run through possible number to ticks and see which interval is best
-                var low = Math.floor(nttarget/2);
-                var hi = Math.ceil(nttarget*1.5);
-                var facts = [];
-                var ntarr = [];
-                var r = (this.max - this.min);
+                var ret = $.jqplot.LinearTickGenerator.bestConstrainedInterval(this.min, this.max, nttarget);
 
-                for (var i=0, l=hi-low+1, i<l; i++) {
-                    ntarr.push(low + i);
-                    facts.push($.jqplot.getSignificantFigures(r/(low+i-1)).digitsLeft);
-                }
-            }
+                this._autoFormatString = ret[3];
+                nt = ret[2];
+                ti = ret[4];
 
-            // for loose zoom, number ticks and interval are also set.
-            if (this.numberTicks != null && this.tickInterval != null) {
-                for (var i=0; i<this.numberTicks; i++) {
-                    opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: this.min + i * this.tickInterval});
+                for (var i=0; i<nt; i++) {
+                    opts.value = this.min + i * ti;
                     t = new this.tickRenderer(opts);
                     
                     if (this._overrideFormatString && this._autoFormatString != '') {
@@ -335,7 +330,26 @@
                 }
             }
 
-            
+            // for loose zoom, number ticks and interval are also set.
+            if (this.numberTicks != null && this.tickInterval != null) {
+                nt = this.numberTicks;
+                for (var i=0; i<nt; i++) {
+                    opts.value = this.min + i * this.tickInterval;
+                    t = new this.tickRenderer(opts);
+                    
+                    if (this._overrideFormatString && this._autoFormatString != '') {
+                        t.formatString = this._autoFormatString;
+                    }
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    this._ticks.push(t);
+                }
+            }
         }
     };
     
