@@ -42,7 +42,7 @@ var goog = [["6/22/2009",425.32],["6/15/2009",420.09],["6/8/2009",424.84],["6/1/
 plot = $.jqplot('chart', [goog], {
     title: 'Google, Inc.',
     series: [{
-        // label: 'Google, Inc.',
+        label: 'Google, Inc.',
         neighborThreshold: 0
     }],
     axes: {
@@ -53,10 +53,10 @@ plot = $.jqplot('chart', [goog], {
           tickOptions:{formatString:"%Y/%#m/%#d"}
         },
         yaxis: {
-            // renderer: $.jqplot.LogAxisRenderer
+            renderer: $.jqplot.LogAxisRenderer
         }
     },
-    cursor:{ zoom: true, looseZoom: true},
+    cursor:{ zoom: true },
     highlighter:{show:true}
 });
   });

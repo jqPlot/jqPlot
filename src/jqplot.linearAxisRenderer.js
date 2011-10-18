@@ -237,7 +237,8 @@
         var name = this.name;
         // databounds were set on axis initialization.
         var db = this._dataBounds;
-        var dim, interval;
+        var dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
+        var interval;
         var min, max;
         var pos1, pos2;
         var tt, i;
@@ -246,6 +247,9 @@
         var userMax = this.max;
         var userNT = this.numberTicks;
         var userTI = this.tickInterval;
+
+        var threshold = 30;
+        this._scalefact =  (Math.max(dim, threshold+1) - threshold)/300.0;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
@@ -365,9 +369,9 @@
                     }
                 }
 
-                var threshold = 30;
-                var tdim = Math.max(dim, threshold+1);
-                this._scalefact =  (tdim-threshold)/300.0;
+                // var threshold = 30;
+                // var tdim = Math.max(dim, threshold+1);
+                // this._scalefact =  (tdim-threshold)/300.0;
                 var ret = $.jqplot.LinearTickGenerator(min, max, this._scalefact, _numberTicks); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.

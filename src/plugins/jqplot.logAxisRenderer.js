@@ -69,6 +69,7 @@
         // Major ticks are ticks supplied by user or auto computed.
         // Minor ticks cannot be created by user.
         this.minorTicks = 'auto';
+        this._scalefact = 1.0;
 
         $.extend(true, this, options);
 
@@ -95,6 +96,10 @@
         var min, max;
         var pos1, pos2;
         var tt, i;
+
+        var threshold = 30;
+        // For some reason scalefactor is screwing up ticks.
+        // this._scalefact =  (Math.max(dim, threshold+1) - threshold)/200;
 
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
@@ -302,13 +307,14 @@
             // don't have an interval yet, pick one that gives the most
             // "round" ticks we can get.
             if (this.numberTicks == null && this.tickInterval == null) {
-                var threshold = 30;
+                // var threshold = 30;
                 var tdim = Math.max(dim, threshold+1);
                 var nttarget =  Math.ceil((tdim-threshold)/35 + 1);
 
                 var ret = $.jqplot.LinearTickGenerator.bestConstrainedInterval(this.min, this.max, nttarget);
 
                 this._autoFormatString = ret[3];
+                console.log(reg[3]);
                 nt = ret[2];
                 ti = ret[4];
 
@@ -331,7 +337,7 @@
             }
 
             // for loose zoom, number ticks and interval are also set.
-            if (this.numberTicks != null && this.tickInterval != null) {
+            else if (this.numberTicks != null && this.tickInterval != null) {
                 nt = this.numberTicks;
                 for (var i=0; i<nt; i++) {
                     opts.value = this.min + i * this.tickInterval;

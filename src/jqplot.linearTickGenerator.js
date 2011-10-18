@@ -122,7 +122,7 @@
             temp = Math.abs(nttarget - currentNT) + sd.digitsRight;
             if (temp < badness) {
                 badness = temp;
-                bestNT = currentNT
+                bestNT = currentNT;
                 bestPrec = sd.digitsRight;
             }
             else if (temp === badness) {
@@ -136,7 +136,12 @@
         }
 
         fsd = Math.max(bestPrec, Math.max(gsf(min).digitsRight, gsf(max).digitsRight));
-        fs = '%.' + fsd + 'f';
+        if (fsd === 0) {
+            fs = '%d';
+        }
+        else {
+            fs = '%.' + fsd + 'f';
+        }
         temp = r / (bestNT - 1);
         // min, max, number ticks, format string, tick interval
         return [min, max, bestNT, fs, temp];
