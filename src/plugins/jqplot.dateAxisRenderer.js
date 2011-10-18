@@ -108,6 +108,40 @@
         $.jqplot.LinearAxisRenderer.call(this);
 		this.date = new $.jsDate();
     };
+
+    var second = 1000;
+    var minute = 60 * second;
+    var hour = 60 * minute;
+    var day = 24 * hour;
+    var week = 7 * day;
+
+    // these are less definitive
+    var month = 30.4368499 * day;
+    var year = 365.242199 * day;
+
+    var daysInMonths = [31,28,31,30,31,30,31,30,31,30,31,30];
+    // array of consistent nice intervals.  Longer intervals
+    // will depend on days in month, days in year, etc.
+    var niceFormatString = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%v', '%v', '%v']
+    var niceIntervalBases = [second, second, second, second, second, second, second, second, second, minute, minute, minute, minute, minute, minute, hour, hour, hour, hour, hour, hour, day, week, week];
+    var niceIntervals = [0.1*second, 0.2*second, 0.5*second, second, 2*second, 5*second, 10*second, 15*second, 30*second, minute, 2*minute, 5*minute, 10*minute, 15*minute, 30*minute, hour, 2*hour, 4*hour, 6*hour, 8*hour, 12*hour, day, week, 2*week];
+
+    function bestDateInterval(min, max, titarget) {
+        // iterate through niceIntervals to find one closest to titarget
+        var badness = Number.MAX_VALUE;
+        var temp, bestTi;
+        for (var i=0, l=niceIntervals.length; i < l; i++) {
+            temp = Math.abs(titarget - niceIntervals[i]);
+            if (temp < badness) {
+                badness = temp;
+                bestTi = niceIntervals[i];
+                bestTiBase = niceIntervalBases[i];
+                bestfmt = niceFormatString[i];
+            }
+        }
+
+        return [bestTi, bestfmt];
+    }
     
     $.jqplot.DateAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
     $.jqplot.DateAxisRenderer.prototype.constructor = $.jqplot.DateAxisRenderer;
@@ -292,10 +326,14 @@
         // databounds were set on axis initialization.
         var db = this._dataBounds;
 		var iv = this._intervalStats;
-        var dim, interval;
+        var dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
+        var interval;
         var min, max;
         var pos1, pos2;
         var tt, i;
+        var threshold = 30;
+
+        var tickInterval = this.tickInterval;
         
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
@@ -304,6 +342,10 @@
         max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
 
         var range = max - min;
+
+        if (this.tickOptions == null || !this.tickOptions.formatString) {
+            this._overrideFormatString = true;
+        }
         
         if (userTicks.length) {
             // ticks could be 1D or 2D array of [val, val, ,,,] or [[val, label], [val, label], ...] or mixed
@@ -347,8 +389,63 @@
         // We don't have any ticks yet, let's make some!
         // Doing complete autoscaling, no user options specified
         ////////
+
+        // ignore user specified number of ticks but honor
+        // min, max and tick interval (as best we can).
+        else if (this.min == null && this.max == null) {
+            var opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: null});
+            // want to find a nice interval 
+            if (!this.tickInterval) {
+                var tdim = Math.max(dim, threshold+1);
+                var nttarget =  Math.ceil((tdim-threshold)/35 + 1);
+                var titarget = (max - min) / (nttarget - 1);
+
+                // If we can use an interval of 2 weeks or less, pick best one
+                if (titarget <= niceIntervals[niceIntervals.length-1] * 1.5) {
+                    var ret = bestDateInterval(min, max, titarget);
+                    var tempti = ret[0];
+                    this._autoFormatString = ret[1];
+                }
+
+                // Now adjust minimum to a round value
+                var tempmin = new $.jsDate(min);
+                tempmin = tempmin.getTime() - tempmin.utcOffset;
+                min = new Date(Math.floor(tempmin/tempti) * tempti);
+                min = min.getTime();
+
+                var nttarget = Math.ceil((max - min) / tempti) + 1;
+                this.min = min;
+                this.max = min + (nttarget - 1) * tempti;
+                this.tickInterval = tempti;
+                this.numberTicks = nttarget;
+
+                for (var i=0; i<nttarget; i++) {
+                    opts.value = this.min + i * tempti;
+                    t = new this.tickRenderer(opts);
+                    
+                    if (this._overrideFormatString && this._autoFormatString != '') {
+                        t.formatString = this._autoFormatString;
+                    }
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    this._ticks.push(t);
+                }
+            }
+
+        }
+
+
+
+
+
+
         
-        else if (this.tickInterval == null && this.min == null && this.max == null && this.numberTicks == null) {
+        else if (false && this.tickInterval == null && this.min == null && this.max == null && this.numberTicks == null) {
             var ret = $.jqplot.LinearTickGenerator(min, max); 
             // calculate a padded max and min, points should be less than these
             // so that they aren't too close to the edges of the plot.
@@ -441,13 +538,13 @@
 			
 			
             var rmin, rmax;
-        
+            
             rmin = (this.min != null) ? new $.jsDate(this.min).getTime() : min - range/2*(this.padMin - 1);
             rmax = (this.max != null) ? new $.jsDate(this.max).getTime() : max + range/2*(this.padMax - 1);
             this.min = rmin;
             this.max = rmax;
             range = this.max - this.min;
-    
+            
             if (this.numberTicks == null){
                 // if tickInterval is specified by user, we will ignore computed maximum.
                 // max will be equal or greater to fit even # of ticks.
@@ -464,7 +561,7 @@
                     this.numberTicks = 2;
                 }
             }
-    
+            
             if (this.daTickInterval == null) {
                 this.daTickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
             }

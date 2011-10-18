@@ -45,7 +45,7 @@
     
         this.syntax = jsDate.config.syntax;
         this._type = "jsDate";
-        this.utcOffset = new Date().getTimezoneOffset * 60000;
+        this.utcOffset = new Date().getTimezoneOffset() * 60000;
         this.proxy = new Date();
         this.options = {};
         this.locale = jsDate.regional.getLocale();
