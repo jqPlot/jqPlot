@@ -45,7 +45,6 @@
     
         this.syntax = jsDate.config.syntax;
         this._type = "jsDate";
-        this.utcOffset = new Date().getTimezoneOffset() * 60000;
         this.proxy = new Date();
         this.options = {};
         this.locale = jsDate.regional.getLocale();
@@ -74,7 +73,8 @@
                 for ( var i=0; i<arguments.length; i++ ) {
                     a.push(arguments[i]);
                 }
-                this.proxy = new Date( this.utcOffset );
+                // this should be the current date/time?
+                this.proxy = new Date();
                 this.proxy.setFullYear.apply( this.proxy, a.slice(0,3) );
                 if ( a.slice(3).length ) {
                     this.proxy.setHours.apply( this.proxy, a.slice(3) );
@@ -120,6 +120,16 @@
      
     jsDate.prototype.clone = function() {
             return new jsDate(this.proxy.getTime());
+    };
+
+    /**
+     * Get the UTC TimeZone Offset of this date in milliseconds.
+     *
+     * @returns {Number}
+     */
+
+    jsDate.prototype.getUtcOffset = function() {
+        return this.proxy.getTimezoneOffset() * 60000;
     };
 
     /**
@@ -488,7 +498,8 @@
                 for ( var i=0; i<arguments.length; i++ ) {
                     a.push(arguments[i]);
                 }
-                this.proxy = new Date( this.utcOffset );
+                // this should be the current date/time
+                this.proxy = new Date();
                 this.proxy.setFullYear.apply( this.proxy, a.slice(0,3) );
                 if ( a.slice(3).length ) {
                     this.proxy.setHours.apply( this.proxy, a.slice(3) );
