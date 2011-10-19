@@ -122,9 +122,9 @@
     var daysInMonths = [31,28,31,30,31,30,31,30,31,30,31,30];
     // array of consistent nice intervals.  Longer intervals
     // will depend on days in month, days in year, etc.
-    var niceFormatString = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%a %H:%M', '%v', '%v', '%v', '%v', '%v']
+    var niceFormatString = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%v', '%v', '%v', '%v', '%v', '%v', '%v']
     var niceIntervalBases = [second, second, second, second, second, second, second, second, second, minute, minute, minute, minute, minute, minute, hour, hour, hour, hour, hour, hour, day, week, week];
-    var niceIntervals = [0.1*second, 0.2*second, 0.5*second, second, 2*second, 5*second, 10*second, 15*second, 30*second, minute, 2*minute, 5*minute, 10*minute, 15*minute, 30*minute, hour, 2*hour, 4*hour, 6*hour, 8*hour, 12*hour, day, 2*day, 4*day, week, 2*week];
+    var niceIntervals = [0.1*second, 0.2*second, 0.5*second, second, 2*second, 5*second, 10*second, 15*second, 30*second, minute, 2*minute, 5*minute, 10*minute, 15*minute, 30*minute, hour, 2*hour, 4*hour, 6*hour, 8*hour, 12*hour, day, 2*day, 3*day, 4*day, 5*day, week, 2*week];
 
     function bestDateInterval(min, max, titarget) {
         // iterate through niceIntervals to find one closest to titarget
@@ -397,10 +397,8 @@
             // want to find a nice interval 
             if (!this.tickInterval) {
                 var tdim = Math.max(dim, threshold+1);
-                var nttarget =  Math.ceil((tdim-threshold)/45 + 1);
+                var nttarget =  Math.ceil((tdim-threshold)/115 + 1);
                 var titarget = (max - min) / (nttarget - 1);
-
-                console.log(nttarget, titarget, titarget/day);
 
                 // If we can use an interval of 2 weeks or less, pick best one
                 if (titarget <= niceIntervals[niceIntervals.length-1] * 1.5) {
@@ -409,15 +407,19 @@
                     this._autoFormatString = ret[1];
                 }
 
-                // Now adjust minimum to a round value
-                var tempmin = new $.jsDate(min);
-                tempmin = tempmin.getTime() - tempmin.utcOffset;
-                min = new Date(Math.floor(tempmin/tempti) * tempti);
-                min = min.getTime();
+                min = Math.floor(min/tempti) * tempti;
+                min = new $.jsDate(min);
+                min = min.getTime() + min.getUtcOffset();
 
                 var nttarget = Math.ceil((max - min) / tempti) + 1;
                 this.min = min;
                 this.max = min + (nttarget - 1) * tempti;
+
+                // if max is less than max, add an interval
+                if (this.max < max) {
+                    this.max += tempti;
+                    nttarget += 1;
+                }
                 this.tickInterval = tempti;
                 this.numberTicks = nttarget;
 
@@ -441,12 +443,6 @@
 
         }
 
-
-
-
-
-
-        
         else if (false && this.tickInterval == null && this.min == null && this.max == null && this.numberTicks == null) {
             var ret = $.jqplot.LinearTickGenerator(min, max); 
             // calculate a padded max and min, points should be less than these
