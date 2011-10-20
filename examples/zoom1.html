@@ -17,6 +17,8 @@
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
   
   <style type="text/css">
     .jqplot-cursor-legend {
@@ -55,10 +57,11 @@ $(document).ready(function(){
         }], 
         axes: { 
             xaxis: { 
-                renderer:$.jqplot.DateAxisRenderer, 
-                min:'August 1, 2007', 
-                tickInterval: '4 months', 
-                tickOptions:{formatString:'%Y/%#m/%#d'} 
+                renderer:$.jqplot.DateAxisRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                tickOptions: {
+                  angle: -30
+                } 
             }, 
             yaxis: {  
                 renderer: $.jqplot.LogAxisRenderer,
@@ -83,10 +86,11 @@ $(document).ready(function(){
         }], 
         axes: { 
             xaxis: { 
-                renderer:$.jqplot.DateAxisRenderer, 
-                min:'August 1, 2007', 
-                tickInterval: '4 months', 
-                tickOptions:{formatString:'%Y/%#m/%#d'} 
+                renderer:$.jqplot.DateAxisRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer, 
+                tickOptions: {
+                  angle: -30
+                } 
             }, 
             yaxis: {  
                 renderer: $.jqplot.LogAxisRenderer,

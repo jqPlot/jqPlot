@@ -106,7 +106,7 @@
      */
     $.jqplot.DateAxisRenderer = function() {
         $.jqplot.LinearAxisRenderer.call(this);
-		this.date = new $.jsDate();
+        this.date = new $.jsDate();
     };
 
     var second = 1000;
@@ -179,28 +179,28 @@
         this.baselineColor = null;
         this.daTickInterval = null;
         this._daTickInterval = null;
-		
+        
         $.extend(true, this, options);
-		
+        
         var db = this._dataBounds,
-			stats, 
-			sum,
-			s,
-			d,
-			pd,
-			sd,
-			intv;
-		
+            stats, 
+            sum,
+            s,
+            d,
+            pd,
+            sd,
+            intv;
+        
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
         for (var i=0; i<this._series.length; i++) {
-			stats = {intervals:[], frequencies:{}, sortedIntervals:[], min:null, max:null, mean:null};
-			sum = 0;
+            stats = {intervals:[], frequencies:{}, sortedIntervals:[], min:null, max:null, mean:null};
+            sum = 0;
             s = this._series[i];
             d = s.data;
             pd = s._plotData;
             sd = s._stackData;
-			intv = 0;
+            intv = 0;
             
             for (var j=0; j<d.length; j++) { 
                 if (this.name == 'xaxis' || this.name == 'x2axis') {
@@ -213,18 +213,18 @@
                     if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
                         db.max = d[j][0];
                     }
-					if (j>0) {
-						intv = Math.abs(d[j][0] - d[j-1][0]);
-						stats.intervals.push(intv);
-						if (stats.frequencies.hasOwnProperty(intv)) {
-							stats.frequencies[intv] += 1;
-						}
-						else {
-							stats.frequencies[intv] = 1;
-						}
-					}
-					sum += intv;
-					
+                    if (j>0) {
+                        intv = Math.abs(d[j][0] - d[j-1][0]);
+                        stats.intervals.push(intv);
+                        if (stats.frequencies.hasOwnProperty(intv)) {
+                            stats.frequencies[intv] += 1;
+                        }
+                        else {
+                            stats.frequencies[intv] = 1;
+                        }
+                    }
+                    sum += intv;
+                    
                 }              
                 else {
                     d[j][1] = new $.jsDate(d[j][1]).getTime();
@@ -236,18 +236,18 @@
                     if ((d[j][1] != null && d[j][1] > db.max) || db.max == null) {
                         db.max = d[j][1];
                     }
-					if (j>0) {
-						intv = Math.abs(d[j][1] - d[j-1][1]);
-						stats.intervals.push(intv);
-						if (stats.frequencies.hasOwnProperty(intv)) {
-							stats.frequencies[intv] += 1;
-						}
-						else {
-							stats.frequencies[intv] = 1;
-						}
-					}
+                    if (j>0) {
+                        intv = Math.abs(d[j][1] - d[j-1][1]);
+                        stats.intervals.push(intv);
+                        if (stats.frequencies.hasOwnProperty(intv)) {
+                            stats.frequencies[intv] += 1;
+                        }
+                        else {
+                            stats.frequencies[intv] = 1;
+                        }
+                    }
                 }
-				sum += intv;              
+                sum += intv;              
             }
 
             if (s.renderer.bands) {
@@ -286,24 +286,24 @@
                     }
                 }
             }
-			
-			var tempf = 0,
-				tempn=0;
-			for (var n in stats.frequencies) {
-				stats.sortedIntervals.push({interval:n, frequency:stats.frequencies[n]});
-			}
-			stats.sortedIntervals.sort(function(a, b){
-				return b.frequency - a.frequency;
-			});
-			
-			stats.min = $.jqplot.arrayMin(stats.intervals);
-			stats.max = $.jqplot.arrayMax(stats.intervals);
-			stats.mean = sum/d.length;
-			this._intervalStats.push(stats);
-			stats = sum = s = d = pd = sd = null;
+            
+            var tempf = 0,
+                tempn=0;
+            for (var n in stats.frequencies) {
+                stats.sortedIntervals.push({interval:n, frequency:stats.frequencies[n]});
+            }
+            stats.sortedIntervals.sort(function(a, b){
+                return b.frequency - a.frequency;
+            });
+            
+            stats.min = $.jqplot.arrayMin(stats.intervals);
+            stats.max = $.jqplot.arrayMax(stats.intervals);
+            stats.mean = sum/d.length;
+            this._intervalStats.push(stats);
+            stats = sum = s = d = pd = sd = null;
         }
-		db = null;
-		
+        db = null;
+        
     };
     
     // called with scope of an axis
@@ -320,14 +320,14 @@
         // this._ticks = this.__ticks;
     };
     
-    $.jqplot.DateAxisRenderer.prototype.createTicks = function() {
+    $.jqplot.DateAxisRenderer.prototype.createTicks = function(plot) {
         // we're are operating on an axis here
         var ticks = this._ticks;
         var userTicks = this.ticks;
         var name = this.name;
         // databounds were set on axis initialization.
         var db = this._dataBounds;
-		var iv = this._intervalStats;
+        var iv = this._intervalStats;
         var dim = (this.name.charAt(0) === 'x') ? this._plotDimensions.width : this._plotDimensions.height;
         var interval;
         var min, max;
@@ -343,6 +343,18 @@
         
         min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
         max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
+
+        // padding: min = min(2-padmin);
+
+        // see if we're zooming.  if we are, don't use the min and max we're given,
+        // but compute some nice ones.  They will be reset later.
+
+        var cursor = plot.plugins.cursor;
+
+        if (cursor && cursor._zoom && cursor._zoom.zooming) {
+            this.min = null;
+            this.max = null;
+        }
 
         var range = max - min;
 
@@ -390,11 +402,9 @@
 
         ////////
         // We don't have any ticks yet, let's make some!
-        // Doing complete autoscaling, no user options specified
         ////////
 
-        // ignore user specified number of ticks but honor
-        // min, max and tick interval (as best we can).
+        // if user specified min and max are null, we set those to make best ticks.
         else if (this.min == null && this.max == null) {
             var opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: null});
             // want to find a nice interval 
@@ -469,10 +479,7 @@
 
                     this.min = mstart.getTime();
                     this.max = mstart.clone().add((nttarget - 1) * intv, 'month').getTime();
-                    console.log(this.min, this.max);
                     this.numberTicks = nttarget;
-
-                    console.log(intv, nmonths, nttarget);
 
                     for (var i=0; i<nttarget; i++) {
                         if (i === 0) {
@@ -501,62 +508,72 @@
 
                 // use yearly intervals
                 else {
-                    
+
+                    this._autoFormatString = '%v';
+
+                    // how many months in an interval?
+                    var intv = Math.round(titarget/year);
+                    if (intv < 1) {
+                        intv = 1;
+                    }
+
+                    // figure out the starting and ending years.
+                    var mstart = new $.jsDate(min).setMonth(0, 1).setHours(0,0,0,0);
+                    var mend = new $.jsDate(max).add(1, 'year').setMonth(0, 1).setHours(0,0,0,0);
+
+                    var nyears = mend.diff(mstart, 'year');
+
+                    nttarget = Math.ceil(nyears/intv) + 1;
+
+                    this.min = mstart.getTime();
+                    this.max = mstart.clone().add((nttarget - 1) * intv, 'year').getTime();
+                    this.numberTicks = nttarget;
+
+                    for (var i=0; i<nttarget; i++) {
+                        if (i === 0) {
+                            opts.value = mstart.getTime();
+                        }
+                        else {
+                            opts.value = mstart.add(intv, 'year').getTime();
+                        }
+                        t = new this.tickRenderer(opts);
+                        
+                        if (this._overrideFormatString && this._autoFormatString != '') {
+                            t.formatString = this._autoFormatString;
+                        }
+                        if (!this.showTicks) {
+                            t.showLabel = false;
+                            t.showMark = false;
+                        }
+                        else if (!this.showTickMarks) {
+                            t.showMark = false;
+                        }
+                        this._ticks.push(t);
+                    }
+
+                    insetMult = intv * year;
                 }
 
             }
 
-        }
-
-        else if (false && this.tickInterval == null && this.min == null && this.max == null && this.numberTicks == null) {
-            var ret = $.jqplot.LinearTickGenerator(min, max); 
-            // calculate a padded max and min, points should be less than these
-            // so that they aren't too close to the edges of the plot.
-            // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
-            var tumin = min + range*(this.padMin - 1);
-            var tumax = max - range*(this.padMax - 1);
-
-            if (min <=tumin || max >= tumax) {
-                tumin = min - range*(this.padMin - 1);
-                tumax = max + range*(this.padMax - 1);
-                ret = $.jqplot.LinearTickGenerator(tumin, tumax);
+            // else tickInterval specified by user
+            else {
+                
             }
-
-            this.min = ret[0];
-            this.max = ret[1];
-            this.numberTicks = ret[2];
-            this.tickInterval = ret[4];
-            this.daTickInterval = [this.tickInterval/1000, 'seconds'];
-
-            for (var i=0; i<this.numberTicks; i++){
-                var min = new $.jsDate(this.min);
-                tt = min.add(i*this.daTickInterval[0], this.daTickInterval[1]).getTime();
-                var t = new this.tickRenderer(this.tickOptions);
-                // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
-                t.setTick(tt, this.name);
-                this._ticks.push(t);
-            }           
         }
 
         ////////
         // Some option(s) specified, work around that.
         ////////
         
-        else {		
+        else {      
             if (name == 'xaxis' || name == 'x2axis') {
                 dim = this._plotDimensions.width;
             }
             else {
                 dim = this._plotDimensions.height;
             }
-			
+            
             // if min, max and number of ticks specified, user can't specify interval.
             if (this.min != null && this.max != null && this.numberTicks != null) {
                 this.tickInterval = null;
@@ -590,16 +607,10 @@
             }
 
             range = max - min;
-			
-			var optNumTicks = 2 + parseInt(Math.max(0, dim-100)/100, 10);
-			
-			
-			// Here try to set ticks based on data spacing.
-            // if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null) {
-            //  //
-            // }
-			
-			
+            
+            var optNumTicks = 2 + parseInt(Math.max(0, dim-100)/100, 10);
+            
+            
             var rmin, rmax;
             
             rmin = (this.min != null) ? new $.jsDate(this.min).getTime() : min - range/2*(this.padMin - 1);
@@ -625,9 +636,13 @@
                 }
             }
             
+            insetMult = range / (this.numberTicks-1)/1000;
+
             if (this.daTickInterval == null) {
-                this.daTickInterval = [range / (this.numberTicks-1)/1000, 'seconds'];
+                this.daTickInterval = [insetMult, 'seconds'];
             }
+
+
             for (var i=0; i<this.numberTicks; i++){
                 var min = new $.jsDate(this.min);
                 tt = min.add(i*this.daTickInterval[0], this.daTickInterval[1]).getTime();
