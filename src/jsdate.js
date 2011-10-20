@@ -506,6 +506,7 @@
                 }
                 break;
         }
+        return this;
     };
     
     /**
@@ -513,7 +514,8 @@
      * @param {Integer} dayValue An integer from 1 to 31, representing the day of the month. 
      */
     jsDate.prototype.setDate = function(n) {
-        return this.proxy.setDate(n);
+        this.proxy.setDate(n);
+        return this;
     };
     
     /**
@@ -523,7 +525,8 @@
      * @param {Integer} dayValue Optional, between 1 and 31 representing the day of the month. If you specify the dayValue parameter, you must also specify the monthValue. 
      */
     jsDate.prototype.setFullYear = function() {
-        return this.proxy.setFullYear.apply(this.proxy, arguments);
+        this.proxy.setFullYear.apply(this.proxy, arguments);
+        return this;
     };
     
     /**
@@ -537,49 +540,56 @@
      * If you specify the msValue parameter, you must also specify the minutesValue and secondsValue. 
      */
     jsDate.prototype.setHours = function() {
-        return this.proxy.setHours.apply(this.proxy, arguments);
+        this.proxy.setHours.apply(this.proxy, arguments);
+        return this;
     };
     
     /**
      * Implements Date functionality
      */ 
     jsDate.prototype.setMilliseconds = function(n) {
-        return this.proxy.setMilliseconds(n);
+        this.proxy.setMilliseconds(n);
+        return this;
     };
     
     /**
      * Implements Date functionality
      */ 
     jsDate.prototype.setMinutes = function() {
-        return this.proxy.setMinutes.apply(this.proxy, arguments);
+        this.proxy.setMinutes.apply(this.proxy, arguments);
+        return this;
     };
     
     /**
      * Implements Date functionality
      */ 
     jsDate.prototype.setMonth = function() {
-        return this.proxy.setMonth.apply(this.proxy, arguments);
+        this.proxy.setMonth.apply(this.proxy, arguments);
+        return this;
     };
     
     /**
      * Implements Date functionality
      */ 
     jsDate.prototype.setSeconds = function() {
-        return this.proxy.setSeconds.apply(this.proxy, arguments);
+        this.proxy.setSeconds.apply(this.proxy, arguments);
+        return this;
     };
     
     /**
      * Implements Date functionality
      */ 
     jsDate.prototype.setTime = function(n) {
-        return this.proxy.setTime(n);
+        this.proxy.setTime(n);
+        return this;
     };
     
     /**
      * Implements Date functionality
      */ 
     jsDate.prototype.setYear = function() {
-        return this.proxy.setYear.apply(this.proxy, arguments);
+        this.proxy.setYear.apply(this.proxy, arguments);
+        return this;
     };
     
     /**
@@ -750,6 +760,8 @@
                 // add any years needed (increments of 12)
                 multipliers.year.add(d, Math[number > 0 ? 'floor' : 'ceil'](number / 12));
                 // ensure that we properly wrap betwen December and January
+                // 11 % 12 = 11
+                // 12 % 12 = 0
                 var prevMonth = d.getMonth() + (number % 12);
                 if (prevMonth == 12) {
                     prevMonth = 0;
