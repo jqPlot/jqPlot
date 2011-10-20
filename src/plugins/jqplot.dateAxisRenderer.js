@@ -344,8 +344,6 @@
         min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
         max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
 
-        // padding: min = min(2-padmin);
-
         // see if we're zooming.  if we are, don't use the min and max we're given,
         // but compute some nice ones.  They will be reset later.
 
@@ -408,157 +406,179 @@
         else if (this.min == null && this.max == null) {
             var opts = $.extend(true, {}, this.tickOptions, {name: this.name, value: null});
             // want to find a nice interval 
-            if (!this.tickInterval) {
+            var nttarget,
+                titarget;
+
+            // if no tickInterval or numberTicks options specified,  make a good guess.
+            if (!this.tickInterval && !this.numberTicks) {
                 var tdim = Math.max(dim, threshold+1);
-                var nttarget =  Math.ceil((tdim-threshold)/75 + 1);
-                var titarget = (max - min) / (nttarget - 1);
-
-                // If we can use an interval of 2 weeks or less, pick best one
-                if (titarget <= niceIntervals[niceIntervals.length-1] * 1.5) {
-                    var ret = bestDateInterval(min, max, titarget);
-                    var tempti = ret[0];
-                    this._autoFormatString = ret[1];
-
-                    min = Math.floor(min/tempti) * tempti;
-                    min = new $.jsDate(min);
-                    min = min.getTime() + min.getUtcOffset();
-
-                    nttarget = Math.ceil((max - min) / tempti) + 1;
-                    this.min = min;
-                    this.max = min + (nttarget - 1) * tempti;
-
-                    // if max is less than max, add an interval
-                    if (this.max < max) {
-                        this.max += tempti;
-                        nttarget += 1;
-                    }
-                    this.tickInterval = tempti;
-                    this.numberTicks = nttarget;
-
-                    for (var i=0; i<nttarget; i++) {
-                        opts.value = this.min + i * tempti;
-                        t = new this.tickRenderer(opts);
-                        
-                        if (this._overrideFormatString && this._autoFormatString != '') {
-                            t.formatString = this._autoFormatString;
-                        }
-                        if (!this.showTicks) {
-                            t.showLabel = false;
-                            t.showMark = false;
-                        }
-                        else if (!this.showTickMarks) {
-                            t.showMark = false;
-                        }
-                        this._ticks.push(t);
-                    }
-
-                    insetMult = this.tickInterval;
+                // how many ticks to put on the axis?
+                // date labels tend to be long.  If ticks not rotated,
+                // don't use too many and have a high spacing factor.
+                // If we are rotating ticks, use a lower factor.
+                var spacingFactor = 115;
+                if (this.tickRenderer === $.jqplot.CanvasAxisTickRenderer && this.tickOptions.angle) {
+                    spacingFactor = 115 - 40 * Math.abs(Math.sin(this.tickOptions.angle/180*Math.PI));
                 }
-
-                // should we use a monthly interval?
-                else if (titarget <= 9 * month) {
-
-                    this._autoFormatString = '%v';
-
-                    // how many months in an interval?
-                    var intv = Math.round(titarget/month);
-                    if (intv < 1) {
-                        intv = 1;
-                    }
-                    else if (intv > 6) {
-                        intv = 6;
-                    }
-
-                    // figure out the starting month and ending month.
-                    var mstart = new $.jsDate(min).setDate(1).setHours(0,0,0,0);
-                    var mend = new $.jsDate(max).add(1, 'month').setDate(1).setHours(0,0,0,0);
-
-                    var nmonths = mend.diff(mstart, 'month');
-
-                    nttarget = Math.ceil(nmonths/intv) + 1;
-
-                    this.min = mstart.getTime();
-                    this.max = mstart.clone().add((nttarget - 1) * intv, 'month').getTime();
-                    this.numberTicks = nttarget;
-
-                    for (var i=0; i<nttarget; i++) {
-                        if (i === 0) {
-                            opts.value = mstart.getTime();
-                        }
-                        else {
-                            opts.value = mstart.add(intv, 'month').getTime();
-                        }
-                        t = new this.tickRenderer(opts);
-                        
-                        if (this._overrideFormatString && this._autoFormatString != '') {
-                            t.formatString = this._autoFormatString;
-                        }
-                        if (!this.showTicks) {
-                            t.showLabel = false;
-                            t.showMark = false;
-                        }
-                        else if (!this.showTickMarks) {
-                            t.showMark = false;
-                        }
-                        this._ticks.push(t);
-                    }
-
-                    insetMult = intv * month;
-                }
-
-                // use yearly intervals
-                else {
-
-                    this._autoFormatString = '%v';
-
-                    // how many months in an interval?
-                    var intv = Math.round(titarget/year);
-                    if (intv < 1) {
-                        intv = 1;
-                    }
-
-                    // figure out the starting and ending years.
-                    var mstart = new $.jsDate(min).setMonth(0, 1).setHours(0,0,0,0);
-                    var mend = new $.jsDate(max).add(1, 'year').setMonth(0, 1).setHours(0,0,0,0);
-
-                    var nyears = mend.diff(mstart, 'year');
-
-                    nttarget = Math.ceil(nyears/intv) + 1;
-
-                    this.min = mstart.getTime();
-                    this.max = mstart.clone().add((nttarget - 1) * intv, 'year').getTime();
-                    this.numberTicks = nttarget;
-
-                    for (var i=0; i<nttarget; i++) {
-                        if (i === 0) {
-                            opts.value = mstart.getTime();
-                        }
-                        else {
-                            opts.value = mstart.add(intv, 'year').getTime();
-                        }
-                        t = new this.tickRenderer(opts);
-                        
-                        if (this._overrideFormatString && this._autoFormatString != '') {
-                            t.formatString = this._autoFormatString;
-                        }
-                        if (!this.showTicks) {
-                            t.showLabel = false;
-                            t.showMark = false;
-                        }
-                        else if (!this.showTickMarks) {
-                            t.showMark = false;
-                        }
-                        this._ticks.push(t);
-                    }
-
-                    insetMult = intv * year;
-                }
-
+                nttarget =  Math.ceil((tdim-threshold)/spacingFactor + 1);
+                titarget = (max - min) / (nttarget - 1);
             }
 
-            // else tickInterval specified by user
+            // If tickInterval is specified, we'll try to honor it.
+            // Not gauranteed to get this interval, but we'll get as close as
+            // we can.
+            // tickInterval will be used before numberTicks, that is if
+            // both are specified, numberTicks will be ignored.
+            else if (this.tickInterval) {
+                titarget = this.tickInterval;
+            }
+
+            // if numberTicks specified, try to honor it.
+            // Not gauranteed, but will try to get close.
+            else if (this.numberTicks) {
+                nttarget = this.numberTicks;
+                titarget = (max - min) / (nttarget - 1);
+            }
+
+            // If we can use an interval of 2 weeks or less, pick best one
+            if (titarget <= niceIntervals[niceIntervals.length-1] * 1.5) {
+                var ret = bestDateInterval(min, max, titarget);
+                var tempti = ret[0];
+                this._autoFormatString = ret[1];
+
+                min = Math.floor(min/tempti) * tempti;
+                min = new $.jsDate(min);
+                min = min.getTime() + min.getUtcOffset();
+
+                nttarget = Math.ceil((max - min) / tempti) + 1;
+                this.min = min;
+                this.max = min + (nttarget - 1) * tempti;
+
+                // if max is less than max, add an interval
+                if (this.max < max) {
+                    this.max += tempti;
+                    nttarget += 1;
+                }
+                this.tickInterval = tempti;
+                this.numberTicks = nttarget;
+
+                for (var i=0; i<nttarget; i++) {
+                    opts.value = this.min + i * tempti;
+                    t = new this.tickRenderer(opts);
+                    
+                    if (this._overrideFormatString && this._autoFormatString != '') {
+                        t.formatString = this._autoFormatString;
+                    }
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    this._ticks.push(t);
+                }
+
+                insetMult = this.tickInterval;
+            }
+
+            // should we use a monthly interval?
+            else if (titarget <= 9 * month) {
+
+                this._autoFormatString = '%v';
+
+                // how many months in an interval?
+                var intv = Math.round(titarget/month);
+                if (intv < 1) {
+                    intv = 1;
+                }
+                else if (intv > 6) {
+                    intv = 6;
+                }
+
+                // figure out the starting month and ending month.
+                var mstart = new $.jsDate(min).setDate(1).setHours(0,0,0,0);
+                var mend = new $.jsDate(max).add(1, 'month').setDate(1).setHours(0,0,0,0);
+
+                var nmonths = mend.diff(mstart, 'month');
+
+                nttarget = Math.ceil(nmonths/intv) + 1;
+
+                this.min = mstart.getTime();
+                this.max = mstart.clone().add((nttarget - 1) * intv, 'month').getTime();
+                this.numberTicks = nttarget;
+
+                for (var i=0; i<nttarget; i++) {
+                    if (i === 0) {
+                        opts.value = mstart.getTime();
+                    }
+                    else {
+                        opts.value = mstart.add(intv, 'month').getTime();
+                    }
+                    t = new this.tickRenderer(opts);
+                    
+                    if (this._overrideFormatString && this._autoFormatString != '') {
+                        t.formatString = this._autoFormatString;
+                    }
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    this._ticks.push(t);
+                }
+
+                insetMult = intv * month;
+            }
+
+            // use yearly intervals
             else {
-                
+
+                this._autoFormatString = '%v';
+
+                // how many years in an interval?
+                var intv = Math.round(titarget/year);
+                if (intv < 1) {
+                    intv = 1;
+                }
+
+                // figure out the starting and ending years.
+                var mstart = new $.jsDate(min).setMonth(0, 1).setHours(0,0,0,0);
+                var mend = new $.jsDate(max).add(1, 'year').setMonth(0, 1).setHours(0,0,0,0);
+
+                var nyears = mend.diff(mstart, 'year');
+
+                nttarget = Math.ceil(nyears/intv) + 1;
+
+                this.min = mstart.getTime();
+                this.max = mstart.clone().add((nttarget - 1) * intv, 'year').getTime();
+                this.numberTicks = nttarget;
+
+                for (var i=0; i<nttarget; i++) {
+                    if (i === 0) {
+                        opts.value = mstart.getTime();
+                    }
+                    else {
+                        opts.value = mstart.add(intv, 'year').getTime();
+                    }
+                    t = new this.tickRenderer(opts);
+                    
+                    if (this._overrideFormatString && this._autoFormatString != '') {
+                        t.formatString = this._autoFormatString;
+                    }
+                    if (!this.showTicks) {
+                        t.showLabel = false;
+                        t.showMark = false;
+                    }
+                    else if (!this.showTickMarks) {
+                        t.showMark = false;
+                    }
+                    this._ticks.push(t);
+                }
+
+                insetMult = intv * year;
             }
         }
 

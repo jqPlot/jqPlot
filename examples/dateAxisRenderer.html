@@ -17,17 +17,14 @@
   <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.ohlcRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-<!--  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
 -->
 
   <!-- END: load jqplot -->
-<script language="javascript" type="text/javascript">
-  
-$(document).ready(function(){
-      $.jqplot.config.enablePlugins = true;
-    
+<script type="text/javascript">
     var ohlc = [['07/06/09', 138.7, 139.68, 135.18, 135.4],
     ['06/29/09', 143.46, 144.66, 139.79, 140.02],
     ['06/22/09', 140.67, 143.56, 132.88, 142.44],
@@ -119,99 +116,131 @@ $(document).ready(function(){
     ['09/15/08', 147.69, 120.68, 140.91],
     ['09/08/08', 164.89, 146, 148.94]
     ];
-       
+</script>
 
-    var ticks = ['08/01/08', '12/01/08', '04/01/09', '08/01/09'];
+<script class="code" type="text/javascript">
+$(document).ready(function(){
+    title: "CandleStick Chart",
+    // Globally enable plugins like cursor and highlighter
+    $.jqplot.config.enablePlugins = true;
 
-	$.jsDate.config.defaultCentury = 2000;
+    // for 2 digit years, set the default centry to 2000.
+    $.jsDate.config.defaultCentury = 2000;
     
     plot1 = $.jqplot('chart1',[ohlc],{
-      title: 'Default Pad',
-      axesDefaults:{},
-      axes: {
+        axes: {
           xaxis: {
               renderer:$.jqplot.DateAxisRenderer,
-              tickOptions:{formatString:'%Y.%m.%d'}, 
-              autoscale: true
           },
           yaxis: {
-              tickOptions:{formatString:'%.2f'}
+              tickOptions:{prefix: '$'}
           }
-      },
-      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
-      cursor:{
-          zoom:true,
-          tooltipOffset: 10,
-          tooltipLocation: 'nw'
-      },
-      highlighter: {
-          showMarker:false,
-          tooltipAxes: 'xy',
-          yvalues: 4,
-          formatString:'<table class="jqplot-highlighter"><tr><td>date:</td><td>%s</td></tr><tr><td>open:</td><td>%s</td></tr><tr><td>hi:</td><td>%s</td></tr><tr><td>low:</td><td>%s</td></tr><tr><td>close:</td><td>%s</td></tr></table>'
-      }
+        },
+        series: [
+            {
+                renderer:$.jqplot.OHLCRenderer, 
+                rendererOptions:{ 
+                    candleStick:true 
+                }
+            }
+        ],
+        highlighter: {
+            showMarker:false,
+            tooltipAxes: 'xy',
+            yvalues: 4,
+            formatString:'<table class="jqplot-highlighter"> \
+                <tr><td>date:</td><td>%s</td></tr> \
+                <tr><td>open:</td><td>%s</td></tr> \
+                <tr><td>hi:</td><td>%s</td></tr> \
+                <tr><td>low:</td><td>%s</td></tr> \
+                <tr><td>close:</td><td>%s</td></tr> \
+            </table>'
+        }
     });
+});
+</script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function(){
         
     plot2 = $.jqplot('chart2',[ohlc],{
-      title: 'Pad = 1.02',
-      axesDefaults:{},
-      axes: {
-          xaxis: {
-              renderer:$.jqplot.DateAxisRenderer,
-              tickOptions:{formatString:'%Y.%m.%d'},
-              autoscale: true,
-              pad: 1.02
-          },
-          yaxis: {
-              tickOptions:{formatString:'%.2f'}
-          }
-      },
-      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
-      cursor:{
-          zoom:true,
-          tooltipOffset: 10,
-          tooltipLocation: 'nw'
-      },
-      highlighter: {
-          showMarker:false,
-          tooltipAxes: 'xy',
-          yvalues: 4,
-          formatString:'<table class="jqplot-highlighter"><tr><td>date:</td><td>%s</td></tr><tr><td>open:</td><td>%s</td></tr><tr><td>hi:</td><td>%s</td></tr><tr><td>low:</td><td>%s</td></tr><tr><td>close:</td><td>%s</td></tr></table>'
-      }
+        title: 'OHLC chart',
+        axes: {
+            xaxis: {
+                renderer:$.jqplot.DateAxisRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                tickOptions: {
+                    angle: -30
+                }
+            },
+            yaxis: {
+                tickOptions:{formatString:'%.2f'}
+            }
+        },
+        series: [
+            {
+                renderer:$.jqplot.OHLCRenderer
+            }
+        ],
+        highlighter: {
+            showMarker:false,
+            tooltipAxes: 'xy',
+            yvalues: 4,
+            formatString:'<table class="jqplot-highlighter"> \
+                <tr><td>date:</td><td>%s</td></tr> \
+                <tr><td>open:</td><td>%s</td></tr> \
+                <tr><td>hi:</td><td>%s</td></tr> \
+                <tr><td>low:</td><td>%s</td></tr> \
+                <tr><td>close:</td><td>%s</td></tr> \
+            </table>'
+        }
     });
+});
+</script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function(){
         
     plot3 = $.jqplot('chart3',[ohlc],{
-      title: 'Pad = 2.02',
-      axesDefaults:{},
-      axes: {
-          xaxis: {
-              renderer:$.jqplot.DateAxisRenderer,
-              tickOptions:{formatString:'%Y.%m.%d'},
-              autoscale: true,
-              pad: 2.02
-          },
-          yaxis: {
-              tickOptions:{formatString:'%.2f'}
-          }
-      },
-      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:true}}],
-      cursor:{
-          zoom:true,
-          tooltipOffset: 10,
-          tooltipLocation: 'nw'
-      },
-      highlighter: {
-          showMarker:false,
-          tooltipAxes: 'xy',
-          yvalues: 4,
-          formatString:'<table class="jqplot-highlighter"><tr><td>date:</td><td>%s</td></tr><tr><td>open:</td><td>%s</td></tr><tr><td>hi:</td><td>%s</td></tr><tr><td>low:</td><td>%s</td></tr><tr><td>close:</td><td>%s</td></tr></table>'
-      }
+        title: 'Pad = 2.02',
+        axesDefaults:{},
+        axes: {
+            xaxis: {
+                renderer:$.jqplot.DateAxisRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                numberTicks: 7,
+                tickOptions: {
+                    angle: -30
+                }
+            },
+            yaxis: {
+                tickOptions:{formatString:'%.2f'}
+            }
+        },
+        series: [
+            {
+                renderer:$.jqplot.OHLCRenderer, 
+                rendererOptions:{ 
+                    candleStick:true 
+                }
+            }
+        ],
+        highlighter: {
+            showMarker:false,
+            tooltipAxes: 'xy',
+            yvalues: 4,
+            formatString:'<table class="jqplot-highlighter"> \
+                <tr><td>date:</td><td>%s</td></tr> \
+                <tr><td>open:</td><td>%s</td></tr> \
+                <tr><td>hi:</td><td>%s</td></tr> \
+                <tr><td>low:</td><td>%s</td></tr> \
+                <tr><td>close:</td><td>%s</td></tr> \
+            </table>'
+        }
     });
-    
 });
-
-
 </script>
+<script type="text/javascript" src="example.js"></script>
 
   </head>
   <body>
