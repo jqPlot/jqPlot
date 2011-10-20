@@ -2444,7 +2444,7 @@
         //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
         this.replot = function(options) {
             var opts =  options || {};
-            var clear = opts.clear || true;
+            var clear = (opts.clear === false) ? false : true;
             var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
             
