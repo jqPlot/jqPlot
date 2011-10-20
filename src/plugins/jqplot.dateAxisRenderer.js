@@ -122,9 +122,11 @@
     var daysInMonths = [31,28,31,30,31,30,31,30,31,30,31,30];
     // array of consistent nice intervals.  Longer intervals
     // will depend on days in month, days in year, etc.
-    var niceFormatString = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%v', '%v', '%v', '%v', '%v', '%v', '%v']
+    var niceFormatStrings = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%v', '%v', '%v', '%v', '%v', '%v', '%v'];
     var niceIntervalBases = [second, second, second, second, second, second, second, second, second, minute, minute, minute, minute, minute, minute, hour, hour, hour, hour, hour, hour, day, week, week];
     var niceIntervals = [0.1*second, 0.2*second, 0.5*second, second, 2*second, 5*second, 10*second, 15*second, 30*second, minute, 2*minute, 5*minute, 10*minute, 15*minute, 30*minute, hour, 2*hour, 4*hour, 6*hour, 8*hour, 12*hour, day, 2*day, 3*day, 4*day, 5*day, week, 2*week];
+
+    var niceMonthlyIntervals = []
 
     function bestDateInterval(min, max, titarget) {
         // iterate through niceIntervals to find one closest to titarget
@@ -136,7 +138,7 @@
                 badness = temp;
                 bestTi = niceIntervals[i];
                 bestTiBase = niceIntervalBases[i];
-                bestfmt = niceFormatString[i];
+                bestfmt = niceFormatStrings[i];
             }
         }
 
@@ -332,6 +334,7 @@
         var pos1, pos2;
         var tt, i;
         var threshold = 30;
+        var insetMult = 1;
 
         var tickInterval = this.tickInterval;
         
@@ -397,7 +400,7 @@
             // want to find a nice interval 
             if (!this.tickInterval) {
                 var tdim = Math.max(dim, threshold+1);
-                var nttarget =  Math.ceil((tdim-threshold)/115 + 1);
+                var nttarget =  Math.ceil((tdim-threshold)/75 + 1);
                 var titarget = (max - min) / (nttarget - 1);
 
                 // If we can use an interval of 2 weeks or less, pick best one
@@ -405,40 +408,102 @@
                     var ret = bestDateInterval(min, max, titarget);
                     var tempti = ret[0];
                     this._autoFormatString = ret[1];
+
+                    min = Math.floor(min/tempti) * tempti;
+                    min = new $.jsDate(min);
+                    min = min.getTime() + min.getUtcOffset();
+
+                    nttarget = Math.ceil((max - min) / tempti) + 1;
+                    this.min = min;
+                    this.max = min + (nttarget - 1) * tempti;
+
+                    // if max is less than max, add an interval
+                    if (this.max < max) {
+                        this.max += tempti;
+                        nttarget += 1;
+                    }
+                    this.tickInterval = tempti;
+                    this.numberTicks = nttarget;
+
+                    for (var i=0; i<nttarget; i++) {
+                        opts.value = this.min + i * tempti;
+                        t = new this.tickRenderer(opts);
+                        
+                        if (this._overrideFormatString && this._autoFormatString != '') {
+                            t.formatString = this._autoFormatString;
+                        }
+                        if (!this.showTicks) {
+                            t.showLabel = false;
+                            t.showMark = false;
+                        }
+                        else if (!this.showTickMarks) {
+                            t.showMark = false;
+                        }
+                        this._ticks.push(t);
+                    }
+
+                    insetMult = this.tickInterval;
                 }
 
-                min = Math.floor(min/tempti) * tempti;
-                min = new $.jsDate(min);
-                min = min.getTime() + min.getUtcOffset();
+                // should we use a monthly interval?
+                else if (titarget <= 9 * month) {
 
-                var nttarget = Math.ceil((max - min) / tempti) + 1;
-                this.min = min;
-                this.max = min + (nttarget - 1) * tempti;
+                    this._autoFormatString = '%v';
 
-                // if max is less than max, add an interval
-                if (this.max < max) {
-                    this.max += tempti;
-                    nttarget += 1;
+                    // how many months in an interval?
+                    var intv = Math.round(titarget/month);
+                    if (intv < 1) {
+                        intv = 1;
+                    }
+                    else if (intv > 6) {
+                        intv = 6;
+                    }
+
+                    // figure out the starting month and ending month.
+                    var mstart = new $.jsDate(min).setDate(1).setHours(0,0,0,0);
+                    var mend = new $.jsDate(max).add(1, 'month').setDate(1).setHours(0,0,0,0);
+
+                    var nmonths = mend.diff(mstart, 'month');
+
+                    nttarget = Math.ceil(nmonths/intv) + 1;
+
+                    this.min = mstart.getTime();
+                    this.max = mstart.clone().add((nttarget - 1) * intv, 'month').getTime();
+                    console.log(this.min, this.max);
+                    this.numberTicks = nttarget;
+
+                    console.log(intv, nmonths, nttarget);
+
+                    for (var i=0; i<nttarget; i++) {
+                        if (i === 0) {
+                            opts.value = mstart.getTime();
+                        }
+                        else {
+                            opts.value = mstart.add(intv, 'month').getTime();
+                        }
+                        t = new this.tickRenderer(opts);
+                        
+                        if (this._overrideFormatString && this._autoFormatString != '') {
+                            t.formatString = this._autoFormatString;
+                        }
+                        if (!this.showTicks) {
+                            t.showLabel = false;
+                            t.showMark = false;
+                        }
+                        else if (!this.showTickMarks) {
+                            t.showMark = false;
+                        }
+                        this._ticks.push(t);
+                    }
+
+                    insetMult = intv * month;
                 }
-                this.tickInterval = tempti;
-                this.numberTicks = nttarget;
 
-                for (var i=0; i<nttarget; i++) {
-                    opts.value = this.min + i * tempti;
-                    t = new this.tickRenderer(opts);
+                // use yearly intervals
+                else {
                     
-                    if (this._overrideFormatString && this._autoFormatString != '') {
-                        t.formatString = this._autoFormatString;
-                    }
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
-                    this._ticks.push(t);
                 }
+
             }
 
         }
@@ -581,8 +646,8 @@
         }
 
         if (this.tickInset) {
-            this.min = this.min - this.tickInset * this.tickInterval;
-            this.max = this.max + this.tickInset * this.tickInterval;
+            this.min = this.min - this.tickInset * insetMult;
+            this.max = this.max + this.tickInset * insetMult;
         }
 
         if (this._daTickInterval == null) {
