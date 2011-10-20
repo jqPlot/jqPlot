@@ -6,8 +6,12 @@ $(document).ready(function(){
                 $('pre.code').eq(index).text($(this).html());
             }
             else {
-                var str = $(this).html();
-                $('div.jqplot-target').eq(index).after($('<pre class="code">'+str+'</pre>'));
+                // var str = $(this).text();
+                // $('div.jqplot-target').eq(index).after($('<pre class="code">'+str+'</pre>'));
+                var pre = $('<pre class="code"></pre>');
+                $('div.jqplot-target').eq(index).after(pre);
+                pre.text($(this).text());
+                pre = null;
             }
         });
     }
