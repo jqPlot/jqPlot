@@ -206,7 +206,7 @@
                     r._bodyWidth = r.bodyWidth;
                 }
                 else {
-                    r._bodyWidth = Math.min(20, dinterval/1.7);
+                    r._bodyWidth = Math.min(20, dinterval/1.65);
                 }
             }
             else {
