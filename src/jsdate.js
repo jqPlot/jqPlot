@@ -87,6 +87,7 @@
      * @namespace Configuration options that will be used as defaults for all instances on the page.
      * @property {String} defaultLocale The default locale to use [en].
      * @property {String} syntax The default syntax to use [perl].
+     * @property {Number} defaultCentury The default centry for 2 digit dates.
      */
     jsDate.config = {
         defaultLocale: 'en',
