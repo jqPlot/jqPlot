@@ -435,6 +435,7 @@
                                 axes[ax].min = newmin;
                                 axes[ax].max = newmax;
                                 axes[ax].tickInterval = null;
+                                axes[ax].numberTicks = null;
                                 // for date axes...
                                 axes[ax].daTickInterval = null;
                             }

@@ -123,7 +123,6 @@
     // array of consistent nice intervals.  Longer intervals
     // will depend on days in month, days in year, etc.
     var niceFormatStrings = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%v', '%v', '%v', '%v', '%v', '%v', '%v'];
-    var niceIntervalBases = [second, second, second, second, second, second, second, second, second, minute, minute, minute, minute, minute, minute, hour, hour, hour, hour, hour, hour, day, week, week];
     var niceIntervals = [0.1*second, 0.2*second, 0.5*second, second, 2*second, 5*second, 10*second, 15*second, 30*second, minute, 2*minute, 5*minute, 10*minute, 15*minute, 30*minute, hour, 2*hour, 4*hour, 6*hour, 8*hour, 12*hour, day, 2*day, 3*day, 4*day, 5*day, week, 2*week];
 
     var niceMonthlyIntervals = []
@@ -137,7 +136,6 @@
             if (temp < badness) {
                 badness = temp;
                 bestTi = niceIntervals[i];
-                bestTiBase = niceIntervalBases[i];
                 bestfmt = niceFormatStrings[i];
             }
         }

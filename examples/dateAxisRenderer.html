@@ -174,7 +174,9 @@ $(document).ready(function(){
                 }
             },
             yaxis: {
-                tickOptions:{formatString:'%.2f'}
+                tickOptions:{
+                    prefix: '$'
+                }
             }
         },
         series: [
@@ -214,7 +216,9 @@ $(document).ready(function(){
                 }
             },
             yaxis: {
-                tickOptions:{formatString:'%.2f'}
+                tickOptions:{
+                    prefix: '$'
+                }
             }
         },
         series: [
@@ -247,8 +251,11 @@ $(document).ready(function(){
     <?php include "topbanner.inc"; ?>
     <div class="example-content">
     <?php include "nav.inc"; ?>
+<p class="text">Date axis renderer with default settings.  Ticks are given wider spacing by default since date axes typically have longer tick labels.</p>
 <div id="chart1" style="margin:20px;height:240px; width:640px;"></div>
+<p class="text">Date axis recognizes rotated tick labels.  It will space ticks a little closer when labels are rotated.</p>
 <div id="chart2" style="margin:20px;height:240px; width:640px;"></div>
+<p class="text">If you want more or less ticks, specify the "numberTicks" options.  Date axes will try to produce the desired number of ticks, but may adjust to get a nice interval.</p>
 <div id="chart3" style="margin:20px;height:240px; width:640px;"></div>
   
   </div>
