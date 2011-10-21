@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    
     if (!$.jqplot._noCodeBlock) {
         $('script.code').each(function(index) {
             if ($('pre.code').eq(index).length  ) {
@@ -8,15 +7,37 @@ $(document).ready(function(){
             else {
                 // var str = $(this).text();
                 // $('div.jqplot-target').eq(index).after($('<pre class="code">'+str+'</pre>'));
-                var pre = $('<pre class="code"></pre>');
+                var pre = $('<pre class="code prettyprint brush: js"></pre>');
                 $('div.jqplot-target').eq(index).after(pre);
                 pre.text($(this).text());
                 pre = null;
             }
         });
-    }
 
-    $(document).unload(function() {$('*').unbind(); });
+        var elstr='';
+        if ($('script.include, link.include').length > 0) {
+            $('script.include').each(function(index) {
+                if (elstr !== '') {
+                    elstr += '\n';
+                }
+                elstr += '&lt;script type="text/javascript" src="'+$(this).attr('src')+'">&lt;/script>';
+            });
+
+            $('link.include').each(function(index) {
+                if (elstr !== '') {
+                    elstr += '\n';
+                }
+                elstr += '&lt;link rel="stylesheet" type="text/css" hrf="'+$(this).attr('href')+'" /&gt;';
+            })
+
+            $('pre.include').html(elstr);
+        }
+
+        else {
+            $('p.include').remove();
+            $('div.include').remove();
+        }
+    }
 
     if (!$.jqplot.use_excanvas) {
         $('div.jqplot-target').each(function(){
@@ -66,4 +87,9 @@ $(document).ready(function(){
             }
         });
     }
+
+    SyntaxHighlighter.defaults['toolbar'] = true;      
+    SyntaxHighlighter.all();
+
+    $(document).unload(function() {$('*').unbind(); });
 });
