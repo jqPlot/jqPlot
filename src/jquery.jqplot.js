@@ -56,59 +56,12 @@
         }
     };
 
-
-// if (window.$LAB === undefined) {
-//     var _script = document.createElement('script');
-//     _script.type = "text/javascript";
-//     _script.src = "LAB.min.js";
-//     document.getElementsByTagName("head")[0].appendChild(_script);
-//     _script = null;
-// }
-
-// var $_loader = $LAB.sandbox();
-
-// var bp = getRootNode().root;
-// console.log(bp);
-
-// $_loader.setOptions({BasePath:bp})
-// .script('jqplot.core.js').wait()
-// .script('jqplot.linearTickGenerator.js')
-// .script('jqplot.linearAxisRenderer.js')
-// .script('jqplot.axisTickRenderer.js')
-// .script('jqplot.axisLabelRenderer.js')
-// .script('jqplot.tableLegendRenderer.js')
-// .script('jqplot.lineRenderer.js')
-// .script('jqplot.lineRenderer.js')
-// .script('jqplot.markerRenderer.js')
-// .script('jqplot.divTitleRenderer.js')
-// .script('jqplot.canvasGridRenderer.js')
-// .script('jqplot.linePattern.js')
-// .script('jqplot.shadowRenderer.js')
-// .script('jqplot.shapeRenderer.js')
-// .script('jqplot.themeEngine.js')
-// .script('jsdate.js')
-// .script('jqplot.sprintf.js')
-// .script('jqplot.effects.core').wait()
-// .script('jqplot.effects.blind.js');
-
-
-// if (!window.LazyLoad) {
-//     var _script = document.createElement('script');
-//     _script.type = "text/javascript";
-//     _script.src = "lazyload-min.js";
-//     document.getElementsByTagName("head")[0].appendChild(_script);
-//     _script = null;
-// }
-
-// LazyLoad.js(['jqplot.core.js', 'jqplot.linearTickGenerator.js', 'jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.axisLabelRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.linePattern.js', 'jqplot.shadowRenderer.js', 'jqplot.shapeRenderer.js', 'jqplot.sprintf.js', 'jsdate.js', 'jqplot.themeEngine.js', 'jqplot.toImage.js', 'jqplot.effects.core.js', 'jqplot.effects.blind.js']);
-
-
     var files = ['jqplot.core.js', 'jqplot.linearTickGenerator.js', 'jqplot.linearAxisRenderer.js', 'jqplot.axisTickRenderer.js', 'jqplot.axisLabelRenderer.js', 'jqplot.tableLegendRenderer.js', 'jqplot.lineRenderer.js', 'jqplot.markerRenderer.js', 'jqplot.divTitleRenderer.js', 'jqplot.canvasGridRenderer.js', 'jqplot.linePattern.js', 'jqplot.shadowRenderer.js', 'jqplot.shapeRenderer.js', 'jqplot.sprintf.js', 'jsdate.js', 'jqplot.themeEngine.js', 'jqplot.toImage.js', 'jqplot.effects.core.js', 'jqplot.effects.blind.js'];
     var rn = getRootNode().root;
     for (var i=0; i<files.length; i++) {
         var pp = rn+files[i];
         try {
-            document.write("<scr"+"ipt type='text/javascript' src='"+pp+"'></scr"+"ipt>");
+            document.write("<scr"+"ipt type='text/javascript' src='"+pp+"'></scr"+"ipt>\n");
         } catch (e) {
             var script = document.createElement("script");
             script.src = pp;

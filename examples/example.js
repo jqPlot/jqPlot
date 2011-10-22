@@ -9,7 +9,7 @@ $(document).ready(function(){
                 // $('div.jqplot-target').eq(index).after($('<pre class="code">'+str+'</pre>'));
                 var pre = $('<pre class="code prettyprint brush: js"></pre>');
                 $('div.jqplot-target').eq(index).after(pre);
-                pre.text($(this).text());
+                pre.text($(this).html());
                 pre = null;
             }
         });
@@ -20,21 +20,21 @@ $(document).ready(function(){
                 if (elstr !== '') {
                     elstr += '\n';
                 }
-                elstr += '&lt;script type="text/javascript" src="'+$(this).attr('src')+'">&lt;/script>';
+                elstr += '<script type="text/javascript" src="'+$(this).attr('src')+'"></script>';
             });
 
             $('link.include').each(function(index) {
                 if (elstr !== '') {
                     elstr += '\n';
                 }
-                elstr += '&lt;link rel="stylesheet" type="text/css" hrf="'+$(this).attr('href')+'" /&gt;';
+                elstr += '<link rel="stylesheet" type="text/css" hrf="'+$(this).attr('href')+'" />';
             })
 
-            $('pre.include').html(elstr);
+            $('pre.include').text(elstr);
         }
 
         else {
-            $('p.include').remove();
+            $('pre.include').remove();
             $('div.include').remove();
         }
     }
