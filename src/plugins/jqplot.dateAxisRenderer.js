@@ -496,7 +496,14 @@
 
                 // figure out the starting month and ending month.
                 var mstart = new $.jsDate(min).setDate(1).setHours(0,0,0,0);
-                var mend = new $.jsDate(max).add(1, 'month').setDate(1).setHours(0,0,0,0);
+
+                // See if max ends exactly on a month
+                var tempmend = new $.jsDate(max);
+                var mend = new $.jsDate(max).setDate(1).setHours(0,0,0,0);
+
+                if (tempmend.getTime() !== mend.getTime()) {
+                    mend = mend.add(1, 'month');
+                }
 
                 var nmonths = mend.diff(mstart, 'month');
 
