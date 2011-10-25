@@ -1,40 +1,28 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Charts with Fill Between Lines";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html>
-<head>
-    <title>Zooming with Log Axes</title>
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="examples.css" />
-  
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
+<!-- Example scripts go here -->
 
-  <!-- END: load jquery -->
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-  
-  <style type="text/css">
-    .jqplot-cursor-legend {
-      width: 160px;
-      font-family: "Courier New";
-      font-size: 0.85em;
-    }
-    
-    td.jqplot-cursor-legend-swatch {
-      width: 1.3em;
-    }
-    
-    div.jqplot-cursor-legend-swatch {
-/*      width: 15px;*/
-    }
-  </style>   
+    <style type="text/css">
+        .jqplot-cursor-legend {
+            width: 160px;
+            font-family: "Courier New";
+            font-size: 0.85em;
+        }
+
+        td.jqplot-cursor-legend-swatch {
+            width: 1.3em;
+        }
+    </style>  
+
+
+
+    <div id="chart1" style="height:200px; width:600px;"></div>
+    <div id="chart2" style="height:500px; width:600px;"></div>
+
 
 <script type="text/javascript" class="code">
 $(document).ready(function(){
@@ -105,19 +93,20 @@ $(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript" src="example.js"></script>
-    
-</head>
-<body>
-    <!-- <?php include "topbanner.inc"; ?>-->
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
+<!-- End example scripts -->
 
-    <div id="chart1" style="height:200px; width:600px;"></div>
-    <div id="chart2" style="height:500px; width:600px;"></div>
+<!-- Don't touch this! -->
 
-  </div>
-</body>
+<?php include "commonScripts.html" ?>
 
+<!-- End Don't touch this! -->
 
-</html>
+<!-- Additional plugins go here -->
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+<!-- End additional plugins -->
+
+<?php include "closer.html"; ?>
