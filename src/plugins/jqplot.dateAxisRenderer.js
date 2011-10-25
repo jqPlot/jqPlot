@@ -125,12 +125,12 @@
     var niceFormatStrings = ['%M:%S.%#N', '%M:%S.%#N', '%M:%S.%#N', '%M:%S', '%M:%S', '%M:%S', '%M:%S', '%H:%M:%S', '%H:%M:%S', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%H:%M', '%a %H:%M', '%a %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%b %e %H:%M', '%v', '%v', '%v', '%v', '%v', '%v', '%v'];
     var niceIntervals = [0.1*second, 0.2*second, 0.5*second, second, 2*second, 5*second, 10*second, 15*second, 30*second, minute, 2*minute, 5*minute, 10*minute, 15*minute, 30*minute, hour, 2*hour, 4*hour, 6*hour, 8*hour, 12*hour, day, 2*day, 3*day, 4*day, 5*day, week, 2*week];
 
-    var niceMonthlyIntervals = []
+    var niceMonthlyIntervals = [];
 
     function bestDateInterval(min, max, titarget) {
         // iterate through niceIntervals to find one closest to titarget
         var badness = Number.MAX_VALUE;
-        var temp, bestTi;
+        var temp, bestTi, bestfmt;
         for (var i=0, l=niceIntervals.length; i < l; i++) {
             temp = Math.abs(titarget - niceIntervals[i]);
             if (temp < badness) {
