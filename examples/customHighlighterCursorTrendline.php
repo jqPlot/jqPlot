@@ -46,15 +46,21 @@
 
 <!-- End example scripts -->
 
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- End Don't touch this! -->
+
 <!-- Additional plugins go here -->
 
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dragable.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script> 
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.dragable.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script> 
 
 <!-- End additional plugins -->
 

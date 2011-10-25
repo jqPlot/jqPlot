@@ -14,8 +14,27 @@ $(document).ready(function(){
             }
         });
 
+        $('script.common').each(function(index) {
+            $('pre.common').eq(index).text($(this).html());
+        });
+
         var elstr='';
         if ($('script.include, link.include').length > 0) {
+
+            if ($('pre.include').length == 0) {
+                var temp = [
+                    '<div class="code prettyprint include">',
+                    '<p class="text">The charts on this page depend on the following files:</p>',
+                    '<pre class="include prettyprint brush: html gutter: false"></pre>',
+                    '</div>'
+                ];
+
+                temp = $(temp.join('\n'));
+                $('div.example-content').append(temp);
+                temp = null;
+            }      
+
+
             $('script.include').each(function(index) {
                 if (elstr !== '') {
                     elstr += '\n';

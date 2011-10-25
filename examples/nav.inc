@@ -35,8 +35,3 @@
     
   ?>
 </div>
-
-<div class="code prettyprint include">
-  <p class="text">The charts on this page depend on the following files:</p>
-  <pre class="include prettyprint brush: html gutter: false"></pre>
-</div>

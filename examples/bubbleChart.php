@@ -4,12 +4,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.bubbleRenderer.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 
   <style type="text/css">
@@ -219,5 +213,15 @@
 
 
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.bubbleRenderer.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

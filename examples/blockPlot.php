@@ -4,14 +4,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.blockRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 
  <p>Below is an example block plot.  This plot also uses the Enhanced Legend Renderer plugin.  Clicking on an item in the legend will toggle display of the appropriate series.</p>
@@ -57,7 +49,7 @@
     <div id="chart2" class="plot" style="width:500px;height:300px;margin-bottom:30px;"></div>
 
 
-<script class="code" language="javascript" type="text/javascript">
+<script class="code" type="text/javascript">
 $(document).ready(function(){
 
     var s1 = [[0.9, 120, 'Vernors'], [1.8, 140, 'Fanta'], [3.2, 90, 'Barqs', {background:'#ddbb33'}], 
@@ -152,5 +144,17 @@ $(document).ready(function(){
 </script>
 
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.blockRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

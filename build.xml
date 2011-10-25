@@ -154,10 +154,35 @@
         <copy todir="${DIST_DIR}/examples">
           <fileset dir="${BUILD_DIR}/examples" />
         </copy>
+
+        <!-- fix up and generate html exmaples from php files -->
+
+        <apply executable="php" parallel="false" dir="${DIST_DIR}/examples" verbose="true">
+          <fileset dir="${DIST_DIR}/examples">
+            <include name="*.php" />
+            <exclude name="opener.php" />
+            <exclude name="bodyOpener.php" />
+            <exclude name="nav.php" />
+          </fileset>
+          <srcfile />
+          <redirector>
+            <!-- redirect STDOUT to file in dest-dir -->
+            <outputmapper id="out" type="glob" from="*.php" to="${DIST_DIR}/examples/*.html"/>
+          </redirector>
+        </apply>
+
+        <replaceregexp match='src="../src/' replace='src="../' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='href="../src/' replace='href="../' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
         
         <replaceregexp match='src="\./src/' replace='src="\.\./' flags="g">
           <fileset dir="${DIST_DIR}/examples">
             <include name="*.html" />
+            <include name="*.php" />
           </fileset>
         </replaceregexp>
         
@@ -185,6 +210,7 @@
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
         </apply>
+
         <!-- Ipanema patch : patched excanvas minified -->
         <echo message="minifying file: excanvas.js" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
@@ -199,6 +225,7 @@
           <targetfile />
           <mapper type="glob" from="excanvas.js" to="temp/excanvas.min.js" />
         </apply>
+
         <echo message="minifing file: jquery.jqplot.css" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
@@ -211,6 +238,20 @@
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
+        </apply>
+
+        <echo message="minifing file: example.css" />
+        <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/examples">
+          <fileset dir="${DIST_DIR}/examples">
+            <include name="example.css" />
+          </fileset>
+          <arg line="-jar" />
+          <arg path="${YUICompressor}" />
+          <arg value="--charset" />
+          <arg value="ANSI" />
+          <arg value="-o" />
+          <targetfile />
+          <mapper type="glob" from="example.css" to="example.min.css" />
         </apply>
 
         <echo message="minifing plugin files" />
@@ -268,6 +309,10 @@
         </replaceregexp>
         
         <replaceregexp match='jquery.jqplot.css' replace='jquery.jqplot.min.css' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+        </replaceregexp>
+        
+        <replaceregexp match='example.css' replace='example.min.css' flags="g">
           <fileset dir="${DIST_DIR}/examples" includes="*.html" />
         </replaceregexp>
         

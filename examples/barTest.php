@@ -4,16 +4,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 
     <p>Below is a default bar plot.  Bars will highlight on mouseover.  Events are triggered when you mouseover a bar and also when you click on a bar.  Here We capture the 'jqplotDataClick' event and display the clicked series index, point index and data values. When series data is assigned as a 1-dimensional array as in this example, jqPlot automatically converts it into a 2-dimensional array for plotting.  So a series defined as [2, 6, 7, 10] will become [[1,2], [2,6], [3,7], [4,10]].<p>
@@ -254,5 +244,19 @@
         });
     });</script> 
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+  <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

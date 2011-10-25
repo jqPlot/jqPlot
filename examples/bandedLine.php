@@ -4,15 +4,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 <p>Bands (like confidence intervals or error bands) can be added to line charts through the "bands" option of the line renderer.  The band data can be automatically computed or manually assigned.  If assigned manually, the simpliest approach is to set the "rendererOptions: { bandData: [] }" array on the series.  Note that band data is taken into account when axes scale themselves so bands will not get clipped.</p>
 
@@ -265,5 +256,18 @@ myTheme = {
 };
 </script>
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

@@ -3,13 +3,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-  <script type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
-  <script type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 
 <style type="text/css">
@@ -93,5 +86,16 @@ $(document).ready(function(){
 </script>
 
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

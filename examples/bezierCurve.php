@@ -4,13 +4,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.BezierCurveRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 
  <p>The Bezier curve renderer can distinguish between two different input data formats.  This first example has the data passed in as 2 data points, the second one defining the Bezier curve to the end point.  With this format, non-default axes renderers will require specifying the minimum and maximum on the axes.</p>
@@ -80,5 +73,16 @@ $(document).ready(function(){
 </script>
 
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.BezierCurveRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

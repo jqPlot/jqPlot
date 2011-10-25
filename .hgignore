@@ -5,7 +5,6 @@ NDdata/Data*
 .DS_Store*
 *.pyc
 *~
-*.php
 config.xml
 myconfig.xml
 build
@@ -17,9 +16,8 @@ tests
 examples/bug*
 examples/_*
 
-
-
 # switch to regexp syntax.
 syntax: regexp
 # ^\.pc/
+^[a-zA-Z_0-9]+\.php$
 ^images

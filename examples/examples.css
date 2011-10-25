@@ -55,7 +55,7 @@ a.nav:active {
 }
 
 div.example-content {
-    margin: 30px;
+    margin: 30px 50px;
 }
 
 div.example-nav {
@@ -74,7 +74,7 @@ pre.code-block{
 }
     
 pre.code {
-    background: #D8F4DC;
+/*    background: #D8F4DC;*/
     border: 1px solid rgb(200, 200, 200);
     padding-top: 1em;
     padding-left: 3em;
@@ -118,4 +118,18 @@ div.jqplot-image-container-content {
 
 a.jqplot-image-container-close {
     float: right;
+}
+
+div.example-plot {
+  width: 500px;
+  height: 300px;
+}
+
+.jqplot-table-legend-label {
+  white-space: nowrap;
+}
+
+div.syntaxhighlighter {
+  margin-top: 4em !important;
+  margin-bottom: 3em !important;
 }

@@ -4,16 +4,6 @@
 ?>
 <?php include "opener.php"; ?>
 
-<!-- Additional plugins go here -->
-
-
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
-
-<!-- End additional plugins -->
-
 <!-- Example scripts go here -->
 
 
@@ -197,5 +187,19 @@ function linedown(plot, name) {
 <pre class="code brush: js"></pre>
 
 <!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- Additional plugins go here -->
+
+
+  <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
+
+<!-- End additional plugins -->
 
 <?php include "closer.html"; ?>

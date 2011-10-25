@@ -47,6 +47,12 @@ $(document).ready(function(){
 
 <!-- End example scripts -->
 
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- End Don't touch this! -->
+
 <!-- Additional plugins go here -->
 
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
