@@ -1696,6 +1696,23 @@
         // a hidden container, call the replot method when the container is shown.
         this.drawIfHidden = false;
         this.eventCanvas = new $.jqplot.GenericCanvas();
+        // prop: fillBetween
+        // Fill between 2 line series in a plot.
+        // Options object:
+        // {
+        //    series1: first index (0 based) of series in fill
+        //    series2: second index (0 based) of series in fill
+        //    color: color of fill [default fillColor of series1]
+        //    baseSeries:  fill will be drawn below this series (0 based index)
+        //    fill: false to turn off fill [default true].
+        //  }
+        this.fillBetween = {
+            series1: null,
+            series2: null,
+            color: null,
+            baseSeries: 0,
+            fill: true
+        };
         // prop; fontFamily
         // css spec for the font-family attribute.  Default for the entire plot.
         this.fontFamily;
@@ -1773,7 +1790,6 @@
         // can specify the title option as just a string like: title: 'My Plot'
         // and this will create a new title object with the specified text.
         this.title = new Title();
-        
         // Count how many times the draw method has been called while the plot is visible.
         // Mostly used to test if plot has never been dran (=0), has been successfully drawn
         // into a visible container once (=1) or draw more than once into a visible container.
@@ -2270,16 +2286,30 @@
                 $.jqplot.preParseOptionsHooks[i].call(this, options);
             }
             this.options = $.extend(true, {}, this.defaults, options);
-            this.animate = this.options.animate;
-            this.stackSeries = this.options.stackSeries;
-            if (this.options.seriesColors) {
-                this.seriesColors = this.options.seriesColors;
+            var opts = this.options;
+            this.animate = opts.animate;
+            this.stackSeries = opts.stackSeries;
+            if ($.isPlainObject(opts.fillBetween)) {
+
+                var temp = ['series1', 'series2', 'color', 'baseSeries', 'fill'], 
+                    tempi;
+
+                for (var i=0, l=temp.length; i<l; i++) {
+                    tempi = temp[i];
+                    if (opts.fillBetween[tempi] != null) {
+                        this.fillBetween[tempi] = opts.fillBetween[tempi];
+                    }
+                }
             }
-            if (this.options.negativeSeriesColors) {
-                this.negativeSeriesColors = this.options.negativeSeriesColors;
+
+            if (opts.seriesColors) {
+                this.seriesColors = opts.seriesColors;
             }
-            if (this.options.captureRightClick) {
-                this.captureRightClick = this.options.captureRightClick;
+            if (opts.negativeSeriesColors) {
+                this.negativeSeriesColors = opts.negativeSeriesColors;
+            }
+            if (opts.captureRightClick) {
+                this.captureRightClick = opts.captureRightClick;
             }
             this.defaultAxisStart = (options && options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
             this.colorGenerator.setColors(this.seriesColors);
@@ -2287,13 +2317,13 @@
             // var cg = new this.colorGenerator(this.seriesColors);
             // var ncg = new this.colorGenerator(this.negativeSeriesColors);
             // this._gridPadding = this.options.gridPadding;
-            $.extend(true, this._gridPadding, this.options.gridPadding);
-            this.sortData = (this.options.sortData != null) ? this.options.sortData : this.sortData;
+            $.extend(true, this._gridPadding, opts.gridPadding);
+            this.sortData = (opts.sortData != null) ? opts.sortData : this.sortData;
             for (var i=0; i<12; i++) {
                 var n = _axisNames[i];
                 var axis = this.axes[n];
-                axis._options = $.extend(true, {}, this.options.axesDefaults, this.options.axes[n]);
-                $.extend(true, axis, this.options.axesDefaults, this.options.axes[n]);
+                axis._options = $.extend(true, {}, opts.axesDefaults, opts.axes[n]);
+                $.extend(true, axis, opts.axesDefaults, opts.axes[n]);
                 axis._plotWidth = this._width;
                 axis._plotHeight = this._height;
             }
@@ -2622,23 +2652,25 @@
                 this.target.append(this.grid.createElement(this._gridPadding, this));
                 this.grid.draw();
                 
+                var series = this.series;
+                var seriesLength = series.length;
                 // put the shadow canvases behind the series canvases so shadows don't overlap on stacked bars.
-                for (i=0, l=this.series.length; i<l; i++) {
+                for (i=0, l=seriesLength; i<l; i++) {
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
-                    this.target.append(this.series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas', null, this));
-                    this.series[j].shadowCanvas.setContext();
-                    this.series[j].shadowCanvas._elem.data('seriesIndex', j);
+                    this.target.append(series[j].shadowCanvas.createElement(this._gridPadding, 'jqplot-series-shadowCanvas', null, this));
+                    series[j].shadowCanvas.setContext();
+                    series[j].shadowCanvas._elem.data('seriesIndex', j);
                 }
                 
-                for (i=0, l=this.series.length; i<l; i++) {
+                for (i=0, l=seriesLength; i<l; i++) {
                     // draw series in order of stacking.  This affects only
                     // order in which canvases are added to dom.
                     j = this.seriesStack[i];
-                    this.target.append(this.series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas', null, this));
-                    this.series[j].canvas.setContext();
-                    this.series[j].canvas._elem.data('seriesIndex', j);
+                    this.target.append(series[j].canvas.createElement(this._gridPadding, 'jqplot-series-canvas', null, this));
+                    series[j].canvas.setContext();
+                    series[j].canvas._elem.data('seriesIndex', j);
                 }
                 // Need to use filled canvas to capture events in IE.
                 // Also, canvas seems to block selection of other elements in document on FF.
@@ -2663,8 +2695,8 @@
                 }
                 else {  // draw series before legend
                     this.drawSeries();
-                    if (this.series.length) {
-                        $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+                    if (seriesLength) {
+                        $(series[seriesLength-1].canvas._elem).after(legendElem);
                     }
                     this.legend.pack(legendPadding);                
                 }
@@ -2681,6 +2713,11 @@
                     // in the handler, this will refer to the eventCanvas dom element.
                     // make sure there are references back into plot objects.
                     this.eventCanvas._elem.bind(this.eventListenerHooks.hooks[i][0], {plot:this}, this.eventListenerHooks.hooks[i][1]);
+                }
+
+                var fb = this.fillBetween;
+                if (fb.fill && fb.series1 !== fb.series2 && fb.series1 < seriesLength && fb.series2 < seriesLength && series[fb.series1]._type === 'line' && series[fb.series2]._type === 'line') {
+                    this.doFillBetweenLines();
                 }
 
                 for (var i=0, l=$.jqplot.postDrawHooks.length; i<l; i++) {
@@ -2700,8 +2737,8 @@
                     sel,
                     _els;
                 // ughh.  ideally would hide all series then show them.
-                for (i=0, l=this.series.length; i<l; i++) {
-                    temps = this.series[i];
+                for (i=0, l=seriesLength; i<l; i++) {
+                    temps = series[i];
                     tempr = temps.renderer;
                     sel = '.jqplot-point-label.jqplot-series-'+i;
                     if (tempr.animation && tempr.animation._supported && tempr.animation.show && this._drawCount < 2) {
@@ -2718,6 +2755,41 @@
             
                 this.target.trigger('jqplotPostDraw', [this]);
             }
+        };
+
+        jqPlot.prototype.doFillBetweenLines = function () {
+            var fb = this.fillBetween;
+            var sid1 = fb.series1;
+            var sid2 = fb.series2;
+            // first series should always be lowest index
+            var id1 = (sid1 < sid2) ? sid1 : sid2;
+            var id2 = (sid2 >  sid1) ? sid2 : sid1;
+
+            var series1 = this.series[id1];
+            var series2 = this.series[id2];
+
+            if (series2.renderer.smooth) {
+                var tempgd = series2.renderer._smoothedData.slice(0).reverse();
+            }
+            else {
+                var tempgd = series2.gridData.slice(0).reverse();
+            }
+
+            if (series1.renderer.smooth) {
+                var gd = series1.renderer._smoothedData.concat(tempgd);
+            }
+            else {
+                var gd = series1.gridData.concat(tempgd);
+            }
+
+            var color = (fb.color !== null) ? fb.color : this.series[sid1].fillColor;
+            var baseSeries = (fb.baseSeries !== null) ? fb.baseSeries : id1;
+
+            // now apply a fill to the shape on the lower series shadow canvas,
+            // so it is behind both series.
+            var sr = this.series[baseSeries].renderer.shapeRenderer;
+            var opts = {fillStyle: color, fill: true, closePath: true};
+            sr.draw(series1.shadowCanvas._ctx, gd, opts);
         };
         
         this.bindCustomEvents = function() {

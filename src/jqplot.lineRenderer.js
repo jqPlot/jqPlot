@@ -48,10 +48,6 @@
             speed: 2500,
             _supported: true
         };
-        // prop: fillTo
-        // Index of another series.  Fill between this series
-        // and the fillTo series.  This will override the "fill" option.
-        this.renderer.fillTo = null;
         // prop: smooth
         // True to draw a smoothed (interpolated) line through the data points
         // with automatically computed number of smoothing points.
@@ -148,13 +144,6 @@
         // if we are given an interval, and bands aren't explicity set to false in options, turn them on.
         else if (options.bands && options.bands.show == null && options.bands.interval != null) {
             this.renderer.bands.show = true;
-        }
-
-        // if we're doing a fillTo, turn off fill and bands.
-        if (this.renderer.fillTo !== null) {
-            this.fill = false;
-            this.renderer.bands.show = false;
-            plot.postDrawHooks.addOnce(fillToLine, [this.index, this.renderer.fillTo]);
         }
 
         // if plot is filled, turn off bands.
@@ -1104,36 +1093,6 @@
     $.jqplot.LineRenderer.prototype.drawShadow = function(ctx, gd, options) {
         // This is a no-op, shadows drawn with lines.
     };
-
-    // called with scope of a plot.
-    function fillToLine (sid1, sid2) {
-        // first series should always be lowest index
-        var id1 = (sid1 < sid2) ? sid1 : sid2;
-        var id2 = (sid2 >  sid1) ? sid2 : sid1;
-
-        var series1 = this.series[id1];
-        var series2 = this.series[id2];
-
-        if (series2.renderer.smooth) {
-            var tempgd = series2.renderer._smoothedData.slice(0).reverse();
-        }
-        else {
-            var tempgd = series2.gridData.slice(0).reverse();
-        }
-
-        if (series1.renderer.smooth) {
-            var gd = series1.renderer._smoothedData.concat(tempgd);
-        }
-        else {
-            var gd = series1.gridData.concat(tempgd);
-        }
-
-        // now apply a fill to the shape on the lower series shadow canvas,
-        // so it is behind both series.
-        var sr = series1.renderer.shapeRenderer;
-        var opts = {fillStyle: this.series[sid1].fillColor, fill: true, closePath: true};
-        sr.draw(series1.shadowCanvas._ctx, gd, opts);
-    }
     
     // called with scope of plot.
     // make sure to not leave anything highlighted.
