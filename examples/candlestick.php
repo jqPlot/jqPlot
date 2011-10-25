@@ -20,7 +20,6 @@
 <pre class="common brush:js"></pre>
 
 <script class="common" type="text/javascript">
-    $.jqplot.config.enablePlugins = true;
     
     ohlc = [['07/06/2009', 138.7, 139.68, 135.18, 135.4],
     ['06/29/2009', 143.46, 144.66, 139.79, 140.02],
@@ -131,7 +130,8 @@
     
 </script>
 
-<script class="code" type="text/javascript">$(document).ready(function(){       
+<script class="code" type="text/javascript">$(document).ready(function(){  
+    $.jqplot.config.enablePlugins = true;     
     plot1 = $.jqplot('chart1',[ohlc],{
       title: 'Chart',
       axesDefaults:{},
