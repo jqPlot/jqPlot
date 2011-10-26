@@ -1,60 +1,58 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Pie Charts and Options";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Pie Chart Tests 4</title>
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="examples.css" />
-  
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-  <!-- END: load jquery -->  
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
-  <!-- END: load jqplot -->
+<!-- Example scripts go here -->
 
-  <style type="text/css">
-    #code {
-        font: 10pt "Andale Mono", Monaco, "Courier New", sans-serif ;
-        white-space: pre;
-    }
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
     
-    pre {
-        background: #D8F4DC;
-        border: 1px solid rgb(200, 200, 200);
-        padding-top: 1em;
-        padding-left: 3em;
-        padding-bottom: 1em;
-        margin-top: 1em;
-        margin-bottom: 3em;
-        
-    }
+    <pre class="code brush:js"></pre>
+ 
+    <div id="chart2" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
     
-    p {
-        margin: 2em 0;
-    }
-  </style>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart3" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+  
+    <div id="chart4" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart5" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart6" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart7" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart8" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart9" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
+
+    <div id="chart10" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
+    <pre class="code brush:js"></pre>
 
 <script class="code" type="text/javascript">$(document).ready(function(){
-	jQuery.jqplot.config.enablePlugins = true;
-	plot1 = jQuery.jqplot('chart1', 
-		[[['Verwerkende FruedenStunde Companaziert Eine industrie', 9],['Retail', 8], ['Primaire producent', 7], 
-		['Out of home', 6],['Groothandel', 5], ['Grondstof', 4], ['Consument', 3], ['Bewerkende industrie', 2]]], 
-		{
-			title: ' ', 
-			seriesDefaults: {
+    jQuery.jqplot.config.enablePlugins = true;
+    plot1 = jQuery.jqplot('chart1', 
+        [[['Verwerkende FruedenStunde Companaziert Eine industrie', 9],['Retail', 8], ['Primaire producent', 7], 
+        ['Out of home', 6],['Groothandel', 5], ['Grondstof', 4], ['Consument', 3], ['Bewerkende industrie', 2]]], 
+        {
+            title: ' ', 
+            seriesDefaults: {
         shadow: false, 
         renderer: jQuery.jqplot.PieRenderer, 
         rendererOptions: { padding: 2, sliceMargin: 2, showDataLabels: false } 
       }, 
-			legend: { show:true, location: 'e' }
-		}
-	);
+            legend: { show:true, location: 'e' }
+        }
+    );
 });
 </script>
 
@@ -175,7 +173,12 @@
     ['Out of home', 6],['Groothandel', 5], ['Grondstof', 4], ['Consument', 3], ['Bewerkende industrie', 2]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: true, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { fill: false, sliceMargin: 4, showDataLabels: true } }, 
+      seriesDefaults: {shadow: true, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { 
+          fill: false, 
+          sliceMargin: 4, 
+          showDataLabels: true 
+          } 
+      }, 
       legend: { show:true }
     }
   );
@@ -188,7 +191,12 @@
     ['Out of home', 0],['Groothandel', 0], ['Grondstof', 0], ['Consument', 0], ['Bewerkende industrie', 1]]], 
     {
       title: ' ', 
-      seriesDefaults: {shadow: true, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { fill: false, sliceMargin: 4, showDataLabels: true } }, 
+      seriesDefaults: {shadow: true, renderer: jQuery.jqplot.PieRenderer, rendererOptions: { 
+          fill: false, 
+          sliceMargin: 4, 
+          showDataLabels: true 
+        } 
+      }, 
       legend: { show:true }
     }
   );
@@ -196,58 +204,18 @@
 </script>
 
 
-<script type="text/javascript">    
-    $(document).ready(function(){
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        });
-        $('script.common').each(function(index) {
-            $('pre.common').eq(index).html($(this).html());
-        });
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script> 
-    
-  </head>
-  <body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
+<!-- End example scripts -->
 
+<!-- Don't touch this! -->
 
-               
-    <div id="chart1" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    
-    <pre class="code"></pre>
- 
-    <div id="chart2" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    
-    <pre class="code"></pre>
+<?php include "commonScripts.html" ?>
 
-    <div id="chart3" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
-  
-    <div id="chart4" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
+<!-- End Don't touch this! -->
 
-    <div id="chart5" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
+<!-- Additional plugins go here -->
 
-    <div id="chart6" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
 
-    <div id="chart7" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
+<!-- End additional plugins -->
 
-    <div id="chart8" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
-
-    <div id="chart9" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
-
-    <div id="chart10" style="margin-top:20px; margin-left:20px; width:460px; height:300px;"></div>
-    <pre class="code"></pre>
-  
-  </div>
-</body>
-</html>
+<?php include "closer.html"; ?>

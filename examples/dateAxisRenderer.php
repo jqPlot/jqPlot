@@ -1,5 +1,5 @@
 <?php 
-    $title = "Candlestick and Open Hi Low Close charts";
+    $title = "Date Axes";
     // $plotTargets = array('chart1');
 ?>
 <?php include "opener.php"; ?>

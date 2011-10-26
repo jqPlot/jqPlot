@@ -1,5 +1,5 @@
 <?php 
-    $title = "Charts with Fill Between Lines";
+    $title = "Zooming";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>

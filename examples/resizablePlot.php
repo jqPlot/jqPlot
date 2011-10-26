@@ -1,5 +1,5 @@
 <?php 
-    $title = "Charts with Fill Between Lines";
+    $title = "Resizable Plots";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
@@ -54,7 +54,7 @@
 <p>The event handler looks like:</p>
 <pre>
     $('#resizable1').bind('resize', function(event, ui) {
-        plot1.replot();
+        plot1.replot( { resetAxes: true } );
     });
 </pre>
 </td>
@@ -114,19 +114,21 @@
       }
     };
     
-    
     $("#resizable1").resizable({delay:20});
     $("#resizable2").resizable({delay:20, helper:'ui-resizable-helper'});
-    
 
     $('#resizable1').bind('resize', function(event, ui) {
-        plot1.replot();
+        // pass in resetAxes: true option to get rid of old ticks and axis properties
+        // which should be recomputed based on new plot size.
+        plot1.replot( { resetAxes: true } );
     });
     
     $('#resizable2').bind('resizestop', function(event, ui) {
         $('#chart2').height($('#resizable2').height()*0.96);
         $('#chart2').width($('#resizable2').width()*0.96);
-        plot2.replot({resetAxes:true});
+        // pass in resetAxes: true option to get rid of old ticks and axis properties
+        // which should be recomputed based on new plot size.
+        plot2.replot( { resetAxes:true } );
     });
     
     var plot1 = $.jqplot('chart1', [l1, l3],  options);

@@ -1,5 +1,5 @@
 <?php 
-    $title = "Animated Charts";
+    $title = "Bar Charts";
     // $plotTargets = array(array('id'=>'chart1', 'height'=>300, 'width'=>700));
 ?>
 <?php include "opener.php"; ?>

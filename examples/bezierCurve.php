@@ -1,5 +1,5 @@
 <?php 
-    $title = "Animated Charts";
+    $title = "Bezier Curve Plots";
     // $plotTargets = array('chart1', 'chart2', 'chart3');
 ?>
 <?php include "opener.php"; ?>

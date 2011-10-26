@@ -1,5 +1,5 @@
 <?php 
-    $title = "Filled (Area) Charts";
+    $title = "Force Plot to Have Tick at 0 or 100";
     // $plotTargets = array('chart1', 'chart2', 'chart3', 'chart4');
 ?>
 <?php include "opener.php"; ?>

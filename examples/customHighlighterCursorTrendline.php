@@ -1,5 +1,5 @@
 <?php 
-    $title = "Candlestick and Open Hi Low Close charts";
+    $title = "Highlighting, Dragging Points, Cursor and Trend Lines.";
     $plotTargets = array('chart1');
 ?>
 <?php include "opener.php"; ?>

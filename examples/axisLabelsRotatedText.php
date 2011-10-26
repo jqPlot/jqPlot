@@ -1,5 +1,5 @@
 <?php 
-    $title = "Filled (Area) Charts";
+    $title = "Axis Labels and Rotated Text";
     $plotTargets = array('chart1', 'chart2', 'chart3', 'chart4');
 ?>
 <?php include "opener.php"; ?>
