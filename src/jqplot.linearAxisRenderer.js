@@ -85,6 +85,9 @@
         // Major ticks are ticks supplied by user or auto computed.
         // Minor ticks cannot be created by user.
         this.minorTicks = 0;
+        // prop: alignTicks
+        // true to align tick marks across opposed axes
+        // such as from the y2axis to yaxis.
         this.alignTicks = false;
         this._autoFormatString = '';
         this._overrideFormatString = false;

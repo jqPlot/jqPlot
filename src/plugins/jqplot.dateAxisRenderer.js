@@ -418,6 +418,7 @@
                 if (this.tickRenderer === $.jqplot.CanvasAxisTickRenderer && this.tickOptions.angle) {
                     spacingFactor = 115 - 40 * Math.abs(Math.sin(this.tickOptions.angle/180*Math.PI));
                 }
+
                 nttarget =  Math.ceil((tdim-threshold)/spacingFactor + 1);
                 titarget = (max - min) / (nttarget - 1);
             }
@@ -439,7 +440,7 @@
             }
 
             // If we can use an interval of 2 weeks or less, pick best one
-            if (titarget <= niceIntervals[niceIntervals.length-1] * 1.5) {
+            if (titarget <= 19*day) {
                 var ret = bestDateInterval(min, max, titarget);
                 var tempti = ret[0];
                 this._autoFormatString = ret[1];
