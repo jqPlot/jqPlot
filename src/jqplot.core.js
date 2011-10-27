@@ -1647,6 +1647,12 @@
         // True to animate the series on initial plot draw (renderer dependent).
         // Actual animation functionality must be supported in the renderer.
         this.animate = false;
+        // prop: animateReplot
+        // True to animate series after a call to the replot() method.
+        // Use with caution!  Replots can happen very frequently under
+        // certain circumstances (e.g. resizing, dragging points) and
+        // animation in these situations can cause problems.
+        this.animateReplot = false;
         // prop: axes
         // up to 4 axes are supported, each with it's own options, 
         // See <Axis> for axis specific options.
@@ -2288,6 +2294,7 @@
             this.options = $.extend(true, {}, this.defaults, options);
             var opts = this.options;
             this.animate = opts.animate;
+            this.animateReplot = opts.animateReplot;
             this.stackSeries = opts.stackSeries;
             if ($.isPlainObject(opts.fillBetween)) {
 
@@ -2741,11 +2748,11 @@
                     temps = series[i];
                     tempr = temps.renderer;
                     sel = '.jqplot-point-label.jqplot-series-'+i;
-                    if (tempr.animation && tempr.animation._supported && tempr.animation.show && this._drawCount < 2) {
+                    if (tempr.animation && tempr.animation._supported && tempr.animation.show && (this._drawCount < 2 || this.animateReplot)) {
                         _els = this.target.find(sel);
-                        _els.hide();
-                        temps.canvas._elem.hide();
-                        temps.shadowCanvas._elem.hide();
+                        _els.stop(true, true).hide();
+                        temps.canvas._elem.stop(true, true).hide();
+                        temps.shadowCanvas._elem.stop(true, true).hide();
                         temps.canvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed);
                         temps.shadowCanvas._elem.jqplotEffect('blind', {mode: 'show', direction: tempr.animation.direction}, tempr.animation.speed);
                         _els.fadeIn(tempr.animation.speed*0.8);

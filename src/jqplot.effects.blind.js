@@ -33,7 +33,7 @@
             show = mode === "show",
             wrapper, distance, top;
 
-        // if already wrapped, the wrapper's properties are my property. #6245
+        // // if already wrapped, the wrapper's properties are my property. #6245
         if ( el.parent().is( ".ui-effects-wrapper" ) ) {
             $.jqplot.effects.save( el.parent(), props );
         } else {
@@ -47,16 +47,16 @@
 
         distance = vertical ? wrapper[ ref ]() + top : wrapper[ ref ]();
 
-        animation[ ref ] = show ? distance : 0;
+        animation[ ref ] = show ? String(distance) : '0';
         if ( !motion ) {
             el
                 .css( vertical ? "bottom" : "right", 0 )
                 .css( vertical ? "top" : "left", "" )
                 .css({ position: "absolute" });
-            animation[ ref2 ] = show ? 0 : distance;
+            animation[ ref2 ] = show ? '0' : String(distance);
         }
 
-        // start at 0 if we are showing
+        // // start at 0 if we are showing
         if ( show ) {
             wrapper.css( ref, 0 );
             if ( ! motion ) {
@@ -64,7 +64,7 @@
             }
         }
 
-        // Animate
+        // // Animate
         wrapper.animate( animation, {
             duration: o.duration,
             easing: o.easing,
