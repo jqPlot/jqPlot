@@ -24,7 +24,7 @@
         plot1 = $.jqplot("chart1", [s2, s1], {
             // Turns on animatino for all series in this plot.
             animate: true,
-            // Will animate plot on calls to plot1.replot()
+            // Will animate plot on calls to plot1.replot({resetAxes:true})
             animateReplot: true,
             cursor: {
                 show: true,
