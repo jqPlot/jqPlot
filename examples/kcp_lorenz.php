@@ -1,31 +1,13 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Lorenz Curves";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <!-- Use Compatibility mode in IE -->
-  <title>Lorenz Curve</title>
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
-  
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-  <!-- END: load jquery -->
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
+<!-- Example scripts go here -->
 
-  <link type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" />  
-  <script type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
-  <!-- END: load jqplot -->
+
+  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
 
   <style type="text/css">
 
@@ -68,6 +50,64 @@
     }
 
   </style>
+
+    <table class="app">
+        <td class="controls">
+
+            <div>
+                Data Series:
+                <ul>
+                    <li><input name="dataSeries" value="national" type="radio" checked />National</li>
+                    <li><input name="dataSeries" value="urban" type="radio" />Urban</li>
+                    <li><input name="dataSeries" value="rural" type="radio" />Rural</li>
+                </ul>
+            </div>
+
+            <div>
+                Background Color:
+                <ul>
+                    <li><input name="backgroundColor" value="white" type="radio" checked />Default</li>
+                    <li><input name="backgroundColor" value="#efefef" type="radio" />Gray</li>
+                </ul>
+            </div>
+
+            <div>
+                Line Width:
+                <ul>
+                    <li><input name="lineWidth" value="2.5" type="radio" checked />Thin</li>
+                    <li><input name="lineWidth" value="5" type="radio" />Thick</li>
+                </ul>
+            </div>
+
+            <div>
+                Grids:
+                <ul>
+                    <li><input name="gridsVertical" value="vertical" type="checkbox" checked />Vertical</li>
+                    <li><input name="gridsHorizontal" value="horizontal" type="checkbox" checked />Horizontal</li>
+                </ul>
+            </div>
+
+            <div>
+                Set lines at:
+                <ul>
+                    <li><input name="userLine1" value="42" type="text" size="8" /> and </li>
+                    <li><input name="userLine2" value="75" type="text" size="8" /></li>
+                </ul>
+            </div>
+        </td>
+        
+        <td class="chart">
+            <div class="chart-container">    
+                <div id="chart1"></div>
+                <div class="jqplot-datestamp"></div>
+            </div>
+        </td>
+
+    </table>
+
+    <pre class="code brush:js"></pre>
+  
+
   
   <script class="code" type="text/javascript">
 $(document).ready(function(){
@@ -170,8 +210,8 @@ $(document).ready(function(){
 
     // make the plot
     
-    plot1 = $.jqplot('chart1', [dataSets.national], {
-        title: 'Lorenz Curve',
+    plot1 = $.jqplot("chart1", [dataSets.national], {
+        title: "Lorenz Curve",
         // To control the size of the grid, can set the gridPadding option,
 
         // gridPadding: {top: 40, bottom: 60, left: 70, right: 50},
@@ -198,7 +238,7 @@ $(document).ready(function(){
         },
         seriesDefaults: {
             showMarker: false,
-            color: '#4bb2c5'
+            color: "#4bb2c5"
         },
         axes: {
             xaxis: {
@@ -214,23 +254,23 @@ $(document).ready(function(){
             drawBorder: false,
             shadow: false,
             // background: 'rgba(0,0,0,0)'  works.
-            background: 'white'
+            background: "white"
         },
         canvasOverlay: {
             show: true,
             objects: [,
                 {line: {
-                    name: 'line5',
+                    name: "line5",
                     start: [0,0],
                     stop: [100,100],
-                    color: '#4bb2c5',
+                    color: "#4bb2c5",
                     shadow: false,
                     showTooltip: false
                 }},
                 {horizontalLine: {
-                    name: 'line1',
+                    name: "line1",
                     y: userLine1Val,
-                    color: '#d4c35D',
+                    color: "#d4c35D",
                     xmin: 0,
                     xmax: line1x,
                     shadow: false,
@@ -239,9 +279,9 @@ $(document).ready(function(){
                     showTooltipPrecision: 0.5
                 }},
                 {horizontalLine: {
-                    name: 'line2',
+                    name: "line2",
                     y: userLine2Val,
-                    color: '#d4c35D',
+                    color: "#d4c35D",
                     xmin: 0,
                     xmax: line2x,
                     shadow: false,
@@ -250,9 +290,9 @@ $(document).ready(function(){
                     showTooltipPrecision: 0.5
                 }},
                 {verticalLine: {
-                    name: 'line3',
+                    name: "line3",
                     x: line1x,
-                    color: '#d4c35D',
+                    color: "#d4c35D",
                     ymin: 0,
                     ymax: line3y,
                     shadow: false,
@@ -261,9 +301,9 @@ $(document).ready(function(){
                     showTooltipPrecision: 0.5
                 }},
                 {verticalLine: {
-                    name: 'line4',
+                    name: "line4",
                     x: line2x,
-                    color: '#d4c35D',
+                    color: "#d4c35D",
                     ymin: 0,
                     ymax: line4y,
                     shadow: false,
@@ -278,107 +318,107 @@ $(document).ready(function(){
     // add a date at the bottom.
 
     var d = new $.jsDate();
-    $('div.jqplot-datestamp').html('Generated on '+d.strftime('%v'));
+    $("div.jqplot-datestamp").html("Generated on "+d.strftime("%v"));
 
     // initialize form elements
     // set these before attaching event handlers.
 
-    $('input[type=radio][name=dataSeries]').attr('checked', false);
-    $('input[type=radio][name=dataSeries][value=national]').attr('checked', true);
+    $("input[type=radio][name=dataSeries]").attr("checked", false);
+    $("input[type=radio][name=dataSeries][value=national]").attr("checked", true);
 
-    $('input[type=radio][name=backgroundColor]').attr('checked', false);
-    $('input[type=radio][name=backgroundColor][value=white]').attr('checked', true);
+    $("input[type=radio][name=backgroundColor]").attr("checked", false);
+    $("input[type=radio][name=backgroundColor][value=white]").attr("checked", true);
 
-    $('input[type=radio][name=lineWidth]').attr('checked', false);
-    $('input[type=radio][name=lineWidth][value="2.5"]').attr('checked', true);
+    $("input[type=radio][name=lineWidth]").attr("checked", false);
+    $('input[type=radio][name=lineWidth][value="2.5"]').attr("checked", true);
 
-    $('input[type=text][name=userLine1]').val(userLine1Val);
-    $('input[type=text][name=userLine2]').val(userLine2Val);
+    $("input[type=text][name=userLine1]").val(userLine1Val);
+    $("input[type=text][name=userLine2]").val(userLine2Val);
 
-    $('input[type=checkbox][name=gridsVertical]').attr('checked', true);
-    $('input[type=checkbox][name=gridsHorizontal]').attr('checked', true);
+    $("input[type=checkbox][name=gridsVertical]").attr("checked", true);
+    $("input[type=checkbox][name=gridsHorizontal]").attr("checked", true);
 
 
     // attach event handlers to form elements
 
-    $('input[type=radio][name=backgroundColor]').change(function(){ 
+    $("input[type=radio][name=backgroundColor]").change(function(){ 
         plot1.grid.background = $(this).val();
         plot1.replot();
     });
 
-    $('input[type=radio][name=dataSeries]').change(function(){ 
+    $("input[type=radio][name=dataSeries]").change(function(){ 
         var val = $(this).val();
         plot1.series[0].data = dataSets[val];
 
         switch (val) {
-            case 'national':
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#4bb2c5';
-                plot1.plugins.canvasOverlay.get('line5').options.color = '#4bb2c5';
+            case "national":
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#4bb2c5";
+                plot1.plugins.canvasOverlay.get("line5").options.color = "#4bb2c5";
                 break;
-            case 'urban':
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#c54b62';
-                plot1.plugins.canvasOverlay.get('line5').options.color = '#c54b62';
+            case "urban":
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#c54b62";
+                plot1.plugins.canvasOverlay.get("line5").options.color = "#c54b62";
                 break;
-            case 'rural':
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#b2c54b';
-                plot1.plugins.canvasOverlay.get('line5').options.color = '#b2c54b';
+            case "rural":
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#b2c54b";
+                plot1.plugins.canvasOverlay.get("line5").options.color = "#b2c54b";
                 break;
             default:
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#4bb2c5';
-                plot1.plugins.canvasOverlay.get('line5').options.color = '#4bb2c5';
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#4bb2c5";
+                plot1.plugins.canvasOverlay.get("line5").options.color = "#4bb2c5";
                 break;
         }
 
         var co = plot1.plugins.canvasOverlay;
-        var x1max = findXValue($('input[type=text][name=userLine1]').val(), dataSets[val])[1][0];
-        co.get('line1').options.xmax = co.get('line3').options.x = x1max;
-        var x2max = findXValue($('input[type=text][name=userLine2]').val(), dataSets[val])[1][0];
-        co.get('line2').options.xmax = co.get('line4').options.x = x2max;
+        var x1max = findXValue($("input[type=text][name=userLine1]").val(), dataSets[val])[1][0];
+        co.get("line1").options.xmax = co.get("line3").options.x = x1max;
+        var x2max = findXValue($("input[type=text][name=userLine2]").val(), dataSets[val])[1][0];
+        co.get("line2").options.xmax = co.get("line4").options.x = x2max;
 
         // hack to make sure plot auto computes a new format string if needed.
         plot1.axes.yaxis.tickOptions.formatString = ''
-        plot1.replot({resetAxes:['yaxis']});
+        plot1.replot({resetAxes:["yaxis"]});
     });
 
-    $('input[type=checkbox][name=gridsVertical]').change(function(){
+    $("input[type=checkbox][name=gridsVertical]").change(function(){
         plot1.axes.xaxis.tickOptions.showGridline = this.checked;
         plot1.replot();
     });
 
-    $('input[type=checkbox][name=gridsHorizontal]').change(function(){
+    $("input[type=checkbox][name=gridsHorizontal]").change(function(){
         plot1.axes.yaxis.tickOptions.showGridline = this.checked;
         plot1.replot();
     });
 
-    $('input[type=text][name=userLine1]').keyup(function(){
+    $("input[type=text][name=userLine1]").keyup(function(){
         var val = parseFloat($(this).val());
 
         var co = plot1.plugins.canvasOverlay;
 
-        co.get('line1').options.y = val;
-        co.get('line3').options.ymax = val;
+        co.get("line1").options.y = val;
+        co.get("line3").options.ymax = val;
 
         var xx = findXValue(val, plot1.series[0].data)[1][0];
-        co.get('line1').options.xmax = co.get('line3').options.x = xx;
+        co.get("line1").options.xmax = co.get("line3").options.x = xx;
 
         plot1.replot();
     });
 
-    $('input[type=text][name=userLine2]').keyup(function(){
+    $("input[type=text][name=userLine2]").keyup(function(){
         var val = parseFloat($(this).val());
 
         var co = plot1.plugins.canvasOverlay;
 
-        co.get('line2').options.y = val;
-        co.get('line4').options.ymax = val;
+        co.get("line2").options.y = val;
+        co.get("line4").options.ymax = val;
         
         var xx = findXValue(val, plot1.series[0].data)[1][0];
-        co.get('line2').options.xmax = co.get('line4').options.x = xx;
+        co.get("line2").options.xmax = co.get("line4").options.x = xx;
 
         plot1.replot();
     });
 
-    $('input[type=radio][name=lineWidth]').change(function(){
+    $("input[type=radio][name=lineWidth]").change(function(){
         var val = parseFloat($(this).val()), shadowOffset; 
         plot1.series[0].renderer.shapeRenderer.lineWidth = val;
         plot1.series[0].renderer.shadowRenderer.lineWidth = val;
@@ -401,86 +441,33 @@ $(document).ready(function(){
     
     $("div.chart-container").resizable({delay:20, aspectRatio: true});    
 
-    $('div.chart-container').bind('resize', function(event, ui) {
+    $("div.chart-container").bind("resize", function(event, ui) {
         plot1.replot();
     });
 
-    $('.jqplot-target').mouseleave(function(){ $('.jqplot-canvasOverlay-tooltip, .jqplot-highlighter-tooltip, .jqpot-cursor-tooltip').hide(); });
+    $(".jqplot-target").mouseleave(function(){ $('.jqplot-canvasOverlay-tooltip, .jqplot-highlighter-tooltip, .jqpot-cursor-tooltip').hide(); });
 });
 
 </script>
 
-<script type="text/javascript">    
-    $(document).ready(function(){
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        });
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script> 
-    
-  </head>
-  <body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
-    <table class="app">
-        <td class="controls">
 
-            <div>
-                Data Series:
-                <ul>
-                    <li><input name="dataSeries" value="national" type="radio" checked />National</li>
-                    <li><input name="dataSeries" value="urban" type="radio" />Urban</li>
-                    <li><input name="dataSeries" value="rural" type="radio" />Rural</li>
-                </ul>
-            </div>
+<!-- End example scripts -->
 
-            <div>
-                Background Color:
-                <ul>
-                    <li><input name="backgroundColor" value="white" type="radio" checked />Default</li>
-                    <li><input name="backgroundColor" value="#efefef" type="radio" />Gray</li>
-                </ul>
-            </div>
+<!-- Don't touch this! -->
 
-            <div>
-                Line Width:
-                <ul>
-                    <li><input name="lineWidth" value="2.5" type="radio" checked />Thin</li>
-                    <li><input name="lineWidth" value="5" type="radio" />Thick</li>
-                </ul>
-            </div>
+<?php include "commonScripts.html" ?>
 
-            <div>
-                Grids:
-                <ul>
-                    <li><input name="gridsVertical" value="vertical" type="checkbox" checked />Vertical</li>
-                    <li><input name="gridsHorizontal" value="horizontal" type="checkbox" checked />Horizontal</li>
-                </ul>
-            </div>
+<!-- End Don't touch this! -->
 
-            <div>
-                Set lines at:
-                <ul>
-                    <li><input name="userLine1" value="42" type="text" size="8" /> and </li>
-                    <li><input name="userLine2" value="75" type="text" size="8" /></li>
-                </ul>
-            </div>
-        </td>
-        
-        <td class="chart">
-            <div class="chart-container">    
-                <div id="chart1"></div>
-                <div class="jqplot-datestamp"></div>
-            </div>
-        </td>
+<!-- Additional plugins go here -->>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
+  <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
 
-    </table>
+<!-- End additional plugins -->
 
-    <pre class="code"></pre>
-
-  
-  </div>
-</body>
-</html>
+<?php include "closer.html"; ?>

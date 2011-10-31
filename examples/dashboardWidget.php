@@ -1,28 +1,11 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Animated Dashboard Sample - Filled Line with Log Axis";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <!-- Use Compatibility mode in IE -->
-    <title>Animated Dashboard Sample - Filled Line with Log Axis.</title>
-    <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-
-    <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-    <link rel="stylesheet" type="text/css" href="examples.css" />
+<!-- Example scripts go here -->
     <link rel="stylesheet" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.css" />
-
-    <!-- BEGIN: load jquery -->
-    <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-    <!-- END: load jquery -->
-
-    <!-- BEGIN: load jqplot -->
-    <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-    <!-- END: load jqplot -->
 
     <style type="text/css">
         .jqplot-target {
@@ -51,11 +34,18 @@
 
     </style>
 
+    <div class="ui-widget ui-corner-all">
+        <div class="ui-widget-header ui-corner-top">Hi Powered Data</div>
+        <div class="ui-widget-content ui-corner-bottom" >
+            <div id="chart1"></div>
+        </div>
+    </div>
+
     <script class="code" type="text/javascript">
-        $.jqplot._noToImageButton = true;
-        $.jqplot._noCodeBlock = true;
 
         $(document).ready(function () {
+            $.jqplot._noToImageButton = true;
+            $.jqplot._noCodeBlock = true;
             var prevYear = [["2011-08-01",398], ["2011-08-02",255.25], ["2011-08-03",263.9], ["2011-08-04",154.24], 
             ["2011-08-05",210.18], ["2011-08-06",109.73], ["2011-08-07",166.91], ["2011-08-08",330.27], ["2011-08-09",546.6], 
             ["2011-08-10",260.5], ["2011-08-11",330.34], ["2011-08-12",464.32], ["2011-08-13",432.13], ["2011-08-14",197.78], 
@@ -172,22 +162,22 @@
 
     </script>
 
-    <script type="text/javascript" src="example.js"></script> 
 
-</head>
-<body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
+<!-- End example scripts -->
 
-        <?php include "nav.inc"; ?>
+<!-- Don't touch this! -->
 
-        <div class="ui-widget ui-corner-all">
-            <div class="ui-widget-header ui-corner-top">Hi Powered Data</div>
-            <div class="ui-widget-content ui-corner-bottom" >
-                <div id="chart1"></div>
-            </div>
-        </div>
-    
-    </div>
-</body>
-</html>
+<?php include "commonScripts.html" ?>
+
+<!-- End Don't touch this! -->
+
+<!-- Additional plugins go here -->
+    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+
+<!-- End additional plugins -->
+
+<?php include "closer.html"; ?>

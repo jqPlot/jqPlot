@@ -1,30 +1,13 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Probability Density Function Chart";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <!-- Use Compatibility mode in IE -->
-  <title>Probability Density Function</title>
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
-  
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-  <!-- END: load jquery -->
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
-  <!-- END: load jqplot -->
-  <link type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" />  
-  <script type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+<!-- Example scripts go here -->
+
+
+  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
 
   <style type="text/css">
 
@@ -68,7 +51,65 @@
 
 
   </style>
+
+    <table class="app">
+        <td class="controls">
+
+            <div>
+                Data Series:
+                <ul>
+                    <li><input name="dataSeries" value="national" type="radio" checked />National</li>
+                    <li><input name="dataSeries" value="urban" type="radio" />Urban</li>
+                    <li><input name="dataSeries" value="rural" type="radio" />Rural</li>
+                </ul>
+            </div>
+
+            <div>
+                Background Color:
+                <ul>
+                    <li><input name="backgroundColor" value="white" type="radio" checked />Default</li>
+                    <li><input name="backgroundColor" value="#efefef" type="radio" />Gray</li>
+                </ul>
+            </div>
+
+            <div>
+                Line Width:
+                <ul>
+                    <li><input name="lineWidth" value="2.5" type="radio" checked />Thin</li>
+                    <li><input name="lineWidth" value="5" type="radio" />Thick</li>
+                </ul>
+            </div>
+
+            <div>
+                Grids:
+                <ul>
+                    <li><input name="gridsVertical" value="vertical" type="checkbox" checked />Vertical</li>
+                    <li><input name="gridsHorizontal" value="horizontal" type="checkbox" checked />Horizontal</li>
+                </ul>
+            </div>
+
+            <div>
+                Set lines at:
+                <ul>
+                    <li><input name="userLine1" value="8250" type="text" size="8" /> and </li>
+                    <li><input name="userLine2" value="60000" type="text" size="8" /></li>
+                </ul>
+            </div>
+        </td>
+
+        <td class="chart">
+            <div class="chart-container">    
+                <div id="chart1"></div>
+                <div class="jqplot-datestamp"></div>
+            </div>
+        </td>
+
+    </table>
+
+    <pre class="code brush:js"></pre>
   
+
+ 
   <script class="code" type="text/javascript">
 $(document).ready(function(){
     var dataSets = {
@@ -138,8 +179,8 @@ $(document).ready(function(){
 
 
     
-    plot1 = $.jqplot('chart1', [dataSets.national], {
-        title: 'Probability Density Function',
+    plot1 = $.jqplot("chart1", [dataSets.national], {
+        title: "Probability Density Function",
         cursor: {
             show: false
         },
@@ -162,7 +203,7 @@ $(document).ready(function(){
                 pad:0,
                 ticks: [700, 7000, 70000, 700000, {value:1000000, showLabel:false, showMark:false, showGridline:false}],
                 tickOptions: {
-                    formatString: '%d'
+                    formatString: "%d"
                 }
             },
             yaxis: {
@@ -175,15 +216,15 @@ $(document).ready(function(){
             drawBorder: false,
             shadow: false,
             // background: 'rgba(0,0,0,0)'  works.
-            background: 'white'
+            background: "white"
         },
         canvasOverlay: {
             show: true,
             objects: [
                 {verticalLine: {
-                    name: 'line1',
+                    name: "line1",
                     x: 8250,
-                    color: '#d4c35D',
+                    color: "#d4c35D",
                     yOffset: 0,
                     shadow: false,
                     showTooltip: true,
@@ -191,9 +232,9 @@ $(document).ready(function(){
                     showTooltipPrecision: 0.5
                 }},
                 {verticalLine: {
-                    name: 'line2',
+                    name: "line2",
                     x: 60000,
-                    color: '#d4c35D',
+                    color: "#d4c35D",
                     yOffset: 0,
                     shadow: false,
                     showTooltip: true,
@@ -205,59 +246,59 @@ $(document).ready(function(){
     });
 
     var d = new $.jsDate();
-    $('div.jqplot-datestamp').html('Generated on '+d.strftime('%v'));
+    $("div.jqplot-datestamp").html("Generated on "+d.strftime("%v"));
 
-    $('input[type=radio][name=backgroundColor]').change(function(){ 
+    $("input[type=radio][name=backgroundColor]").change(function(){ 
         plot1.grid.background = $(this).val();
         plot1.replot();
     });
 
-    $('input[type=radio][name=dataSeries]').change(function(){ 
+    $("input[type=radio][name=dataSeries]").change(function(){ 
         var val = $(this).val();
         plot1.series[0].data = dataSets[val];
 
         switch (val) {
-            case 'national':
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#4bb2c5';
+            case "national":
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#4bb2c5";
                 break;
-            case 'urban':
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#c54b62';
+            case "urban":
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#c54b62";
                 break;
-            case 'rural':
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#b2c54b';
+            case "rural":
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#b2c54b";
                 break;
             default:
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = '#4bb2c5';
+                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#4bb2c5";
                 break;
         }
         // hack to make sure plot auto computes a new format string if needed.
         plot1.axes.yaxis.tickOptions.formatString = ''
-        plot1.replot({resetAxes:['yaxis']});
+        plot1.replot({resetAxes:["yaxis"]});
     });
 
-    $('input[type=checkbox][name=gridsVertical]').change(function(){
+    $("input[type=checkbox][name=gridsVertical]").change(function(){
         plot1.axes.xaxis.tickOptions.showGridline = this.checked;
         plot1.replot();
     });
 
-    $('input[type=checkbox][name=gridsHorizontal]').change(function(){
+    $("input[type=checkbox][name=gridsHorizontal]").change(function(){
         plot1.axes.yaxis.tickOptions.showGridline = this.checked;
         plot1.replot();
     });
 
-    $('input[type=text][name=userLine1]').keyup(function(){
+    $("input[type=text][name=userLine1]").keyup(function(){
         var val = parseFloat($(this).val());
-        plot1.plugins.canvasOverlay.get('line1').options.x = val;
+        plot1.plugins.canvasOverlay.get("line1").options.x = val;
         plot1.replot();
     });
 
-    $('input[type=text][name=userLine2]').keyup(function(){
+    $("input[type=text][name=userLine2]").keyup(function(){
         var val = parseFloat($(this).val());
-        plot1.plugins.canvasOverlay.get('line2').options.x = val;
+        plot1.plugins.canvasOverlay.get("line2").options.x = val;
         plot1.replot();
     });
 
-    $('input[type=radio][name=lineWidth]').change(function(){
+    $("input[type=radio][name=lineWidth]").change(function(){
         var val = parseFloat($(this).val()), shadowOffset; 
         plot1.series[0].renderer.shapeRenderer.lineWidth = val;
         plot1.series[0].renderer.shadowRenderer.lineWidth = val;
@@ -271,92 +312,39 @@ $(document).ready(function(){
             shadowOffset = 1.25*Math.atan((val/2.5))/0.785398163;
         }
         plot1.series[0].renderer.shadowRenderer.offset = shadowOffset;
-        plot1.plugins.canvasOverlay.get('line1').options.lineWidth = val;
-        plot1.plugins.canvasOverlay.get('line2').options.lineWidth = val;
+        plot1.plugins.canvasOverlay.get("line1").options.lineWidth = val;
+        plot1.plugins.canvasOverlay.get("line2").options.lineWidth = val;
         plot1.replot();
     });
     
     
     $("div.chart-container").resizable({delay:20});    
 
-    $('div.chart-container').bind('resize', function(event, ui) {
+    $("div.chart-container").bind("resize", function(event, ui) {
         plot1.replot();
     });
 });
 
 </script>
 
-<script type="text/javascript">    
-    $(document).ready(function(){
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        });
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script> 
-    
-  </head>
-  <body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
-    <table class="app">
-        <td class="controls">
 
-            <div>
-                Data Series:
-                <ul>
-                    <li><input name="dataSeries" value="national" type="radio" checked />National</li>
-                    <li><input name="dataSeries" value="urban" type="radio" />Urban</li>
-                    <li><input name="dataSeries" value="rural" type="radio" />Rural</li>
-                </ul>
-            </div>
+<!-- End example scripts -->
 
-            <div>
-                Background Color:
-                <ul>
-                    <li><input name="backgroundColor" value="white" type="radio" checked />Default</li>
-                    <li><input name="backgroundColor" value="#efefef" type="radio" />Gray</li>
-                </ul>
-            </div>
+<!-- Don't touch this! -->
 
-            <div>
-                Line Width:
-                <ul>
-                    <li><input name="lineWidth" value="2.5" type="radio" checked />Thin</li>
-                    <li><input name="lineWidth" value="5" type="radio" />Thick</li>
-                </ul>
-            </div>
+<?php include "commonScripts.html" ?>
 
-            <div>
-                Grids:
-                <ul>
-                    <li><input name="gridsVertical" value="vertical" type="checkbox" checked />Vertical</li>
-                    <li><input name="gridsHorizontal" value="horizontal" type="checkbox" checked />Horizontal</li>
-                </ul>
-            </div>
+<!-- End Don't touch this! -->
 
-            <div>
-                Set lines at:
-                <ul>
-                    <li><input name="userLine1" value="8250" type="text" size="8" /> and </li>
-                    <li><input name="userLine2" value="60000" type="text" size="8" /></li>
-                </ul>
-            </div>
-        </td>
+<!-- Additional plugins go here -->>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
+  <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
 
-        <td class="chart">
-            <div class="chart-container">    
-                <div id="chart1"></div>
-                <div class="jqplot-datestamp"></div>
-            </div>
-        </td>
+<!-- End additional plugins -->
 
-    </table>
-
-    <pre class="code"></pre>
-
-  
-  </div>
-</body>
-</html>
+<?php include "closer.html"; ?>

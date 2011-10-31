@@ -1,52 +1,36 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Dashed Lines with Smoothing";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <!-- Use Compatibility mode in IE -->
-  <title>Dashed Lines with Smoothing</title>
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
-  
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-  <!-- END: load jquery -->
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <!-- END: load jqplot -->
+<!-- Example scripts go here -->
 
   <style type="text/css">
     .jqplot-target {
         margin-bottom: 2em;
     }
     
-    pre {
-        background: #D8F4DC;
-        border: 1px solid rgb(200, 200, 200);
-        padding-top: 1em;
-        padding-left: 3em;
-        padding-bottom: 1em;
-        margin-top: 1em;
-        margin-bottom: 4em;
-        
-    }
-    
     p {
         margin: 2em 0;
-    }
-    
-    .note {
-        font-size: 0.8em;
-    }
-
-    .jqplot-breakTick {
-        
-    }
+    }  
   </style>
-  
+
+         
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+        
+    <div id="chart1b" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+
+    <div id="chart2" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+
+    <div id="chart3" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+
+    <div id="chart4" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+
+    <div id="chart4b" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+
+    <div id="chart5" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+
   <script class="code" type="text/javascript">
 
     $(document).ready(function () {
@@ -190,44 +174,17 @@
     });
 </script>
 
-<script type="text/javascript" src="example.js"></script>
-    
-  </head>
-  <body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
-        
-    <div id="chart1" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
 
-    <pre class="code"></pre>
-        
-    <div id="chart1b" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+<!-- End example scripts -->
 
-    <pre class="code"></pre>
+<!-- Don't touch this! -->
 
-    <div id="chart2" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+<?php include "commonScripts.html" ?>
 
-    <pre class="code"></pre>
+<!-- End Don't touch this! -->
 
-    <div id="chart3" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+<!-- Additional plugins go here -->
 
-    <pre class="code"></pre>
+<!-- End additional plugins -->
 
-    <div id="chart4" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
-
-    <pre class="code"></pre>
-
-    <div id="chart4b" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
-
-    <pre class="code"></pre>
-
-    <div id="chart5" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
-
-    <pre class="code"></pre>
-
-
-  
-  </div>
-</body>
-</html>
+<?php include "closer.html"; ?>

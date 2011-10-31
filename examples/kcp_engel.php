@@ -1,28 +1,13 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Engel Curves";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <!-- Use Compatibility mode in IE -->
-  <title>Engel Curves</title>
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="../examples/examples.css" />
-  
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-  <!-- END: load jquery -->
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
+<!-- Example scripts go here -->
 
-  <link type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" />  
-  <script type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
-  <!-- END: load jqplot -->
+
+  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
 
   <style type="text/css">
 
@@ -83,6 +68,13 @@
     }
 
   </style>
+
+    <div class="chart-container">    
+        <div id="chart1"></div>
+        <div class="jqplot-datestamp"></div>
+    </div>
+
+    <pre class="code brush:js"></pre>
   
   <script class="code" type="text/javascript">
 $(document).ready(function(){
@@ -106,7 +98,7 @@ $(document).ready(function(){
             // have to use synchronous here, else returns before data is fetched
             async: false,
             url: url,
-            dataType:'text',
+            dataType:"text",
             success: function(data) {
                 // parse csv data
                 var lines = data.split('\n');
@@ -143,8 +135,8 @@ $(document).ready(function(){
 
     // make the plot
     
-    plot1 = $.jqplot('chart1', data, {
-        title: 'Engel Curves',
+    plot1 = $.jqplot("chart1", data, {
+        title: "Engel Curves",
         axesDefaults: {
             labelRenderer: $.jqplot.CanvasAxisLabelRenderer
         },
@@ -154,10 +146,10 @@ $(document).ready(function(){
         legend: {
             show: true,
             renderer: $.jqplot.EnhancedLegendRenderer,
-            placement: 'outsideGrid',
+            placement: "outsideGrid",
             labels: labels,
-            location: 'ne',
-            rowSpacing: '0px'
+            location: "ne",
+            rowSpacing: "0px"
         },
         axes: {
             xaxis: {
@@ -175,20 +167,20 @@ $(document).ready(function(){
             drawBorder: false,
             shadow: false,
             // background: 'rgba(0,0,0,0)'  works to make transparent.
-            background: 'white'
+            background: "white"
         }
     });
 
     // add a date at the bottom.
 
     var d = new $.jsDate();
-    $('div.jqplot-datestamp').html('Generated on '+d.strftime('%v'));
+    $("div.jqplot-datestamp").html("Generated on "+d.strftime("%v"));
 
     // make it resizable.
     
     $("div.chart-container").resizable({delay:20});
 
-    $('div.chart-container').bind('resize', function(event, ui) {
+    $("div.chart-container").bind("resize", function(event, ui) {
         plot1.replot();
     });
 });
@@ -196,29 +188,20 @@ $(document).ready(function(){
 </script>
 
 
-<script type="text/javascript">    
-    $(document).ready(function(){
-        $('script.code').each(function(index) {
-            $('pre.code').eq(index).text($(this).html());
-        });
-        $(document).unload(function() {$('*').unbind(); });
-    });
-</script> 
-    
-  </head>
-  <body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
+<!-- End example scripts -->
 
-    <div class="chart-container">    
-        <div id="chart1"></div>
-        <div class="jqplot-datestamp"></div>
-    </div>
+<!-- Don't touch this! -->
 
-    <pre class="code"></pre>
+<?php include "commonScripts.html" ?>
 
-  
-  </div>
-</body>
-</html>
+<!-- End Don't touch this! -->
+
+<!-- Additional plugins go here -->>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
+  <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+
+<!-- End additional plugins -->
+
+<?php include "closer.html"; ?>

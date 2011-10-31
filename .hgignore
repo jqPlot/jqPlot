@@ -15,6 +15,7 @@ style.css
 tests
 examples/bug*
 examples/_*
+examples/~*
 
 # switch to regexp syntax.
 syntax: regexp

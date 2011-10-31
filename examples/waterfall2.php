@@ -1,26 +1,11 @@
-<!DOCTYPE html>
+<?php 
+    $title = "Probability Density Function Chart";
+    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
+?>
+<?php include "opener.php"; ?>
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Waterfall Chart</title>
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-  <link rel="stylesheet" type="text/css" href="examples.css" />
-  
-  <!-- BEGIN: load jquery -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.js"></script>
-  <!-- END: load jquery -->
-  
-  <!-- BEGIN: load jqplot -->
-  <script language="javascript" type="text/javascript" src="../src/jquery.jqplot.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
-  <!-- END: load jqplot -->
+<!-- Example scripts go here -->
+
   <style type="text/css" media="screen">
     .jqplot-axis {
       font-size: 0.85em;
@@ -33,6 +18,18 @@
         font-family:Arial,Helvetica,Sans-serif;
       }
   </style>
+
+
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
+
+    <div id="chart1b" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
+
+    <div id="chart1c" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
+
+    <div id="chart1d" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
+
+
+  
 
 <script class="code" type="text/javascript">$(document).ready(function(){
     var line1 = [14, 4, 3, -23, 5, 2, -3, -7];
@@ -177,32 +174,21 @@
     });
 });</script>
 
-  
-    <script type="text/javascript">    
-        $(document).ready(function(){
-            $('script.code').each(function(index) {
-                $('pre.code').eq(index).text($(this).html());
-            });
-            $('script.common').each(function(index) {
-                $('pre.common').eq(index).html($(this).html());
-            });
-            $(document).unload(function() {$('*').unbind(); });
-        });
-    </script> 
-  </head>
-  <body>
-    <?php include "topbanner.inc"; ?>
-    <div class="example-content">
-    <?php include "nav.inc"; ?>
-    <div id="chart1" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
-    <pre class="code"></pre>
-    <div id="chart1b" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
-    <pre class="code"></pre>
-    <div id="chart1c" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
-    <pre class="code"></pre>
-    <div id="chart1d" style="margin-top:20px; margin-left:20px; width:350px; height:350px;"></div>
-    <pre class="code"></pre>
-  
-  </div>
-</body>
-</html>
+<!-- End example scripts -->
+
+<!-- Don't touch this! -->
+
+<?php include "commonScripts.html" ?>
+
+<!-- End Don't touch this! -->
+
+<!-- Additional plugins go here -->
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.pointLabels.js"></script>
+
+<!-- End additional plugins -->
+
+<?php include "closer.html"; ?>
