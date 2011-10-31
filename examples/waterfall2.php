@@ -1,5 +1,5 @@
 <?php 
-    $title = "Probability Density Function Chart";
+    $title = "Waterfall charts 2";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>

@@ -1,7 +1,7 @@
 <div class="example-nav">
   <?php
     $tmpnames = scandir('./');
-    $skip = array('opener.php', 'bodyOpener.php', 'nav.php', 'closer.html', 'commonScripts.html', 'topbanner.html');
+    $skip = array('opener.php', 'bodyOpener.php', 'nav.php', 'closer.html', 'commonScripts.html', 'topbanner.html', 'index.php');
     
     foreach( $tmpnames as $value) {
         if (preg_match('/^[a-z0-9][a-z0-9_\-]+\.(html|php)$/i', $value)) {

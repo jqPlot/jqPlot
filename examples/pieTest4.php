@@ -1,5 +1,5 @@
 <?php 
-    $title = "Pie Charts and Options";
+    $title = "Pie Charts and Options 2";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>

@@ -58,6 +58,7 @@
         <copy todir="${BUILD_DIR}/examples">
           <fileset dir="examples">
             <exclude name="_*" />
+            <exclude name="~*" />
             <exclude name="bug*" />
             <exclude name="footer.inc" />
           </fileset>

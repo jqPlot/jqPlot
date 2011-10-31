@@ -1,12 +1,10 @@
 <?php 
-    $title = "Probability Density Function Chart";
+    $title = "Smoothed Lines";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
-
-  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
 
     <style type="text/css">
         body {

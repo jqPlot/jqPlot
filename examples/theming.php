@@ -1,5 +1,5 @@
 <?php 
-    $title = "Probability Density Function Chart";
+    $title = "Chart Theming";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
@@ -11,8 +11,6 @@
     margin: 30px;
 }
 </style>
-
-  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
 
 <p>jqPlot has basic theming support for commonly styled atributes of plot elements.  Upon creation, each plot will have a "themeEngine" that controls modificaition, adding, removing and activating of plot themes.  In addition, each plot will have a "Default" theme which corresponds to the styling of the plot at plot creation.<p>
     

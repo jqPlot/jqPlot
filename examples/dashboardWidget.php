@@ -5,7 +5,7 @@
 <?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
-    <link rel="stylesheet" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.css" />
+    <link class="include" rel="stylesheet" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.css" />
 
     <style type="text/css">
         .jqplot-target {
@@ -41,11 +41,12 @@
         </div>
     </div>
 
+    <pre class="code brush:js"></pre>
+
     <script class="code" type="text/javascript">
 
         $(document).ready(function () {
             $.jqplot._noToImageButton = true;
-            $.jqplot._noCodeBlock = true;
             var prevYear = [["2011-08-01",398], ["2011-08-02",255.25], ["2011-08-03",263.9], ["2011-08-04",154.24], 
             ["2011-08-05",210.18], ["2011-08-06",109.73], ["2011-08-07",166.91], ["2011-08-08",330.27], ["2011-08-09",546.6], 
             ["2011-08-10",260.5], ["2011-08-11",330.34], ["2011-08-12",464.32], ["2011-08-13",432.13], ["2011-08-14",197.78], 
@@ -75,7 +76,7 @@
             ["2011-09-25",2785.93], ["2011-09-26",4329.7], ["2011-09-27",3493.72], ["2011-09-28",4440.55], 
             ["2011-09-29",5235.81], ["2011-09-30",6473.25]];
 
-            plot1 = $.jqplot("chart1", [prevYear, currYear], {
+            var plot1 = $.jqplot("chart1", [prevYear, currYear], {
                 seriesColors: ["rgba(78, 135, 194, 0.7)", "rgb(211, 235, 59)"],
                 title: 'Monthly TurnKey Revenue',
                 highlighter: {
@@ -147,15 +148,6 @@
                 }
             });
 
-              // Add animation to the bars and line.
-              // use jquery-ui to initially hide the canvases for the series.
-              // Then use the 'blind' effect to show the canvases.
-
-              // plot1.series[0].canvas._elem.hide();
-              // plot1.series[1].canvas._elem.hide();
-              // plot1.series[0].canvas._elem.jqplotEffect('blind', {mode: 'show', direction: 'left'}, 3000);
-              // plot1.series[1].canvas._elem.jqplotEffect('blind', {mode: 'show', direction: 'left'}, 3000);
-
               $('.jqplot-highlighter-tooltip').addClass('ui-corner-all')
         });
 
@@ -172,11 +164,11 @@
 <!-- End Don't touch this! -->
 
 <!-- Additional plugins go here -->
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-    <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
 
 <!-- End additional plugins -->
 

@@ -193,7 +193,6 @@ $(document).ready(function(){
 $(document).ready(function(){
         
     plot3 = $.jqplot('chart3',[ohlc],{
-        title: 'Pad = 2.02',
         axesDefaults:{},
         axes: {
             xaxis: {

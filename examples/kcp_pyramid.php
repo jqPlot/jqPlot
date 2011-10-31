@@ -1,5 +1,5 @@
 <?php 
-    $title = "Probability Density Function Chart";
+    $title = "Pyramid Charts";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
@@ -505,6 +505,12 @@
 
         var d = new $.jsDate();
         $('div.jqplot-datestamp').html('Generated on '+d.strftime('%v'));
+    
+        $("div.chart-container").resizable({delay:20});    
+
+        $("div.chart-container").bind("resize", function(event, ui) {
+            plot1.replot();
+        });
 
     });
     </script>
