@@ -79,6 +79,11 @@
         // prop: highlightColors
         // an array of colors to use when highlighting a slice.
         this.highlightColors = [];
+        // prop: offsetBars
+        // False will center bars on their y value.
+        // True will push bars up by 1/2 bar width to fill between their y values.
+        // If true, there needs to be 1 more tick than there are bars.
+        this.offsetBars = false;
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -294,8 +299,10 @@
             var xstart = this._xaxis.series_u2p(this._xnudge);
             var ystart = this._yaxis.series_u2p(this._yaxis.min);
             var yend = this._yaxis.series_u2p(this._yaxis.max);
-            var bw2 = this.barWidth/2.0;
+            var bw = this.barWidth;
+            var bw2 = bw/2.0;
             var points = [];
+            var yadj = this.offsetBars ? bw2 : 0;
             
             for (var i=0, l=gridData.length; i<l; i++) {
                 if (this.data[i][0] == null) {
@@ -324,17 +331,18 @@
                 }
                 
                 if (this.fill) {
+
                     if (this._plotData[i][1] >= 0) {
                         // xstart = this._xaxis.series_u2p(this._xnudge);
                         w = gridData[i][0] - xstart;
                         h = this.barWidth;
-                        points = [xstart, base - bw2, w, h];
+                        points = [xstart, base - bw2 - yadj, w, h];
                     }
                     else {
                         // xstart = this._xaxis.series_u2p(0);
                         w = xstart - gridData[i][0];
                         h = this.barWidth;
-                        points = [gridData[i][0], base - bw2, w, h];
+                        points = [gridData[i][0], base - bw2 - yadj, w, h];
                     }
 
                     this._barPoints.push([[points[0], points[1] + h], [points[0], points[1]], [points[0] + w, points[1]], [points[0] + w, points[1] + h]]);
@@ -349,16 +357,16 @@
 
                 else {
                     if (i === 0) {
-                        points =[[xstart, ystart], [gridData[i][0], ystart], [gridData[i][0], gridData[i][1] - bw2]];
+                        points =[[xstart, ystart], [gridData[i][0], ystart], [gridData[i][0], gridData[i][1] - bw2 - yadj]];
                     }
 
                     else if (i < l-1) {
-                        points = points.concat([[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], gridData[i][1] - bw2]]);
+                        points = points.concat([[gridData[i-1][0], gridData[i-1][1] - bw2 - yadj], [gridData[i][0], gridData[i][1] + bw2 - yadj], [gridData[i][0], gridData[i][1] - bw2 - yadj]]);
                     } 
 
                     // finally, draw the line
                     else {
-                        points = points.concat([[gridData[i-1][0], gridData[i-1][1] - bw2], [gridData[i][0], gridData[i][1] + bw2], [gridData[i][0], yend], [xstart, yend]]);
+                        points = points.concat([[gridData[i-1][0], gridData[i-1][1] - bw2 - yadj], [gridData[i][0], gridData[i][1] + bw2 - yadj], [gridData[i][0], yend], [xstart, yend]]);
                     
                         if (shadow) {
                             this.renderer.shadowRenderer.draw(ctx, points);
