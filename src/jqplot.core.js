@@ -2032,6 +2032,7 @@
                 this._sumx += this.series[i]._sumx;
             }
 
+            var name;
             for (var i=0; i<12; i++) {
                 name = _axisNames[i];
                 this.axes[name]._plotDimensions = this._plotDimensions;
@@ -2140,6 +2141,8 @@
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
             }
+
+            var name;
             
             for (var j=0; j<12; j++) {
                 name = _axisNames[j];
@@ -2589,6 +2592,7 @@
                 }
                 
                 var ax = this.axes;
+                var name;
                 // draw the yMidAxis first, so xaxis of pyramid chart can adjust itself if needed.
                 for (i=0; i<12; i++) {
                     name = _axisNames[i];
