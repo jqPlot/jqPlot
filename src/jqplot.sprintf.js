@@ -296,7 +296,7 @@
         var sd = (parts[0].indexOf('.') != -1) ? parts[0].length - 1 : parts[0].length;
         var zeros = (parts[1] < 0) ? -parts[1] - 1 : 0;
         // exponent
-        var expn = parseInt(parts[1]);
+        var expn = parseInt(parts[1], 10);
         // digits to the left of the decimal place
         var dleft = (expn + 1 > 0) ? expn + 1 : 0;
         // digits to the right of the decimal place

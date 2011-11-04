@@ -58,7 +58,7 @@
         }
 
         else if (interval > 1) {
-            if (interval === parseInt(interval)) {
+            if (interval === parseInt(interval, 10)) {
                 fstr = '%d';
             }
             else {
