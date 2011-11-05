@@ -57,6 +57,8 @@
         this._splitAxis = false;
         this._splitLength = null;
         this.category = false;
+        this._autoFormatString = '';
+        this._overrideFormatString = false;
         
         $.extend(true, this, options);
         this.renderer.options = options;
@@ -338,20 +340,27 @@
                 max = tempmax;
                 range = max - min;
 
+                if (this.tickOptions == null || !this.tickOptions.formatString) {
+                    this._overrideFormatString = true;
+                }
+
                 threshold = 30;
                 tdim = Math.max(dim, threshold+1);
                 scalefact =  (tdim-threshold)/300.0;
                 ret = $.jqplot.LinearTickGenerator(min, max, scalefact); 
+                console.log(min, max, scalefact, ret);
+                console.log(ret[0].toString(), ret[1].toString());
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
                 tumin = min + range*(this.padMin - 1);
                 tumax = max - range*(this.padMax - 1);
 
-                if (min <=tumin || max >= tumax) {
+                if (min < tumin || max > tumax) {
                     tumin = min - range*(this.padMin - 1);
                     tumax = max + range*(this.padMax - 1);
                     ret = $.jqplot.LinearTickGenerator(tumin, tumax, scalefact);
+                console.log(tumin, tumax, scalefact, ret);
                 }
 
                 this.min = ret[0];
@@ -401,6 +410,11 @@
                     }
                 }
             }
+            
+            if (this._overrideFormatString && this._autoFormatString != '') {
+                this.tickOptions = this.tickOptions || {};
+                this.tickOptions.formatString = this._autoFormatString;
+            }
 
             var labelval;
             for (i=0; i<this.numberTicks; i++) {
@@ -409,9 +423,12 @@
                 if (this.name.charAt(0) === 'x') {
                     labelval = Math.abs(labelval);
                 }
-                this.tickOptions.label = String (labelval);
+                // this.tickOptions.label = String (labelval);
                 this.tickOptions.value = this.min + this.tickInterval * i;
                 t = new this.tickRenderer(this.tickOptions);
+
+                t.label = t.prefix + t.formatter(t.formatString, labelval);
+
                 this._ticks.push(t);
                 // for x axis, if y axis is in middle, add a symetrical 0 tick
                 if (this.name.charAt(0) === 'x' && plot.axes.yMidAxis.show && this.tickOptions.value === 0) {
