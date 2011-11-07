@@ -244,7 +244,13 @@
                       var number_str = Math.abs(number)[method](precision);
                       number_str = thousandSeparation ? thousand_separate(number_str): number_str;
                       value = prefix + number_str;
-                      return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
+                      var justified = justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
+
+                      if ($.jqplot.sprintf.decimalMark !== '.' && $.jqplot.sprintf.decimalMark !== $.jqplot.sprintf.thousandsSeparator) {
+                          return justified.replace(/\./, $.jqplot.sprintf.decimalMark);
+                      } else {
+                          return justified;
+                      }
                   }
             case 'p':
             case 'P':
@@ -287,6 +293,11 @@
     };
 
     $.jqplot.sprintf.thousandsSeparator = ',';
+    // Specifies the decimal mark for floating point values. By default a period '.'
+    // is used. If you change this value to for example a comma be sure to also
+    // change the thousands separator or else this won't work since a simple String
+    // replace is used (replacing all periods with the mark specified here).
+    $.jqplot.sprintf.decimalMark = '.';
     
     $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0&\' ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
