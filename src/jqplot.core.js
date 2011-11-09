@@ -715,62 +715,64 @@
         var doforce = (this.show) ? true : false;
         for (var i=0; i<this._series.length; i++) {
             s = this._series[i];
-            d = s._plotData;
-            if (s._type === 'line' && s.renderer.bands.show && this.name.charAt(0) !== 'x') {
-                d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
-            }
-
-            var minyidx = 1, maxyidx = 1;
-
-            if (s._type != null && s._type == 'ohlc') {
-                minyidx = 3;
-                maxyidx = 2;
-            }
-            
-            for (var j=0, l=d.length; j<l; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if ((d[j][minyidx] != null && d[j][minyidx] < db.min) || db.min == null) {
-                        db.min = d[j][minyidx];
-                    }
-                    if ((d[j][maxyidx] != null && d[j][maxyidx] > db.max) || db.max == null) {
-                        db.max = d[j][maxyidx];
-                    }
-                }              
-            }
-
-            // Hack to not pad out bottom of bar plots unless user has specified a padding.
-            // every series will have a chance to set doforce to false.  once it is set to 
-            // false, it cannot be reset to true.
-            // If any series attached to axis is not a bar, wont force 0.
-            if (doforce && s.renderer.constructor !== $.jqplot.BarRenderer) {
-                doforce = false;
-            }
-
-            else if (doforce && this._options.hasOwnProperty('forceTickAt0') && this._options.forceTickAt0 == false) {
-                doforce = false;
-            }
-
-            else if (doforce && s.renderer.constructor === $.jqplot.BarRenderer) {
-                if (s.barDirection == 'vertical' && this.name != 'xaxis' && this.name != 'x2axis') { 
-                    if (this._options.pad != null || this._options.padMin != null) {
-                        doforce = false;
-                    }
+            if (s.show) {
+                d = s._plotData;
+                if (s._type === 'line' && s.renderer.bands.show && this.name.charAt(0) !== 'x') {
+                    d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
                 }
 
-                else if (s.barDirection == 'horizontal' && (this.name == 'xaxis' || this.name == 'x2axis')) {
-                    if (this._options.pad != null || this._options.padMin != null) {
-                        doforce = false;
-                    }
+                var minyidx = 1, maxyidx = 1;
+
+                if (s._type != null && s._type == 'ohlc') {
+                    minyidx = 3;
+                    maxyidx = 2;
+                }
+                
+                for (var j=0, l=d.length; j<l; j++) { 
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
+                            db.min = d[j][0];
+                        }
+                        if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
+                            db.max = d[j][0];
+                        }
+                    }              
+                    else {
+                        if ((d[j][minyidx] != null && d[j][minyidx] < db.min) || db.min == null) {
+                            db.min = d[j][minyidx];
+                        }
+                        if ((d[j][maxyidx] != null && d[j][maxyidx] > db.max) || db.max == null) {
+                            db.max = d[j][maxyidx];
+                        }
+                    }              
                 }
 
+                // Hack to not pad out bottom of bar plots unless user has specified a padding.
+                // every series will have a chance to set doforce to false.  once it is set to 
+                // false, it cannot be reset to true.
+                // If any series attached to axis is not a bar, wont force 0.
+                if (doforce && s.renderer.constructor !== $.jqplot.BarRenderer) {
+                    doforce = false;
+                }
+
+                else if (doforce && this._options.hasOwnProperty('forceTickAt0') && this._options.forceTickAt0 == false) {
+                    doforce = false;
+                }
+
+                else if (doforce && s.renderer.constructor === $.jqplot.BarRenderer) {
+                    if (s.barDirection == 'vertical' && this.name != 'xaxis' && this.name != 'x2axis') { 
+                        if (this._options.pad != null || this._options.padMin != null) {
+                            doforce = false;
+                        }
+                    }
+
+                    else if (s.barDirection == 'horizontal' && (this.name == 'xaxis' || this.name == 'x2axis')) {
+                        if (this._options.pad != null || this._options.padMin != null) {
+                            doforce = false;
+                        }
+                    }
+
+                }
             }
         }
 
