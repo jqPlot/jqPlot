@@ -194,7 +194,7 @@
             var dwidth = this.gridData[xmaxidx-1][0] - this.gridData[xminidx][0];
             var nvisiblePoints = xmaxidx - xminidx;
             try {
-                var dinterval = Math.abs(this._xaxis.series_u2p(parseInt(this._xaxis._intervalStats[0].sortedIntervals[0].interval)) - this._xaxis.series_u2p(0)); 
+                var dinterval = Math.abs(this._xaxis.series_u2p(parseInt(this._xaxis._intervalStats[0].sortedIntervals[0].interval, 10)) - this._xaxis.series_u2p(0)); 
             }
 
             catch (e) {

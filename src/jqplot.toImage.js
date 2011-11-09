@@ -223,7 +223,7 @@
             var tagname = el.tagName.toLowerCase();
             var p = $(el).position();
             var css = window.getComputedStyle ?  window.getComputedStyle(el) : el.currentStyle; // for IE < 9
-            var left = x_offset + p.left + parseInt(css.marginLeft, 10) + parseInt(css.borderLeftWidth) + parseInt(css.paddingLeft, 10);
+            var left = x_offset + p.left + parseInt(css.marginLeft, 10) + parseInt(css.borderLeftWidth, 10) + parseInt(css.paddingLeft, 10);
             var top = y_offset + p.top + parseInt(css.marginTop, 10) + parseInt(css.borderTopWidth, 10)+ parseInt(css.paddingTop, 10);
             var w = newCanvas.width;
             // var left = x_offset + p.left + $(el).css('marginLeft') + $(el).css('borderLeftWidth') 
