@@ -1,5 +1,5 @@
 <?php 
-    $title = "jqPlot Meter Gauge";
+    $title = "Meter Gauge";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>700, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
