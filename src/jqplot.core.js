@@ -1951,10 +1951,7 @@
             if (data == null || jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
                 
                 if (this.noDataIndicator.show == false) {
-                    throw{
-                        name: "DataError",
-                        message: "No data to plot."
-                    };
+                    throw "No Data";
                 }
                 
                 else {
