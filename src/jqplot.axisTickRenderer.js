@@ -167,6 +167,19 @@
             return String(val);
         }
     };
+        
+    $.jqplot.PercentTickFormatter = function (format, val) {
+        if (typeof val == 'number') {
+            val = 100 * val;
+            if (!format) {
+                format = $.jqplot.config.defaultTickFormatString;
+            }
+            return $.jqplot.sprintf(format, val);
+        }
+        else {
+            return String(val);
+        }
+    };
     
     $.jqplot.AxisTickRenderer.prototype.pack = function() {
     };

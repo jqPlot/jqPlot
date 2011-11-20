@@ -688,7 +688,7 @@
         this.renderer._lowBandSmoothedData = [];
         var bands = this.renderer.bands;
         var hasNull = false;
-        for (var i=0, l=this.data.length; i < l; i++) {
+        for (var i=0, l=data.length; i < l; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
