@@ -228,6 +228,8 @@
             var w = newCanvas.width;
             // var left = x_offset + p.left + $(el).css('marginLeft') + $(el).css('borderLeftWidth') 
 
+            // somehow in here, for divs within divs, the width of the inner div should be used instead of the canvas.
+
             if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip')) {
                 $(el).children().each(function() {
                     _jqpToImage(this, left, top);

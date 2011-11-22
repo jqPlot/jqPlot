@@ -90,7 +90,7 @@
 <p class="description">Code for generating the plots follows.  It is critical to bind the callback to the UI widgets "show" or "change" method which calls the plots "replot" method.  Without this, the plot won't properly redraw itself when it's container becomes visible.</p>
 
 <p class="description">
-  Note in the ui.index and plot._drawCount properties in the tabsshow callback.  ui.index gives the index of the activated tab.  plot._drawCount keeps track of how many times the plot was visibly drawn (or redrawn/replotted).  Generally, replot only needs to be called the first time the plot is visibly drawn, hence the check for plot._drawCount == 0.
+  Note in the ui.index and plot._drawCount properties in the tabsshow callback.  ui.index gives the index of the activated tab.  plot._drawCount keeps track of how many times the plot was visibly drawn (or redrawn/replotted).  Generally, replot only needs to be called the first time the plot is visibly drawn, hence the check for plot._drawCount === 0.
   </p>  
 
 <pre class="code brush:js"></pre>
@@ -149,17 +149,17 @@
         });
 
         $('#tabs').bind('tabsshow', function(event, ui) {
-          if (ui.index == 1 && plot1._drawCount == 0) {
+          if (ui.index === 1 && plot1._drawCount === 0) {
             plot1.replot();
           }
-          else if (ui.index == 2 && plot2._drawCount == 0) {
+          else if (ui.index === 2 && plot2._drawCount === 0) {
             plot2.replot();
           }
         });
 
         $('#accordion').bind('accordionchange', function(event, ui) {
           var index = $(this).find("h3").index ( ui.newHeader[0] );
-          if (index == 1) {
+          if (index === 1) {
             plot3.replot();
           }
         });
