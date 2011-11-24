@@ -40,7 +40,7 @@ $(document).ready(function(){
         // the browser assumes the time zone of the client.
         min: "09-01-2008 16:00",
         max: "06-22-2009 16:00",
-        tickInterval: "6 weeks",
+        tickInterval: "6 weeks"
       },
       y2axis: {
         tickOptions:{formatString:'$%d'}
@@ -77,7 +77,7 @@ $(document).ready(function(){
         tickOptions:{formatString:'%b %e'}, 
         min: "09-01-2008",
         max: "06-22-2009",
-        tickInterval: "6 weeks",
+        tickInterval: "6 weeks"
       },
       y2axis: {
         tickOptions:{formatString:'$%d'}
