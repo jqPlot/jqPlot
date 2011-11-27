@@ -480,11 +480,14 @@
                     s += '<br />';
                 }
                 if (c.useAxesFormatters) {
-                    var xf = plot.axes[g[0]]._ticks[0].formatter;
-                    var yf = plot.axes[g[1]]._ticks[0].formatter;
-                    var xfstr = plot.axes[g[0]]._ticks[0].formatString;
-                    var yfstr = plot.axes[g[1]]._ticks[0].formatString;
-                    s += xf(xfstr, datapos[g[0]]) + ', '+ yf(yfstr, datapos[g[1]]);
+                    for (var j=0; j<g.length; j++) {
+                        if (j) {
+                            s += ', ';
+                        }
+                        var af = plot.axes[g[j]]._ticks[0].formatter;
+                        var afstr = plot.axes[g[j]]._ticks[0].formatString;
+                        s += af(afstr, datapos[g[j]]);
+                    }
                 }
                 else {
                     s += $.jqplot.sprintf(c.tooltipFormatString, datapos[g[0]], datapos[g[1]]);
