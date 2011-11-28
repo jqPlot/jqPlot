@@ -115,6 +115,26 @@
       }
     };
 
+    $.fn.jqplot = function(data, options) {
+
+        return this.each(function() {
+            var tid, 
+                plot, 
+                $this = $(this);
+            // does el have an id?
+            // if not assign it one.
+            tid = $this.attr('id');
+            if (tid === undefined) {
+                tid = 'jqplot_target_' + $.jqplot.targetCounter++;
+                $this.attr('id', tid);
+            }
+
+            plot = $.jqplot(tid, data, options);
+
+            $this.data('jqplot', plot);
+        });
+    };
+
 
     /**
      * Namespace: $.jqplot
@@ -190,6 +210,8 @@
     };
 
     $.jqplot.version = "@VERSION";
+
+    $.jqplot.targetCounter = 1;
 
     // canvas manager to reuse canvases on the plot.
     // Should help solve problem of canvases not being freed and
@@ -1873,7 +1895,7 @@
             // Add a reference to plot
             //////
             if (this._addDomReference) {
-                this.target.data('jqplot_plot', this);
+                this.target.data('jqplot', this);
             }
             // remove any error class that may be stuck on target.
             this.target.removeClass('jqplot-error');
