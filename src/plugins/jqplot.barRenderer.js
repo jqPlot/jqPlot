@@ -331,7 +331,7 @@
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
-                    if (this.data[i][1] == null) {
+                    if (!this._stack && this.data[i][1] == null) {
                         continue;
                     }
                     points = [];
@@ -341,6 +341,10 @@
                     // stacked
                     if (this._stack && this._prevGridData.length) {
                         ystart = this._prevGridData[i][1];
+
+                        if (ystart === null) {
+                            ystart = this._yaxis.series_u2p(0);
+                        }
                     }
                     // not stacked and first series in stack
                     else {
