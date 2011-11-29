@@ -104,7 +104,7 @@
     <div class="overlay-print-container"></div>
 
     <div class="overlay-chart-container ui-corner-all">
-        <div class="overlay-chart-container-header ui-widget-header ui-corner-top">Right click image to Save As...<div class="ui-icon ui-icon-closethick"></div></div>
+        <div class="overlay-chart-container-header ui-widget-header ui-corner-top">Right click the image to Copy or Save As...<div class="ui-icon ui-icon-closethick"></div></div>
         <div class="overlay-chart-container-content ui-corner-bottom"></div>
     </div>
 
@@ -648,17 +648,17 @@
         $('div.jqplot-chart').jqplot([quintiles[0][1], quintiles[0][2]], [quintiles[1][1], quintiles[1][2]], [quintiles[2][1], quintiles[2][2]],[quintiles[3][1], quintiles[3][2]],[quintiles[4][1], quintiles[4][2]],plotOptions);
 
         // bind to the data highlighting event to make custom tooltip:
-        $(".jqplot-target").each(function(){
+        $(".jqplot-target").each(function(index){
             $(this).bind("jqplotDataHighlight", function(evt, seriesIndex, pointIndex, data) {
                 // Here, assume first series is male poulation and second series is female population.
                 // Adjust series indices as appropriate.
                 var plot = $(this).data('jqplot');
-                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[0][0][1];
-                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[0][0][2];
-                var malePopulation = quintiles[0][1][pointIndex] * quintiles[0][0][1];
-                var femalePopulation = quintiles[0][2][pointIndex] * quintiles[0][0][2];
+                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[index][0][1];
+                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[index][0][2];
+                var malePopulation = quintiles[index][1][pointIndex] * quintiles[index][0][1];
+                var femalePopulation = quintiles[index][2][pointIndex] * quintiles[index][0][2];
                 // var ratio = femalePopulation / malePopulation * 100;
-                var ratio = quintiles[0][3][pointIndex+1];
+                var ratio = quintiles[index][3][pointIndex+1];
 
                 $(this).closest('table').find('.tooltipMale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", malePopulation));
                 $(this).closest('table').find('.tooltipFemale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", femalePopulation));
@@ -697,11 +697,11 @@
 
         $('.ui-icon-print').click(function(){
             console.log('helrwo');
-            $(this).closest('div.quintile-outer-container').find('td.stats-cell').sprintf();
+            
         });
 
 
-        $('.ui-icon-disk').each(function() {
+        $('.ui-icon-disk, .ui-icon-clipboard').each(function() {
             $(this).bind('click', function(evt) {
                 var chart = $(this).closest('div.quintile-outer-container').find('div.jqplot-target');
                 var imgelem = chart.jqplotToImageElem();
