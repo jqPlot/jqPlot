@@ -115,12 +115,42 @@
       }
     };
 
-    $.fn.jqplot = function(data, options) {
+    $.fn.jqplot = function() {
+        var datas = [];
+        var options = [];
+        // see how many data arrays we have
+        for (var i=0, l=arguments.length; i<l; i++) {
+            if ($.isArray(arguments[i])) {
+                datas.push(arguments[i]);
+            }
+            else if ($.isPlainObject(arguments[i])) {
+                options.push(arguments[i]);
+            }
+        }
 
-        return this.each(function() {
+        return this.each(function(index) {
             var tid, 
                 plot, 
-                $this = $(this);
+                $this = $(this),
+                dl = datas.length,
+                ol = options.length,
+                data, 
+                opt;
+
+            if (index < dl) {
+                data = datas[index];
+            }
+            else {
+                data = dl ? datas[dl-1] : [];
+            }
+
+            if (index < ol) {
+                opts = options[index];
+            }
+            else {
+                opts = ol ? options[ol-1] : {};
+            }
+
             // does el have an id?
             // if not assign it one.
             tid = $this.attr('id');
@@ -129,7 +159,7 @@
                 $this.attr('id', tid);
             }
 
-            plot = $.jqplot(tid, data, options);
+            plot = $.jqplot(tid, data, opts);
 
             $this.data('jqplot', plot);
         });
