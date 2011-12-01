@@ -2045,7 +2045,7 @@
             }
             
             // make a copy of the data
-            this.data = $extend(true, [], data);
+            this.data = $.extend(true, [], data);
             
             this.parseOptions(options);
             
@@ -2153,6 +2153,14 @@
             // a display:none attribute, however.
 
             var options = $.extend(true, {}, this.options, opts);
+
+            for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
+                $.jqplot.preInitHooks[i].call(this, target, data, options);
+            }
+
+            for (var i=0; i<this.preInitHooks.hooks.length; i++) {
+                this.preInitHooks.hooks[i].call(this, target, data, options);
+            }
             
             this._height = this.target.height();
             this._width = this.target.width();
@@ -2202,25 +2210,44 @@
             if (this.fontSize) {
                 this.target.css('font-size', this.fontSize);
             }
-            
+
+            this.title.init();
+            this.legend.init();
             this._sumy = 0;
             this._sumx = 0;
+
+            this.seriesStack = [];
+            this.previousSeriesStack = [];
+
             for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
-                if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
-                    this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
-                }
-                this.series[i]._plotDimensions = this._plotDimensions;
+                // set default stacking order for series canvases
+                this.seriesStack.push(i);
+                this.previousSeriesStack.push(i);
+                this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
-                //this.series[i].init(i, this.grid.borderWidth);
+                for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
+                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+                }
+                for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
+                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+                }
+                this.populatePlotData(this.series[i], i);
+                this.series[i]._plotDimensions = this._plotDimensions;
+                this.series[i].init(i, this.grid.borderWidth, this);
+                for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
+                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+                }
+                for (var j=0; j<this.postSeriesInitHooks.hooks.length; j++) {
+                    this.postSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+                }
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
             }
 
             var name;
-            
-            for (var j=0; j<12; j++) {
-                name = _axisNames[j];
+            for (var i=0; i<12; i++) {
+                name = _axisNames[i];
+
                 // Memory Leaks patch : clear ticks elements
                 var t = this.axes[name]._ticks;
                 for (var i = 0; i < t.length; i++) {
@@ -2236,19 +2263,34 @@
                   }
                 }
                 t = null;
-                
+
                 this.axes[name]._plotDimensions = this._plotDimensions;
-                this.axes[name]._ticks = [];
-                // this.axes[name].renderer.init.call(this.axes[name], {});
+                this.axes[name].init();
+                if (this.axes[name].borderColor == null) {
+                    if (name.charAt(0) !== 'x' && this.axes[name].useSeriesColor === true && this.axes[name].show) {
+                        this.axes[name].borderColor = this.axes[name]._series[0].color;
+                    }
+                    else {
+                        this.axes[name].borderColor = this.grid.borderColor;
+                    }
+                }
             }
             
             if (this.sortData) {
                 sortData(this.series);
             }
-            
+            this.grid.init();
             this.grid._axes = this.axes;
             
             this.legend._series = this.series;
+
+            for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
+                $.jqplot.postInitHooks[i].call(this, target, this.data, options);
+            }
+
+            for (var i=0; i<this.postInitHooks.hooks.length; i++) {
+                this.postInitHooks.hooks[i].call(this, target, this.data, options);
+            }
         };
         
         // sort the series data in increasing order.
@@ -2446,6 +2488,7 @@
             };
 
             var colorIndex = 0;
+            this.series = [];
             for (var i=0; i<this.data.length; i++) {
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
@@ -2559,7 +2602,7 @@
         //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
         this.replot = function(options) {
             var opts =  options || {};
-            var data = opts.data || false;
+            var data = opts.data || null;
             var clear = (opts.clear === false) ? false : true;
             var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
@@ -2567,7 +2610,7 @@
             if (clear) {
                 this.destroy();
             }
-            this.reInitialize();
+            this.reInitialize(data, opts);
             if (resetAxes) {
                 this.resetAxesScale(resetAxes, opts.axes);
             }
