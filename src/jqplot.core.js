@@ -89,7 +89,7 @@
       for ( var i = 0, elem; (elem = $(this)[i]) != null; i++ ) {
         // Remove element nodes and prevent memory leaks
         if ( elem.nodeType === 1 ) {
-          jQuery.cleanData( elem.getElementsByTagName("*") );
+          $.cleanData( elem.getElementsByTagName("*") );
         }
   
         // Remove any remaining nodes
@@ -141,14 +141,14 @@
                 data = datas[index];
             }
             else {
-                data = dl ? datas[dl-1] : [];
+                data = dl ? datas[dl-1] : null;
             }
 
             if (index < ol) {
                 opts = options[index];
             }
             else {
-                opts = ol ? options[ol-1] : {};
+                opts = ol ? options[ol-1] : null;
             }
 
             // does el have an id?
@@ -191,23 +191,27 @@
      */
 
     $.jqplot = function(target, data, options) {
-        var _data, _options;
-        
-        if (options == null) {
-            if (jQuery.isArray(data)) {
-                _data = data;
-                _options = null;   
-            }
-            
-            else if (typeof(data) === 'object') {
-                _data = null;
-                _options = data;
-            }
-        }
-        else {
+        var _data = null, _options = null;
+
+        if (arguments.length === 3) {
             _data = data;
             _options = options;
         }
+
+        else if (arguments.length === 2) {
+            if ($.isArray(data)) {
+                _data = data;
+            }
+
+            else if ($.isPlainObject(data)) {
+                _options = data;
+            }
+        }
+
+        if (_data === null && _options !== null && _options.data) {
+            _data = _options.data;
+        }
+
         var plot = new jqPlot();
         // remove any error class that may be stuck on target.
         $('#'+target).removeClass('jqplot-error');
@@ -1988,7 +1992,7 @@
                 throw "Canvas dimension not set";
             }
             
-            if (options.dataRenderer && jQuery.isFunction(options.dataRenderer)) {
+            if (options.dataRenderer && $.isFunction(options.dataRenderer)) {
                 if (options.dataRendererOptions) {
                     this.dataRendererOptions = options.dataRendererOptions;
                 }
@@ -1996,11 +2000,11 @@
                 data = this.dataRenderer(data, this, this.dataRendererOptions);
             }
             
-            if (options.noDataIndicator && jQuery.isPlainObject(options.noDataIndicator)) {
+            if (options.noDataIndicator && $.isPlainObject(options.noDataIndicator)) {
                 $.extend(true, this.noDataIndicator, options.noDataIndicator);
             }
             
-            if (data == null || jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
+            if (data == null || $.isArray(data) == false || data.length == 0 || $.isArray(data[0]) == false || data[0].length == 0) {
                 
                 if (this.noDataIndicator.show == false) {
                     throw "No Data";
@@ -2040,7 +2044,8 @@
                 }
             }
             
-            this.data = data;
+            // make a copy of the data
+            this.data = $extend(true, [], data);
             
             this.parseOptions(options);
             
@@ -2065,19 +2070,19 @@
                 this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
                 this.series[i].canvas._plotDimensions = this._plotDimensions;
                 for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
-                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
+                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
-                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
+                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
-                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
+                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 for (var j=0; j<this.postSeriesInitHooks.hooks.length; j++) {
-                    this.postSeriesInitHooks.hooks[j].call(this.series[i], target, data, this.options.seriesDefaults, this.options.series[i], this);
+                    this.postSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
@@ -2107,11 +2112,11 @@
             this.legend._series = this.series;
 
             for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
-                $.jqplot.postInitHooks[i].call(this, target, data, options);
+                $.jqplot.postInitHooks[i].call(this, target, this.data, options);
             }
 
             for (var i=0; i<this.postInitHooks.hooks.length; i++) {
-                this.postInitHooks.hooks[i].call(this, target, data, options);
+                this.postInitHooks.hooks[i].call(this, target, this.data, options);
             }
         };  
         
@@ -2127,7 +2132,7 @@
             if (ax === true) {
                 ax = this.axes;
             }
-            if (jQuery.isArray(ax)) {
+            if ($.isArray(ax)) {
                 for (var i = 0; i < ax.length; i++) {
                     this.axes[ax[i]].resetScale(opts[ax[i]]);
                 }
@@ -2141,11 +2146,13 @@
         // method: reInitialize
         // reinitialize plot for replotting.
         // not called directly.
-        this.reInitialize = function () {
+        this.reInitialize = function (data, opts) {
             // Plot should be visible and have a height and width.
             // If plot doesn't have height and width for some
             // reason, set it by other means.  Plot must not have
             // a display:none attribute, however.
+
+            var options = $.extend(true, {}, this.options, opts);
             
             this._height = this.target.height();
             this._width = this.target.width();
@@ -2165,6 +2172,23 @@
             for (var n in this.axes) {
                 this.axes[n]._plotWidth = this._width;
                 this.axes[n]._plotHeight = this._height;
+            }
+            
+            if (data) {
+                if (options.dataRenderer && $.isFunction(options.dataRenderer)) {
+                    if (options.dataRendererOptions) {
+                        this.dataRendererOptions = options.dataRendererOptions;
+                    }
+                    this.dataRenderer = options.dataRenderer;
+                    data = this.dataRenderer(data, this, this.dataRendererOptions);
+                }
+                
+                // make a copy of the data
+                this.data = $extend(true, [], data);
+            }
+
+            if (opts) {
+                this.parseOptions(options);
             }
             
             this.title._plotWidth = this._width;
@@ -2401,7 +2425,7 @@
                 var temp = [];
                 var i;
                 dir = dir || 'vertical';
-                if (!jQuery.isArray(data[0])) {
+                if (!$.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
@@ -2515,7 +2539,7 @@
             // Couple of posts on Stack Overflow indicate that empty() doesn't
             // always cear up the dom and release memory.  Sometimes setting
             // innerHTML property to null is needed.  Particularly on IE, may 
-            // have to directly set it to null, bypassing jQuery.
+            // have to directly set it to null, bypassing $.
             this.target.empty();
 
             this.target[0].innerHTML = '';
@@ -2535,6 +2559,7 @@
         //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
         this.replot = function(options) {
             var opts =  options || {};
+            var data = opts.data || false;
             var clear = (opts.clear === false) ? false : true;
             var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
@@ -3188,7 +3213,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            var evt = jQuery.Event('jqplotClick');
+            var evt = $.Event('jqplotClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
@@ -3200,7 +3225,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            var evt = jQuery.Event('jqplotDblClick');
+            var evt = $.Event('jqplotDblClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
@@ -3210,7 +3235,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            var evt = jQuery.Event('jqplotMouseDown');
+            var evt = $.Event('jqplotMouseDown');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
@@ -3218,7 +3243,7 @@
         
         this.onMouseUp = function(ev) {
             var positions = getEventPosition(ev);
-            var evt = jQuery.Event('jqplotMouseUp');
+            var evt = $.Event('jqplotMouseUp');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, ev.data.plot]);
@@ -3230,13 +3255,13 @@
             var neighbor = checkIntersection(positions.gridPos, p);
             if (p.captureRightClick) {
                 if (ev.which == 3) {
-                var evt = jQuery.Event('jqplotRightClick');
+                var evt = $.Event('jqplotRightClick');
                 evt.pageX = ev.pageX;
                 evt.pageY = ev.pageY;
                     $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
                 }
                 else {
-                var evt = jQuery.Event('jqplotMouseUp');
+                var evt = $.Event('jqplotMouseUp');
                 evt.pageX = ev.pageX;
                 evt.pageY = ev.pageY;
                     $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
@@ -3248,7 +3273,7 @@
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
             var neighbor = checkIntersection(positions.gridPos, p);
-            var evt = jQuery.Event('jqplotMouseMove');
+            var evt = $.Event('jqplotMouseMove');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, neighbor, p]);
@@ -3257,7 +3282,7 @@
         this.onMouseEnter = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var evt = jQuery.Event('jqplotMouseEnter');
+            var evt = $.Event('jqplotMouseEnter');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             evt.relatedTarget = ev.relatedTarget;
@@ -3267,7 +3292,7 @@
         this.onMouseLeave = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var evt = jQuery.Event('jqplotMouseLeave');
+            var evt = $.Event('jqplotMouseLeave');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             evt.relatedTarget = ev.relatedTarget;
@@ -3428,7 +3453,7 @@
     // conpute a highlight color or array of highlight colors from given colors.
     $.jqplot.computeHighlightColors  = function(colors) {
         var ret;
-        if (jQuery.isArray(colors)) {
+        if ($.isArray(colors)) {
             ret = [];
             for (var i=0; i<colors.length; i++){
                 var rgba = $.jqplot.getColorComponents(colors[i]);
