@@ -2102,17 +2102,19 @@
                 this._sumx += this.series[i]._sumx;
             }
 
-            var name;
+            var name,
+                axis;
             for (var i=0, l=_axisNames.length; i<l; i++) {
                 name = _axisNames[i];
-                this.axes[name]._plotDimensions = this._plotDimensions;
-                this.axes[name].init();
+                axis = this.axes[name];
+                axis._plotDimensions = this._plotDimensions;
+                axis.init();
                 if (this.axes[name].borderColor == null) {
-                    if (name.charAt(0) !== 'x' && this.axes[name].useSeriesColor === true && this.axes[name].show) {
-                        this.axes[name].borderColor = this.axes[name]._series[0].color;
+                    if (name.charAt(0) !== 'x' && axis.useSeriesColor === true && axis.show) {
+                        axis.borderColor = axis._series[0].color;
                     }
                     else {
-                        this.axes[name].borderColor = this.grid.borderColor;
+                        axis.borderColor = this.grid.borderColor;
                     }
                 }
             }
@@ -2194,13 +2196,36 @@
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
 
+            var name,
+                t, 
+                j, 
+                axis;
+
             for (var i=0, l=_axisNames.length; i<l; i++) {
-                this.axes[_axisNames[i]] = new Axis(_axisNames[i]);
-            }
-            
-            for (var n in this.axes) {
-                this.axes[n]._plotWidth = this._width;
-                this.axes[n]._plotHeight = this._height;
+                name = _axisNames[i];
+                axis = this.axes[name];
+
+                // Memory Leaks patch : clear ticks elements
+                t = axis._ticks;
+                for (var j = 0, tlen = t.length; j < tlen; j++) {
+                  var el = t[j]._elem;
+                  if (el) {
+                    // if canvas renderer
+                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
+                      window.G_vmlCanvasManager.uninitElement(el.get(0));
+                    }
+                    el.emptyForce();
+                    el = null;
+                    t._elem = null;
+                  }
+                }
+                t = null;
+
+                delete axis.ticks;
+                delete axis._ticks;
+                this.axes[name] = new Axis(name);
+                this.axes[name]._plotWidth = this._width;
+                this.axes[name]._plotHeight = this._height;
             }
             
             if (data) {
@@ -2265,33 +2290,10 @@
                 this._sumx += this.series[i]._sumx;
             }
 
-            var name,
-                t, 
-                j,
-                axis;
-            for (var i=0; i<12; i++) {
+            for (var i=0, l=_axisNames.length; i<l; i++) {
                 name = _axisNames[i];
                 axis = this.axes[name];
 
-
-                // Memory Leaks patch : clear ticks elements
-                t = axis._ticks;
-                for (var j = 0, tlen = t.length; j < tlen; j++) {
-                  var el = t[j]._elem;
-                  if (el) {
-                    // if canvas renderer
-                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
-                      window.G_vmlCanvasManager.uninitElement(el.get(0));
-                    }
-                    el.emptyForce();
-                    el = null;
-                    t._elem = null;
-                  }
-                }
-                t = null;
-
-                axis.ticks = [];
-                axis._ticks = [];
                 axis._plotDimensions = this._plotDimensions;
                 axis.init();
                 if (axis.borderColor == null) {
