@@ -1,7 +1,7 @@
    
 </head>
 <body>
-    <?php // include "topbanner.html"; ?>
+    <?php include "topbanner.html"; ?>
 
     <div class="example-content">
 
