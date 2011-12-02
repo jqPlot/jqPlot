@@ -663,7 +663,9 @@
     Axis.prototype.constructor = Axis;
     
     Axis.prototype.init = function() {
-        this.renderer = new this.renderer();
+        if ($.isFunction(this.renderer)) {
+            this.renderer = new this.renderer();  
+        }
         // set the axis name
         this.tickOptions.axis = this.name;
         // if showMark or showLabel tick options not specified, use value of axis option.
@@ -1050,7 +1052,9 @@
     };
     
     Legend.prototype.init = function() {
-        this.renderer = new this.renderer();
+        if ($.isFunction(this.renderer)) {
+            this.renderer = new this.renderer();  
+        }
         this.renderer.init.call(this, this.rendererOptions);
     };
     
@@ -1113,7 +1117,9 @@
     Title.prototype.constructor = Title;
     
     Title.prototype.init = function() {
-        this.renderer = new this.renderer();
+        if ($.isFunction(this.renderer)) {
+            this.renderer = new this.renderer();  
+        }
         this.renderer.init.call(this, this.rendererOptions);
     };
     
@@ -1343,7 +1349,9 @@
             var comp = $.jqplot.getColorComponents(comp);
             this.fillColor = 'rgba('+comp[0]+','+comp[1]+','+comp[2]+','+this.fillAlpha+')';
         }
-        this.renderer = new this.renderer();
+        if ($.isFunction(this.renderer)) {
+            this.renderer = new this.renderer();  
+        }
         this.renderer.init.call(this, this.rendererOptions, plot);
         this.markerRenderer = new this.markerRenderer();
         if (!this.markerOptions.color) {
@@ -1568,7 +1576,9 @@
     Grid.prototype.constructor = Grid;
     
     Grid.prototype.init = function() {
-        this.renderer = new this.renderer();
+        if ($.isFunction(this.renderer)) {
+            this.renderer = new this.renderer();  
+        }
         this.renderer.init.call(this, this.rendererOptions);
     };
     
@@ -1645,7 +1655,7 @@
         args = args || [];
         var havehook = false;
         for (var i=0, l=this.hooks.length; i<l; i++) {
-            if (this.hooks[i][0] == fn) {
+            if (this.hooks[i] == fn) {
                 havehook = true;
             }
         }
@@ -2219,7 +2229,9 @@
             this.seriesStack = [];
             this.previousSeriesStack = [];
 
-            for (var i=0; i<this.series.length; i++) {
+            var target = this.targetId.substr(1);
+
+            for (var i=0, l=this.series.length; i<l; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
                 this.previousSeriesStack.push(i);
@@ -2244,14 +2256,19 @@
                 this._sumx += this.series[i]._sumx;
             }
 
-            var name;
+            var name,
+                t, 
+                j,
+                axis;
             for (var i=0; i<12; i++) {
                 name = _axisNames[i];
+                axis = this.axes[name];
+
 
                 // Memory Leaks patch : clear ticks elements
-                var t = this.axes[name]._ticks;
-                for (var i = 0; i < t.length; i++) {
-                  var el = t[i]._elem;
+                t = axis._ticks;
+                for (var j = 0, tlen = t.length; j < tlen; j++) {
+                  var el = t[j]._elem;
                   if (el) {
                     // if canvas renderer
                     if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
@@ -2264,14 +2281,16 @@
                 }
                 t = null;
 
-                this.axes[name]._plotDimensions = this._plotDimensions;
-                this.axes[name].init();
-                if (this.axes[name].borderColor == null) {
-                    if (name.charAt(0) !== 'x' && this.axes[name].useSeriesColor === true && this.axes[name].show) {
-                        this.axes[name].borderColor = this.axes[name]._series[0].color;
+                axis.ticks = [];
+                axis._ticks = [];
+                axis._plotDimensions = this._plotDimensions;
+                axis.init();
+                if (axis.borderColor == null) {
+                    if (name.charAt(0) !== 'x' && axis.useSeriesColor === true && axis.show) {
+                        axis.borderColor = axis._series[0].color;
                     }
                     else {
-                        this.axes[name].borderColor = this.grid.borderColor;
+                        axis.borderColor = this.grid.borderColor;
                     }
                 }
             }
@@ -2284,11 +2303,11 @@
             
             this.legend._series = this.series;
 
-            for (var i=0; i<$.jqplot.postInitHooks.length; i++) {
+            for (var i=0, l=$.jqplot.postInitHooks.length; i<l; i++) {
                 $.jqplot.postInitHooks[i].call(this, target, this.data, options);
             }
 
-            for (var i=0; i<this.postInitHooks.hooks.length; i++) {
+            for (var i=0, l=this.postInitHooks.hooks.length; i<l; i++) {
                 this.postInitHooks.hooks[i].call(this, target, this.data, options);
             }
         };
