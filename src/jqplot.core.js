@@ -2202,7 +2202,7 @@
                 }
                 
                 // make a copy of the data
-                this.data = $extend(true, [], data);
+                this.data = $.extend(true, [], data);
             }
 
             if (opts) {
