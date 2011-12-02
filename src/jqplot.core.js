@@ -1990,6 +1990,10 @@
             else {
                 this._width = w = this.target.width();
             }
+
+            for (var i=0, l=_axisNames.length; i<l; i++) {
+                this.axes[_axisNames[i]] = new Axis(_axisNames[i]);
+            }
             
             this._plotDimensions.height = this._height;
             this._plotDimensions.width = this._width;
@@ -2099,7 +2103,7 @@
             }
 
             var name;
-            for (var i=0; i<12; i++) {
+            for (var i=0, l=_axisNames.length; i<l; i++) {
                 name = _axisNames[i];
                 this.axes[name]._plotDimensions = this._plotDimensions;
                 this.axes[name].init();
@@ -2164,12 +2168,15 @@
 
             var options = $.extend(true, {}, this.options, opts);
 
+            var target = this.targetId.substr(1);
+            var tdata = (data == null) ? this.data : data;
+
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
-                $.jqplot.preInitHooks[i].call(this, target, data, options);
+                $.jqplot.preInitHooks[i].call(this, target, tdata, options);
             }
 
             for (var i=0; i<this.preInitHooks.hooks.length; i++) {
-                this.preInitHooks.hooks[i].call(this, target, data, options);
+                this.preInitHooks.hooks[i].call(this, target, tdata, options);
             }
             
             this._height = this.target.height();
@@ -2186,6 +2193,10 @@
             this.baseCanvas._plotDimensions = this._plotDimensions;
             this.eventCanvas._plotDimensions = this._plotDimensions;
             this.legend._plotDimensions = this._plotDimensions;
+
+            for (var i=0, l=_axisNames.length; i<l; i++) {
+                this.axes[_axisNames[i]] = new Axis(_axisNames[i]);
+            }
             
             for (var n in this.axes) {
                 this.axes[n]._plotWidth = this._width;
@@ -2228,8 +2239,6 @@
 
             this.seriesStack = [];
             this.previousSeriesStack = [];
-
-            var target = this.targetId.substr(1);
 
             for (var i=0, l=this.series.length; i<l; i++) {
                 // set default stacking order for series canvases
@@ -2566,7 +2575,7 @@
             // copy the grid and title options into this object.
             $.extend(true, this.grid, this.options.grid);
             // if axis border properties aren't set, set default.
-            for (var i=0; i<12; i++) {
+            for (var i=0, l=_axisNames.length; i<l; i++) {
                 var n = _axisNames[i];
                 var axis = this.axes[n];
                 if (axis.borderWidth == null) {
