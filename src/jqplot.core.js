@@ -135,7 +135,7 @@
                 dl = datas.length,
                 ol = options.length,
                 data, 
-                opt;
+                opts;
 
             if (index < dl) {
                 data = datas[index];
