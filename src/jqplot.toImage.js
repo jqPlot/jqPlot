@@ -67,7 +67,7 @@
 
     // Returns font style as abbreviation for "font" property.
     $.fn.jqplotGetComputedFontStyle = function() {
-        var css = window.getComputedStyle ?  window.getComputedStyle(this[0]) : this[0].currentStyle;
+        var css = window.getComputedStyle ?  window.getComputedStyle(this[0], "") : this[0].currentStyle;
         var attrs = css['font-style'] ? ['font-style', 'font-weight', 'font-size', 'font-family'] : ['fontStyle', 'fontWeight', 'fontSize', 'fontFamily'];
         var style = [];
 
@@ -99,7 +99,7 @@
         }
 
         // excanvas and hence IE < 9 do not support toDataURL and cannot export images.
-        if (!$.jqplot.support_canvas) {
+        if ($.jqplot.use_excanvas) {
             return null;
         }
         
@@ -222,7 +222,7 @@
         function _jqpToImage(el, x_offset, y_offset) {
             var tagname = el.tagName.toLowerCase();
             var p = $(el).position();
-            var css = window.getComputedStyle ?  window.getComputedStyle(el) : el.currentStyle; // for IE < 9
+            var css = window.getComputedStyle ?  window.getComputedStyle(el, "") : el.currentStyle; // for IE < 9
             var left = x_offset + p.left + parseInt(css.marginLeft, 10) + parseInt(css.borderLeftWidth, 10) + parseInt(css.paddingLeft, 10);
             var top = y_offset + p.top + parseInt(css.marginTop, 10) + parseInt(css.borderTopWidth, 10)+ parseInt(css.paddingTop, 10);
             var w = newCanvas.width;
