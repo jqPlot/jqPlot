@@ -531,7 +531,7 @@
 
         $('.ui-icon-newwin').each(function(index) {
             $(this).bind('click', function(evt) {
-                var url = '_kcp_pyramid_by_age.php?qidx='+index;
+                var url = 'kcp_pyramid_by_age.php?qidx='+index;
                 window.open(url);
             });
         });
