@@ -1,28 +1,43 @@
-<?php 
-    $title = "Quintile Pyramid Charts";
-    // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
-?>
-<?php include "opener.php"; ?>
+<!DOCTYPE html>
+
+<html>
+<head>
+    
+    <title>Quintile Chart</title>
+
+    <link class="include" rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
+    <link rel="stylesheet" type="text/css" href="examples.css" />
+    <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
+    <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
+  
+  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
+    <script class="include" type="text/javascript" src="../src/jquery.js"></script>
+    
+   
+</head>
+<body>
 
 <!-- Example scripts go here -->
 
   <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
 
     <style type="text/css">
+        
+        body {
+            width: 98%;
+            height: 98%;
+            padding: 12px;
+        }
 
         .quintile-outer-container {
-            width: 900px;
-            margin-bottom: 25px;
+            width: 96%;
+            height: 96%;
+            margin: auto;
         }
 
         .jqplot-chart {
-            width: 500px;
-            height: 400px;
-        }
-
-        pre.code {
-            margin-top: 45px;
-            clear: both;
+            width: 800px;
+            height: 800px;
         }
 
         .quintile-toolbar .ui-icon {
@@ -68,7 +83,7 @@
 
         td.stats-cell {
             padding-left: 20px;
-            padding-top: 20px;
+            padding-top: 40px;
             vertical-align: top;
 
         }
@@ -82,13 +97,13 @@
             display: none;
             z-index: 11;
             position: fixed;
-            width: 588px;
+            width: 800px;
             left: 50%;
-            margin-left: -294px;
+            margin-left: -400px;
             background-color: white;
         }
 
-        div.overlay-chart-container .ui-icon {
+        div.overlay-chart-container div.ui-icon {
             float: right;
             margin: 3px 5px;
         }
@@ -134,13 +149,11 @@
     <div class="quintile-outer-container ui-widget ui-corner-all">
         <div class="quintile-toolbar ui-widget-header  ui-corner-top">
             <span class="quintile-title">Income Level:</span>
-            <div class="quintile-toggle ui-icon ui-icon-arrowthickstop-1-n"></div>
-            <div class="ui-icon ui-icon-newwin"></div>
         </div>
         <div class="quintile-content ui-widget-content ui-corner-bottom">
             <table class="quintile-display">
                 <tr>
-                    <td class="chart-cell" rowspan="2">
+                    <td class="chart-cell">
                         <div class="jqplot-chart"></div>
                     </td>
                     <td class="stats-cell">
@@ -183,7 +196,7 @@
                         </colgroup>
                         <tbody>
                             <tr class="tooltip-header">
-                                <td class="tooltip-header ui-corner-top" colspan="2">Highlighted Range: <span class="tooltip-item tooltipAge">&nbsp;</span></td>
+                                <td class="tooltip-header ui-corner-top" colspan="2">Highlighted Age: <span class="tooltip-item tooltipAge">&nbsp;</span></td>
                             </tr>
                             <tr>
                                 <td>Population, Male: </td>
@@ -201,11 +214,6 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
-                    <td class="contour-cell">
-                        <input name="showContour" type="checkbox" /> Use as overlay on other charts?
-                    </td>
-                </tr>
             </table>
         </div>
     </div> 
@@ -220,24 +228,25 @@
             $('div.quintile-toolbar').append('<div class="ui-icon ui-icon-image"></div><div class="ui-icon ui-icon-print"></div>');
         }
 
-        // Add the needed containers:
-        for (var i=0; i<4; i++) {
-            var el = $('div.quintile-outer-container:last')
-            var clone = el.clone();
-            clone.insertAfter(el);
-        }
+        var quintileIndex = parseInt(<?php echo $_GET["qidx"]; ?>);
 
         var male;
         var female;
         var summaryTable;
         var sexRatios;
-        var quintiles;
+        quintiles = [];
+
+
+        // the "x" values from the data will go into the ticks array.  
+        // ticks should be strings for this case where we have values like "75+"
+        var ticks = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75+", ""];
+
 
         $.ajax({
             type: "GET",
             dataType: 'json',
             async: false,
-            url: "quintiles.json",
+            url: "ages.json",
             contentType: "application/json",
             success: function (retdata) {
                 // array of arrays of data for each quintile
@@ -248,40 +257,36 @@
                 //  3: ratios
                 quintiles = retdata;
             },
-            error: function (xhr) { console.log(xhr.statusText) }
+            error: function (xhr) { console.log("ERROR: ", xhr.statusText) }
         });
 
         $('td.summary-meanAge').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[index][0][3]));
+            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][0][3]));
         });
 
         $('td.summary-sexRatio').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[index][3][0]));
+            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][3][0]));
         });
 
         $('td.summary-ageDependencyRatio').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[index][0][6]));
+            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][0][6]));
         });
 
         $('td.summary-populationTotal').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[index][0][0]));
+            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][0]));
         });
 
         $('td.summary-populationMale').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[index][0][1]));
+            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][1]));
         });
 
         $('td.summary-populationFemale').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[index][0][2]));
+            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][2]));
         });
         
         // These two variables should be removed outside of the jqplot.com example environment.
         $.jqplot._noToImageButton = true;
         $.jqplot._noCodeBlock = true;
-
-        // the "x" values from the data will go into the ticks array.  
-        // ticks should be strings for this case where we have values like "75+"
-        var ticks = ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85-90", "90-94", "95+"];
 
         // Custom color arrays are set up for each series to get the look that is desired.
         // Two color arrays are created for the default and optional color which the user can pick.
@@ -310,8 +315,8 @@
                     // along the y axis with an adjustable interval.
                     plotBands: {
                         show: true,
-                        interval: 2,
-                        color: 'rgb(250, 240, 225)'
+                        interval: 10,
+                        color: 'rgb(245, 235, 215)'
                     }
                 },
             },
@@ -322,7 +327,8 @@
             seriesDefaults: {
                 renderer: $.jqplot.PyramidRenderer,
                 rendererOptions: {
-                    barPadding: 4
+                    barPadding: 2,
+                    offsetBars: true
                 },
                 yaxis: "yaxis",
                 shadow: false
@@ -389,7 +395,7 @@
                     showMinorTicks: true,
                     ticks: ticks,
                     rendererOptions: {
-                        category: true
+                        tickSpacingFactor: 15
                     }
                 },
                 y2axis: {
@@ -402,13 +408,13 @@
                     showMinorTicks: true,
                     ticks: ticks,
                     rendererOptions: {
-                        category: true
+                        tickSpacingFactor: 15
                     }
                 }
             }
         };
 
-        $('div.jqplot-chart').jqplot([quintiles[0][1], quintiles[0][2]], [quintiles[1][1], quintiles[1][2]], [quintiles[2][1], quintiles[2][2]],[quintiles[3][1], quintiles[3][2]],[quintiles[4][1], quintiles[4][2]],plotOptions);
+        $('div.jqplot-chart').jqplot([quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
 
         // Clear all the check boxes
 
@@ -425,12 +431,12 @@
                 // Here, assume first series is male poulation and second series is female population.
                 // Adjust series indices as appropriate.
                 var plot = $(this).data('jqplot');
-                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[index][0][1];
-                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[index][0][2];
-                var malePopulation = quintiles[index][1][pointIndex] * quintiles[index][0][1];
-                var femalePopulation = quintiles[index][2][pointIndex] * quintiles[index][0][2];
+                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[quintileIndex][0][1];
+                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[quintileIndex][0][2];
+                var malePopulation = quintiles[quintileIndex][1][pointIndex] * quintiles[quintileIndex][0][1];
+                var femalePopulation = quintiles[quintileIndex][2][pointIndex] * quintiles[quintileIndex][0][2];
                 // var ratio = femalePopulation / malePopulation * 100;
-                var ratio = quintiles[index][3][pointIndex+1];
+                var ratio = quintiles[quintileIndex][3][pointIndex+1];
 
                 $(this).closest('table').find('.tooltipMale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", malePopulation));
                 $(this).closest('table').find('.tooltipFemale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", femalePopulation));
@@ -450,66 +456,6 @@
             });
         });
 
-        $('.quintile-toggle').each(function() {
-            $(this).click(function(e) {
-                if ($(this).hasClass('ui-icon-arrowthickstop-1-n')) {
-                    $(this).parent().next('.quintile-content').effect('blind', {mode:'hide'}, 600);
-                    // $('.quintile-content').jqplotEffect('blind', {mode: 'hide'}, 600);
-                    $(this).removeClass('ui-icon-arrowthickstop-1-n');
-                    $(this).addClass('ui-icon-arrowthickstop-1-s');
-                }
-                else if ($(this).hasClass('ui-icon-arrowthickstop-1-s')) {
-                    $(this).parent().next('.quintile-content').effect('blind', {mode:'show'}, 600, function() {
-                        $(this).find('div.jqplot-chart').data('jqplot').replot();
-                    });
-                    // $('.quintile-content').jqplotEffect('blind', {mode: 'show'}, 150);
-                    $(this).removeClass('ui-icon-arrowthickstop-1-s');
-                    $(this).addClass('ui-icon-arrowthickstop-1-n');
-                }
-            });
-        });
-
-        $('input[type=checkbox][name=showContour]').each(function(index) {
-            // on load/reload, clear all the check boxes.
-            $(this).get(0).checked = false;
-
-            $(this).change(function(evt){
-                var copydata = [quintiles[index][1], quintiles[index][2]];
-                var checkBox = this;
-
-                if (this.checked) {
-                    // uncheck all other check boxes.
-                    $('input[type=checkbox][name=showContour]').each(function(cidx) {
-                        if (cidx !== index) {
-                            this.checked = false;
-                        }
-                    });
-
-                    // add data to other plots.
-                    // remove data from this plot.
-                    $('div.jqplot-chart').each(function(pidx) {
-                        var plot = $(this).data('jqplot');
-                        var data = plot.data.slice(0,2);
-
-                        if (pidx !== index) {
-                            data = data.concat(copydata);
-                        }
-
-                        plot.replot({data: data});
-                    });
-                }
-
-                else {
-                    // remove extra data from plots.
-                    $('div.jqplot-chart').each(function(pidx) {
-                        var plot = $(this).data('jqplot');
-                        var data = plot.data.slice(0,2);
-                        plot.replot({data: data});
-                    });
-                }
-            })
-        });
-
         $('.ui-icon-print').click(function(){
             $(this).parent().next().print();
         });
@@ -525,14 +471,6 @@
                 $('div.overlay-shadow').fadeIn(600);
                 div.parent().fadeIn(1000);
                 div = null;
-            });
-        });
-
-
-        $('.ui-icon-newwin').each(function(index) {
-            $(this).bind('click', function(evt) {
-                var url = '_kcp_pyramid_by_age.php?qidx='+index;
-                window.open(url);
             });
         });
 
@@ -564,6 +502,7 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.pyramidRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.json2.js"></script>
     <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
 
