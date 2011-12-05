@@ -133,7 +133,7 @@
 
     <div class="quintile-outer-container ui-widget ui-corner-all">
         <div class="quintile-toolbar ui-widget-header  ui-corner-top">
-            <span class="quintile-title">Income Level:</span>
+            <span class="quintile-title">Income Level:  First Quintile</span>
             <div class="quintile-toggle ui-icon ui-icon-arrowthickstop-1-n"></div>
             <div class="ui-icon ui-icon-newwin"></div>
         </div>
@@ -220,10 +220,13 @@
             $('div.quintile-toolbar').append('<div class="ui-icon ui-icon-image"></div><div class="ui-icon ui-icon-print"></div>');
         }
 
+        var quintHash = {0: 'First Quintile', 1: 'Second Quintile', 2: 'Third Quintile', 3: 'Fourth Quintile', 4: 'Fifth Quintile'}
+
         // Add the needed containers:
-        for (var i=0; i<4; i++) {
+        for (var i=1; i<5; i++) {
             var el = $('div.quintile-outer-container:last')
             var clone = el.clone();
+            clone.find('span.quintile-title').html('Income Level:  ' + quintHash[i]);
             clone.insertAfter(el);
         }
 

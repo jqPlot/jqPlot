@@ -98,8 +98,12 @@ p {
 }
 
 div.jqplot-image-container {
+  position: relative;
+  z-index: 11;
+
+    margin: auto;
     display: none;
-    background-color: #fff;
+    background-color: #ffffff;
     border: 1px solid #999;
     display: inline-block;
     margin-top: 25px;
@@ -114,6 +118,7 @@ div.jqplot-image-container-header {
 
 div.jqplot-image-container-content {
     padding: 15px;
+    background-color: #ffffff;
 }
 
 a.jqplot-image-container-close {

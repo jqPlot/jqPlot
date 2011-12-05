@@ -487,7 +487,10 @@
 
 <!-- Don't touch this! -->
 
-<?php include "commonScripts.html" ?>
+    <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushXml.min.js"></script>
 
 <!-- End Don't touch this! -->
 
@@ -508,4 +511,10 @@
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+    </div>  
+    <script type="text/javascript" src="example.js"></script>
+
+</body>
+
+
+</html>

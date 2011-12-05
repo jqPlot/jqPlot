@@ -165,6 +165,7 @@
             <exclude name="opener.php" />
             <exclude name="bodyOpener.php" />
             <exclude name="nav.php" />
+            <exclude name="kcp_pyramid_by_age.php" />
           </fileset>
           <srcfile />
           <redirector>
@@ -178,6 +179,7 @@
         <delete>
           <fileset dir="${DIST_DIR}/examples">
             <include name="*.php" />
+            <exclude name="kcp_pyramid_by_age.php" />
             <include name="closer.html" />
             <include name="commonScripts.html" />
             <include name="topbanner.html" />
@@ -199,11 +201,17 @@
         </replaceregexp>
 
         <replaceregexp match='src="../src/' replace='src="../' flags="g">
-          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+          <fileset dir="${DIST_DIR}/examples">
+            <include name="*.html" />
+            <include name="kcp_pyramid_by_age.php" />
+          </fileset>
         </replaceregexp>
         
         <replaceregexp match='href="../src/' replace='href="../' flags="g">
-          <fileset dir="${DIST_DIR}/examples" includes="*.html" />
+          <fileset dir="${DIST_DIR}/examples">
+            <include name="*.html" />
+            <include name="kcp_pyramid_by_age.php" />
+          </fileset>
         </replaceregexp>
         
         <replaceregexp match='src="\./src/' replace='src="\.\./' flags="g">
