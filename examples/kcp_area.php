@@ -7,7 +7,7 @@
 <!-- Example scripts go here -->
 
 
-  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
+  <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
 
    <style type="text/css">
 

@@ -152,7 +152,7 @@
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
   
-  <link class="include" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.min.css" rel="Stylesheet" /> 
+  <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
   <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
 <!-- End additional plugins -->
 

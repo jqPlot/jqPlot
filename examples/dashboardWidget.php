@@ -5,7 +5,7 @@
 <?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
-    <link class="include" rel="stylesheet" type="text/css" href="jquery-ui/css/ui-lightness/jquery-ui.css" />
+    <link class="include" rel="stylesheet" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.css" />
 
     <style type="text/css">
         .jqplot-target {
