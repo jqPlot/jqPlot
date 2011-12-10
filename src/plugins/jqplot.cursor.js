@@ -848,6 +848,7 @@
         var c = plot.plugins.cursor;
         // don't do anything if not on grid.
         if (c.show && c.zoom && c._zoom.started && !c.zoomTarget) {
+            ev.preventDefault();
             var ctx = c.zoomCanvas._ctx;
             var positions = getEventPosition(ev);
             var gridpos = positions.gridPos;
@@ -889,7 +890,11 @@
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
-        $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
+        if(plot.plugins.jquerymobile){
+            $(document).one('vmouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
+        } else {
+            $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
+        }
         var axes = plot.axes;
         if (document.onselectstart != undefined) {
             c._oldHandlers.onselectstart = document.onselectstart;
@@ -923,7 +928,12 @@
                 // get zoom starting position.
                 c._zoom.axes.start[ax] = datapos[ax];
             }  
-            $(document).bind('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
+           if(plot.plugins.jquerymobile){
+                $(document).bind('vmousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
+            } else {
+                $(document).bind('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
+            }
+
         }
     }
     
