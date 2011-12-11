@@ -630,6 +630,9 @@
         // color of the border adjacent to the axis.  Defaults to grid border color.
         this.borderColor = null;
         // minimum and maximum values on the axis.
+        // prop: scaleToHiddenSeries
+        // True to include hidden series when computing axes bounds and scaling.
+        this.scaleToHiddenSeries = false;
         this._dataBounds = {min:null, max:null};
         // statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
         // holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
@@ -773,7 +776,7 @@
         var doforce = (this.show) ? true : false;
         for (var i=0; i<this._series.length; i++) {
             s = this._series[i];
-            if (s.show) {
+            if (s.show || this.scaleToHiddenSeries) {
                 d = s._plotData;
                 if (s._type === 'line' && s.renderer.bands.show && this.name.charAt(0) !== 'x') {
                     d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
