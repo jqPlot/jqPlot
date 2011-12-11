@@ -291,9 +291,7 @@
         var greenColors = ["#526D2C", "#77933C", "#C57225", "#C57225"];
         var blueColors = ["#3F7492", "#4F9AB8", "#C57225", "#C57225"];
 
-        // To accomodate changing y axis, need to keep track of plot options.
-        // changing axes will require recreating the plot, so need to keep 
-        // track of state changes.
+        // options common to all plots.
         var plotOptions = {
             // We set up a customized title which acts as labels for the left and right sides of the pyramid.
             title: {
@@ -325,41 +323,58 @@
             seriesDefaults: {
                 renderer: $.jqplot.PyramidRenderer,
                 rendererOptions: {
-                    barPadding: 4
+                    barPadding: 4,
+                    fill: false
                 },
                 yaxis: "yaxis",
-                shadow: false
+                shadow: false,
+                show: false
             },
 
-            // We have 4 series, the left and right pyramid bars and
-            // the left and rigt overlay lines.
+            // We have 10 series, but only 2 will be shown at a time unless an overlay is turned on.
             series: [
                 // For pyramid plots, the default side is right.
                 // We want to override here to put first set of bars
                 // on left.
                 {
                     rendererOptions:{
-                        side: "left",
-                        syncronizeHighlight: 1
+                        side: "left"
                     }
                 },
                 {
-                    yaxis: "y2axis",
-                    rendererOptions: {
-                        syncronizeHighlight: 0
-                    }
+                    yaxis: "y2axis"
                 },
                 {
                     rendererOptions: {
-                        fill: false,
                         side: 'left'
                     }
                 },
                 {
-                    yaxis: 'y2axis',
+                    yaxis: 'y2axis'
+                },
+                {
                     rendererOptions: {
-                        fill: false
+                        side: 'left'
                     }
+                },
+                {
+                    yaxis: 'y2axis'
+                },
+                {
+                    rendererOptions: {
+                        side: 'left'
+                    }
+                },
+                {
+                    yaxis: 'y2axis'
+                },
+                {
+                    rendererOptions: {
+                        side: 'left'
+                    }
+                },
+                {
+                    yaxis: 'y2axis'
                 }
             ],
             axesDefaults: {
@@ -410,6 +425,65 @@
                 }
             }
         };
+
+        var serOpts = {show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}};
+        var plotOptsArr = [];
+
+        for (var sidx=0; sidx<10; sidx++;) {
+            var serArr = []  
+        }
+
+        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions2 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions3 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions4 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions5 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions6 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+
+            // We have 4 series, the left and right pyramid bars and
+            // the left and rigt overlay lines.
+            series: [
+                // For pyramid plots, the default side is right.
+                // We want to override here to put first set of bars
+                // on left.
+                {
+                    rendererOptions:{
+                        side: "left",
+                        syncronizeHighlight: 1
+                    }
+                },
+                {
+                    yaxis: "y2axis",
+                    rendererOptions: {
+                        syncronizeHighlight: 0
+                    }
+                },
+                {
+                    rendererOptions: {
+                        fill: false,
+                        side: 'left'
+                    }
+                },
+                {
+                    yaxis: 'y2axis',
+                    rendererOptions: {
+                        fill: false
+                    }
+                }
+            ],
 
         $('div.jqplot-chart').jqplot([quintiles[0][1], quintiles[0][2]], [quintiles[1][1], quintiles[1][2]], [quintiles[2][1], quintiles[2][2]],[quintiles[3][1], quintiles[3][2]],[quintiles[4][1], quintiles[4][2]],plotOptions);
 
