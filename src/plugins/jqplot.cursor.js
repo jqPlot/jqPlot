@@ -890,7 +890,7 @@
     
     function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
         var c = plot.plugins.cursor;
-        if(plot.plugins.jquerymobile){
+        if(plot.plugins.mobile){
             $(document).one('vmouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
         } else {
             $(document).one('mouseup.jqplot_cursor', {plot:plot}, handleMouseUp);
