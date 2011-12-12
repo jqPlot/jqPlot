@@ -928,7 +928,7 @@
                 // get zoom starting position.
                 c._zoom.axes.start[ax] = datapos[ax];
             }  
-           if(plot.plugins.jquerymobile){
+           if(plot.plugins.mobile){
                 $(document).bind('vmousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
             } else {
                 $(document).bind('mousemove.jqplotCursor', {plot:plot}, handleZoomMove);              
