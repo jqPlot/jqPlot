@@ -121,7 +121,7 @@
 
         var temptop, templeft, tempbottom, tempright;
 
-        for (var i in clses) {
+        for (var i = 0; i < clses.length; i++) {
             $(this).find('.'+clses[i]).each(function() {
                 temptop = $(this).offset().top - plottop;
                 templeft = $(this).offset().left - plotleft;
