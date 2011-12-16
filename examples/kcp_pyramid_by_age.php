@@ -11,15 +11,9 @@
     <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
   
   <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-    <script class="include" type="text/javascript" src="../src/jquery.js"></script>
+    <script class="include" type="text/javascript" src="../src/jquery.min.js"></script>
     
-   
-</head>
-<body>
-
-<!-- Example scripts go here -->
-
-  <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
+     <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
 
     <style type="text/css">
         
@@ -139,6 +133,13 @@
 
     </style>
 
+   
+</head>
+<body>
+
+<!-- Example scripts go here -->
+
+ 
     <div class="overlay-shadow"></div>
 
     <div class="overlay-chart-container ui-corner-all">
@@ -220,7 +221,7 @@
   
 
 
-    <script class="code" type="text/javascript" language="javascript">
+    <script class="code" type="text/javascript">
     $(document).ready(function(){
 
         // if browser supports canvas, show additional toolbar icons
@@ -318,7 +319,7 @@
                         interval: 10,
                         color: 'rgb(245, 235, 215)'
                     }
-                },
+                }
             },
 
             // This makes the effective starting value of the axes 0 instead of 1.
@@ -343,13 +344,13 @@
                 {
                     rendererOptions:{
                         side: "left",
-                        syncronizeHighlight: 1
+                        synchronizeHighlight: 1
                     }
                 },
                 {
                     yaxis: "y2axis",
                     rendererOptions: {
-                        syncronizeHighlight: 0
+                        synchronizeHighlight: 0
                     }
                 },
                 {
@@ -416,10 +417,6 @@
 
         $('div.jqplot-chart').jqplot([quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
 
-        // Clear all the check boxes
-
-        $()
-
         //////
         // The followng functions use verbose css selectors to make
         // it clear exactly which elements they are binging to/operating on
@@ -483,18 +480,12 @@
     });
     </script>
 
-<!-- End example scripts -->
-
-<!-- Don't touch this! -->
 
     <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/scripts/shCore.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushXml.min.js"></script>
 
-<!-- End Don't touch this! -->
-
-<!-- Additional plugins go here -->
 
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
 
@@ -508,10 +499,7 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.json2.js"></script>
     <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
-
-<!-- End additional plugins -->
-
-    </div>  
+ 
     <script type="text/javascript" src="example.js"></script>
 
 </body>

@@ -288,10 +288,9 @@
 
         // Custom color arrays are set up for each series to get the look that is desired.
         // Two color arrays are created for the default and optional color which the user can pick.
-        var greenColors = ["#526D2C", "#77933C", "#C57225", "#C57225"];
-        var blueColors = ["#3F7492", "#4F9AB8", "#C57225", "#C57225"];
+        var greenColors = ["#526D2C", "#77933C"];
 
-        // options common to all plots.
+        // These options are common to all plots.
         var plotOptions = {
             // We set up a customized title which acts as labels for the left and right sides of the pyramid.
             title: {
@@ -314,7 +313,7 @@
                         interval: 2,
                         color: 'rgb(250, 240, 225)'
                     }
-                },
+                }
             },
 
             // This makes the effective starting value of the axes 0 instead of 1.
@@ -332,6 +331,7 @@
             },
 
             // We have 10 series, but only 2 will be shown at a time unless an overlay is turned on.
+            // Set up options for all series now, so when turned on they will look right.
             series: [
                 // For pyramid plots, the default side is right.
                 // We want to override here to put first set of bars
@@ -384,7 +384,8 @@
                 pad: 0,
                 rendererOptions: {
                     baselineWidth: 2
-                }
+                },
+                scaleToHiddenSeries: true
             },
 
             // Set up all the y axes, since users are allowed to switch between them.
@@ -426,70 +427,31 @@
             }
         };
 
-        var serOpts = {show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}};
+        // These options are different for each series.
+        // sopts are common options for the overlay series in each plot.
+        var sopts = {color: '#C57225'};
+
+        // An array of 5 elements, one for each plot.
         var plotOptsArr = [];
 
-        for (var sidx=0; sidx<10; sidx++;) {
-            var serArr = []  
-        }
+        // Options for each individual plot
+        plotOptsArr[0] = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {synchronizeHighlight: 0, fill: true}}, sopts, sopts, sopts, sopts, sopts, sopts, sopts, sopts]});
 
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+        plotOptsArr[1] = $.extend(true, {}, plotOptions, {series:[sopts, sopts, {show: true, rendererOptions:{synchronizeHighlight: 3, fill: true}}, {show: true, rendererOptions: {synchronizeHighlight: 2, fill: true}}, sopts, sopts, sopts, sopts, sopts, sopts]});
 
-        var plotOptions2 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+        plotOptsArr[2] = $.extend(true, {}, plotOptions, {series:[sopts, sopts, sopts, sopts, {show: true, rendererOptions:{synchronizeHighlight: 5, fill: true}}, {show: true, rendererOptions: {synchronizeHighlight: 4, fill: true}}, sopts, sopts, sopts, sopts]});
 
-        var plotOptions3 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+        plotOptsArr[3] = $.extend(true, {}, plotOptions, {series:[sopts, sopts, sopts, sopts, sopts, sopts, {show: true, rendererOptions:{synchronizeHighlight: 7, fill: true}}, {show: true, rendererOptions: {synchronizeHighlight: 6, fill: true}}, sopts, sopts]});
 
-        var plotOptions4 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
+        plotOptsArr[4] = $.extend(true, {}, plotOptions, {series:[sopts, sopts, sopts, sopts, sopts, sopts, sopts, sopts, {show: true, rendererOptions:{synchronizeHighlight: 9, fill: true}}, {show: true, rendererOptions: {synchronizeHighlight: 8, fill: true}}]});
 
-        var plotOptions5 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
 
-        var plotOptions6 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-        var plotOptions1 = $.extend(true, {}, plotOptions, {series:[{show: true, rendererOptions:{synchronizeHighlight: 1, fill: true}}, {show: true, rendererOptions: {fill: true}}]});
-
-            // We have 4 series, the left and right pyramid bars and
-            // the left and rigt overlay lines.
-            series: [
-                // For pyramid plots, the default side is right.
-                // We want to override here to put first set of bars
-                // on left.
-                {
-                    rendererOptions:{
-                        side: "left",
-                        syncronizeHighlight: 1
-                    }
-                },
-                {
-                    yaxis: "y2axis",
-                    rendererOptions: {
-                        syncronizeHighlight: 0
-                    }
-                },
-                {
-                    rendererOptions: {
-                        fill: false,
-                        side: 'left'
-                    }
-                },
-                {
-                    yaxis: 'y2axis',
-                    rendererOptions: {
-                        fill: false
-                    }
-                }
-            ],
-
-        $('div.jqplot-chart').jqplot([quintiles[0][1], quintiles[0][2]], [quintiles[1][1], quintiles[1][2]], [quintiles[2][1], quintiles[2][2]],[quintiles[3][1], quintiles[3][2]],[quintiles[4][1], quintiles[4][2]],plotOptions);
-
-        // Clear all the check boxes
-
-        $()
+        // Create all the plots at one time.
+        // Use jQuery selecctor syntax to select all the plot targets.  Here, no id's were specified on the targets, so they are auto generated.
+        // You can get a reference to the individual plot object by:
+        //     var plot = $('div.jqplot-chart').eq(0).data('jqplot');
+        //
+        $('div.jqplot-chart').jqplot([quintiles[0][1], quintiles[0][2], quintiles[1][1], quintiles[1][2], quintiles[2][1], quintiles[2][2], quintiles[3][1], quintiles[3][2], quintiles[4][1], quintiles[4][2]], plotOptsArr[0], plotOptsArr[1], plotOptsArr[2], plotOptsArr[3], plotOptsArr[4]);
 
         //////
         // The followng functions use verbose css selectors to make
@@ -527,6 +489,7 @@
             });
         });
 
+        // Open and close the plot container.
         $('.quintile-toggle').each(function() {
             $(this).click(function(e) {
                 if ($(this).hasClass('ui-icon-arrowthickstop-1-n')) {
@@ -546,14 +509,15 @@
             });
         });
 
+        // Handle each of the checkboxes to display overlays.
         $('input[type=checkbox][name=showContour]').each(function(index) {
             // on load/reload, clear all the check boxes.
             $(this).get(0).checked = false;
 
+            // bind to change event event on the checkbox.
             $(this).change(function(evt){
-                var copydata = [quintiles[index][1], quintiles[index][2]];
-                var checkBox = this;
 
+                // if check box is checked.
                 if (this.checked) {
                     // uncheck all other check boxes.
                     $('input[type=checkbox][name=showContour]').each(function(cidx) {
@@ -562,26 +526,39 @@
                         }
                     });
 
-                    // add data to other plots.
-                    // remove data from this plot.
+                    // On each chart, show the checked plot's overlay and
+                    // show the original plot.
                     $('div.jqplot-chart').each(function(pidx) {
                         var plot = $(this).data('jqplot');
-                        var data = plot.data.slice(0,2);
+                        
+                        // Set up options to hide all series.
+                        var seriesOpts = [{show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}];
 
-                        if (pidx !== index) {
-                            data = data.concat(copydata);
-                        }
+                        // Show series for this particular plot (pidx) and for the checked plot (index).
+                        seriesOpts[2 * pidx].show = true;
+                        seriesOpts[2 * pidx + 1].show = true;
+                        seriesOpts[2 * index].show = true;
+                        seriesOpts[2 * index + 1].show = true;
 
-                        plot.replot({data: data});
+                        // replot with the new options.
+                        plot.replot({series: seriesOpts});
+
                     });
                 }
 
+                // if check box is not checked.
                 else {
-                    // remove extra data from plots.
-                    $('div.jqplot-chart').each(function(pidx) {
+                    $('div.jqplot-chart').each(function(pidx) { 
+                        // Set up options to hide all series.
+                        var seriesOpts = [{show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}, {show: false}];
                         var plot = $(this).data('jqplot');
-                        var data = plot.data.slice(0,2);
-                        plot.replot({data: data});
+
+                        // Here showing only the series for this particular plot (pidx).
+                        seriesOpts[2 * pidx].show = true;
+                        seriesOpts[2 * pidx + 1].show = true;
+
+                        // replot with the new options.
+                        plot.replot({series: seriesOpts});
                     });
                 }
             })
@@ -641,7 +618,7 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.pyramidRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
-    <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+    <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
 
 <!-- End additional plugins -->
