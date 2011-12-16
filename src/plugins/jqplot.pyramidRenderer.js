@@ -79,10 +79,10 @@
         // prop: highlightColors
         // an array of colors to use when highlighting a slice.
         this.highlightColors = [];
-        // prop: syncronizeHighlight
+        // prop: synchronizeHighlight
         // Index of another series to highlight when this series is highlighted.
-        // null or false to not syncronize.
-        this.syncronizeHighlight = false;
+        // null or false to not synchronize.
+        this.synchronizeHighlight = false;
         // prop: offsetBars
         // False will center bars on their y value.
         // True will push bars up by 1/2 bar width to fill between their y values.
@@ -452,8 +452,8 @@
         plot.plugins.pyramidRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColors[pidx], fillRect: false};
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
-        if (!isNaN(s.syncronizeHighlight) && plot.series.length >= s.syncronizeHighlight && s.syncronizeHighlight !== sidx) {
-            s = plot.series[s.syncronizeHighlight];
+        if (s.synchronizeHighlight !== false && plot.series.length >= s.synchronizeHighlight && s.synchronizeHighlight !== sidx) {
+            s = plot.series[s.synchronizeHighlight];
             opts = {fillStyle: s.highlightColors[pidx], fillRect: false};
             s.renderer.shapeRenderer.draw(canvas._ctx, s._barPoints[pidx], opts);
         }
