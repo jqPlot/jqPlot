@@ -299,6 +299,8 @@
         return newCanvas;
     };
 
+    // return the raw image data string.
+    // Should work on canvas supporting browsers.
     $.fn.jqplotToImageStr = function(options) {
         var imgCanvas = $(this).jqplotToImageCanvas(options);
         if (imgCanvas) {
@@ -309,7 +311,7 @@
         }
     };
 
-    // create an <img> element and return it.
+    // return a DOM <img> element and return it.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageElem = function(options) {
         var elem = document.createElement("img");
@@ -318,7 +320,7 @@
         return elem;
     };
 
-    // create an <img> element and return it.
+    // return a string for an <img> element and return it.
     // Should work on canvas supporting browsers.
     $.fn.jqplotToImageElemStr = function(options) {
         var str = '<img src='+$(this).jqplotToImageStr(options)+' />';
