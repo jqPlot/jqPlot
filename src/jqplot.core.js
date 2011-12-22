@@ -629,10 +629,10 @@
         // prop: borderColor
         // color of the border adjacent to the axis.  Defaults to grid border color.
         this.borderColor = null;
-        // minimum and maximum values on the axis.
         // prop: scaleToHiddenSeries
         // True to include hidden series when computing axes bounds and scaling.
         this.scaleToHiddenSeries = false;
+        // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
         // statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
         // holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
@@ -1336,10 +1336,12 @@
         this.data = temp;
 
         // parse the renderer options and apply default colors if not provided
-        if (!this.color && this.show) {
+        // Set color even if not shown, so series don't change colors when other
+        // series on plot shown/hidden.
+        if (!this.color) {
             this.color = plot.colorGenerator.get(this.index);
         }
-        if (!this.negativeColor && this.show) {
+        if (!this.negativeColor) {
             this.negativeColor = plot.negativeColorGenerator.get(this.index);
         }
 
@@ -2645,6 +2647,14 @@
                 if (temp.show) {
                     temp._xaxis.show = true;
                     temp._yaxis.show = true;
+                }
+                else {
+                    if (temp._xaxis.scaleToHiddenSeries) {
+                        temp._xaxis.show = true;
+                    }
+                    if (temp._yaxis.scaleToHiddenSeries) {
+                        temp._yaxis.show = true;
+                    }
                 }
 
                 // // parse the renderer options and apply default colors if not provided
