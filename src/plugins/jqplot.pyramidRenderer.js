@@ -79,6 +79,11 @@
         // prop: highlightColors
         // an array of colors to use when highlighting a slice.
         this.highlightColors = [];
+        // prop highlightThreshold
+        // Expand the highlightable region in the x direction.
+        // E.g. a value of 3 will highlight a bar when the mouse is
+        // within 3 pixels of the bar in the x direction.
+        this.highlightThreshold = 1.5;
         // prop: synchronizeHighlight
         // Index of another series to highlight when this series is highlighted.
         // null or false to not synchronize.
@@ -101,6 +106,14 @@
         // if (this.fill === false) {
         //     this.shadow = false;
         // }
+
+        if (this.side === 'left') {
+            this._highlightThreshold = [[-this.highlightThreshold, 0], [-this.highlightThreshold, 0], [0,0], [0,0]];
+        }
+
+        else {
+            this._highlightThreshold = [[0,0], [0,0], [this.highlightThreshold, 0], [this.highlightThreshold, 0]];
+        }
         
         this.renderer.options = options;
         // index of the currenty highlighted point, if any
