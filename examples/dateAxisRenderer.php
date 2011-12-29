@@ -119,7 +119,7 @@ $(document).ready(function(){
     plot1 = $.jqplot('chart1',[ohlc],{
         axes: {
           xaxis: {
-              renderer:$.jqplot.DateAxisRenderer,
+              renderer:$.jqplot.DateAxisRenderer
           },
           yaxis: {
               tickOptions:{prefix: '$'}

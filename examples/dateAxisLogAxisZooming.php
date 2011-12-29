@@ -25,12 +25,8 @@ $(document).ready(function(){
                 },
                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {
-                  angle: -30,
-                  // formatString: '%#m-%#d %H:%M'
+                  angle: -30
                 } 
-                // min:'August 1, 2007', 
-                // tickInterval: '4 months', 
-                // tickOptions:{formatString:'%Y/%#m/%#d'} 
             }, 
             yaxis: {  
                 renderer: $.jqplot.LogAxisRenderer,
