@@ -14,6 +14,7 @@
     <script class="include" type="text/javascript" src="../src/jquery.min.js"></script>
     
      <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
+    <link href="colorpicker/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
 
     <style type="text/css">
         
@@ -87,6 +88,19 @@
             margin-top: 1.5em;
         }
 
+        td.controls, td.controls select {
+            font-size: 0.8em;
+        }
+
+        td.controls li {
+            list-style-type: none;
+        }
+
+        td.controls ul {
+            margin-top: 0.5em;
+            padding-left: 0.2em;
+        }
+
         div.overlay-chart-container {
             display: none;
             z-index: 11;
@@ -111,6 +125,18 @@
             left: 0px;
             width: 100%;
             height: 100%;
+        }
+
+        div.ui-colorpicker div.ui-dialog-titlebar {
+            padding: 0.1em 0.3em;
+        }
+
+        input.color {
+            display: none;
+        }
+
+        div.colorpicker-container span {
+            padding: 3px;
         }
 
         @media print {
@@ -154,8 +180,63 @@
         <div class="quintile-content ui-widget-content ui-corner-bottom">
             <table class="quintile-display">
                 <tr>
+
+                    <td class="controls">
+                        <table>
+                            <tr>
+                                <td>
+                                    Axes:
+                                </td>
+                                <td>
+                                    <select name="axisPosition">
+                                        <option value="both">Left &amp; Right</option>
+                                        <option value = "left">Left</option>
+                                        <option value = "right">Right</option>
+                                        <option value = "mid">Mid</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Colors:
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li><input class="color" type="color" id="colorMale" /> Male</li>
+                                        <li><input class="color" type="color" id="colorFemale" /> Female</li>
+                                        <li><input class="color" type="color" id="colorBackground"  /> Background</li>
+                                        <li><input class="color" type="color" id="colorPlotBands" /> Plot Bands</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Grids:
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li><input name="gridsVertical" value="vertical" type="checkbox" />Vertical</li>
+                                        <li><input name="gridsHorizontal" value="horizontal" type="checkbox" />Horizontal</li>
+                                        <li><input name="showMinorTicks" value="true" type="checkbox" />Only major</li>
+                                        <li><input name="plotBands" value="true" type="checkbox" checked />Plot Bands</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <ul>
+                                        <li><input name="barPadding" value="2" type="checkbox" checked />Gap between bars</li>
+                                        <!-- value for showContour is speed at which to fade lines in/out -->
+                                        <li><input name="showContour" value="500" type="checkbox" />Comparison Line</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+
                     <td class="chart-cell">
-                        <div class="jqplot-chart"></div>
+                        <div id="agesChart" class="jqplot-chart"></div>
                     </td>
                     <td class="stats-cell">
                         <table class="stats-table">
@@ -309,7 +390,7 @@
             grid: {
                 drawBorder: false,
                 shadow: false,
-                background: "white",
+                background: "#ffffff",
                 rendererOptions: {
                     // plotBands is an option of the pyramidGridRenderer.
                     // it will put banding at starting at a specified value
@@ -415,7 +496,20 @@
             }
         };
 
-        $('div.jqplot-chart').jqplot([quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
+        // $('#agesChart').jqplot([quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
+        $.jqplot.config.addDomReference = true;
+        var plot1 = $.jqplot('agesChart', [quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
+
+        // initialize form elements
+        // set these before attaching event handlers.
+
+        $("input[type=checkbox][name=gridsVertical]").attr("checked", false);
+        $("input[type=checkbox][name=gridsHorizontal]").attr("checked", false);
+        $("input[type=checkbox][name=showMinorTicks]").attr("checked", false);
+        $("input[type=checkbox][name=plotBands]").attr("checked", true);
+        $("input[type=checkbox][name=showContour]").attr("checked", true);
+        $("input[type=checkbox][name=barPadding]").attr("checked", true);
+        $("select[name=axisPosition]").val("both");
 
         //////
         // The followng functions use verbose css selectors to make
@@ -458,6 +552,93 @@
         });
 
 
+        $("input[type=checkbox][name=gridsVertical]").change(function(){
+            // this refers to the html element we are binding to.
+            // $(this) is jQuery object on that element.
+            var opts = {axes: {xaxis: {tickOptions: {showGridline: this.checked}}}};
+            plot1.replot(opts);
+        });
+
+
+        $("input[type=checkbox][name=gridsHorizontal]").change(function(){
+            // this refers to the html element we are binding to.
+            // $(this) is jQuery object on that element.
+            var opts = {
+                axes: {
+                    yaxis: {
+                        tickOptions: {showGridline: this.checked}
+                    },
+                    y2axis: {
+                        tickOptions: {showGridline: this.checked}
+                    },
+                    yMidAxis: {
+                        tickOptions: {showGridline: this.checked}
+                    }
+                }
+            };
+            plot1.replot(opts);
+        });
+
+        $("input[type=checkbox][name=plotBands]").change(function(){
+            // this refers to the html element we are binding to.
+            // $(this) is jQuery object on that element.
+            var opts = {grid:{ rendererOptions: {plotBands: { show: this.checked}}}};
+            plot1.replot(opts);
+        });
+
+        ////
+        // To-Do
+        //
+        // initialize form elements on reload.
+        // figure out what overlay line would be.
+        // have to adjust ticks to do show minor.
+        // make like kcp_pyramid.php
+        ////
+        $("input[type=checkbox][name=showMinorTicks]").change(function(){
+            // this refers to the html element we are binding to.
+            // $(this) is jQuery object on that element.
+            var opts = {
+                axes: {
+                    yaxis: {
+                        showMinorTicks: !this.checked
+                    },
+                    y2axis: {
+                        showMinorTicks: !this.checked
+                    },
+                    yMidAxis: {
+                        showMinorTicks: !this.checked
+                    }
+                }
+            };
+            plot1.replot(opts);
+        });
+
+        $("input[type=checkbox][name=barPadding]").change(function(){
+            // this refers to the html element we are binding to.
+            // $(this) is jQuery object on that element.
+            if (this.checked) {
+                var val = parseFloat($(this).val());
+                var opts = {
+                    seriesDefaults: {
+                        rendererOptions: {
+                            barPadding: val
+                        }
+                    }
+                };
+            }
+            else {
+                var opts = {
+                    seriesDefaults: {
+                        rendererOptions: {
+                            barPadding: 0
+                        }
+                    }
+                };
+            }
+            plot1.replot(opts);
+        });
+
+
         $('.ui-icon-image').each(function() {
             $(this).bind('click', function(evt) {
                 var chart = $(this).closest('div.quintile-outer-container').find('div.jqplot-target');
@@ -475,6 +656,67 @@
             var div = $('div.overlay-chart-container-content');
             div.parent().fadeOut(600);
             $('div.overlay-shadow').fadeOut(1000);
+        });
+
+        function applyColors () {
+            var opts = {series:[{}, {}], grid:{rendererOptions:{plotBands:{}}}};
+            opts.series[0].color = $('#colorMale').data('colorpicker').color.toCSS();
+            opts.series[1].color = $('#colorFemale').data('colorpicker').color.toCSS();
+            opts.grid.background = $('#colorBackground').data('colorpicker').color.toCSS();
+            opts.grid.rendererOptions.plotBands.color = $('#colorPlotBands').data('colorpicker').color.toCSS();
+
+            plot1.replot(opts);
+
+        };
+
+        // $('#colorMale').val(plot1.series[0].color);
+
+        $('#colorMale').colorpicker({
+            showOn: 'button',
+            showHeader: true,
+            showSwatches: true,
+            buttonColorize: true,
+            buttonImageOnly: true,
+            parts: 'full',
+            color: plot1.series[0].color,
+            onClose: applyColors
+
+        });
+
+        $('#colorFemale').colorpicker({
+            showOn: 'button',
+            showHeader: true,
+            showSwatches: true,
+            buttonColorize: true,
+            buttonImageOnly: true,
+            parts: 'full',
+            color: plot1.series[1].color,
+            onClose: applyColors
+
+        });
+
+        $('#colorBackground').colorpicker({
+            showOn: 'button',
+            showHeader: true,
+            showSwatches: true,
+            buttonColorize: true,
+            buttonImageOnly: true,
+            parts: 'full',
+            color: plot1.grid.background,
+            onClose: applyColors
+
+        });
+
+        $('#colorPlotBands').colorpicker({
+            showOn: 'button',
+            showHeader: true,
+            showSwatches: true,
+            buttonColorize: true,
+            buttonImageOnly: true,
+            parts: 'full',
+            color: plot1.grid.plotBands.color,
+            onClose: applyColors
+
         });
 
     });
@@ -499,6 +741,8 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.json2.js"></script>
     <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
+
+    <script src="colorpicker/jquery.colorpicker.js"></script>
  
     <script type="text/javascript" src="example.js"></script>
 
