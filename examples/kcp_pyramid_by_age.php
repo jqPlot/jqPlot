@@ -17,22 +17,27 @@
     <link href="colorpicker/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
 
     <style type="text/css">
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
         
         body {
             width: 98%;
-            height: 98%;
-            padding: 12px;
+            height: 97%;
+            margin: 6px;
         }
 
         .quintile-outer-container {
-            width: 96%;
-            height: 96%;
+            width: 97%;
+            height: 97%;
             margin: auto;
         }
 
         .jqplot-chart {
-            width: 800px;
-            height: 800px;
+/*            width: 400px;
+            height: 400px;*/
         }
 
         .quintile-toolbar .ui-icon {
@@ -76,27 +81,52 @@
             margin-top: 15px;
         }
 
-        td.stats-cell {
-            padding-left: 20px;
-            padding-top: 40px;
-            vertical-align: top;
-
-        }
-
-        td.stats-cell div.input {
+        div.stats-cell div.input {
             font-size: 0.7em;
             margin-top: 1.5em;
         }
 
-        td.controls, td.controls select {
+        div.content-container {
+            padding-left: 230px;   /* LC width */
+            padding-right: 300px;  /* RC width */
+            height: 100%;
+        }
+
+        div.content-container .column {
+            position: relative;
+            float: left;
+        }
+
+        div.controls {
+            width: 170px;          /* LC width */
+            right: 230px;          /* LC width */
+            padding-left: 30px;
+            padding-right: 30px;
+            margin-left: -100%;
+            margin-top: 30px;
+        }
+
+        div.chart-cell {
+            width: 100%;
+            height: 100%;
+        }
+
+        div.stats-cell {
+            width: 270px;          /* RC width */
+            margin-right: -300px;  /* RC width */
+            padding-right: 30px;
+            margin-top: 30px;
+        }
+
+        div.controls, div.controls select {
             font-size: 0.8em;
         }
 
-        td.controls li {
+        div.controls li {
             list-style-type: none;
         }
 
-        td.controls ul {
+        div.controls ul {
             margin-top: 0.5em;
             padding-left: 0.2em;
         }
@@ -139,8 +169,14 @@
             padding: 3px;
         }
 
+        div.quintile-content {
+            width: 100%;
+            height: 100%;
+        }
+
+
         @media print {
-            td.stats-cell {
+            div.stats-cell {
                 vertical-align: top;
                 padding-top: 35px;
             }
@@ -178,125 +214,127 @@
             <span class="quintile-title">Income Level:</span>
         </div>
         <div class="quintile-content ui-widget-content ui-corner-bottom">
-            <table class="quintile-display">
-                <tr>
 
-                    <td class="controls">
-                        <table>
-                            <tr>
-                                <td>
-                                    Axes:
-                                </td>
-                                <td>
-                                    <select name="axisPosition">
-                                        <option value="both">Left &amp; Right</option>
-                                        <option value = "left">Left</option>
-                                        <option value = "right">Right</option>
-                                        <option value = "mid">Mid</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Colors:
-                                </td>
-                                <td>
-                                    <ul>
-                                        <li><input class="color" type="color" id="colorMale" /> Male</li>
-                                        <li><input class="color" type="color" id="colorFemale" /> Female</li>
-                                        <li><input class="color" type="color" id="colorBackground"  /> Background</li>
-                                        <li><input class="color" type="color" id="colorPlotBands" /> Plot Bands</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Grids:
-                                </td>
-                                <td>
-                                    <ul>
-                                        <li><input name="gridsVertical" value="vertical" type="checkbox" />Vertical</li>
-                                        <li><input name="gridsHorizontal" value="horizontal" type="checkbox" />Horizontal</li>
-                                        <li><input name="showMinorTicks" value="true" type="checkbox" />Only major</li>
-                                        <li><input name="plotBands" value="true" type="checkbox" checked />Plot Bands</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <ul>
-                                        <li><input name="barPadding" value="2" type="checkbox" checked />Gap between bars</li>
-                                        <!-- value for showContour is speed at which to fade lines in/out -->
-                                        <li><input name="showContour" value="500" type="checkbox" />Comparison Line</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
+            <div class="content-container">
 
 
-                    <td class="chart-cell">
-                        <div id="agesChart" class="jqplot-chart"></div>
-                    </td>
-                    <td class="stats-cell">
-                        <table class="stats-table">
-                        <colgroup>
-                            <col class="label">
-                            <col class="value">
-                        </colgroup>
-                        <tbody>
-                            <tr>
-                                <td class="ui-corner-tl">Mean Age:</td>
-                                <td class="quintile-value summary-meanAge ui-corner-tr"></td>
-                            </tr>
-                            <tr>
-                                <td>Sex Ratio:</td>
-                                <td class="quintile-value summary-sexRatio"></td>
-                            </tr>
-                            <tr>
-                                <td>Age Dependency Ratio:</td>
-                                <td class="quintile-value summary-ageDependencyRatio"></td>
-                            </tr>
-                            <tr>
-                                <td>Population, Total:</td>
-                                <td class="quintile-value summary-populationTotal"></td>
-                            </tr>
-                            <tr>
-                                <td>Population, Male:</td>
-                                <td class="quintile-value summary-populationMale"></td>
-                            </tr>
-                            <tr>
-                                <td class="ui-corner-bl">Population, Female:</td>
-                                <td class="quintile-value summary-populationFemale ui-corner-br"></td>
-                            </tr>
-                        </tbody>
-                        </table>
-                        <table class="highlighted-stats-table">
-                        <colgroup>
-                            <col class="label">
-                            <col class="value">
-                        </colgroup>
-                        <tbody>
-                            <tr class="tooltip-header">
-                                <td class="tooltip-header ui-corner-top" colspan="2">Highlighted Age: <span class="tooltip-item tooltipAge">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <td>Population, Male: </td>
-                                <td class="quintile-value"><span class="tooltip-item tooltipMale">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <td>Population, Female: </td>
-                                <td class="quintile-value"><span class="tooltip-item tooltipFemale">&nbsp;</span></td>
-                            </tr>
-                            <tr>
-                                <td class="ui-corner-bl">Sex Ratio: </td>
-                                <td class="quintile-value ui-corner-br"><span class="tooltip-item tooltipRatio">&nbsp;</span></td>
-                            </tr>
-                        <tbody>
-                        </table>
-                    </td>
-                </tr>
-            </table>
+            <div class="chart-cell column">
+                <div id="agesChart" class="jqplot-chart"></div>
+            </div>
+
+            <div class="controls column">
+                <table>
+                    <tr>
+                        <td>
+                            Axes:
+                        </td>
+                        <td>
+                            <select name="axisPosition">
+                                <option value="both">Left &amp; Right</option>
+                                <option value = "left">Left</option>
+                                <option value = "right">Right</option>
+                                <option value = "mid">Mid</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Colors:
+                        </td>
+                        <td>
+                            <ul>
+                                <li><input class="color" type="color" id="colorMale" /> Male</li>
+                                <li><input class="color" type="color" id="colorFemale" /> Female</li>
+                                <li><input class="color" type="color" id="colorBackground"  /> Background</li>
+                                <li><input class="color" type="color" id="colorPlotBands" /> Plot Bands</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Grids:
+                        </td>
+                        <td>
+                            <ul>
+                                <li><input name="gridsVertical" value="vertical" type="checkbox" />Vertical</li>
+                                <li><input name="gridsHorizontal" value="horizontal" type="checkbox" />Horizontal</li>
+                                <li><input name="showMinorTicks" value="true" type="checkbox" />Only major</li>
+                                <li><input name="plotBands" value="true" type="checkbox" checked />Plot Bands</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <ul>
+                                <li><input name="barPadding" value="2" type="checkbox" checked />Gap between bars</li>
+                                <!-- value for showContour is speed at which to fade lines in/out -->
+                                <li><input name="showContour" value="500" type="checkbox" />Comparison Line</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="stats-cell column">
+                <table class="stats-table">
+                <colgroup>
+                    <col class="label">
+                    <col class="value">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td class="ui-corner-tl">Mean Age:</td>
+                        <td class="quintile-value summary-meanAge ui-corner-tr"></td>
+                    </tr>
+                    <tr>
+                        <td>Sex Ratio:</td>
+                        <td class="quintile-value summary-sexRatio"></td>
+                    </tr>
+                    <tr>
+                        <td>Age Dependency Ratio:</td>
+                        <td class="quintile-value summary-ageDependencyRatio"></td>
+                    </tr>
+                    <tr>
+                        <td>Population, Total:</td>
+                        <td class="quintile-value summary-populationTotal"></td>
+                    </tr>
+                    <tr>
+                        <td>Population, Male:</td>
+                        <td class="quintile-value summary-populationMale"></td>
+                    </tr>
+                    <tr>
+                        <td class="ui-corner-bl">Population, Female:</td>
+                        <td class="quintile-value summary-populationFemale ui-corner-br"></td>
+                    </tr>
+                </tbody>
+                </table>
+                <table class="highlighted-stats-table">
+                <colgroup>
+                    <col class="label">
+                    <col class="value">
+                </colgroup>
+                <tbody>
+                    <tr class="tooltip-header">
+                        <td class="tooltip-header ui-corner-top" colspan="2">Highlighted Age: <span class="tooltip-item tooltipAge">&nbsp;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Population, Male: </td>
+                        <td class="quintile-value"><span class="tooltip-item tooltipMale">&nbsp;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Population, Female: </td>
+                        <td class="quintile-value"><span class="tooltip-item tooltipFemale">&nbsp;</span></td>
+                    </tr>
+                    <tr>
+                        <td class="ui-corner-bl">Sex Ratio: </td>
+                        <td class="quintile-value ui-corner-br"><span class="tooltip-item tooltipRatio">&nbsp;</span></td>
+                    </tr>
+                <tbody>
+                </table>
+            </div>
+
+            </div>
+
         </div>
     </div> 
   
@@ -310,19 +348,15 @@
             $('div.quintile-toolbar').append('<div class="ui-icon ui-icon-image"></div><div class="ui-icon ui-icon-print"></div>');
         }
 
-        var quintileIndex = parseInt(<?php echo $_GET["qidx"]; ?>);
+        // for this demo, all data is same for each quintile.
+        // could do something like this to get the index of the quintile.
+        // <!-- var quintileIndex = parseInt(<?php echo $_GET["qidx"]; ?>); -->
 
         var male;
         var female;
         var summaryTable;
         var sexRatios;
-        quintiles = [];
-
-
-        // the "x" values from the data will go into the ticks array.  
-        // ticks should be strings for this case where we have values like "75+"
-        var ticks = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75+", ""];
-
+        jsondata = [];
 
         $.ajax({
             type: "GET",
@@ -337,33 +371,38 @@
                 //  1: male data
                 //  2: female data
                 //  3: ratios
-                quintiles = retdata;
+                jsondata = retdata;
             },
             error: function (xhr) { console.log("ERROR: ", xhr.statusText) }
         });
 
+
+        // the "x" values from the data will go into the ticks array.  
+        // ticks should be strings for this case where we have values like "75+"
+        var ticks = jsondata[4];
+
         $('td.summary-meanAge').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][0][3]));
+            $(this).html($.jqplot.sprintf('%5.2f', jsondata[0][3]));
         });
 
         $('td.summary-sexRatio').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][3][0]));
+            $(this).html($.jqplot.sprintf('%5.2f', jsondata[3][0]));
         });
 
         $('td.summary-ageDependencyRatio').each(function(index) {
-            $(this).html($.jqplot.sprintf('%5.2f', quintiles[quintileIndex][0][6]));
+            $(this).html($.jqplot.sprintf('%5.2f', jsondata[0][6]));
         });
 
         $('td.summary-populationTotal').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][0]));
+            $(this).html($.jqplot.sprintf("%'d", jsondata[0][0]));
         });
 
         $('td.summary-populationMale').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][1]));
+            $(this).html($.jqplot.sprintf("%'d", jsondata[0][1]));
         });
 
         $('td.summary-populationFemale').each(function(index) {
-            $(this).html($.jqplot.sprintf("%'d", quintiles[quintileIndex][0][2]));
+            $(this).html($.jqplot.sprintf("%'d", jsondata[0][2]));
         });
         
         // These two variables should be removed outside of the jqplot.com example environment.
@@ -381,7 +420,7 @@
         var plotOptions = {
             // We set up a customized title which acts as labels for the left and right sides of the pyramid.
             title: {
-                text: '<span style="position:relative;left:25%;">Male</span><span style="position:relative;left:50%;">Female</span>',
+                text: '<span style="margin-left:25%;">Male</span><span style="margin-left:33%;">Female</span>',
                 textAlign: 'left'
             },
             // by default, the series will use the green color scheme.
@@ -409,8 +448,7 @@
             seriesDefaults: {
                 renderer: $.jqplot.PyramidRenderer,
                 rendererOptions: {
-                    barPadding: 2,
-                    offsetBars: true
+                    barPadding: 2
                 },
                 yaxis: "yaxis",
                 shadow: false
@@ -464,7 +502,7 @@
                 xaxis: {
                     tickOptions: {
                         formatter: $.jqplot.PercentTickFormatter,
-                        formatString: '%d%%'
+                        formatString: '%.1f%%'
                     }
                 },
                 yaxis: {
@@ -477,7 +515,20 @@
                     showMinorTicks: true,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 15
+                        tickSpacingFactor: 12,
+                        category: true
+                    }
+                },
+                yMidAxis: {
+                    label: "Age",
+                    // include empty tick options, they will be used
+                    // as users set options with plot controls.
+                    tickOptions: {},
+                    showMinorTicks: true,
+                    ticks: ticks,
+                    rendererOptions: {
+                        tickSpacingFactor: 12,
+                        category: true
                     }
                 },
                 y2axis: {
@@ -490,15 +541,28 @@
                     showMinorTicks: true,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 15
+                        tickSpacingFactor: 12,
+                        category: true
                     }
                 }
             }
         };
 
-        // $('#agesChart').jqplot([quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
+        // resize the chart container to fill the space
+        $('#agesChart').height($('div.chart-cell').height()*0.96);
+        $('#agesChart').width($('div.chart-cell').width()*0.97);
+
+        // $('#agesChart').jqplot([jsondata[1], jsondata[2]], plotOptions);
         $.jqplot.config.addDomReference = true;
-        var plot1 = $.jqplot('agesChart', [quintiles[quintileIndex][1], quintiles[quintileIndex][2]], plotOptions);
+        var plot1 = $.jqplot('agesChart', [jsondata[1], jsondata[2]], plotOptions);
+
+        $(window).resize (function(event, ui) {
+            // pass in resetAxes: true option to get rid of old ticks and axis properties
+            // which should be recomputed based on new plot size.
+            $('#agesChart').height($('div.chart-cell').height()*0.96);
+            $('#agesChart').width($('div.chart-cell').width()*0.97);
+            plot1.replot( { resetAxes: true } );
+        });
 
         // initialize form elements
         // set these before attaching event handlers.
@@ -516,26 +580,65 @@
         // it clear exactly which elements they are binging to/operating on
         //////
 
+        $("select[name=axisPosition]").change(function(){ 
+            // this refers to the html element we are binding to.
+            // $(this) is jQuery object on that element.
+
+            var opts = {series:[{}, {}, {}, {}]};
+
+            switch ($(this).val()) {
+                case "both":
+                    opts.series[0].yaxis = "yaxis";
+                    opts.series[1].yaxis = "y2axis";
+                    opts.series[2].yaxis = "yaxis";
+                    opts.series[3].yaxis = "y2axis";
+                    break;
+                case "left":
+                    opts.series[0].yaxis = "yaxis";
+                    opts.series[1].yaxis = "yaxis";
+                    opts.series[2].yaxis = "yaxis";
+                    opts.series[3].yaxis = "yaxis";
+                    break;
+                case "right":
+                    opts.series[0].yaxis = "y2axis";
+                    opts.series[1].yaxis = "y2axis";
+                    opts.series[2].yaxis = "y2axis";
+                    opts.series[3].yaxis = "y2axis";
+                    break;
+                case "mid":
+                    opts.series[0].yaxis = "yMidAxis";
+                    opts.series[1].yaxis = "yMidAxis";
+                    opts.series[2].yaxis = "yMidAxis";
+                    opts.series[3].yaxis = "yMidAxis";
+                    break;
+                default:
+                    break;
+                    
+            }
+
+            plot1.replot(opts); 
+        });
+
         // bind to the data highlighting event to make custom tooltip:
         $(".jqplot-target").each(function(index){
             $(this).bind("jqplotDataHighlight", function(evt, seriesIndex, pointIndex, data) {
                 // Here, assume first series is male poulation and second series is female population.
                 // Adjust series indices as appropriate.
                 var plot = $(this).data('jqplot');
-                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * quintiles[quintileIndex][0][1];
-                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * quintiles[quintileIndex][0][2];
-                var malePopulation = quintiles[quintileIndex][1][pointIndex] * quintiles[quintileIndex][0][1];
-                var femalePopulation = quintiles[quintileIndex][2][pointIndex] * quintiles[quintileIndex][0][2];
+                var malePopulation = Math.abs(plot.series[0].data[pointIndex][1]) * jsondata[0][1];
+                var femalePopulation = Math.abs(plot.series[1].data[pointIndex][1]) * jsondata[0][2];
+                var malePopulation = jsondata[1][pointIndex] * jsondata[0][1];
+                var femalePopulation = jsondata[2][pointIndex] * jsondata[0][2];
                 // var ratio = femalePopulation / malePopulation * 100;
-                var ratio = quintiles[quintileIndex][3][pointIndex+1];
+                var ratio = jsondata[3][pointIndex];
 
-                $(this).closest('table').find('.tooltipMale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", malePopulation));
-                $(this).closest('table').find('.tooltipFemale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", femalePopulation));
-                $(this).closest('table').find('.tooltipRatio').stop(true, true).fadeIn(350).html($.jqplot.sprintf('%5.2f', ratio));
+                $('.tooltipMale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", malePopulation));
+                $('.tooltipFemale').stop(true, true).fadeIn(350).html($.jqplot.sprintf("%'d", femalePopulation));
+                $('.tooltipRatio').stop(true, true).fadeIn(350).html($.jqplot.sprintf('%5.2f', ratio));
 
                 // Since we don't know which axis is rendererd and acive with out a little extra work,
                 // just use the supplied ticks array to get the age label.
-                $(this).closest('table').find('.tooltipAge').stop(true, true).fadeIn(350).html(ticks[pointIndex]);
+                $('.tooltipAge').stop(true, true).fadeIn(350).html(ticks[pointIndex]);
             });
         });
 
@@ -543,7 +646,7 @@
         $(".jqplot-target").each(function() {
             $(this).bind("jqplotDataUnhighlight", function(evt, seriesIndex, pointIndex, data) {
                 // clear out all the tooltips.
-                $(this).closest('table').find(".tooltip-item").fadeOut(250);
+                $(".tooltip-item").fadeOut(250);
             });
         });
 
