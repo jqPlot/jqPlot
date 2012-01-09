@@ -200,9 +200,6 @@
                                         speed = this.seriesToggle;
                                     }
                                 } 
-                                else if (this.seriesToggle === true) {
-                                    speed = 'normal';
-                                }
                                 if (this.showSwatches) {
                                     td1.bind('click', {series:s, speed:speed, plot: plot, replot:this.seriesToggleReplot}, handleToggle);
                                     td1.addClass('jqplot-seriesToggle');
@@ -269,6 +266,7 @@
             }
 
             else {
+                var s = plot.series[sidx];
 
                 if (s.canvas._elem.is(':hidden') || !s.show) {
                     plot.legend._elem.find('tr').eq(sidx).children().addClass('jqplot-series-hidden');
