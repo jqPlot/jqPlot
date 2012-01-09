@@ -73,6 +73,10 @@
         // String to prepend to the tick label.
         // Prefix is prepended to the formatted tick label.
         this.prefix = '';
+        // prop: suffix
+        // String to append to the tick label.
+        // Suffix is appended to the formatted tick label.
+        this.suffix = '';
         // prop: formatString
         // string passed to the formatter.
         this.formatString = '';
@@ -112,7 +116,7 @@
     
     $.jqplot.AxisTickRenderer.prototype.draw = function() {
         if (this.label === null) {
-            this.label = this.prefix + this.formatter(this.formatString, this.value);
+            this.label = this.prefix + this.formatter(this.formatString, this.value) + this.suffix;
         }
         var style = {position: 'absolute'};
         if (Number(this.label)) {
