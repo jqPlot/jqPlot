@@ -1061,11 +1061,11 @@
         this.renderer.init.call(this, this.rendererOptions);
     };
     
-    Legend.prototype.draw = function(offsets) {
+    Legend.prototype.draw = function(offsets, plot) {
         for (var i=0; i<$.jqplot.preDrawLegendHooks.length; i++){
             $.jqplot.preDrawLegendHooks[i].call(this, offsets);
         }
-        return this.renderer.draw.call(this, offsets);
+        return this.renderer.draw.call(this, offsets, plot);
     };
     
     Legend.prototype.pack = function(offsets) {
@@ -1453,7 +1453,7 @@
     };
     
     // toggles series display on plot, e.g. show/hide series
-    Series.prototype.toggleDisplay = function(ev) {
+    Series.prototype.toggleDisplay = function(ev, callback) {
         var s, speed;
         if (ev.data.series) {
             s = ev.data.series;
@@ -1461,42 +1461,53 @@
         else {
             s = this;
         }
+
         if (ev.data.speed) {
             speed = ev.data.speed;
         }
         if (speed) {
-            if (s.canvas._elem.is(':hidden')) {
+            // this can be tricky because series may not have a canvas element if replotting.
+            if (s.canvas._elem.is(':hidden') || !s.show) {
+                s.show = true;
+
                 s.canvas._elem.removeClass('jqplot-series-hidden');
                 if (s.shadowCanvas._elem) {
                     s.shadowCanvas._elem.fadeIn(speed);
                 }
-                s.canvas._elem.fadeIn(speed);
+                s.canvas._elem.fadeIn(speed, callback);
                 s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).fadeIn(speed);
             }
             else {
+                s.show = false;
+
                 s.canvas._elem.addClass('jqplot-series-hidden');
                 if (s.shadowCanvas._elem) {
                     s.shadowCanvas._elem.fadeOut(speed);
                 }
-                s.canvas._elem.fadeOut(speed);
+                s.canvas._elem.fadeOut(speed, callback);
                 s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).fadeOut(speed);
             }
         }
         else {
-            if (s.canvas._elem.is(':hidden')) {
+            // this can be tricky because series may not have a canvas element if replotting.
+            if (s.canvas._elem.is(':hidden') || !s.show) {
+                s.show = true;
+
                 s.canvas._elem.removeClass('jqplot-series-hidden');
                 if (s.shadowCanvas._elem) {
                     s.shadowCanvas._elem.show();
                 }
-                s.canvas._elem.show();
+                s.canvas._elem.show(callback);
                 s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).show();
             }
             else {
+                s.show = false;
+
                 s.canvas._elem.addClass('jqplot-series-hidden');
                 if (s.shadowCanvas._elem) {
                     s.shadowCanvas._elem.hide();
                 }
-                s.canvas._elem.hide();
+                s.canvas._elem.hide(callback);
                 s.canvas._elem.nextAll('.jqplot-point-label.jqplot-series-'+s.index).hide();
             }
         }
@@ -2827,7 +2838,8 @@
                 this.title.pack({top:0, left:0});
                 
                 // make room  for the legend between the grid and the edge.
-                var legendElem = this.legend.draw();
+                // pass a dummy offsets object and a reference to the plot.
+                var legendElem = this.legend.draw({}, this);
                 
                 var gridPadding = {top:0, left:0, bottom:0, right:0};
                 
