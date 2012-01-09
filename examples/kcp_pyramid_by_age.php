@@ -515,7 +515,7 @@
                     showMinorTicks: true,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 12,
+                        tickSpacingFactor: 13,
                         category: true
                     }
                 },
@@ -527,7 +527,7 @@
                     showMinorTicks: true,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 12,
+                        tickSpacingFactor: 13,
                         category: true
                     }
                 },

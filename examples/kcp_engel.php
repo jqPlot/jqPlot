@@ -149,16 +149,26 @@ $(document).ready(function(){
             placement: "outsideGrid",
             labels: labels,
             location: "ne",
-            rowSpacing: "0px"
+            rowSpacing: "0px",
+            rendererOptions: {
+                // set to true to replot when toggling series on/off
+                // set to an options object to pass in replot options.
+                seriesToggleReplot: {resetAxes: true}
+            }
         },
         axes: {
             xaxis: {
+                label: 'Population Percentile',
                 pad: 1.01,
                 tickOptions: {
                     showGridline: false
                 }
             },
             yaxis: {
+                label: 'Share in Total Expenditure',
+                tickOptions: {
+                    suffix: '%'
+                },
                 padMin: 0,
                 padMax: 1.05
             }
