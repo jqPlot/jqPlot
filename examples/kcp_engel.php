@@ -2,7 +2,7 @@
     $title = "Engel Curves";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
-<?php include "opener.php"; ?>
+<?php include "openerNoHeader.php"; ?>
 
 <!-- Example scripts go here -->
 
@@ -137,6 +137,7 @@ $(document).ready(function(){
     
     plot1 = $.jqplot("chart1", data, {
         title: "Engel Curves",
+        animate: false,
         axesDefaults: {
             labelRenderer: $.jqplot.CanvasAxisLabelRenderer
         },
@@ -153,6 +154,7 @@ $(document).ready(function(){
             rendererOptions: {
                 // set to true to replot when toggling series on/off
                 // set to an options object to pass in replot options.
+                seriesToggle: 'normal',
                 seriesToggleReplot: {resetAxes: true}
             }
         },
