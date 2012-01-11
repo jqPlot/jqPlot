@@ -57,9 +57,9 @@
             <div>
                 Data Series:
                 <ul>
-                    <li><input name="dataSeries" value="national" type="radio" checked />National</li>
-                    <li><input name="dataSeries" value="urban" type="radio" />Urban</li>
-                    <li><input name="dataSeries" value="rural" type="radio" />Rural</li>
+                    <li><input name="dataSeries" value="national" type="checkbox" checked />National</li>
+                    <li><input name="dataSeries" value="urban" type="checkbox" />Urban</li>
+                    <li><input name="dataSeries" value="rural" type="checkbox" />Rural</li>
                 </ul>
             </div>
 
@@ -88,10 +88,11 @@
             </div>
 
             <div>
-                Set lines at:
+                Cutoff Lines:
                 <ul>
-                    <li><input name="userLine1" value="42" type="text" size="8" /> and </li>
-                    <li><input name="userLine2" value="75" type="text" size="8" /></li>
+                    <li><input name="cutoffLines" value="showCutoffLines" type="checkbox" checked />Show</li>
+                    <li>Low:&nbsp;&nbsp;<input name="userLine1" value="42" type="text" size="6" /></li>
+                    <li>High:&nbsp;<input name="userLine2" value="75" type="text" size="6" /></li>
                 </ul>
             </div>
         </td>
@@ -210,7 +211,7 @@ $(document).ready(function(){
 
     // make the plot
     
-    plot1 = $.jqplot("chart1", [dataSets.national], {
+    plot1 = $.jqplot("chart1", [dataSets.national, dataSets.urban, dataSets.rural], {
         title: "Lorenz Curve",
         // To control the size of the grid, can set the gridPadding option,
 
@@ -224,6 +225,7 @@ $(document).ready(function(){
         // won't be overwritten.
 
         gridDimensions: {height: 290, width: 290},
+        seriesColors: ["#4bb2c5", "#c54b62", "#b2c54b"],
         cursor: {
             show: false
         },
@@ -237,16 +239,20 @@ $(document).ready(function(){
             labelRenderer: $.jqplot.CanvasAxisLabelRenderer
         },
         seriesDefaults: {
-            showMarker: false,
-            color: "#4bb2c5"
+            showMarker: false
         },
+        series: [
+            {show: true},
+            {show: false},
+            {show: false}
+        ],
         axes: {
             xaxis: {
-                label: 'Per Capita Expenditure (local currency)',
+                label: '% of Population',
                 pad:0
             },
             yaxis: {
-                label: 'Population Share (%)',
+                label: '% of Expenditure',
                 pad: 0
             }
         },
@@ -263,9 +269,10 @@ $(document).ready(function(){
                     name: "line5",
                     start: [0,0],
                     stop: [100,100],
-                    color: "#4bb2c5",
+                    color: "#666666",
                     shadow: false,
-                    showTooltip: false
+                    showTooltip: false,
+                    lineWidth: 3
                 }},
                 {horizontalLine: {
                     name: "line1",
@@ -323,8 +330,8 @@ $(document).ready(function(){
     // initialize form elements
     // set these before attaching event handlers.
 
-    $("input[type=radio][name=dataSeries]").attr("checked", false);
-    $("input[type=radio][name=dataSeries][value=national]").attr("checked", true);
+    $("input[type=checkbox][name=dataSeries]").attr("checked", false);
+    $("input[type=checkbox][name=dataSeries][value=national]").attr("checked", true);
 
     $("input[type=radio][name=backgroundColor]").attr("checked", false);
     $("input[type=radio][name=backgroundColor][value=white]").attr("checked", true);
@@ -337,6 +344,7 @@ $(document).ready(function(){
 
     $("input[type=checkbox][name=gridsVertical]").attr("checked", true);
     $("input[type=checkbox][name=gridsHorizontal]").attr("checked", true);
+    $("input[type=checkbox][name=cutoffLines]").attr("checked", true);
 
 
     // attach event handlers to form elements
@@ -346,9 +354,7 @@ $(document).ready(function(){
         plot1.replot();
     });
 
-    $("input[type=radio][name=dataSeries]").change(function(){ 
-        var val = $(this).val();
-        plot1.series[0].data = dataSets[val];
+    $("input[type=checkbox][name=dataSeries]").change(function(){ 
 
         switch (val) {
             case "national":
@@ -387,6 +393,23 @@ $(document).ready(function(){
 
     $("input[type=checkbox][name=gridsHorizontal]").change(function(){
         plot1.axes.yaxis.tickOptions.showGridline = this.checked;
+        plot1.replot();
+    });
+
+    $("input[type=checkbox][name=cutoffLines]").change(function(){
+        var co = plot1.plugins.canvasOverlay;
+        if (this.checked) {
+            co.get('line1').options.show = true;
+            co.get('line2').options.show = true;
+            co.get('line3').options.show = true;
+            co.get('line4').options.show = true;
+        }
+        else {
+            co.get('line1').options.show = false;
+            co.get('line2').options.show = false;
+            co.get('line3').options.show = false;
+            co.get('line4').options.show = false;
+        }
         plot1.replot();
     });
 

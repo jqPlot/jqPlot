@@ -322,12 +322,12 @@
 
             else if (keepMin) {
                 r[0] = axis_min                                         // min
-                r[2] = Math.ceil((axis_max - axis_min) / ss + 1.0);    // number of ticks
+                r[2] = Math.ceil((axis_max - axis_min) / ss + 1.0);     // number of ticks
                 r[1] = axis_min + (r[2] - 1) * ss;                      // max
                 var digitsMin = gsf(axis_min).digitsRight;
                 var digitsSS = gsf(ss).digitsRight;
                 if (digitsMin < digitsSS) {
-                    r[3] = bestFormatString(ss);                            // format string
+                    r[3] = bestFormatString(ss);                        // format string
                 }
                 else {
                     r[3] = '%.' + digitsMin + 'f';
@@ -336,13 +336,13 @@
             }
 
             else if (keepMax) {
-                r[1] = axis_max;                      // max
+                r[1] = axis_max;                                        // max
                 r[2] = Math.ceil((axis_max - axis_min) / ss + 1.0);     // number of ticks
                 r[0] = axis_max - (r[2] - 1) * ss;                      // min
                 var digitsMax = gsf(axis_max).digitsRight;
                 var digitsSS = gsf(ss).digitsRight;
                 if (digitsMax < digitsSS) {
-                    r[3] = bestFormatString(ss);                            // format string
+                    r[3] = bestFormatString(ss);                        // format string
                 }
                 else {
                     r[3] = '%.' + digitsMax + 'f';
@@ -373,10 +373,10 @@
 
                 var newti = bestInterval(tempr[1] - tempr[0], numberTicks);
 
-                r[0] = tempr[0];
-                r[2] = numberTicks;
-                r[4] = newti;
-                r[3] = bestFormatString(newti);
+                r[0] = tempr[0];                        // min
+                r[2] = numberTicks;                     // number of ticks
+                r[4] = newti;                           // tick interval
+                r[3] = bestFormatString(newti);         // format string
                 r[1] = r[0] + (r[2] - 1) * r[4];        // max
             }
         }
