@@ -351,7 +351,7 @@
             }
 
             // Doing complete autoscaling
-            if (this.min == null && this.max == null && this.tickInterval == null && !this.autoscale) {
+            if (this.min == null || this.max == null && this.tickInterval == null && !this.autoscale) {
                 // Check if user must have tick at 0 or 100 and ensure they are in range.
                 // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
                 if (this.forceTickAt0) {
@@ -372,22 +372,34 @@
                     }
                 }
 
+                var keepMin = false,
+                    keepMax = false;
+
+                if (this.min !== null) {
+                    keepMin = true;
+                }
+
+                else if (this.max !== null) {
+                    keepMax = true;
+                }
+
                 // var threshold = 30;
                 // var tdim = Math.max(dim, threshold+1);
                 // this._scalefact =  (tdim-threshold)/300.0;
-                var ret = $.jqplot.LinearTickGenerator(min, max, this._scalefact, _numberTicks); 
+                var ret = $.jqplot.LinearTickGenerator(min, max, this._scalefact, _numberTicks, keepMin, keepMax); 
                 // calculate a padded max and min, points should be less than these
                 // so that they aren't too close to the edges of the plot.
                 // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
-                var tumin = min + range*(this.padMin - 1);
-                var tumax = max - range*(this.padMax - 1);
+                // If min or max is set, don't pad that end of axis.
+                var tumin = (this.min != null) ? min : min + range*(this.padMin - 1);
+                var tumax = (this.max != null) ? max : max - range*(this.padMax - 1);
 
                 // if they're equal, we shouldn't have to do anything, right?
                 // if (min <=tumin || max >= tumax) {
                 if (min <tumin || max > tumax) {
-                    tumin = min - range*(this.padMin - 1);
-                    tumax = max + range*(this.padMax - 1);
-                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, this._scalefact, _numberTicks);
+                    tumin = (this.min != null) ? min : min - range*(this.padMin - 1);
+                    tumax = (this.max != null) ? max : max + range*(this.padMax - 1);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax, this._scalefact, _numberTicks, keepMin, keepMax);
                 }
 
                 this.min = ret[0];

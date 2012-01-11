@@ -108,9 +108,9 @@
         var temp;
         var sd;
         var bestNT;
+        var gsf = $.jqplot.getSignificantFigures;
         var fsd;
         var fs;
-        var gsf = $.jqplot.getSignificantFigures;
         var currentNT;
         var bestPrec;
 
@@ -282,7 +282,11 @@
     // for the graphing, a good number for the number of ticks, and a
     // format string so that extraneous digits are not displayed.
     // returned is an array containing [min, max, nTicks, format]
-    $.jqplot.LinearTickGenerator = function(axis_min, axis_max, scalefact, numberTicks) {
+    $.jqplot.LinearTickGenerator = function(axis_min, axis_max, scalefact, numberTicks, keepMin, keepMax) {
+        // Set to preserve EITHER min OR max.
+        // If min is preserved, max must be free.
+        keepMin = (keepMin === null) ? false : keepMin;
+        keepMax = (keepMax === null || keepMin) ? false : keepMax;
         // if endpoints are equal try to include zero otherwise include one
         if (axis_min === axis_max) {
             axis_max = (axis_max) ? 0 : 1;
@@ -299,6 +303,8 @@
 
         var r = [];
         var ss = bestLinearInterval(axis_max - axis_min, scalefact);
+
+        var gsf = $.jqplot.getSignificantFigures;
         
         if (numberTicks == null) {
 
@@ -306,11 +312,43 @@
             // the min and max will be some multiple of the tick interval,
             // 1*10^n, 2*10^n or 5*10^n.  This gaurantees that, if the
             // axis min is negative, 0 will be a tick.
-            r[0] = Math.floor(axis_min / ss) * ss;  // min
-            r[1] = Math.ceil(axis_max / ss) * ss;   // max
-            r[2] = Math.round((r[1]-r[0])/ss+1.0);  // number of ticks
-            r[3] = bestFormatString(ss);            // format string
-            r[4] = ss;                              // tick Interval
+            if (!keepMin && !keepMax) {
+                r[0] = Math.floor(axis_min / ss) * ss;  // min
+                r[1] = Math.ceil(axis_max / ss) * ss;   // max
+                r[2] = Math.round((r[1]-r[0])/ss+1.0);  // number of ticks
+                r[3] = bestFormatString(ss);            // format string
+                r[4] = ss;                              // tick Interval
+            }
+
+            else if (keepMin) {
+                r[0] = axis_min                                         // min
+                r[2] = Math.ceil((axis_max - axis_min) / ss + 1.0);    // number of ticks
+                r[1] = axis_min + (r[2] - 1) * ss;                      // max
+                var digitsMin = gsf(axis_min).digitsRight;
+                var digitsSS = gsf(ss).digitsRight;
+                if (digitsMin < digitsSS) {
+                    r[3] = bestFormatString(ss);                            // format string
+                }
+                else {
+                    r[3] = '%.' + digitsMin + 'f';
+                }
+                r[4] = ss;                                              // tick Interval
+            }
+
+            else if (keepMax) {
+                r[1] = axis_max;                      // max
+                r[2] = Math.ceil((axis_max - axis_min) / ss + 1.0);     // number of ticks
+                r[0] = axis_max - (r[2] - 1) * ss;                      // min
+                var digitsMax = gsf(axis_max).digitsRight;
+                var digitsSS = gsf(ss).digitsRight;
+                if (digitsMax < digitsSS) {
+                    r[3] = bestFormatString(ss);                            // format string
+                }
+                else {
+                    r[3] = '%.' + digitsMax + 'f';
+                }
+                r[4] = ss;                                              // tick Interval
+            }
         }
 
         else {
