@@ -23,6 +23,7 @@
         font-size: 0.65em;
         line-height: 1em;
         margin: 0px 0px 10px 15px;
+        border-collapse: collapse;
     }
 
     td.jqplot-table-legend-label {
@@ -35,6 +36,18 @@
 
     div.jqplot-table-legend-swatch-outline {
         border: none;
+    }
+
+    tr.jqplot-table-legend td {
+        padding: 2px;
+    }
+
+    .legend-row-highlighted {
+        background-color: #666666;
+    }
+
+    .legend-text-highlighted {
+        color: #ffffff;
     }
 
     #chart1 {
@@ -155,10 +168,14 @@ $(document).ready(function(){
             location: 'ne',
             rowSpacing: '0px'
         },
+        axesDefaults: {
+            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+        },
         axes: {
             xaxis: {
                 pad: 0,
                 ticks: ticks,
+                label: 'Population Vingtile',
                 tickOptions: {
                     showGridline: false
                 }
@@ -166,8 +183,10 @@ $(document).ready(function(){
             yaxis: {
                 min: 0,
                 max: 100,
+                label: 'Share of Item in Total Expenditure',
                 tickOptions: {
-                  showGridline: false
+                  showGridline: false,
+                  suffix: '%'
                 }
             }
         },
@@ -191,6 +210,19 @@ $(document).ready(function(){
     $('div.chart-container').bind('resize', function(event, ui) {
         plot1.replot();
     });
+
+    $('#chart1').bind('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, data) {
+        var idx = 21 - seriesIndex
+        $('tr.jqplot-table-legend').removeClass('legend-row-highlighted');  
+        $('tr.jqplot-table-legend').children('.jqplot-table-legend-label').removeClass('legend-text-highlighted');
+        $('tr.jqplot-table-legend').eq(idx).addClass('legend-row-highlighted'); 
+        $('tr.jqplot-table-legend').eq(idx).children('.jqplot-table-legend-label').addClass('legend-text-highlighted'); 
+    });
+
+    $('#chart1').bind('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, data) {
+        $('tr.jqplot-table-legend').removeClass('legend-row-highlighted');  
+        $('tr.jqplot-table-legend').children('.jqplot-table-legend-label').removeClass('legend-text-highlighted');
+    });
 });
 
 </script>
@@ -207,6 +239,8 @@ $(document).ready(function(){
 <!-- Additional plugins go here -->
 
   <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
 
 <!-- End additional plugins -->
 

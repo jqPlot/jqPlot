@@ -2,7 +2,7 @@
     $title = "Lorenz Curves";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
-<?php include "opener.php"; ?>
+<?php include "openerNoHeader.php"; ?>
 
 <!-- Example scripts go here -->
 
@@ -57,9 +57,9 @@
             <div>
                 Data Series:
                 <ul>
-                    <li><input name="dataSeries" value="national" type="checkbox" checked />National</li>
-                    <li><input name="dataSeries" value="urban" type="checkbox" />Urban</li>
-                    <li><input name="dataSeries" value="rural" type="checkbox" />Rural</li>
+                    <li><input class="dataSeries-checkbox" name="dataSeries_national" value="national" type="checkbox" checked />National</li>
+                    <li><input class="dataSeries-checkbox" name="dataSeries_urban" value="urban" type="checkbox" />Urban</li>
+                    <li><input class="dataSeries-checkbox" name="dataSeries_rural" value="rural" type="checkbox" />Rural</li>
                 </ul>
             </div>
 
@@ -330,8 +330,8 @@ $(document).ready(function(){
     // initialize form elements
     // set these before attaching event handlers.
 
-    $("input[type=checkbox][name=dataSeries]").attr("checked", false);
-    $("input[type=checkbox][name=dataSeries][value=national]").attr("checked", true);
+    $("input.dataSeries-checkbox").attr("checked", false);
+    $("input.dataSeries-checkbox[name=dataSeries_national]").attr("checked", true);
 
     $("input[type=radio][name=backgroundColor]").attr("checked", false);
     $("input[type=radio][name=backgroundColor][value=white]").attr("checked", true);
@@ -354,36 +354,31 @@ $(document).ready(function(){
         plot1.replot();
     });
 
-    $("input[type=checkbox][name=dataSeries]").change(function(){ 
+    $("input.dataSeries-checkbox").change(function(){ 
 
-        switch (val) {
-            case "national":
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#4bb2c5";
-                plot1.plugins.canvasOverlay.get("line5").options.color = "#4bb2c5";
-                break;
-            case "urban":
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#c54b62";
-                plot1.plugins.canvasOverlay.get("line5").options.color = "#c54b62";
-                break;
-            case "rural":
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#b2c54b";
-                plot1.plugins.canvasOverlay.get("line5").options.color = "#b2c54b";
-                break;
-            default:
-                plot1.series[0].renderer.shapeRenderer.strokeStyle = "#4bb2c5";
-                plot1.plugins.canvasOverlay.get("line5").options.color = "#4bb2c5";
-                break;
+        plot1.series[0].show = false;
+        plot1.series[1].show = false;
+        plot1.series[2].show = false;
+
+        if ($('input[name=dataSeries_national]').get(0).checked === true) {
+            plot1.series[0].show = true;
         }
 
-        var co = plot1.plugins.canvasOverlay;
-        var x1max = findXValue($("input[type=text][name=userLine1]").val(), dataSets[val])[1][0];
-        co.get("line1").options.xmax = co.get("line3").options.x = x1max;
-        var x2max = findXValue($("input[type=text][name=userLine2]").val(), dataSets[val])[1][0];
-        co.get("line2").options.xmax = co.get("line4").options.x = x2max;
+        if ($('input[name=dataSeries_urban]').get(0).checked === true) {
+            plot1.series[1].show = true;
+        }
 
-        // hack to make sure plot auto computes a new format string if needed.
-        plot1.axes.yaxis.tickOptions.formatString = ''
-        plot1.replot({resetAxes:["yaxis"]});
+        if ($('input[name=dataSeries_rural]').get(0).checked === true) {
+            plot1.series[2].show = true;
+        }
+
+        // var co = plot1.plugins.canvasOverlay;
+        // var x1max = findXValue($("input[type=text][name=userLine1]").val(), dataSets[val])[1][0];
+        // co.get("line1").options.xmax = co.get("line3").options.x = x1max;
+        // var x2max = findXValue($("input[type=text][name=userLine2]").val(), dataSets[val])[1][0];
+        // co.get("line2").options.xmax = co.get("line4").options.x = x2max;
+
+        plot1.replot();
     });
 
     $("input[type=checkbox][name=gridsVertical]").change(function(){
