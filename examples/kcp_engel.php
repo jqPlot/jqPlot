@@ -2,7 +2,7 @@
     $title = "Engel Curves";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
-<?php include "openerNoHeader.php"; ?>
+<?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
 
@@ -137,7 +137,7 @@ $(document).ready(function(){
     
     plot1 = $.jqplot("chart1", data, {
         title: "Engel Curves",
-        animate: false,
+        animate: true,
         axesDefaults: {
             labelRenderer: $.jqplot.CanvasAxisLabelRenderer
         },
@@ -167,7 +167,7 @@ $(document).ready(function(){
                 }
             },
             yaxis: {
-                label: 'Share in Total Expenditure',
+                label: 'Share in Total Expenditure (%)',
                 tickOptions: {
                     suffix: '%'
                 },

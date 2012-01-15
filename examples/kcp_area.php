@@ -183,7 +183,7 @@ $(document).ready(function(){
             yaxis: {
                 min: 0,
                 max: 100,
-                label: 'Share of Item in Total Expenditure',
+                label: 'Share of Item in Total Expenditure (%)',
                 tickOptions: {
                   showGridline: false,
                   suffix: '%'

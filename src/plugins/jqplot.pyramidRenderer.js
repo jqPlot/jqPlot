@@ -83,7 +83,7 @@
         // Expand the highlightable region in the x direction.
         // E.g. a value of 3 will highlight a bar when the mouse is
         // within 3 pixels of the bar in the x direction.
-        this.highlightThreshold = 1.5;
+        this.highlightThreshold = 2;
         // prop: synchronizeHighlight
         // Index of another series to highlight when this series is highlighted.
         // null or false to not synchronize.

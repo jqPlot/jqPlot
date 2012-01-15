@@ -321,7 +321,7 @@
             }
 
             else if (keepMin) {
-                r[0] = axis_min                                         // min
+                r[0] = axis_min;                                        // min
                 r[2] = Math.ceil((axis_max - axis_min) / ss + 1.0);     // number of ticks
                 r[1] = axis_min + (r[2] - 1) * ss;                      // max
                 var digitsMin = gsf(axis_min).digitsRight;

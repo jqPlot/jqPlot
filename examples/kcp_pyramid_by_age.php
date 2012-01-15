@@ -258,7 +258,7 @@
                             <ul>
                                 <li><input name="gridsVertical" value="vertical" type="checkbox" />Vertical</li>
                                 <li><input name="gridsHorizontal" value="horizontal" type="checkbox" />Horizontal</li>
-                                <li><input name="showMinorTicks" value="true" type="checkbox" />Only major</li>
+                                <li><input name="showMinorTicks" value="true" type="checkbox" checked />Only major</li>
                                 <li><input name="plotBands" value="true" type="checkbox" checked />Plot Bands</li>
                             </ul>
                         </td>
@@ -350,7 +350,7 @@
 
         // for this demo, all data is same for each quintile.
         // could do something like this to get the index of the quintile.
-        // <!-- var quintileIndex = parseInt(<?php echo $_GET["qidx"]; ?>); -->
+        // <!-- var quintileIndex = parseInt(< ? php echo $_GET["qidx"]; ? >); -->
 
         var male;
         var female;
@@ -448,7 +448,8 @@
             seriesDefaults: {
                 renderer: $.jqplot.PyramidRenderer,
                 rendererOptions: {
-                    barPadding: 2
+                    barPadding: 1.5,
+                    offsetBars: true
                 },
                 yaxis: "yaxis",
                 shadow: false
@@ -512,11 +513,12 @@
                     // include empty tick options, they will be used
                     // as users set options with plot controls.
                     tickOptions: {},
-                    showMinorTicks: true,
+                    showMinorTicks: false,
+                    tickInterval: 5,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 13,
-                        category: true
+                        tickSpacingFactor: 15,
+                        category: false
                     }
                 },
                 yMidAxis: {
@@ -524,11 +526,12 @@
                     // include empty tick options, they will be used
                     // as users set options with plot controls.
                     tickOptions: {},
-                    showMinorTicks: true,
+                    showMinorTicks: false,
+                    tickInterval: 5,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 13,
-                        category: true
+                        tickSpacingFactor: 15,
+                        category: false
                     }
                 },
                 y2axis: {
@@ -538,11 +541,12 @@
                     // include empty tick options, they will be used
                     // as users set options with plot controls.
                     tickOptions: {},
-                    showMinorTicks: true,
+                    showMinorTicks: false,
+                    tickInterval: 5,
                     ticks: ticks,
                     rendererOptions: {
-                        tickSpacingFactor: 12,
-                        category: true
+                        tickSpacingFactor: 15,
+                        category: false
                     }
                 }
             }
@@ -569,7 +573,7 @@
 
         $("input[type=checkbox][name=gridsVertical]").attr("checked", false);
         $("input[type=checkbox][name=gridsHorizontal]").attr("checked", false);
-        $("input[type=checkbox][name=showMinorTicks]").attr("checked", false);
+        $("input[type=checkbox][name=showMinorTicks]").attr("checked", true);
         $("input[type=checkbox][name=plotBands]").attr("checked", true);
         $("input[type=checkbox][name=showContour]").attr("checked", true);
         $("input[type=checkbox][name=barPadding]").attr("checked", true);
