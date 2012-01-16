@@ -2,7 +2,7 @@
     $title = "Lorenz Curves";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
-<?php include "openerNoHeader.php"; ?>
+<?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
 
