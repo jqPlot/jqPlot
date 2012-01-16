@@ -167,7 +167,6 @@
             <exclude name="openerNoHeader.php" />
             <exclude name="bodyOpenerNoHeader.php" />
             <exclude name="nav.php" />
-            <exclude name="kcp_pyramid_by_age.php" />
           </fileset>
           <srcfile />
           <redirector>
@@ -175,6 +174,12 @@
             <outputmapper id="out" type="glob" from="*.php" to="${DIST_DIR}/examples/*.html"/>
           </redirector>
         </apply>
+
+        <!-- adjust the one special case example where kcp_quintile is linked to kcp_pyramid_by_age -->
+        <replaceregexp match='kcp_pyramid_by_age\.php' replace='kcp_pyramid_by_age\.html' flags="g">
+          <fileset dir="${DIST_DIR}/examples" includes="kcp_quintiles.html" />
+        </replaceregexp>
+
 
         <!-- now remove said php files -->
 
