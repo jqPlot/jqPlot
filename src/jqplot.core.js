@@ -2928,8 +2928,16 @@
                     }
                 }
                 
-                var legendPadding = (this.legend.placement == 'outsideGrid') ? {top:this.title.getHeight(), left: 0, right: 0, bottom: 0} : this._gridPadding;
-            
+                var legendPadding = this._gridPadding;
+                
+                if (this.legend.placement === 'outsideGrid') {
+                    legendPadding = {top:this.title.getHeight(), left: 0, right: 0, bottom: 0};
+                    if (this.legend.location === 's') {
+                        legendPadding.left = this._gridPadding.left;
+                        legendPadding.right = this._gridPadding.right;
+                    }
+                }
+                
                 ax.xaxis.pack({position:'absolute', bottom:this._gridPadding.bottom - ax.xaxis.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
                 ax.yaxis.pack({position:'absolute', top:0, left:this._gridPadding.left - ax.yaxis.getWidth(), height:this._height}, {min:this._height - this._gridPadding.bottom, max: this._gridPadding.top});
                 ax.x2axis.pack({position:'absolute', top:this._gridPadding.top - ax.x2axis.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});

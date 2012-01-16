@@ -1,8 +1,8 @@
 <?php 
-    $title = "Area Chart";
+    $title = "Area Chart 2";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
-<?php include "openerNoHeader.php"; ?>
+<?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
 
@@ -20,17 +20,19 @@
     }
 
     table.jqplot-table-legend {
-        font-size: 0.65em;
-        line-height: 1em;
-        margin: 0px 0px 10px 15px;
+        border: 0px;
     }
 
     td.jqplot-table-legend-label {
-      width: 20em;
+      padding: 0.25em;
+    }
+
+    td.jqplot-table-legend-label + td.jqplot-table-legend-swatch {
+        padding-left: 1.5em;
     }
 
     div.jqplot-table-legend-swatch {
-        border-width: 2px 6px;
+        border-width: 4px 6px;
     }
 
     div.jqplot-table-legend-swatch-outline {
@@ -87,6 +89,7 @@ $(document).ready(function(){
         plot1 = $.jqplot('chart1', [data.rural, data.urban], {
             title: 'Contribution of Urban and Rural Population to National Percentiles (edited data)',
             stackSeries: true,
+            seriesColors: ['#77933C', '#B9CDE5'],
             seriesDefaults: {
                 showMarker: false,
                 fill: true,
@@ -107,6 +110,8 @@ $(document).ready(function(){
                     pad: 0,
                     min: 1,
                     max: 100,
+                    label: 'Population Percentile',
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                     tickInterval: 3,
                     tickOptions: {
                         showGridline: false
@@ -115,6 +120,8 @@ $(document).ready(function(){
                 yaxis: {
                     min: 0,
                     max: 1,
+                    label: 'Percentage of Population',
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                     tickOptions: {
                       formatter: $.jqplot.PercentTickFormatter,
                       showGridline: false,
@@ -164,6 +171,8 @@ $(document).ready(function(){
 <!-- Additional plugins go here -->
 
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.enhancedLegendRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
   <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
 
 <!-- End additional plugins -->
