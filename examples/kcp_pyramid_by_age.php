@@ -2,8 +2,11 @@
 
 <html>
 <head>
+<?php 
+    $title = "Pyramid Chart By Age";
+?>
     
-    <title>Quintile Chart</title>
+    <title><?php print $title ?></title>
 
     <link class="include" rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
     <link rel="stylesheet" type="text/css" href="examples.css" />

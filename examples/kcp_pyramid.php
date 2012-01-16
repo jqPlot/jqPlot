@@ -194,8 +194,18 @@
                 // For pyramid plots, the default side is right.
                 // We want to override here to put first set of bars
                 // on left.
-                {rendererOptions:{side: 'left'}},
-                {yaxis: 'y2axis'},
+                {
+                    rendererOptions:{
+                        side: 'left',
+                        synchronizeHighlight: 1
+                    }
+                },
+                {
+                    yaxis: 'y2axis',
+                    rendererOptions:{
+                        synchronizeHighlight: 0
+                    }
+                },
                 // Pyramid series are filled bars by default.
                 // The overlay series will be unfilled lines.
                 {
