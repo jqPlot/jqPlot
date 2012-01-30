@@ -128,7 +128,7 @@
                     tr.appendTo(this._elem);
                 }
                 for (j=0; j<nc; j++) {
-                    if (idx < series.length && series[idx].show || series[idx].showLabel){
+                    if (idx < series.length && (series[idx].show || series[idx].showLabel)){
                         s = series[idx];
                         lt = this.labels[idx] || s.label.toString();
                         if (lt) {
