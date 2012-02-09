@@ -183,6 +183,7 @@
                 if (context.measureText(w).width > tagwidth) {
                     breaks.push(i);
                     w = '';
+                    i--;
                 }   
             }
             if (breaks.length === 0) {
