@@ -128,7 +128,7 @@
                     tr.appendTo(this._elem);
                 }
                 for (j=0; j<nc; j++) {
-                    if (idx < series.length && series[idx].show || series[idx].showLabel){
+                    if (idx < series.length && (series[idx].show || series[idx].showLabel)){
                         s = series[idx];
                         lt = this.labels[idx] || s.label.toString();
                         if (lt) {
@@ -269,15 +269,26 @@
                 var s = plot.series[sidx];
 
                 if (s.canvas._elem.is(':hidden') || !s.show) {
-                    plot.legend._elem.find('tr').eq(sidx).children().addClass('jqplot-series-hidden');
-
+                    // Not sure if there is a better way to check for showSwatches and showLabels === true.
+                    // Test for "undefined" since default values for both showSwatches and showLables is true.
+                    if (typeof plot.options.legend.showSwatches === 'undefined' || plot.options.legend.showSwatches === true) {
+                        plot.legend._elem.find('td').eq(sidx * 2).addClass('jqplot-series-hidden');
+                    }
+                    if (typeof plot.options.legend.showLabels === 'undefined' || plot.options.legend.showLabels === true) {
+                        plot.legend._elem.find('td').eq((sidx * 2) + 1).addClass('jqplot-series-hidden');
+                    }
                 }
                 else {
-                    plot.legend._elem.find('tr').eq(sidx).children().removeClass('jqplot-series-hidden');
+                    if (typeof plot.options.legend.showSwatches === 'undefined' || plot.options.legend.showSwatches === true) {
+                        plot.legend._elem.find('td').eq(sidx * 2).removeClass('jqplot-series-hidden');
+                    }
+                    if (typeof plot.options.legend.showLabels === 'undefined' || plot.options.legend.showLabels === true) {
+                        plot.legend._elem.find('td').eq((sidx * 2) + 1).removeClass('jqplot-series-hidden');
+                    }
                 }
-                
+
             }
-            
+
         };
 
         s.toggleDisplay(ev, doLegendToggle);

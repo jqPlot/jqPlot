@@ -183,6 +183,7 @@
                 if (context.measureText(w).width > tagwidth) {
                     breaks.push(i);
                     w = '';
+                    i--;
                 }   
             }
             if (breaks.length === 0) {
@@ -283,7 +284,7 @@
                     var t = top + elem.position().top + parseInt(elem.css('padding-top'), 10);
                     newContext.font = elem.jqplotGetComputedFontStyle();
                     newContext.fillStyle = elem.css('color');
-                    newContext.fillText(elem.text(), l, t);
+                    writeWrappedText(elem, newContext, elem.text(), l, t, w);
                 });
 
                 var elem = null;
