@@ -375,11 +375,11 @@
                 var keepMin = false,
                     keepMax = false;
 
-                if (this.min !== null) {
+                if (this.min != null) {
                     keepMin = true;
                 }
 
-                else if (this.max !== null) {
+                else if (this.max != null) {
                     keepMax = true;
                 }
 
