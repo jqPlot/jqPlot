@@ -5,7 +5,8 @@
  * 
  * About: Version
  * 
- * @VERSION 
+ * version: @VERSION 
+ * revision: @REVISION
  * 
  * About: Copyright & License
  * 
@@ -244,6 +245,7 @@
     };
 
     $.jqplot.version = "@VERSION";
+    $.jqplot.revision = "@REVISION";
 
     $.jqplot.targetCounter = 1;
 

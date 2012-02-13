@@ -28,6 +28,11 @@
       <arg value="-n"/>
     </exec>
 
+    <exec executable="hg" outputproperty="REVISION">
+      <arg value="id"/>
+      <arg value="-n"/>
+    </exec>
+
     <!-- MAIN -->
        
     <target name="build" depends="clean" description="create and populate build area for making distribution">
@@ -85,13 +90,21 @@
           <fileset dir="${SRC_DIR}/plugins" includes="*" />
         </copy>
         
-        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version}">
 			<fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
 		</replaceregexp>
         
-        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version}">
 			<fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
 		</replaceregexp>
+        
+        <replaceregexp match="@REVISION" flags="g" replace="${REVISION}">
+      <fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
+    </replaceregexp>
+        
+        <replaceregexp match="@REVISION" flags="g" replace="${REVISION}">
+      <fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
+    </replaceregexp>
                 
         <!-- remove appropriate opening and closing of closures -->
         <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s">
