@@ -144,19 +144,27 @@ $(document).ready(function(){
         }
     });
     
+    // capture the highlighters highlight event and show a custom tooltip.
     $('#chart2').bind('jqplotHighlighterHighlight', 
         function (ev, seriesIndex, pointIndex, data, plot) {
-            var content = plot.series[seriesIndex]._xaxis.ticks[pointIndex][1] + ', ' + data[1];
+            // create some content for the tooltip.  Here we want the label of the tick,
+            // which is not supplied to the highlighters standard tooltip.
+            var content = plot.series[seriesIndex].label + ', ' + plot.series[seriesIndex]._xaxis.ticks[pointIndex][1] + ', ' + data[1];
+            // get a handle on our custom tooltip element, which was previously created
+            // and styled.  Be sure it is initiallly hidden!
             var elem = $('#customTooltipDiv');
             elem.html(content);
+            // Figure out where to position the tooltip.
             var h = elem.outerHeight();
             var w = elem.outerWidth();
             var left = ev.pageX - w - 10;
             var top = ev.pageY - h - 10;
+            // now stop any currently running animation, position the tooltip, and fade in.
             elem.stop(true, true).css({left:left, top:top}).fadeIn(200);
         }
     );
     
+    // Hide the tooltip when unhighliting.
     $('#chart2').bind('jqplotHighlighterUnhighlight', 
         function (ev) {
             $('#customTooltipDiv').fadeOut(300);
