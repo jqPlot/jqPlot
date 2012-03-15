@@ -9,6 +9,16 @@
 .jqplot-target {
     margin: 30px;
 }
+
+#customTooltipDiv {
+    position: absolute; 
+    display: none; 
+    color: #333333;
+    font-size: 0.8em;
+    border: 1px solid #666666; 
+    background-color: rgba(160, 160, 160, 0.2);
+    padding: 2px;
+}
 </style>
 
 <p>Area charts support highlighting and mouse events by default.  The options and handlers and callbacks are essentially the same as with bar, pie, donut and funnel charts.  One notable exception for area charts is that no data point index will be provided to the callback and the entire data set for the highlighted area will be returned.  This is because the area is not associated with one particular data point, but with the entire data set of the series.</p>
@@ -22,6 +32,10 @@
 <div><span>You Clicked: </span><span id="info1c">Nothing yet</span></div>
 
 <div id="chart1c" style="width:400px;height:260px;"></div>
+
+<div id="chart2" style="width:600px;height:260px;"></div>
+
+<div id="customTooltipDiv">I'm a tooltip.</div>
   
 
 
@@ -85,6 +99,72 @@ $(document).ready(function(){
 });
 </script>
 
+
+<script class="code" language="javascript" type="text/javascript">
+$(document).ready(function(){
+    var l6 = [11, 9, 5, 12, 14, 8, 7, 9, 6, 11, 9, 3, 4];
+    var l7 = [4, 8, 5, 3, 6, 5, 3, 2, 6, 7, 4, 3, 2];
+    var l8 = [12, 6, 13, 11, 2, 3, 4, 2, 1, 5, 7, 4, 8];
+
+    var ticks = [[1,'Dec 10'], [2,'Jan 11'], [3,'Feb 11'], [4,'Mar 11'], [5,'Apr 11'], [6,'May 11'], [7,'Jun 11'], [8,'Jul 11'], [9,'Aug 11'], [10,'Sep 11'], [11,'Oct 11'], [12,'Nov 11'], [13,'Dec 11']];  
+
+    
+    plot2 = $.jqplot('chart2',[l6, l7, l8],{
+       stackSeries: true,
+       showMarker: false,
+       highlighter: {
+        show: true,
+        showTooltip: false
+       },
+       seriesDefaults: {
+           fill: true,
+       },
+       series: [
+        {label: 'Beans'},
+        {label: 'Oranges'},
+        {label: 'Crackers'}
+       ],
+       legend: {
+        show: true,
+        placement: 'outsideGrid'
+       },
+       grid: {
+        drawBorder: false,
+        shadow: false
+       },
+       axes: {
+           xaxis: {
+              ticks: ticks,
+              tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+              tickOptions: {
+                angle: -90 
+              },
+              drawMajorGridlines: false
+          }           
+        }
+    });
+    
+    $('#chart2').bind('jqplotHighlighterHighlight', 
+        function (ev, seriesIndex, pointIndex, data, plot) {
+            var content = plot.series[seriesIndex]._xaxis.ticks[pointIndex][1] + ', ' + data[1];
+            var elem = $('#customTooltipDiv');
+            elem.html(content);
+            var h = elem.outerHeight();
+            var w = elem.outerWidth();
+            var left = ev.pageX - w - 10;
+            var top = ev.pageY - h - 10;
+            elem.stop(true, true).css({left:left, top:top}).fadeIn(200);
+        }
+    );
+    
+    $('#chart2').bind('jqplotHighlighterUnhighlight', 
+        function (ev) {
+            $('#customTooltipDiv').fadeOut(300);
+        }
+    );
+});
+</script>
+
 <!-- End example scripts -->
 
 <!-- Don't touch this! -->
@@ -93,8 +173,10 @@ $(document).ready(function(){
 
 <!-- Additional plugins go here -->
 
-  <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
 
 <!-- End additional plugins -->
 
