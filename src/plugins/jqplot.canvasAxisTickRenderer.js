@@ -180,6 +180,16 @@
             return w;
         }
     };
+
+    // return top.
+    $.jqplot.CanvasAxisTickRenderer.prototype.getTop = function(ctx) {
+        if (this._elem) {
+         return this._elem.position().top;
+        }
+        else {
+            return null;
+        }
+    };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.getAngleRad = function() {
         var a = this.angle * Math.PI/180;
