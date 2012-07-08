@@ -292,13 +292,11 @@
             for (var i=0, l=p._labels.length; i < l; i++) {
                 var label = p._labels[i];
                 
-                if (p.hideZeros && parseInt(p._labels[i], 10) == 0) {
-                    label = '';
+                if (label == null || (p.hideZeros && parseInt(label, 10) == 0)) {
+                    continue;
                 }
                 
-                if (label != null) {
-                    label = p.formatter(p.formatString, label);
-                } 
+                label = p.formatter(p.formatString, label);
 
                 helem = document.createElement('div');
                 p._elems[i] = $(helem);
