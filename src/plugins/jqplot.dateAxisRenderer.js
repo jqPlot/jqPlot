@@ -480,9 +480,8 @@
                 var tempti = ret[0];
                 this._autoFormatString = ret[1];
 
-                min = Math.floor(min/tempti) * tempti;
                 min = new $.jsDate(min);
-                min = min.getTime() + min.getUtcOffset();
+                min = Math.floor((min.getTime() - min.getUtcOffset())/tempti) * tempti + min.getUtcOffset();
 
                 nttarget = Math.ceil((max - min) / tempti) + 1;
                 this.min = min;
