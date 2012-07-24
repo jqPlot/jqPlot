@@ -286,7 +286,7 @@
         return ret;
     }
     
-    $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
+    $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options, plot) {
         var i;
         // Ughhh, have to make a copy of options b/c it may be modified later.
         var opts = $.extend({}, options);
@@ -329,6 +329,21 @@
 			var base;
 			var xstart; 
 			var ystart;
+
+            function getYStart(idx, it, comp) {
+                var series = plot.series[idx];
+                var ystart = series._prevGridData[it][1];
+                var temp;
+                // if sign change, look for previous series point of same sign.
+                if ((series._prevPlotData[it][1] * comp) < 0 && idx > 0) {
+                    temp = idx - 1;
+                    getYStart(temp, it, comp);
+                }
+                else if (ystart === null || idx === 0) {
+                    ystart = series._yaxis.series_u2p(0);
+                }
+                return ystart;
+            }
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -341,11 +356,12 @@
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
-                        ystart = this._prevGridData[i][1];
+                        // ystart = this._prevGridData[i][1];
 
-                        if (ystart === null) {
-                            ystart = this._yaxis.series_u2p(0);
-                        }
+                        // if (ystart === null) {
+                        //     ystart = this._yaxis.series_u2p(0);
+                        // }
+                        ystart = getYStart(this.index, i, this.data[i][1]);
                     }
                     // not stacked and first series in stack
                     else {
