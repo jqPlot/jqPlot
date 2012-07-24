@@ -330,18 +330,38 @@
 			var xstart; 
 			var ystart;
 
-            function getYStart(idx, it, comp) {
-                var series = plot.series[idx];
-                var ystart = series._prevGridData[it][1];
-                var temp;
-                // if sign change, look for previous series point of same sign.
-                if ((series._prevPlotData[it][1] * comp) < 0 && idx > 0) {
-                    temp = idx - 1;
-                    getYStart(temp, it, comp);
+            // called with scope of series
+            function getYStart(sidx, didx, comp) {
+                // check if sign change
+                // console.log('in getYStart', sidx, didx);
+                var seriesIndex = sidx,
+                    prevSeriesIndex = sidx - 1,
+                    ystart,
+                    prevYVal;
+
+                // is this not the first series?
+                if (seriesIndex > 0) {
+                    prevYVal = plot.series[prevSeriesIndex]._plotData[didx][1];
+                    // console.log(comp*prevYVal);
+
+                    // is there a sign change
+                    if ((comp * prevYVal) < 0) {
+                        // console.log('sign change');
+                        ystart = getYStart(prevSeriesIndex, didx, comp);
+                    }
+
+                    // no sign change.
+                    else {
+                        ystart = plot.series[prevSeriesIndex].gridData[didx][1];
+                    }
+
                 }
-                else if (ystart === null || idx === 0) {
-                    ystart = series._yaxis.series_u2p(0);
+
+                // if first series, return y value at 0
+                else {
+                    ystart = plot.series[seriesIndex]._yaxis.series_u2p(0);
                 }
+
                 return ystart;
             }
             
@@ -352,16 +372,12 @@
                     }
                     points = [];
                     base = gridData[i][0] + this._barNudge;
-                    ystart;
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
-                        // ystart = this._prevGridData[i][1];
 
-                        // if (ystart === null) {
-                        //     ystart = this._yaxis.series_u2p(0);
-                        // }
-                        ystart = getYStart(this.index, i, this.data[i][1]);
+                        ystart = getYStart(this.index, i, this._plotData[i][1]);
+
                     }
                     // not stacked and first series in stack
                     else {
