@@ -330,39 +330,66 @@
 			var xstart; 
 			var ystart;
 
-            // called with scope of series
             function getYStart(sidx, didx, comp) {
                 // check if sign change
-                // console.log('in getYStart', sidx, didx);
                 var seriesIndex = sidx,
                     prevSeriesIndex = sidx - 1,
-                    ystart,
-                    prevYVal;
+                    start,
+                    prevVal;
 
                 // is this not the first series?
                 if (seriesIndex > 0) {
-                    prevYVal = plot.series[prevSeriesIndex]._plotData[didx][1];
-                    // console.log(comp*prevYVal);
+                    prevVal = plot.series[prevSeriesIndex]._plotData[didx][1];
 
                     // is there a sign change
-                    if ((comp * prevYVal) < 0) {
-                        // console.log('sign change');
-                        ystart = getYStart(prevSeriesIndex, didx, comp);
+                    if ((comp * prevVal) < 0) {
+                        start = getYStart(prevSeriesIndex, didx, comp);
                     }
 
                     // no sign change.
                     else {
-                        ystart = plot.series[prevSeriesIndex].gridData[didx][1];
+                        start = plot.series[prevSeriesIndex].gridData[didx][1];
                     }
 
                 }
 
-                // if first series, return y value at 0
+                // if first series, return value at 0
                 else {
-                    ystart = plot.series[seriesIndex]._yaxis.series_u2p(0);
+                    start = plot.series[seriesIndex]._yaxis.series_u2p(0);
                 }
 
-                return ystart;
+                return start;
+            }
+
+            function getXStart(sidx, didx, comp) {
+                // check if sign change
+                var seriesIndex = sidx,
+                    prevSeriesIndex = sidx - 1,
+                    start,
+                    prevVal;
+
+                // is this not the first series?
+                if (seriesIndex > 0) {
+                    prevVal = plot.series[prevSeriesIndex]._plotData[didx][0];
+
+                    // is there a sign change
+                    if ((comp * prevVal) < 0) {
+                        start = getYStart(prevSeriesIndex, didx, comp);
+                    }
+
+                    // no sign change.
+                    else {
+                        start = plot.series[prevSeriesIndex].gridData[didx][0];
+                    }
+
+                }
+
+                // if first series, return value at 0
+                else {
+                    start = plot.series[seriesIndex]._xaxis.series_u2p(0);
+                }
+
+                return start;
             }
             
             if (this.barDirection == 'vertical') {
@@ -473,7 +500,7 @@
                     xstart;
                     
                     if (this._stack && this._prevGridData.length) {
-                        xstart = this._prevGridData[i][0];
+                        xstart = getXStart(this.index, i, this._plotData[i][0]);
                     }
                     // not stacked and first series in stack
                     else {
