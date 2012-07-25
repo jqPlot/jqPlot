@@ -1443,7 +1443,7 @@
             }
             gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
-            this.renderer.drawShadow.call(this, sctx, gridData, options);
+            this.renderer.drawShadow.call(this, sctx, gridData, options, plot);
         }
         
         for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
@@ -2494,7 +2494,10 @@
                         temp[k][0] += cd[k][0];
                         temp[k][1] += cd[k][1];
                         // only need to sum up the stack axis column of data
-                        plotdata[k][sidx] += cd[k][sidx];
+                        // and only sum if it is of same sign.
+                        if (series.data[k][sidx] * cd[k][sidx] >= 0) {
+                            plotdata[k][sidx] += cd[k][sidx];
+                        }
                     }
                 }
                 for (var i=0; i<plotdata.length; i++) {

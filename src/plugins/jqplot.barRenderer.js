@@ -285,6 +285,40 @@
         }
         return ret;
     }
+
+    function getStart(sidx, didx, comp, plot, axis) {
+        // check if sign change
+        var seriesIndex = sidx,
+            prevSeriesIndex = sidx - 1,
+            start,
+            prevVal,
+            aidx = (axis === 'x') ? 0 : 1;
+
+        // is this not the first series?
+        if (seriesIndex > 0) {
+            prevVal = plot.series[prevSeriesIndex]._plotData[didx][aidx];
+
+            // is there a sign change
+            if ((comp * prevVal) < 0) {
+                start = getStart(prevSeriesIndex, didx, comp, plot, axis);
+            }
+
+            // no sign change.
+            else {
+                start = plot.series[prevSeriesIndex].gridData[didx][aidx];
+            }
+
+        }
+
+        // if first series, return value at 0
+        else {
+
+            start = (aidx === 0) ? plot.series[seriesIndex]._xaxis.series_u2p(0) : plot.series[seriesIndex]._yaxis.series_u2p(0);
+        }
+
+        return start;
+    }
+
     
     $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options, plot) {
         var i;
@@ -329,68 +363,6 @@
 			var base;
 			var xstart; 
 			var ystart;
-
-            function getYStart(sidx, didx, comp) {
-                // check if sign change
-                var seriesIndex = sidx,
-                    prevSeriesIndex = sidx - 1,
-                    start,
-                    prevVal;
-
-                // is this not the first series?
-                if (seriesIndex > 0) {
-                    prevVal = plot.series[prevSeriesIndex]._plotData[didx][1];
-
-                    // is there a sign change
-                    if ((comp * prevVal) < 0) {
-                        start = getYStart(prevSeriesIndex, didx, comp);
-                    }
-
-                    // no sign change.
-                    else {
-                        start = plot.series[prevSeriesIndex].gridData[didx][1];
-                    }
-
-                }
-
-                // if first series, return value at 0
-                else {
-                    start = plot.series[seriesIndex]._yaxis.series_u2p(0);
-                }
-
-                return start;
-            }
-
-            function getXStart(sidx, didx, comp) {
-                // check if sign change
-                var seriesIndex = sidx,
-                    prevSeriesIndex = sidx - 1,
-                    start,
-                    prevVal;
-
-                // is this not the first series?
-                if (seriesIndex > 0) {
-                    prevVal = plot.series[prevSeriesIndex]._plotData[didx][0];
-
-                    // is there a sign change
-                    if ((comp * prevVal) < 0) {
-                        start = getYStart(prevSeriesIndex, didx, comp);
-                    }
-
-                    // no sign change.
-                    else {
-                        start = plot.series[prevSeriesIndex].gridData[didx][0];
-                    }
-
-                }
-
-                // if first series, return value at 0
-                else {
-                    start = plot.series[seriesIndex]._xaxis.series_u2p(0);
-                }
-
-                return start;
-            }
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -402,10 +374,9 @@
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
-
-                        ystart = getYStart(this.index, i, this._plotData[i][1]);
-
+                        ystart = getStart(this.index, i, this._plotData[i][1], plot, 'y');
                     }
+
                     // not stacked and first series in stack
                     else {
                         if (this.fillToZero) {
@@ -500,7 +471,7 @@
                     xstart;
                     
                     if (this._stack && this._prevGridData.length) {
-                        xstart = getXStart(this.index, i, this._plotData[i][0]);
+                        xstart = getStart(this.index, i, this._plotData[i][0], plot, 'x');
                     }
                     // not stacked and first series in stack
                     else {
@@ -600,7 +571,7 @@
     
      
     // for stacked plots, shadows will be pre drawn by drawShadow.
-    $.jqplot.BarRenderer.prototype.drawShadow = function(ctx, gridData, options) {
+    $.jqplot.BarRenderer.prototype.drawShadow = function(ctx, gridData, options, plot) {
         var i;
         var opts = (options != undefined) ? options : {};
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
@@ -640,7 +611,7 @@
                         var ystart;
                     
                         if (this._stack && this._prevGridData.length) {
-                            ystart = this._prevGridData[i][1];
+                            ystart = getStart(this.index, i, this._plotData[i][1], plot, 'y');
                         }
                         else {
                             if (this.fillToZero) {
@@ -669,10 +640,15 @@
                         var xstart;
                     
                         if (this._stack && this._prevGridData.length) {
-                            xstart = this._prevGridData[i][0];
+                            xstart = getStart(this.index, i, this._plotData[i][0], plot, 'x');
                         }
                         else {
-                            xstart = 0;
+                            if (this.fillToZero) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else {
+                                xstart = 0;
+                            }
                         }
                     
                         points.push([xstart, base+this.barWidth/2]);
