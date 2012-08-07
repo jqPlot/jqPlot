@@ -2099,6 +2099,7 @@
             this._sumy = 0;
             this._sumx = 0;
             console.log('in init 2: ', this.data[2][2]);
+            this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
@@ -2111,7 +2112,7 @@
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
                     this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -2287,6 +2288,7 @@
             this.seriesStack = [];
             this.previousSeriesStack = [];
 
+            this.computePlotData();
             for (var i=0, l=this.series.length; i<l; i++) {
                 // set default stacking order for series canvases
                 this.seriesStack.push(i);
@@ -2299,7 +2301,7 @@
                 for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
                     this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
                 }
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 this.series[i]._plotDimensions = this._plotDimensions;
                 this.series[i].init(i, this.grid.borderWidth, this);
                 for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
@@ -2392,8 +2394,9 @@
             
             this._sumy = 0;
             this._sumx = 0;
+            this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
+                // this.populatePlotData(this.series[i], i);
                 if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
                     this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
                 }
@@ -2483,42 +2486,47 @@
 
 
             for (index=0, l=this.series.length; index<l; index++) {
+                console.log('index is: ', index);
                 series = this.series[index];
                 this._plotData.push([]);
                 this._stackData.push([]);
                 if (this.stackSeries && !series.disableStack) {
                     // for first series, not stacking anything.
                     var cd = series.data;
-                    var pd = this._plotData[index] = $.extend(true, [], cd);
-                    var sd = this._stackData[index] = $.extend(true, [], cd);
-                    series._plotData = pd;
-                    series._stackData = sd;
+                    this._plotData[index] = $.extend(true, [], cd);
+                    this._stackData[index] = $.extend(true, [], cd);
+                    series._plotData = this._plotData[index];
+                    series._stackData = this._stackData[index];
                     ///////////////////////////
                     // have to check for nulls
                     ///////////////////////////
+                    var sidx = (series._stackAxis === 'x') ? 0 : 1;
 
-                    if (index > 0) {
-                        var sidx = (series._stackAxis === 'x') ? 0 : 1;
-                        for (var k=0, l=cd.length; k<l; k++) {
-                            var temp = cd[k][sidx];
-                            if (temp == null) {
-                                temp = 0;
-                            }
+                    for (var k=0, cdl=cd.length; k<cdl; k++) {
+                        var temp = cd[k][sidx];
+                        if (temp == null) {
+                            temp = 0;
+                        }
+                        this._plotData[index][k][sidx] = temp;
+                        this._stackData[index][k][sidx] = temp;
 
-                            for (var j=index; j--) {
+                        if (index > 0) {
+                            for (var j=index; j--;) {
+                                console.log(index, j, k);
                                 var prevval = this._plotData[j][k][sidx];
                                 // only need to sum up the stack axis column of data
                                 // and only sum if it is of same sign.
                                 // if previous series isn't same sign, keep looking
                                 // at earlier series untill we find one of same sign.
                                 if (temp * prevval >= 0) {
-                                    pd[k][sidx] += prevval;
+                                    this._plotData[index][k][sidx] += prevval;
+                                    this._stackData[index][k][sidx] += prevval;
                                     break;
                                 } 
                             }
                         }
-
                     }
+
                 }
                 else {
                     for (var i=0; i<series.data.length; i++) {
@@ -2893,9 +2901,10 @@
              for (var ax in this.axes) {
                 this.axes[ax]._ticks = [];
             }
-            for (var i=0; i<this.series.length; i++) {
-                this.populatePlotData(this.series[i], i);
-            }
+            this.computePlotData();
+            // for (var i=0; i<this.series.length; i++) {
+            //     this.populatePlotData(this.series[i], i);
+            // }
             this._sumy = 0;
             this._sumx = 0;
             for (i=0; i<this.series.length; i++) {
