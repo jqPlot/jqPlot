@@ -1337,8 +1337,6 @@
         }
         this.data = temp;
 
-        console.log('series init: ', this.index, this.breakOnNull, this.data[2]);
-
         // parse the renderer options and apply default colors if not provided
         // Set color even if not shown, so series don't change colors when other
         // series on plot shown/hidden.
@@ -1943,7 +1941,6 @@
         // sets the plot target, checks data and applies user
         // options to plot.
         this.init = function(target, data, options) {
-            console.log('in init: ', data[2][2]);
             options = options || {};
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
@@ -2098,7 +2095,6 @@
             this.legend.init();
             this._sumy = 0;
             this._sumx = 0;
-            console.log('in init 2: ', this.data[2][2]);
             this.computePlotData();
             for (var i=0; i<this.series.length; i++) {
                 // set default stacking order for series canvases
@@ -2486,12 +2482,11 @@
 
 
             for (index=0, l=this.series.length; index<l; index++) {
-                console.log('index is: ', index);
                 series = this.series[index];
                 this._plotData.push([]);
                 this._stackData.push([]);
                 if (this.stackSeries && !series.disableStack) {
-                    // for first series, not stacking anything.
+                    series._stack = true;
                     var cd = series.data;
                     this._plotData[index] = $.extend(true, [], cd);
                     this._stackData[index] = $.extend(true, [], cd);
@@ -2512,7 +2507,6 @@
 
                         if (index > 0) {
                             for (var j=index; j--;) {
-                                console.log(index, j, k);
                                 var prevval = this._plotData[j][k][sidx];
                                 // only need to sum up the stack axis column of data
                                 // and only sum if it is of same sign.
@@ -2725,7 +2719,6 @@
                 // Need to know breakONNull during initializtion, so create an otptions object and pass
                 // it in just for breakOnNull support (for now).
                 var sopts = $.extend(true, {}, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
-                console.log('parseOptions: ', sopts.breakOnNull);
                 var temp = new Series(sopts);
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
