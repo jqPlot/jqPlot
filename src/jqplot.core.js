@@ -2485,13 +2485,15 @@
                 series = this.series[index];
                 this._plotData.push([]);
                 this._stackData.push([]);
+                var cd = series.data;
+                this._plotData[index] = $.extend(true, [], cd);
+                this._stackData[index] = $.extend(true, [], cd);
+                series._plotData = this._plotData[index];
+                series._stackData = this._stackData[index];
+                var plotValues = {x:[], y:[]};
+
                 if (this.stackSeries && !series.disableStack) {
                     series._stack = true;
-                    var cd = series.data;
-                    this._plotData[index] = $.extend(true, [], cd);
-                    this._stackData[index] = $.extend(true, [], cd);
-                    series._plotData = this._plotData[index];
-                    series._stackData = this._stackData[index];
                     ///////////////////////////
                     // have to check for nulls
                     ///////////////////////////
