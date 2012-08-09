@@ -2903,7 +2903,7 @@
             // }
             this._sumy = 0;
             this._sumx = 0;
-            for (i=0; i<this.series.length; i++) {
+            for (var i=0, tsl = this.series.length; i<tsl; i++) {
                 this._sumy += this.series[i]._sumy;
                 this._sumx += this.series[i]._sumx;
             }
