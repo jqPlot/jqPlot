@@ -463,7 +463,7 @@
             
             else if (this.barDirection == 'horizontal'){
                 for (var i=0; i<gridData.length; i++) {
-                    if (this.data[i][0] == null) {
+                    if (!this._stack && this.data[i][0] == null) {
                         continue;
                     }
                     points = [];
@@ -551,7 +551,7 @@
                     var clr = opts.fillStyle || this.color;
                     this._dataColors.push(clr);
                     this.renderer.shapeRenderer.draw(ctx, points, opts); 
-                }  
+                } 
             }
         }                
         

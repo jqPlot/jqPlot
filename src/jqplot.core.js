@@ -1143,7 +1143,8 @@
      * by the Plot oject.  Series properties can be set or overriden by the 
      * options passed in from the user.
      */
-    function Series() {
+    function Series(options) {
+        options = options || {};
         $.jqplot.ElemContainer.call(this);
         // Group: Properties
         // Properties will be assigned from a series array at the top level of the
@@ -2717,10 +2718,8 @@
             var colorIndex = 0;
             this.series = [];
             for (var i=0; i<this.data.length; i++) {
-                // Hack here, series constrcutor originally didn't have options passed in.
-                // Need to know breakONNull during initializtion, so create an otptions object and pass
-                // it in just for breakOnNull support (for now).
-                var sopts = $.extend(true, {}, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
+                var sopts = $.extend(true, {index: i}, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
+                // pass in options in case something needs set prior to initialization.
                 var temp = new Series(sopts);
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
@@ -2732,8 +2731,10 @@
                 // mess up preParseSeriesOptionsHooks at this point.
                 $.extend(true, temp, sopts);
                 var dir = 'vertical';
-                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal' && temp.transposeData === true) {
+                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
                     dir = 'horizontal';
+                    temp._stackAxis = 'x';
+                    temp._primaryAxis = '_yaxis';
                 }
                 temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
                 switch (temp.xaxis) {
