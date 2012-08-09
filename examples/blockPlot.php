@@ -59,7 +59,7 @@ $(document).ready(function(){
     var s3 = [[1, 59, 'Coca-Cola', {background:'rgb(250, 160, 160)'}], [2, 50, 'Ambasa'], 
     [3, 90, 'Mello Yello'], [4, 90, 'Sprite'], [5, 71, 'Squirt'], [5, 155, 'Youki']];
 
-    var plot1 = $.jqplot('chart1',[s1, s2, s3],{
+    $('#chart1').jqplot([s1, s2, s3],{
         seriesDefaults:{
             renderer:$.jqplot.BlockRenderer
         }, 
@@ -88,6 +88,19 @@ $(document).ready(function(){
         }
     });
 });
+ 
+ function move(dir, val) {
+     var plot1 = $('#chart1').data('jqplot');
+     val = parseFloat(val);
+     var sidx = parseInt($('#seriesId').val());
+     var pidx = parseInt($('#pointId').val());
+     var duration = $('#duration').val();
+     var x = plot1.series[sidx].data[pidx][0];
+     var y = plot1.series[sidx].data[pidx][1];
+     (dir == 'x') ? x += val : y += val; 
+     plot1.series[sidx].moveBlock(pidx, x, y, duration);
+ }
+ 
 </script>
 
 <script class="code" type="text/javascript">
@@ -129,17 +142,6 @@ $(document).ready(function(){
     });
    
  });
- 
- function move(dir, val) {
-     val = parseFloat(val);
-     var sidx = parseInt($('#seriesId').val());
-     var pidx = parseInt($('#pointId').val());
-     var duration = $('#duration').val();
-     var x = plot1.series[sidx].data[pidx][0];
-     var y = plot1.series[sidx].data[pidx][1];
-     (dir == 'x') ? x += val : y += val; 
-     plot1.series[sidx].moveBlock(pidx, x, y, duration);
- }
  
 </script>
 
