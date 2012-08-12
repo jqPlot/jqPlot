@@ -377,7 +377,7 @@
                         ystart = getStart(this.index, i, this._plotData[i][1], plot, 'y');
                     }
 
-                    // not stacked and first series in stack
+                    // not stacked
                     else {
                         if (this.fillToZero) {
                             ystart = this._yaxis.series_u2p(0);
@@ -473,13 +473,13 @@
                     if (this._stack && this._prevGridData.length) {
                         xstart = getStart(this.index, i, this._plotData[i][0], plot, 'x');
                     }
-                    // not stacked and first series in stack
+                    // not stacked
                     else {
                         if (this.fillToZero) {
                             xstart = this._xaxis.series_u2p(0);
                         }
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
-                            xstart = this.gridData[i-1][1];
+                            xstart = this.gridData[i-1][0];
                         }
                         else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
                             if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
@@ -489,7 +489,7 @@
                                 xstart = 0;
                             }
                             else {
-                                xstart = ctx.canvas.width;
+                                xstart = 0;
                             }
                         }
                         else if (this.waterfall && i == this.gridData.length - 1) {
@@ -550,7 +550,7 @@
                     }
                     var clr = opts.fillStyle || this.color;
                     this._dataColors.push(clr);
-                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
+                    this.renderer.shapeRenderer.draw(ctx, points, opts);
                 } 
             }
         }                
