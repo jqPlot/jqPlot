@@ -340,8 +340,8 @@
         // if we already have ticks, use them.
         // ticks must be in order of increasing value.
         
-        min = ((this.min != null) ? new $.jsDate(this.min).getTime() : db.min);
-        max = ((this.max != null) ? new $.jsDate(this.max).getTime() : db.max);
+        min = new $.jsDate((this.min != null) ? this.min : db.min).getTime();
+        max = new $.jsDate((this.max != null) ? this.max : db.max).getTime();
 
         // see if we're zooming.  if we are, don't use the min and max we're given,
         // but compute some nice ones.  They will be reset later.
@@ -482,7 +482,7 @@
 
                 min = Math.floor(min/tempti) * tempti;
                 min = new $.jsDate(min);
-                min = min.getTime() + min.getUtcOffset();
+                min = min.getTime();
 
                 nttarget = Math.ceil((max - min) / tempti) + 1;
                 this.min = min;
