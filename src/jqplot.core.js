@@ -3303,49 +3303,7 @@
                         break;
                         
                     case $.jqplot.PieRenderer:
-                        sa = s.startAngle/180*Math.PI;
-                        x = gridpos.x - s._center[0];
-                        y = gridpos.y - s._center[1];
-                        r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-                        if (x > 0 && -y >= 0) {
-                            theta = 2*Math.PI - Math.atan(-y/x);
-                        }
-                        else if (x > 0 && -y < 0) {
-                            theta = -Math.atan(-y/x);
-                        }
-                        else if (x < 0) {
-                            theta = Math.PI - Math.atan(-y/x);
-                        }
-                        else if (x == 0 && -y > 0) {
-                            theta = 3*Math.PI/2;
-                        }
-                        else if (x == 0 && -y < 0) {
-                            theta = Math.PI/2;
-                        }
-                        else if (x == 0 && y == 0) {
-                            theta = 0;
-                        }
-                        if (sa) {
-                            theta -= sa;
-                            if (theta < 0) {
-                                theta += 2*Math.PI;
-                            }
-                            else if (theta > 2*Math.PI) {
-                                theta -= 2*Math.PI;
-                            }
-                        }
-            
-                        sm = s.sliceMargin/180*Math.PI;
-                        if (r < s._radius) {
-                            for (j=0; j<s.gridData.length; j++) {
-                                minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
-                                maxang = s.gridData[j][1];
-                                if (theta > minang && theta < maxang) {
-                                    return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
-                                }
-                            }
-                        }
-                        break;
+						return s.renderer.checkIntersection(gridpos, plot, i);
                         
                     case $.jqplot.BubbleRenderer:
                         x = gridpos.x;
