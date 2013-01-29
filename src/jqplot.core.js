@@ -1369,7 +1369,7 @@
             this.markerOptions.show = this.showMarker;
         }
         this.showMarker = this.markerOptions.show;
-        // the markerRenderer is called within its own scaope, don't want to overwrite series options!!
+        // the markerRenderer is called within its own scope, don't want to overwrite series options!!
         this.markerRenderer.init(this.markerOptions);
     };
     
