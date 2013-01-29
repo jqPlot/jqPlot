@@ -57,12 +57,12 @@
     </div>
     
     <div id="tabs-2">
-      <p>This plot was in an initially hidden container.  It's hieght and width are set by the "data-height" and "data-width" properties of the plot container.</p>
+      <p>This plot was in an initially hidden container.  Its hieght and width are set by the "data-height" and "data-width" properties of the plot container.</p>
         <div id="chart1" data-height="260px" data-width="480px" style="margin-top:20px; margin-left:20px;"></div>
     </div>
     
     <div id="tabs-3">
-      <p>This plot is in an initially hidden container.  It's height and width are set by the 'height' and 'width' properties of the options object passed into the plot constructor.</p>
+      <p>This plot is in an initially hidden container.  Its height and width are set by the 'height' and 'width' properties of the options object passed into the plot constructor.</p>
         <div id="chart2" style="margin-top:20px; margin-left:20px;"></div>
     </div>
     
@@ -80,14 +80,14 @@
   <h3><a href="#">Section 2</a></h3>
   <div>
     <p>
-    This plot also has it's height and width set with the data-height and data-width attributes.  Note, if you want the accordion widget to properly size itself </em>before</em> the plot is shown, you must also specify a css height and width on the plot target.
+    This plot also has its height and width set with the data-height and data-width attributes.  Note, if you want the accordion widget to properly size itself </em>before</em> the plot is shown, you must also specify a css height and width on the plot target.
     </p>
     <div id="chart3" data-height="200" data-width="400" style="width:400px; height: 200px; margin-top: 20px; margin-left: 20px"></div>
   </div>
   
 </div>
 
-<p class="description">Code for generating the plots follows.  It is critical to bind the callback to the UI widgets "show" or "change" method which calls the plots "replot" method.  Without this, the plot won't properly redraw itself when it's container becomes visible.</p>
+<p class="description">Code for generating the plots follows.  It is critical to bind the callback to the UI widgets "show" or "change" method which calls the plots "replot" method.  Without this, the plot won't properly redraw itself when its container becomes visible.</p>
 
 <p class="description">
   Note in the ui.index and plot._drawCount properties in the tabsshow callback.  ui.index gives the index of the activated tab.  plot._drawCount keeps track of how many times the plot was visibly drawn (or redrawn/replotted).  Generally, replot only needs to be called the first time the plot is visibly drawn, hence the check for plot._drawCount === 0.
