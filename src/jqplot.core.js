@@ -1842,13 +1842,13 @@
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
         this.previousSeriesStack = [];
-        // Namespece to hold plugins.  Generally non-renderer plugins add themselves to here.
+        // Namespace to hold plugins.  Generally non-renderer plugins add themselves to here.
         this.plugins = {};
         // prop: series
         // Array of series object options.
         // see <Series> for series specific options.
         this.series = [];
-        // array of series indicies. Keep track of order
+        // array of series indices. Keep track of order
         // which series canvases are displayed, lowest
         // to highest, back to front.
         this.seriesStack = [];
@@ -1860,7 +1860,7 @@
         this.seriesColors = $.jqplot.config.defaultColors;
         // prop: sortData
         // false to not sort the data passed in by the user.
-        // Many bar, stakced and other graphs as well as many plugins depend on
+        // Many bar, stacked and other graphs as well as many plugins depend on
         // having sorted data.
         this.sortData = true;
         // prop: stackSeries
