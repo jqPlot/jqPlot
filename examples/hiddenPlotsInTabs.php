@@ -57,7 +57,7 @@
     </div>
     
     <div id="tabs-2">
-      <p>This plot was in an initially hidden container.  Its hieght and width are set by the "data-height" and "data-width" properties of the plot container.</p>
+      <p>This plot was in an initially hidden container.  Its height and width are set by the "data-height" and "data-width" properties of the plot container.</p>
         <div id="chart1" data-height="260px" data-width="480px" style="margin-top:20px; margin-left:20px;"></div>
     </div>
     
