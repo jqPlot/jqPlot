@@ -115,7 +115,7 @@
         
         //////
         // This is probably wrong here.
-        // After going back and forth on wether renderer should be the thing
+        // After going back and forth on whether renderer should be the thing
         // or extend the thing, it seems that it it best if it is a property
         // on the thing.  This should be something that is commonized 
         // among series renderers in the future.

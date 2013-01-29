@@ -101,7 +101,7 @@
         // null will compute ringMargin based on sliceMargin.
         this.ringMargin = null;
         // prop: fill
-        // true or false, wether to fil the slices.
+        // true or false, whether to fil the slices.
         this.fill = true;
         // prop: shadowOffset
         // offset of the shadow from the slice and offset of 
