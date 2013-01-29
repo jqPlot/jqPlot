@@ -44,7 +44,7 @@
     
     <p>This second chart is like the first except the "varyBlockColors" renderer option is set to true.  This will vary the color of each block in a series separately.  This allows displaying a third dimension to the data such as grouping beverage products by producer and by category such as "cola", "tea", "energy drink", etc.</p>
     
-    <p>Also, the legend has its "showSwathces" option set to false, since the blocks of each series will be of varying color and won't correspond to one swatch color.  This still enables the user to show and hide the series by clicking on a label in the legend.</p>
+    <p>Also, the legend has its "showSwatches" option set to false, since the blocks of each series will be of varying color and won't correspond to one swatch color.  This still enables the user to show and hide the series by clicking on a label in the legend.</p>
     
     <div id="chart2" class="plot" style="width:500px;height:300px;margin-bottom:30px;"></div>
 
