@@ -1757,7 +1757,8 @@
         this.data = [];
         // prop: dataRenderer
         // A callable which can be used to preprocess data passed into the plot.
-        // Will be called with 2 arguments, the plot data and a reference to the plot.
+        // Will be called with 3 arguments: the plot data, a reference to the plot,
+        // and the value of dataRendererOptions.
         this.dataRenderer;
         // prop: dataRendererOptions
         // Options that will be passed to the dataRenderer.
