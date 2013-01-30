@@ -511,7 +511,7 @@
     /**
      * Class: Axis
      * An individual axis object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Axis properties can be set or overriden by the 
+     * by the Plot object.  Axis properties can be set or overriden by the 
      * options passed in from the user.
      * 
      */
@@ -848,7 +848,7 @@
     /**
      * Class: Legend
      * Legend object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Legend properties can be set or overriden by the 
+     * by the Plot object.  Legend properties can be set or overriden by the 
      * options passed in from the user.
      */
     function Legend(options) {
@@ -1077,7 +1077,7 @@
     /**
      * Class: Title
      * Plot Title object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Title properties can be set or overriden by the 
+     * by the Plot object.  Title properties can be set or overriden by the 
      * options passed in from the user.
      * 
      * Parameters:
@@ -1140,7 +1140,7 @@
     /**
      * Class: Series
      * An individual data series object.  Cannot be instantiated directly, but created
-     * by the Plot oject.  Series properties can be set or overriden by the 
+     * by the Plot object.  Series properties can be set or overriden by the 
      * options passed in from the user.
      */
     function Series(options) {
@@ -1524,7 +1524,7 @@
      * Object representing the grid on which the plot is drawn.  The grid in this
      * context is the area bounded by the axes, the area which will contain the series.
      * Note, the series are drawn on their own canvas.
-     * The Grid object cannot be instantiated directly, but is created by the Plot oject.  
+     * The Grid object cannot be instantiated directly, but is created by the Plot object.  
      * Grid properties can be set or overriden by the options passed in from the user.
      */
     function Grid() {
