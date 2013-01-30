@@ -1821,7 +1821,6 @@
         this.legend = new Legend();
         // prop: noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
-        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         this.noDataIndicator = {    
             show: false,
             indicator: 'Loading Data...',
@@ -1840,6 +1839,9 @@
                 }
             }
         };
+        // prop: negativeSeriesColors 
+        // colors to use for portions of the line below zero.
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // container to hold all of the merged options.  Convienence for plugins.
         this.options = {};
         this.previousSeriesStack = [];
