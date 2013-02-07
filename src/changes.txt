@@ -1,5 +1,8 @@
 Title: Change Log
 
+1.0.5:
+* Updated to jQuery 1.9
+
 1.0.0b2:
 * Major improvements in memory usage:
 ** Merged in changes from Timo Besenruether to reuse canvas elements and improve 
