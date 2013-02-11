@@ -1,0 +1,39 @@
+{
+  "name": "jqPlot",
+  "title": "Pure JavaScript plotting plugin for jQuery",
+  "description": "jqPlot is a plotting and charting plugin for the jQuery Javascript framework. jqPlot produces beautiful line, bar and pie charts with many features.",
+  "keywords": [
+    "plotting",
+    "charting",
+    "graphing"
+  ],
+  "version": "1.0.5",
+  "author": {
+    "name": "Chris Leonello",
+    "url": "http://http://www.jqplot.com/info.php"
+  },
+  "maintainers": [
+    {
+      "name": "Chris Leonello",
+      "email": "chris@jqplot.com",
+      "url": "http://jqplot.com"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.jqplot.com/docs/files/gpl-2-0-txt.html"
+    },
+    {
+      "type": "MIT",
+      "url": "http://www.jqplot.com/docs/files/MIT-LICENSE-txt.html"
+    }
+  ],
+  "bugs": "http://www.bitbucket.org/cleonello/jqplot/issues/",
+  "homepage": "http://jqplot.com",
+  "docs": "http://www.jqplot.com/docs/",
+  "download": "http://bitbucket.org/cleonello/jqplot/downloads/",
+  "dependencies": {
+    "jquery": ">=1.4"
+  }
+}
