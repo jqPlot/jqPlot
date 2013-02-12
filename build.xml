@@ -121,7 +121,7 @@
             <include name="jqplot.*.js" />
             <include name="jqplot.effects.*.js" />
             <include name="jsdate.js" />
-            <exclude name="jqplot.sprintf.js" />
+            <exclude name="jqplot.effects.blind.js" />
           </fileset>
         </replaceregexp>
         
