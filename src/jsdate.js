@@ -708,8 +708,15 @@
             dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
             dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','S&aacute;b'],
             formatString: '%Y-%m-%d %H:%M:%S'
-        }
+        },
         
+        'pl': {
+            monthNames: ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'],
+            monthNamesShort: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze','Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
+            dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+            dayNamesShort: ['Ni', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
     
     };
     
