@@ -155,7 +155,7 @@
             labelIdx = p.seriesLabelIndex;
         }
         else if (this.renderer.constructor === $.jqplot.BarRenderer && this.barDirection === 'horizontal') {
-            labelIdx = 0;
+           labelIdx = (this._plotData[0].length < 3) ? 0 : this._plotData[0].length -1;
         }
         else {
             labelIdx = (this._plotData.length === 0) ? 0 : this._plotData[0].length -1;
