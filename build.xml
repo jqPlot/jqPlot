@@ -107,7 +107,7 @@
     </replaceregexp>
                 
         <!-- remove appropriate opening and closing of closures -->
-        <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s">
+        <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s" encoding="UTF8">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
             <include name="jqplot.effects.*.js" />
@@ -116,7 +116,7 @@
           </fileset>
         </replaceregexp>
         
-        <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="">
+        <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="" encoding="UTF8">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
             <include name="jqplot.effects.*.js" />
@@ -126,7 +126,7 @@
         </replaceregexp>
         
         <!-- now cat all files together to make one jqplot source file -->
-        <concat destfile="${BUILD_DIR}/${JQPLOT}">
+        <concat destfile="${BUILD_DIR}/${JQPLOT}" encoding="UTF8">
             <fileset dir="${BUILD_DIR}" includes="jqplot.core.js" />
             <fileset dir="${BUILD_DIR}">
               <include name="jqplot.*.js" />
@@ -259,8 +259,8 @@
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
-          <arg value="--charset" />
-          <arg value="ANSI" />
+          <arg value="--charset" /> 
+          <arg value="UTF8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
@@ -275,7 +275,7 @@
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
           <arg value="--charset" />
-          <arg value="ANSI" />
+          <arg value="UTF8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="excanvas.js" to="temp/excanvas.min.js" />
@@ -289,7 +289,7 @@
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
           <arg value="--charset" />
-          <arg value="ANSI" />
+          <arg value="UFT8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
@@ -305,7 +305,7 @@
           <arg value="--type" />
           <arg value="css" />
           <arg value="--charset" />
-          <arg value="ANSI" />
+          <arg value="UTF8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="examples.css" to="examples.min.css" />
@@ -321,7 +321,7 @@
           <arg value="--type" />
           <arg value="js" />
           <arg value="--charset" />
-          <arg value="ANSI" />
+          <arg value="UTF8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="example.js" to="example.min.js" />
@@ -337,7 +337,7 @@
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
           <arg value="--charset" />
-          <arg value="ANSI" />
+          <arg value="UTF8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jqplot.*.js" to="temp/jqplot.*.min.js" />
