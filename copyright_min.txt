@@ -1,0 +1,3 @@
+/* jqPlot @VERSION | (c) 2009-2013 Chris Leonello | jplot.com
+   jsDate | (c) 2010-2013 Chris Leonello
+ */
