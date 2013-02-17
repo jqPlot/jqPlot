@@ -5,7 +5,7 @@
 <?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
-    <link class="include" rel="stylesheet" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.css" />
+    <link class="include" rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" />
 
     <style type="text/css">
         .jqplot-target {
@@ -172,4 +172,4 @@
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

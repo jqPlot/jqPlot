@@ -1,6 +1,5 @@
 <?php 
-    $title = "Candlestick and Open Hi Low Close charts";
-    // $plotTargets = array('chart1', 'chart2', 'chart3');
+    $title = "Candlestick and Open Hi Low Close Charts";
 ?>
 <?php include "opener.php"; ?>
 
@@ -133,7 +132,7 @@
 <script class="code" type="text/javascript">$(document).ready(function(){  
     $.jqplot.config.enablePlugins = true;     
     plot1 = $.jqplot('chart1',[ohlc],{
-      title: 'Chart',
+      title: 'Candlestick Charts',
       axesDefaults:{},
       axes: {
           xaxis: {
@@ -186,7 +185,6 @@
 
 <script class="code" type="text/javascript">$(document).ready(function(){  
     plot2b = $.jqplot('chart2b',[ohlc_b],{
-      title: 'Chart',
       axesDefaults:{},
       axes: {
           xaxis: {
@@ -219,7 +217,6 @@
 
 <script class="code" type="text/javascript">$(document).ready(function(){ 
     plot3 = $.jqplot('chart3',[hlc],{
-      title: 'Chart',
       axesDefaults:{},
       axes: {
           xaxis: {
@@ -282,4 +279,4 @@
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

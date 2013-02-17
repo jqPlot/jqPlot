@@ -176,4 +176,4 @@ $(document).ready(function(){
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

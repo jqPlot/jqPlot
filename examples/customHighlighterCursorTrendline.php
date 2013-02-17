@@ -1,5 +1,5 @@
 <?php 
-    $title = "Highlighting, Dragging Points, Cursor and Trend Lines.";
+    $title = "Highlighting, Dragging Points, Cursor and Trend Lines";
     $plotTargets = array('chart1');
 ?>
 <?php include "opener.php"; ?>
@@ -64,4 +64,4 @@
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

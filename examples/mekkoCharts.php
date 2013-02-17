@@ -221,7 +221,6 @@ $(document).ready(function(){
 
 <!-- Additional plugins go here -->
 
-  <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.mekkoRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.mekkoAxisRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
@@ -229,4 +228,4 @@ $(document).ready(function(){
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

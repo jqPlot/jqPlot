@@ -251,7 +251,6 @@
 
 <!-- Additional plugins go here -->
 
-  <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
@@ -259,4 +258,4 @@
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

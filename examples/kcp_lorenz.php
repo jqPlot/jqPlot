@@ -7,7 +7,7 @@
 <!-- Example scripts go here -->
 
 
-  <link class="include" type="text/css" href="jquery-ui/css/smoothness/jquery-ui.min.css" rel="Stylesheet" /> 
+  <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.csss" rel="Stylesheet" /> 
 
   <style type="text/css">
 
@@ -484,8 +484,8 @@ $(document).ready(function(){
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
-  <script class="include" type="text/javascript" src="jquery-ui/js/jquery-ui.min.js"></script>
+  <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

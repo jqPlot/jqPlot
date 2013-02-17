@@ -194,12 +194,10 @@ function linedown(plot, name) {
 
 <!-- Additional plugins go here -->
 
-
-  <script class="include" type="text/javascript" src="../src/jquery.jqplot.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

@@ -1,5 +1,5 @@
 <?php 
-    $title = "Line Charts and Options";
+    $title = "Axis Labels";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
@@ -117,4 +117,4 @@ $(document).ready(function(){
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

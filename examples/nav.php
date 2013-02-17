@@ -1,41 +1,27 @@
-<div class="example-nav">
-  <?php
+         <div class="col2">
+
+<?php
     $tmpnames = scandir('./');
     $skip = array('opener.php', 'bodyOpener.php', 'nav.php', 'closer.html', 'commonScripts.html', 'topbanner.html', 'index.php');
-    
+
     foreach( $tmpnames as $value) {
         if (preg_match('/^[a-z0-9][a-z0-9_\-]+\.(html|php)$/i', $value)) {
-          if (! in_array($value, $skip)) {
-            $files[] = $value;
-          }
+            if (! in_array($value, $skip)) {
+                $content = file_get_contents($value);
+                preg_match('/\$title *= *"(.*)";/', $content, $match);
+                if (count($match) > 1) {
+                    $nfiles[$value] = $match[1];
+                }
+            }
         }
     }
 
-    $fcount = count($files);
-    $parts = explode("/", $_SERVER['SCRIPT_NAME']);
-    $curfile = end($parts);
-    $prevfile = '';
-    $nextfile = '';
-    // print_r($files);
-    
-    for ($i=0; $i<$fcount; $i++) {
-      if ($curfile == $files[$i]) {
-        if ($i == 0) {
-          $prevfile = $files[$fcount-1];
-          $nextfile = $files[1];
-        }
-        elseif ($i == $fcount-1) {
-          $prevfile = $files[$i-1];
-          $nextfile = $files[0];
-        }
-        else {
-          $prevfile = $files[$i-1];
-          $nextfile = $files[$i+1];
-        }
-      }  
+    array_multisort($nfiles);
+
+    foreach( $nfiles as $filename=>$title) {
+        echo '           <div class="example-link"><a class="example-link" href="'.$filename.'">'.$title.'</a></div>'."\n";
     }
-    
-    echo '<a href="'.$prevfile.'">Previous</a> <a href="./">Examples</a> <a href="'.$nextfile.'">Next</a>';
-    
-  ?>
-</div>
+?>
+
+         </div>
+         

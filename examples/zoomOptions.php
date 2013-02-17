@@ -136,4 +136,4 @@
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

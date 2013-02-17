@@ -30,7 +30,7 @@ $(document).ready(function(){
                 ];
 
                 temp = $(temp.join('\n'));
-                $('div.example-content').append(temp);
+                $('div#example-content').append(temp);
                 temp = null;
             }      
 

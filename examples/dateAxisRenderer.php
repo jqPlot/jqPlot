@@ -1,5 +1,5 @@
 <?php 
-    $title = "Date Axes";
+    $title = "Date Axes 2";
     // $plotTargets = array('chart1');
 ?>
 <?php include "opener.php"; ?>
@@ -252,4 +252,4 @@ $(document).ready(function(){
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

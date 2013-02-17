@@ -1,62 +1,30 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-    
-    <title>jqPlot Sample Charts</title>
-
-    <link class="include" rel="stylesheet" type="text/css" href="../src/jquery.jqplot.css" />
-    <link rel="stylesheet" type="text/css" href="examples.css" />
-    <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCoreDefault.min.css" />
-    <link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemejqPlot.min.css" />
-  
-  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../src/excanvas.js"></script><![endif]-->
-    <script class="include" type="text/javascript" src="../src/jquery.js"></script>
-
-</head>
-<body>
-    <?php include "topbanner.html"; ?>
-
-<!-- Index content goes here -->
-
-<style type="text/css">
-
-    p.example-link {
-        margin-top: 0.5em;
-        margin-bottom: 0.5em;
-        margin-left: 120px;
-    }
-
-</style>
-
-<div class="example-links">
-
-<?php
-    $tmpnames = scandir('./');
-    $skip = array('opener.php', 'bodyOpener.php', 'nav.php', 'closer.html', 'commonScripts.html', 'topbanner.html', 'index.php');
-
-    foreach( $tmpnames as $value) {
-        if (preg_match('/^[a-z0-9][a-z0-9_\-]+\.(html|php)$/i', $value)) {
-            if (! in_array($value, $skip)) {
-                $nfiles[] = $value;
-                $content = file_get_contents($value);
-                preg_match('/\$title *= *"(.*)";/', $content, $match);
-                if (count($match) > 1) {
-                    print "<p class=\"example-link\"><a class=\"example-link\" href=\"$value\">$match[1]</a></p>\n";
-                }
-            }
-        }
-    }
+<?php 
+    $title = "Examples";
 ?>
+<?php include "opener.php"; ?>
 
-</div>
+<!-- Example scripts go here -->
+There are lots of examples showing basic chart functionality as well as zoom proxies, dynamic replotting, Mekko charts, trend lines, block plots, log axes, filled line (area) plots, and...well you get the picture. When you download a distribution, you'll get over 90 examples of plot types, features and functionality!  The examples are a great way to understand what jqPlot is capable of, and to learn how to use the library.
 
-<!-- End Index content -->
+    <script class="code" type="text/javascript">
+    $(document).ready(function(){
 
+        // These two variables should be removed outside of the jqplot.com example environment.
+        $.jqplot._noToImageButton = true;
+        $.jqplot._noCodeBlock = true;
 
-    </div>
+    });
+    </script>
 
-</body>
+<!-- End example scripts -->
 
+<!-- Don't touch this! -->
 
-</html>
+<?php include "commonScripts.html" ?>
+
+<!-- End Don't touch this! -->
+
+<!-- Additional plugins go here -->
+<!-- End additional plugins -->
+
+<?php include "closer.php"; ?>

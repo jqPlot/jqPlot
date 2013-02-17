@@ -1,5 +1,5 @@
 <?php 
-    $title = "Waterfall charts 2";
+    $title = "Waterfall Charts 2";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
 <?php include "opener.php"; ?>
@@ -191,4 +191,4 @@
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

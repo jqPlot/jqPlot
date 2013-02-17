@@ -199,10 +199,6 @@
 </select>
 </p>
 
-  
-  </div>
-  
-
 <script language="javascript" type="text/javascript">
 $(document).ready(function(){
 
@@ -479,4 +475,4 @@ function switch35() {
 
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>

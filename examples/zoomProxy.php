@@ -121,4 +121,4 @@ var ERPM = [[0.0,1503.],[10.0,3006.],[20.0,3005.],[30.0,1505.],[40.0,1505.],[50.
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
 <!-- End additional plugins -->
 
-<?php include "closer.html"; ?>
+<?php include "closer.php"; ?>
