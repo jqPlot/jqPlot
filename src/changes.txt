@@ -1,5 +1,17 @@
 Title: Change Log
 
+1.0.6:
+* Add left sidebar navigation to examples
+* Update examples for jquery 1.9.1 and jquery ui 1.10.0
+* Add colorpicker.js to distribution
+* Fix some problems with examples when viewing with local file system
+* Add "minified" copyright notice for minified files, similar to jquery's notice.
+* Pull Request #25: jqplot.sprintf.js is no longer the last file in the concatenated jquery.jqplot.js
+* Pull Request #17: Fixed bug causing custom pointLabels passed with plot data to be ignored for horizontal bar graphs.
+* Pull Request #10: Build error by invalid encoding.
+* Issue #714: handle tickColor in meterGaugeRenderer
+* Issue #519: jsDate Polish Localization
+
 1.0.5:
 * Updated to jQuery 1.9
 
