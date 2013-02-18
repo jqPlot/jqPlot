@@ -192,6 +192,11 @@
             //     rmax = rmax*(1+adj);
             // }
 
+            // Handle case where a data value was zero
+            if (rmin === 0) {
+              rmin = 1;
+            }
+
             var order = Math.round(Math.log(rmin)/Math.LN10);
 
             if (this.tickOptions == null || !this.tickOptions.formatString) {
