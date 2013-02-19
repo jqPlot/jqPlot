@@ -314,7 +314,7 @@
     
     jsDate.prototype.getIsoWeek = function() {
         var d = this.proxy;
-        var woy = d.getWeekOfYear();
+        var woy = this.getWeekOfYear();
         var dow1_1 = (new Date('' + d.getFullYear() + '/1/1')).getDay();
         // First week is 01 and not 00 as in the case of %U and %W,
         // so we add 1 to the final result except if day 1 of the year
