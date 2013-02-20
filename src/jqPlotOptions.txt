@@ -12,9 +12,8 @@ described using the following convention:
 property: default, // notes 
 }}}
 
-This document is not complete!  Not all options are shown!  Also, Options marked 
-with ** in the notes are post 0.7.1 additions. They will be available in the next 
-release.  Further information about the options can be found in the online API 
+This document is not complete!  Not all options are shown!  
+Further information about the options can be found in the online API 
 documentation.  For details on how the options relate to the API documentation,
 see the <Options Tutorial> in the optionsTutorial.txt file.
 
@@ -94,9 +93,9 @@ options =
         showLine: true,     // whether to render the line segments or not.
         showMarker: true,   // render the data point markers or not.
         fill: false,        // fill under the line,
-        fillAndStroke: false,       // **stroke a line at top of fill area.
-        fillColor: undefined,       // **custom fill color for filled lines (default is line color).
-        fillAlpha: undefined,       // **custom alpha to apply to fillColor.
+        fillAndStroke: false,       // stroke a line at top of fill area.
+        fillColor: undefined,       // custom fill color for filled lines (default is line color).
+        fillAlpha: undefined,       // custom alpha to apply to fillColor.
         renderer: $.jqplot.LineRenderer],    // renderer used to draw the series.
         rendererOptions: {}, // options passed to the renderer.  LineRenderer has no options.
         markerRenderer: $.jqplot.MarkerRenderer,    // renderer to use to draw the data 
@@ -131,7 +130,7 @@ options =
     
     grid: {
         drawGridLines: true,        // whether to draw lines across the grid or not.
-        gridLineColor: '#cccccc'    // **Color of the grid lines.
+        gridLineColor: '#cccccc'    // Color of the grid lines.
         background: '#fffdf6',      // CSS color spec for background color of grid.
         borderColor: '#999999',     // CSS color spec for border around grid.
         borderWidth: 2.0,           // pixel width of border around grid.
