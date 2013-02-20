@@ -86,7 +86,7 @@ $(document).ready(function(){
 
   // jQuery selector for all divs with a class of "jqplot".
   // Here, there are two divs that match.  By supplying 2 seperate
-  // arrays of data, each plot will have it's own independent series.
+  // arrays of data, each plot will have its own independent series.
   // Only one options array is supplied, so it will be used for both
   // plots.
   $("div.jqplot").jqplot([cosPoints, sinPoints], [powPoints1, powPoints2], {  

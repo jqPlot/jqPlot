@@ -43,7 +43,7 @@
 </select>
 </p>
 
-<p>Themes can be reused between plots.  Here a style object is created and assigned to two different plots.  For convenience, the theme is given the same name when added to each plot's themeEngine.  Since each plot keeps it's own copy of the theme, the names do not need to be the same.  Also note that themes are added as deep copies by value and not by reference.  This avoids strange behavior due to the cascading nature of css related styles.</p>
+<p>Themes can be reused between plots.  Here a style object is created and assigned to two different plots.  For convenience, the theme is given the same name when added to each plot's themeEngine.  Since each plot keeps its own copy of the theme, the names do not need to be the same.  Also note that themes are added as deep copies by value and not by reference.  This avoids strange behavior due to the cascading nature of css related styles.</p>
 
 <pre>
     temp = {
