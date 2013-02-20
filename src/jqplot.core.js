@@ -1369,7 +1369,7 @@
             this.markerOptions.show = this.showMarker;
         }
         this.showMarker = this.markerOptions.show;
-        // the markerRenderer is called within it's own scaope, don't want to overwrite series options!!
+        // the markerRenderer is called within its own scaope, don't want to overwrite series options!!
         this.markerRenderer.init(this.markerOptions);
     };
     
@@ -1741,7 +1741,7 @@
         // animation in these situations can cause problems.
         this.animateReplot = false;
         // prop: axes
-        // up to 4 axes are supported, each with it's own options, 
+        // up to 4 axes are supported, each with its own options, 
         // See <Axis> for axis specific options.
         this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis'), yMidAxis: new Axis('yMidAxis')};
         this.baseCanvas = new $.jqplot.GenericCanvas();
@@ -1887,7 +1887,7 @@
         // Mostly used to test if plot has never been dran (=0), has been successfully drawn
         // into a visible container once (=1) or draw more than once into a visible container.
         // Can use this in tests to see if plot has been visibly drawn at least one time.
-        // After plot has been visibly drawn once, it generally doesn't need redrawn if its
+        // After plot has been visibly drawn once, it generally doesn't need redrawing if its
         // container is hidden and shown.
         this._drawCount = 0;
         // sum of y values for all series in plot.

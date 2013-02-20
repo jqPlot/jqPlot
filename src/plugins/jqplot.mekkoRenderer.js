@@ -33,7 +33,7 @@
      * Class: $.jqplot.MekkoRenderer
      * Draws a Mekko style chart which shows 3 dimensional data on a 2 dimensional graph.
      * the <$.jqplot.MekkoAxisRenderer> should be used with mekko charts.  The mekko renderer
-     * overrides the default legend renderer with it's own $.jqplot.MekkoLegendRenderer
+     * overrides the default legend renderer with its own $.jqplot.MekkoLegendRenderer
      * which allows more flexibility to specify number of rows and columns in the legend.
      * 
      * Data is specified per bar in the chart.  You can specify data as an array of y values, or as 

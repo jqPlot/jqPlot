@@ -358,7 +358,7 @@
         
         
             
-        // pre-draw so can get it's dimensions.
+        // pre-draw so can get its dimensions.
         if (this.label) {
             this._labelElem = $('<div class="jqplot-meterGauge-label" style="position:absolute;">'+this.label+'</div>');
             this.canvas._elem.after(this._labelElem);

@@ -65,7 +65,7 @@
      * 
      */
     $.jqplot.OHLCRenderer = function(){
-        // subclass line renderer to make use of some of it's methods.
+        // subclass line renderer to make use of some of its methods.
         $.jqplot.LineRenderer.call(this);
         // prop: candleStick
         // true to render chart as candleStick.
