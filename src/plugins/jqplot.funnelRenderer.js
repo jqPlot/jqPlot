@@ -102,7 +102,7 @@
         // spacing between funnel sections in pixels.
         this.sectionMargin = 6;
         // prop: fill
-        // true or false, wether to fill the areas.
+        // true or false, whether to fill the areas.
         this.fill = true;
         // prop: shadowOffset
         // offset of the shadow from the area and offset of 

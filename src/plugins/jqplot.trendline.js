@@ -60,7 +60,7 @@
         // Either 'exponential', 'exp', or 'linear'.
         this.type = 'linear';
         // prop: shadow
-        // true or false, wether or not to show the shadow.
+        // true or false, whether or not to show the shadow.
         this.shadow = true;
         // prop: markerRenderer
         // Renderer to use to draw markers on the line.

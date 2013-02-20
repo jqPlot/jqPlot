@@ -88,7 +88,7 @@
         // angular spacing between pie slices in degrees.
         this.sliceMargin = 0;
         // prop: fill
-        // true or false, wether to fil the slices.
+        // true or false, whether to fil the slices.
         this.fill = true;
         // prop: shadowOffset
         // offset of the shadow from the slice and offset of 
