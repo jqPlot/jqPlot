@@ -184,7 +184,9 @@ directly above the point I'm highlighting:
 > }
 
 Other plugins, like dragable and trendlines, add their options in with
-the series. This is because both of those plugins can have different
+the series.   (Yes, that's the correct name for the dragable plugin; it
+doesn't use the correct spelling of "draggable".)
+This is because both of those plugins can have different
 options for different series in the plot.  So, if you wanted to specify the
 color for the dragable plugin and constrain it to drag only on the x axis as well
 as specify the color of the trend line you could do:
