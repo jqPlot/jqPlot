@@ -25,6 +25,11 @@ options =
          // be assigned to the series.  If there are more series than colors, colors
          // will wrap around and start at the beginning again.
 
+    // when fillToZero is enabled, this sets the colors to use for portions of the line below zero.
+    negativeSeriesColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621",
+                            "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", 
+                            "#959E5C", "#C7AF7B", "#478396", "#907294"], 
+
     sortData : true,    // if true, will sort the data passed in by the user.
     stackSeries: false, // if true, will create a stack plot.  
                         // Currently supported by line and bar graphs.
@@ -36,8 +41,26 @@ options =
         show: true,
     },
 
+    animate : false,        // if true, the series will be animated on initial drawing.
+                            // This support is renderer-dependent; the renderer must support animation.
+    animateReplot : false,  // if true, the series will be animated after every replot() call.
+                            // Use with caution!  Replots can happen very frequently under
+                            // certain circumstances (e.g. resizing, dragging points) and
+                            // animation in these situations can cause problems.
+    captureRightClick : false,   // if true, right-click events are intercepted and a jqplotRightClick
+                                 // event will be fired.  This will also block the context menu.
+    dataRenderer : undefined, // A callable which can be used to preprocess data passed into the plot.
+                              // Will be called with 3 arguments: the plot data, a reference to the plot,
+			      // and the value of dataRendererOptions.
+
+    dataRendererOptions : undefined,    // Options that will be passed to the dataRenderer,
+                                        // if that option is supplied.  Can be of any type.
+
+    gridData : [],  // array of grid coordinates corresponding to the data points; 
+                    // normally jqPlot will calculate this for you.
+
     axesDefaults: {
-        show: false,    // whether or not to renderer the axis.  Determined automatically.
+        show: false,    // whether or not to render the axis.  Determined automatically.
         min: null,      // minimum numerical value of the axis.  Determined automatically.
         max: null,      // maximum numerical value of the axis.  Determined automatically.
         pad: 1.2,       // a factor multiplied by the data range on the axis to give the 
@@ -147,6 +170,24 @@ options =
                                     // CanvasGridRenderer takes no additional options.
     },                              
     
+    // Size of the grid containing the plot.
+    gridDimensions: {
+        height: null,
+        width: null
+    },
+
+    // Padding to apply around the grid containing the plot.
+    gridPadding: {
+        top: null,
+        bottom: null,
+        left: null,
+        right: null
+    },
+
+    noDataIndicator : object, // For setting up a mock plot with a data loading indicator if
+                              // no data is specified.  Must have .show=true, .axes, and a
+			      // .indicator string that will be displayed.
+
     // Plugin and renderer options.
     
     // BarRenderer. 
@@ -279,22 +320,7 @@ options =
 
 
 Options to be described:
-    animate
-    animateReplot
-    captureRightClick
-    clear
-    dataRenderer
-    fillBetween
-    forceTickAt0
-    gridData
-    gridDimensions
-    gridPadding
-    height, width
-    negativeSeriesColors
-    noDataIndicator
-    preventJqPlotSeriesDrawTrigger
-    toImage: x_offset, y_offset, backgroundColor
-		
+     
     lineRenderer: 
     .markerOptions?
     bands
@@ -344,6 +370,7 @@ Options to be described:
     .min, .max (?)
     numberTicks
     tickInternal
+    forceTickAt0 : false,   // If true, a tick will always be drawn at 0.
 
     markerRenderer:
     color
