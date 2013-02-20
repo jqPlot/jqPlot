@@ -67,7 +67,7 @@
 </div>
 </td>
 <td>
-<p>The second plot uses an alternative sizing method that is more responsive in all browsers, especially IE.  The differnece?  First, the plot target is given a static height and width that will fit inside the resizable container.  Then, instead of resizing dynamically with the container, the plots replot() method is called at the end of the resize.  When resizing is done, the plot targets hieght and width are set to a percentage of the container's and then the replot method is called.</p>
+<p>The second plot uses an alternative sizing method that is more responsive in all browsers, especially IE.  The difference?  First, the plot target is given a static height and width that will fit inside the resizable container.  Then, instead of resizing dynamically with the container, the plots replot() method is called at the end of the resize.  When resizing is done, the plot targets height and width are set to a percentage of the container's and then the replot method is called.</p>
 
 <p>Also, an options object is passed into the replot method.  It contains a single option, resetAxes, which, if true, resets all axes so the min, max, numberTicks and tickInterval are recalculated.</p>
 <pre>
