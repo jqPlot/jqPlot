@@ -40,7 +40,7 @@
  * Ken has generously given permission to adapt his code and release
  * under the MIT and GPL V2 licenses.
  * 
- * Ken's origianl Date Instance Methods and copyright notice:
+ * Ken's original Date Instance Methods and copyright notice:
  * 
  * Ken Snyder (ken d snyder at gmail dot com)
  * 2008-09-10

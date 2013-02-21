@@ -26,7 +26,7 @@
      * under both the MIT and GPL version 2.0 licenses. This means that you can 
      * choose the license that best suits your project and use it accordingly.
      * 
-     * <p>Ken's origianl Date Instance Methods and copyright notice:</p>
+     * <p>Ken's original Date Instance Methods and copyright notice:</p>
      * <pre>
      * Ken Snyder (ken d snyder at gmail dot com)
      * 2008-09-10
