@@ -58,7 +58,7 @@
             shadow: false, 
             renderer:$.jqplot.PieRenderer, 
             rendererOptions:{
-                sliceMargin: 4, 
+                sliceMargin: 10, 
                 // rotate the starting position of the pie around to 12 o'clock.
                 startAngle: -90
             }
