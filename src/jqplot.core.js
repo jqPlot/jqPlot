@@ -2927,7 +2927,7 @@
                 for (i=0, l=$.jqplot.preDrawHooks.length; i<l; i++) {
                     $.jqplot.preDrawHooks[i].call(this);
                 }
-                for (i=0, l=this.preDrawHooks.length; i<l; i++) {
+                for (i=0, l=this.preDrawHooks.hooks.length; i<l; i++) {
                     this.preDrawHooks.hooks[i].apply(this, this.preDrawSeriesHooks.args[i]);
                 }
                 // create an underlying canvas to be used for special features.
