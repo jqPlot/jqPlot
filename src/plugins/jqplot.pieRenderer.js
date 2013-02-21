@@ -272,6 +272,58 @@
         return rprime;
     }
     
+    $.jqplot.PieRenderer.prototype.checkIntersection = function(gridpos, plot, i) {
+		var series = plot.series;
+        var s = series[i];
+		var hp = s._highlightThreshold;
+		
+		var sa = s.startAngle/180*Math.PI;
+		var x = gridpos.x - s._center[0];
+		var y = gridpos.y - s._center[1];
+		var r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+		
+		var theta;
+		if (x > 0 && -y >= 0) {
+			theta = 2*Math.PI - Math.atan(-y/x);
+		}
+		else if (x > 0 && -y < 0) {
+			theta = -Math.atan(-y/x);
+		}
+		else if (x < 0) {
+			theta = Math.PI - Math.atan(-y/x);
+		}
+		else if (x == 0 && -y > 0) {
+			theta = 3*Math.PI/2;
+		}
+		else if (x == 0 && -y < 0) {
+			theta = Math.PI/2;
+		}
+		else if (x == 0 && y == 0) {
+			theta = 0;
+		}
+		if (sa) {
+			theta -= sa;
+			if (theta < 0) {
+				theta += 2*Math.PI;
+			}
+			else if (theta > 2*Math.PI) {
+				theta -= 2*Math.PI;
+			}
+		}
+
+		var sm = s.sliceMargin/180*Math.PI;
+		if (r < s._radius) {
+			for (j=0; j<s.gridData.length; j++) {
+				var minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
+				var maxang = s.gridData[j][1];
+				if (theta > minang && theta < maxang) {
+					return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
+				}
+			}
+		}
+		return null;
+	}
+    
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
             var r = this._radius;
