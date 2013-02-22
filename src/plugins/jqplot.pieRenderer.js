@@ -160,12 +160,11 @@
         if (this.sliceMargin < 0) {
             this.sliceMargin = 0;
         }
-        
+
         this._diameter = null;
         this._radius = null;
-        
-        this._sliceData = [];
-        
+        // array of [start,end] angles arrays, one for each slice.  In radians.
+        this._sliceAngles = [];
         // index of the currenty highlighted point, if any
         this._highlightedPoint = null;
         
@@ -258,7 +257,7 @@
     }
 
     function calcRPrime(ang1, ang2, sliceMargin, fill, lineWidth) {
-        var rPrime = 0;
+        var rprime = 0;
         var ang = ang2 - ang1;
         var absang = Math.abs(ang);
         var sm = sliceMargin;
@@ -267,91 +266,89 @@
         }
 
         if (sm > 0 && absang > 0.01 && absang < 6.282) {
-            rPrime = parseFloat(sm) / 2.0 / calcRadiusAdjustment(ang);
+            rprime = parseFloat(sm) / 2.0 / calcRadiusAdjustment(ang);
         }
 
-        return rPrime;
+        return rprime;
     }
     
-    // calculate the "point" of the slice, near the center of the pie. 
-    function calcsliceOriginOffset(ang1, ang2, rPrime){
-        var transx = rPrime * Math.cos((ang1 + ang2) / 2.0);
-        var transy = rPrime * Math.sin((ang1 + ang2) / 2.0);
-        return {x:transx, y:transy};
-    }
+    $.jqplot.PieRenderer.prototype.checkIntersection = function(gridpos, plot, i) {
+		var series = plot.series;
+        var s = series[i];
+		var hp = s._highlightThreshold;
+		
+		var sa = s.startAngle/180*Math.PI;
+		var x = gridpos.x - s._center[0];
+		var y = gridpos.y - s._center[1];
+		var r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+		
+		var theta;
+		if (x > 0 && -y >= 0) {
+			theta = 2*Math.PI - Math.atan(-y/x);
+		}
+		else if (x > 0 && -y < 0) {
+			theta = -Math.atan(-y/x);
+		}
+		else if (x < 0) {
+			theta = Math.PI - Math.atan(-y/x);
+		}
+		else if (x == 0 && -y > 0) {
+			theta = 3*Math.PI/2;
+		}
+		else if (x == 0 && -y < 0) {
+			theta = Math.PI/2;
+		}
+		else if (x == 0 && y == 0) {
+			theta = 0;
+		}
+		if (sa) {
+			theta -= sa;
+			if (theta < 0) {
+				theta += 2*Math.PI;
+			}
+			else if (theta > 2*Math.PI) {
+				theta -= 2*Math.PI;
+			}
+		}
+
+		var sm = s.sliceMargin/180*Math.PI;
+		if (r < s._radius) {
+			for (j=0; j<s.gridData.length; j++) {
+				var minang = (j>0) ? s.gridData[j-1][1]+sm : sm;
+				var maxang = s.gridData[j][1];
+				if (theta > minang && theta < maxang) {
+					return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
+				}
+			}
+		}
+		return null;
+	}
     
-    function calcAdjustedRadius(ang1, ang2, r, rPrime) {
-        if ((ang2 - ang1) <= Math.PI) {
-            return r - rPrime;  
-        }
-        else {
-            return r + rPrime;
-        }
-    }
-    
-    function calcMouseAngleFromOrigin(x, y, sa) {
-    	var theta;
-    	
-    	if (x > 0 && -y >= 0) {
-            theta = 2*Math.PI - Math.atan(-y/x);
-        }
-        else if (x > 0 && -y < 0) {
-            theta = -Math.atan(-y/x);
-        }
-        else if (x < 0) {
-            theta = Math.PI - Math.atan(-y/x);
-        }
-        else if (x == 0 && -y > 0) {
-            theta = 3*Math.PI/2;
-        }
-        else if (x == 0 && -y < 0) {
-            theta = Math.PI/2;
-        }
-        else if (x == 0 && y == 0) {
-            theta = 0;
-        }
-    	
-    	// works for comparing with negative angles:
-    	if(theta > 2*Math.PI + sa) {
-    		theta -= 2*Math.PI;
-    	}
-    	
-    	/*
-    	if (sa) {
-            theta -= sa;
-            if (theta < 0) {
-                theta += 2*Math.PI;
-            }
-            else if (theta > 2*Math.PI) {
-                theta -= 2*Math.PI;
-            }
-        }
-    	*/
-    	
-        return theta;
-    }
-    
-    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, sliceData, color, isShadow) {
+    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
+            var r = this._radius;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
             var sm = this.sliceMargin;
             if (this.fill == false) {
                 sm += this.lineWidth;
             }
-            
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
             
-            var ang1 = sliceData.startAngle;
-            var ang2 = sliceData.endAngle;
-            var rPrime = sliceData.rPrime;
-            
-            //var sliceOriginOffset = calcsliceOriginOffset(ang1, ang2, rPrime);
-            var sliceOriginOffset = sliceData.sliceOriginOffset;        
-            var r = calcAdjustedRadius(ang1, ang2, this._radius, rPrime);
-            
-            ctx.translate(sliceOriginOffset.x, sliceOriginOffset.y);
+            var rprime = calcRPrime(ang1, ang2, this.sliceMargin, this.fill, this.lineWidth);
+
+            var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
+            var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
+
+            if ((ang2 - ang1) <= Math.PI) {
+                r -= rprime;  
+            }
+            else {
+                r += rprime;
+            }
+
+            ctx.translate(transx, transy);
             
             if (isShadow) {
                 for (var i=0, l=this.shadowDepth; i<l; i++) {
@@ -402,51 +399,6 @@
             }
         }
     };
-    
-    $.jqplot.PieRenderer.prototype.checkIntersection = function (gridpos, plot, i) {
-        var series = plot.series;        
-        var s = series[i];
-        var sa = s.startAngle/180*Math.PI;
-        
-        var sm = s.sliceMargin/180*Math.PI;
-        for (j=0; j<s.gridData.length; j++) {
-            
-        	// angles are previous data's angle and this data's angle.
-            /*
-        	var ang1 = (j>0) ? s.gridData[j-1][1] : 0;
-            var ang2 = s.gridData[j][1];
-        	var rPrime = calcRPrime(ang1, ang2, s.sliceMargin, s.fill, s.lineWidth);
-        	*/
-        	
-        	var ang1 = s._sliceData[j].startAngle;
-        	var ang2 = s._sliceData[j].endAngle;
-        	var rPrime = s._sliceData[j].rPrime;
-            
-            var sliceR = calcAdjustedRadius(ang1, ang2, s._radius, rPrime);
-            var sliceOriginOffset = calcsliceOriginOffset(ang1, ang2, rPrime);  
-            var sliceOrigin = {
-            		x : s._center[0] + sliceOriginOffset.x, 
-            		y : s._center[1] + sliceOriginOffset.y
-            };
-            
-            // calculate mouse location relative to slice origin:
-            var x = gridpos.x - sliceOrigin.x;
-            var y = gridpos.y - sliceOrigin.y;
-            var r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));   
-            
-            if(r > sliceR) {
-            	continue;
-            }
-            
-            var theta = calcMouseAngleFromOrigin(x, y, sa);	            
-            
-            if (theta > ang1 && theta < ang2) {
-            	return {seriesIndex:s.index, pointIndex:j, gridData:s.gridData[j], data:s.data[j]};
-            }
-        }
-        
-        return null;
-    }
     
     // called with scope of series
     $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options, plot) {
@@ -504,41 +456,38 @@
         
         // Fixes issue #272.  Thanks hugwijst!
         // reset slice angles array.
-        this._sliceData = [];
+        this._sliceAngles = [];
 
         var sm = this.sliceMargin;
         if (this.fill == false) {
             sm += this.lineWidth;
         }
         
-        var maxRPrime = 0;
+        var rprime;
+        var maxrprime = 0;
+
+        var ang, ang1, ang2, shadowColor;
         var sa = this.startAngle / 180 * Math.PI;
 
         // have to pre-draw shadows, so loop throgh here and calculate some values also.
         for (var i=0, l=gd.length; i<l; i++) {
-            var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
-            var ang2 = gd[i][1] + sa;
+            ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
+            ang2 = gd[i][1] + sa;
 
-            var rPrime = calcRPrime(ang1, ang2, this.sliceMargin, this.fill, this.lineWidth);
-            var sliceOriginOffset = calcsliceOriginOffset(ang1, ang2, rPrime);  
+            this._sliceAngles.push([ang1, ang2]);
 
-            this._sliceData.push({
-        		startAngle:ang1,
-        		endAngle:ang2,
-        		rPrime:rPrime,
-        		sliceOriginOffset:sliceOriginOffset
-            });
-            
+            rprime = calcRPrime(ang1, ang2, this.sliceMargin, this.fill, this.lineWidth);
+
             if (Math.abs(ang2-ang1) > Math.PI) {
-                maxRPrime = Math.max(rPrime, maxRPrime);  
+                maxrprime = Math.max(rprime, maxrprime);  
             }
         }
 
         if (this.diameter != null && this.diameter > 0) {
-            this._diameter = this.diameter - 2*maxRPrime;
+            this._diameter = this.diameter - 2*maxrprime;
         }
         else {
-            this._diameter = d - 2*maxRPrime;
+            this._diameter = d - 2*maxrprime;
         }
 
         // Need to check for undersized pie.  This can happen if
@@ -550,21 +499,21 @@
 
         var r = this._radius = this._diameter/2;
 
-        this._center = [(cw - trans * offx)/2 + trans * offx + maxRPrime * Math.cos(sa), (ch - trans*offy)/2 + trans * offy + maxRPrime * Math.sin(sa)];
+        this._center = [(cw - trans * offx)/2 + trans * offx + maxrprime * Math.cos(sa), (ch - trans*offy)/2 + trans * offy + maxrprime * Math.sin(sa)];
 
         if (this.shadow) {
             for (var i=0, l=gd.length; i<l; i++) {
-                var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
-                this.renderer.drawSlice.call (this, ctx, this._sliceData[i], shadowColor, true);
+                shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
+                this.renderer.drawSlice.call (this, ctx, this._sliceAngles[i][0], this._sliceAngles[i][1], shadowColor, true);
             }
         }
         
         for (var i=0; i<gd.length; i++) {
                       
-            this.renderer.drawSlice.call (this, ctx, this._sliceData[i], colorGenerator.next(), false);
+            this.renderer.drawSlice.call (this, ctx, this._sliceAngles[i][0], this._sliceAngles[i][1], colorGenerator.next(), false);
         
             if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
-                var fstr, avgang = (this._sliceData[i].startAngle + this._sliceData[i].endAngle)/2, label;
+                var fstr, avgang = (this._sliceAngles[i][0] + this._sliceAngles[i][1])/2, label;
             
                 if (this.dataLabels == 'label') {
                     fstr = this.dataLabelFormatString || '%s';
@@ -882,7 +831,7 @@
         canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
         s._highlightedPoint = pidx;
         plot.plugins.pieRenderer.highlightedSeriesIndex = sidx;
-        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceData[pidx], s.highlightColorGenerator.get(pidx), false);
+        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColorGenerator.get(pidx), false);
     }
     
     function unhighlight (plot) {
