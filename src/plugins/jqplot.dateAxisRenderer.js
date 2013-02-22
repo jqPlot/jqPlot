@@ -334,6 +334,27 @@
         var tt, i;
         var threshold = 30;
         var insetMult = 1;
+        var daTickInterval = null;
+        
+        // if user specified a tick interval, convert to usable.
+        if (this.tickInterval != null)
+        {
+            // if interval is a number or can be converted to one, use it.
+            // Assume it is in SECONDS!!!
+            if (Number(this.tickInterval)) {
+                daTickInterval = [Number(this.tickInterval), 'seconds'];
+            }
+            // else, parse out something we can build from.
+            else if (typeof this.tickInterval == "string") {
+                var parts = this.tickInterval.split(' ');
+                if (parts.length == 1) {
+                    daTickInterval = [1, parts[0]];
+                }
+                else if (parts.length == 2) {
+                    daTickInterval = [parts[0], parts[1]];
+                }
+            }
+        }
 
         var tickInterval = this.tickInterval;
         
@@ -464,7 +485,7 @@
             // tickInterval will be used before numberTicks, that is if
             // both are specified, numberTicks will be ignored.
             else if (this.tickInterval) {
-                titarget = this.tickInterval;
+                titarget = new $.jsDate(0).add(daTickInterval[0], daTickInterval[1]).getTime();
             }
 
             // if numberTicks specified, try to honor it.
@@ -480,9 +501,8 @@
                 var tempti = ret[0];
                 this._autoFormatString = ret[1];
 
-                min = Math.floor(min/tempti) * tempti;
                 min = new $.jsDate(min);
-                min = min.getTime() + min.getUtcOffset();
+                min = Math.floor((min.getTime() - min.getUtcOffset())/tempti) * tempti + min.getUtcOffset();
 
                 nttarget = Math.ceil((max - min) / tempti) + 1;
                 this.min = min;
@@ -640,24 +660,8 @@
                 this.tickInterval = null;
             }
             
-            // if user specified a tick interval, convert to usable.
-            if (this.tickInterval != null)
-            {
-                // if interval is a number or can be converted to one, use it.
-                // Assume it is in SECONDS!!!
-                if (Number(this.tickInterval)) {
-                    this.daTickInterval = [Number(this.tickInterval), 'seconds'];
-                }
-                // else, parse out something we can build from.
-                else if (typeof this.tickInterval == "string") {
-                    var parts = this.tickInterval.split(' ');
-                    if (parts.length == 1) {
-                        this.daTickInterval = [1, parts[0]];
-                    }
-                    else if (parts.length == 2) {
-                        this.daTickInterval = [parts[0], parts[1]];
-                    }
-                }
+            if (this.tickInterval != null && daTickInterval != null) {
+                this.daTickInterval = daTickInterval;
             }
             
             // if min and max are same, space them out a bit
