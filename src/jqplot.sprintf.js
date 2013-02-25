@@ -264,7 +264,7 @@
                 var prefix = number < 0 ? '-' : positivePrefix;
 
                 var parts = String(Number(Math.abs(number)).toExponential()).split(/e|E/);
-                var sd = (parts[0].indexOf('.') != -1) ? parts[0].length - 1 : parts[0].length;
+                var sd = (parts[0].indexOf('.') != -1) ? parts[0].length - 1 : String(number).length;
                 var zeros = (parts[1] < 0) ? -parts[1] - 1 : 0;
                 
                 if (Math.abs(number) < 1) {
