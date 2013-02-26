@@ -19,6 +19,10 @@
 
 <pre class="code prettyprint brush: js"></pre>
   
+<div id="chart3" style="height:300px; width:650px;"></div>
+
+<pre class="code prettyprint brush: js"></pre>
+  
 <script class="code" type="text/javascript">
 $(document).ready(function(){
   var line1=[['2008-08-12 4:00PM',4], ['2008-09-12 4:00PM',6.5], ['2008-10-12 4:00PM',5.7], ['2008-11-12 4:00PM',9], ['2008-12-12 4:00PM',8.2]];
@@ -46,6 +50,23 @@ $(document).ready(function(){
           tickOptions:{formatString:'%b %#d, %#I %p'},
           min:'June 16, 2008 8:00AM', 
           tickInterval:'2 weeks'
+        }
+      },
+      series:[{lineWidth:4, markerOptions:{style:'square'}}]
+  });
+});
+</script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function(){
+  var line1 = [['2011-10-29 6:05',4], ['2011-10-29 6:06',6.5]];    
+  var plot3 = $.jqplot('chart3', [line1], {
+      title:'Customized Date Axis using a Short Interval', 
+      axes:{
+        xaxis:{
+          renderer:$.jqplot.DateAxisRenderer,
+          tickOptions:{formatString:'%H:%M:%S'},
+          tickInterval:'15 second'
         }
       },
       series:[{lineWidth:4, markerOptions:{style:'square'}}]
