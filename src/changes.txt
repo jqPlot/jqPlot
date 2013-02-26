@@ -1,5 +1,31 @@
 Title: Change Log
 
+1.0.7:
+* Issue #726: Bug in sprintf %p, sometimes it outputs exponential form rather than decimal
+* Issue #717: Plot's preDrawHooks not called
+* Issue #707: Browser hangs with LogAxisRenderer when value is 0
+* Issue #695: Horizontal Bar Chart Negative Series Colors Not Working
+* Issue #670: Examples IE7, IE8 and IE9 multipleBarColors.html failure and fix
+* Issue #607: Integration issue
+* Issue #571: Decimal numbers not properly formatted
+* Issue #536: DateAxisRenderer invalid scaling
+* Issue #534: "decimalMark" in the "jqplot.sprintf.js"
+* Issue #529: Scientific notation on label values ending in 0
+* Issue #521: invalid JS in meterGaugeRenderer.js
+* Issue #516: Including BezierCurveRenderer plugin and initializing jqplot with no options give error
+* Issue #452: Including ALL jqPlot plugins causes an Error
+* Issue #494: No point when use LogAxisRenderer and a point has a zero value
+* Issue #430: getIsoWeek: invalid method call
+* Issue #280: jqplot Options
+* Issue #179: Spelling/grammar
+* Pull Request #18: Implement getTop in CanvasAxisTickRenderer
+* Pull Request #21: Performance issue when drawing pointlabels with zeros/null values
+* Pull Request #24: Added suggested fix in comment #8 for issue #536
+* Pull Request #29: Removed unbalanced addition of UTC offset
+* Pull Request #33: Documentation fixes (issue #179, other changes)
+* Pull Request #34: Start of updating jqPlotOptions.txt
+* Pull Request #39: Fixed trailing comma which caused issues with IE7
+
 1.0.6:
 * Add left sidebar navigation to examples
 * Update examples for jquery 1.9.1 and jquery ui 1.10.0
