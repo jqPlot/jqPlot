@@ -23,7 +23,7 @@
     <dd>True to keep showing and updating the tooltip even when the cursor is outside of the plot area.  Not applicable if zoomOutsidePlot is false.  Default false</dd>
 </dl>
 
-<p>The fist plot demonstrates the default functionality where you can move the mouse off of the plot while zooming but the actual area zoomed will not extend beyond the axes.</p>
+<p>The first plot demonstrates the default functionality where you can move the mouse off of the plot while zooming but the actual area zoomed will not extend beyond the axes.</p>
     <div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:200px;"></div>
     <div style="padding-top:20px"><button value="reset" type="button" onclick="plot1.resetZoom();">Reset Zoom</button></div>
 
