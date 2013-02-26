@@ -43,7 +43,7 @@
     <div id="chart6" style="margin-top:20px; margin-left:20px; width:300px; height:200px;"></div>
 <pre class="code brush:js"></pre>
 
-<p>The nex example shows the placement of point labels on negative bars. They shou be placed on the opposite position. That is, if it is placed 'north' to the positive bars, then it should be placed 'south' to the negative bars.</p>
+<p>The next example shows the placement of point labels on negative bars. They should be placed on the opposite position. That is, if it is placed 'north' to the positive bars, then it should be placed 'south' to the negative bars.</p>
     <div id="chart7" style="margin-top:20px; margin-left:20px; width:300px; height:300px;"></div>
 <pre class="code brush:js"></pre>
 
