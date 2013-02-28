@@ -329,7 +329,7 @@
         return str;
     };
 
-    // Not gauranteed to work, even on canvas supporting browsers due to 
+    // Not guaranteed to work, even on canvas supporting browsers due to 
     // limitations with location.href and browser support.
     $.fn.jqplotSaveImage = function() {
         var imgData = $(this).jqplotToImageStr({});
@@ -339,7 +339,7 @@
 
     };
 
-    // Not gauranteed to work, even on canvas supporting browsers due to
+    // Not guaranteed to work, even on canvas supporting browsers due to
     // limitations with window.open and arbitrary data.
     $.fn.jqplotViewImage = function() {
         var imgStr = $(this).jqplotToImageElemStr({});
