@@ -211,7 +211,11 @@
             }
             
             if (isMerged && this.sortMergedLabels) {
-                labels.sort(function(a,b) { return a - b; });
+                if (typeof labels[0] == "string") {
+                    labels.sort();
+                } else {
+                    labels.sort(function(a,b) { return a - b; });
+                }
             }
             
             // keep a reference to these tick labels to use for redrawing plot (see bug #57)
@@ -432,7 +436,7 @@
         var offmin = offsets.min;
         var lshow = (this._label == null) ? false : this._label.show;
         var i;
-		
+
         for (var p in pos) {
             this._elem.css(p, pos[p]);
         }
