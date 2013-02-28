@@ -18,6 +18,12 @@
 
 <pre class="code prettyprint brush: js"></pre>
 
+<p>Tooltips can be displayed with Pie Charts.  Cursor tracking doesn't work with Pie Charts since they do not have points or axes, so the tooltip is based on the highlighter and always follows the mouse.  You may wish to change the background and border colors of the highlighter tooltip for use with Pie Charts, since the default tooltip colors are designed to be displayed on top of a white background, while the Pie Chart slices provide a darker color background for the tooltips.  To change the tooltip colors or other attributes, modify the jqplot-highlighter-tooltip class in jquery.jqplot.css.</p>
+
+<div id="chart3" style="height:300px; width:600px;"></div>
+
+<pre class="code prettyprint brush: js"></pre>
+
 <script class="code" type="text/javascript">
 $(document).ready(function(){
   var line1=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],
@@ -79,6 +85,35 @@ $(document).ready(function(){
   });
 });
 </script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function() {
+  var line1 = [['Sony',7], ['Samsung',13.3], ['LG',14.7], 
+    ['Vizio',5.2], ['Insignia', 1.2]];
+
+  var plot3 = $.jqplot('chart3', [line1], {
+    title: 'Pie Chart with Tooltips',
+    seriesDefaults: {
+      renderer: $.jqplot.PieRenderer,
+      rendererOptions: {
+        showDataLabels: true,
+        padding: 10,
+        sliceMargin: 6,
+        shadow: false
+      }
+    },
+    legend: {
+      show: true
+    },
+    highlighter: {
+      show: true,
+      useAxesFormatters: false,
+      tooltipFormatString: '%s'
+    }
+
+  });
+
+});
 
 
 <!-- End example scripts -->
