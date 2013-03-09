@@ -161,10 +161,10 @@
             
             // perform some checks
             if (this.min != null && this.min <= 0) {
-                throw('log axis minimum must be greater than 0');
+                throw new Error("Log axis minimum must be greater than 0");
             }
             if (this.max != null && this.max <= 0) {
-                throw('log axis maximum must be greater than 0');
+                throw new Error("Log axis maximum must be greater than 0");
             }
 
             function findCeil (val) {
