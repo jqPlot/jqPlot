@@ -1048,7 +1048,7 @@
         if (this.show) {
             var series = this._series, s;
             // make a table.  one line label per row.
-            var elem = document.createElement('div');
+            var elem = document.createElement('table');
             this._elem = $(elem);
             elem = null;
             this._elem.addClass('jqplot-legend jqplot-cursor-legend');
