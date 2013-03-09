@@ -73,7 +73,7 @@
         var legend = this;
         if (this.show) {
             var series = this._series;
-			var s;
+            var s;
             var ss = 'position:absolute;';
             ss += (this.background) ? 'background:'+this.background+';' : '';
             ss += (this.border) ? 'border:'+this.border+';' : '';

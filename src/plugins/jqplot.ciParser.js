@@ -54,7 +54,7 @@
     $.jqplot.ciParser = function (data, plot) {
         var ret = [],
             line,
-			temp,
+            temp,
             i, j, k, kk;
     
          if (typeof(data) == "string") {

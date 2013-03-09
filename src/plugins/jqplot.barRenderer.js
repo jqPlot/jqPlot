@@ -350,7 +350,7 @@
         var nvals = temp[0];
         var nseries = temp[1];
         var pos = temp[2];
-		var points = [];
+        var points = [];
         
         if (this._stack) {
             this._barNudge = 0;
@@ -366,9 +366,9 @@
                 negativeColor = opts.fillStyle;
             }
             var positiveColor = opts.fillStyle;
-			var base;
-			var xstart; 
-			var ystart;
+            var base;
+            var xstart; 
+            var ystart;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -438,20 +438,20 @@
                             opts.fillStyle = positiveColor;
                         }
                     }
-					
-					if (!this.fillToZero || this._plotData[i][1] >= 0) { 
-						points.push([base-this.barWidth/2, ystart]);
-						points.push([base-this.barWidth/2, gridData[i][1]]);
-						points.push([base+this.barWidth/2, gridData[i][1]]);
-						points.push([base+this.barWidth/2, ystart]);
-					}
-					// for negative bars make sure points are always ordered clockwise
-					else {              
-						points.push([base-this.barWidth/2, gridData[i][1]]);
-						points.push([base-this.barWidth/2, ystart]);
-						points.push([base+this.barWidth/2, ystart]);
-						points.push([base+this.barWidth/2, gridData[i][1]]);
-					}
+                    
+                    if (!this.fillToZero || this._plotData[i][1] >= 0) { 
+                        points.push([base-this.barWidth/2, ystart]);
+                        points.push([base-this.barWidth/2, gridData[i][1]]);
+                        points.push([base+this.barWidth/2, gridData[i][1]]);
+                        points.push([base+this.barWidth/2, ystart]);
+                    }
+                    // for negative bars make sure points are always ordered clockwise
+                    else {              
+                        points.push([base-this.barWidth/2, gridData[i][1]]);
+                        points.push([base-this.barWidth/2, ystart]);
+                        points.push([base+this.barWidth/2, ystart]);
+                        points.push([base+this.barWidth/2, gridData[i][1]]);
+                    }
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
@@ -734,7 +734,7 @@
             plot.target.trigger(evt1, ins);
             if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.barRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 var evt = jQuery.Event('jqplotDataHighlight');
-		evt.which = ev.which;
+                evt.which = ev.which;
                 evt.pageX = ev.pageX;
                 evt.pageY = ev.pageY;
                 plot.target.trigger(evt, ins);
@@ -751,7 +751,7 @@
             var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
             if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.barRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
                 var evt = jQuery.Event('jqplotDataHighlight');
-		evt.which = ev.which;
+                evt.which = ev.which;
                 evt.pageX = ev.pageX;
                 evt.pageY = ev.pageY;
                 plot.target.trigger(evt, ins);
@@ -774,7 +774,7 @@
         if (neighbor) {
             var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
             var evt = jQuery.Event('jqplotDataClick');
-	    evt.which = ev.which;
+            evt.which = ev.which;
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             plot.target.trigger(evt, ins);
@@ -789,7 +789,7 @@
                 unhighlight(plot);
             }
             var evt = jQuery.Event('jqplotDataRightClick');
-	    evt.which = ev.which;
+            evt.which = ev.which;
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
             plot.target.trigger(evt, ins);

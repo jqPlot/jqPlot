@@ -654,7 +654,7 @@
             
         elem.css('left', x);
         elem.css('top', y);
-	    elem = null;
+        elem = null;
     }
     
     function positionTooltip(plot) { 

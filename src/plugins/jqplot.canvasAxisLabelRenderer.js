@@ -186,8 +186,8 @@
         elem.style.width = w;
         elem.style.height = h;
         
-		elem = plot.canvasManager.initCanvas(elem);
-		
+        elem = plot.canvasManager.initCanvas(elem);
+
         this._elem = $(elem);
         this._elem.css({ position: 'absolute'});
         this._elem.addClass('jqplot-'+this.axis+'-label');

@@ -235,13 +235,13 @@
         elem.style.height = h;
         elem.style.textAlign = 'left';
         elem.style.position = 'absolute';
-		
-		elem = plot.canvasManager.initCanvas(elem);
-		
+
+        elem = plot.canvasManager.initCanvas(elem);
+
         this._elem = $(elem);
         this._elem.css(this._styles);
         this._elem.addClass('jqplot-'+this.axis+'-tick');
-		
+
         elem = null;
         return this._elem;
     };

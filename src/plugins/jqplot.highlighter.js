@@ -339,12 +339,12 @@
         if (series.markerRenderer.show == true) { 
             ms = (series.markerRenderer.size + opts.sizeAdjust)/2;
         }
-		
-		var loc = locations;
-		if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
-			loc = oppositeLocations;
-		}
-		
+
+        var loc = locations;
+        if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+          loc = oppositeLocations;
+        }
+
         switch (loc[locationIndicies[opts.tooltipLocation]]) {
             case 'nw':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;

@@ -51,7 +51,7 @@ options =
                                  // event will be fired.  This will also block the context menu.
     dataRenderer : undefined, // A callable which can be used to preprocess data passed into the plot.
                               // Will be called with 3 arguments: the plot data, a reference to the plot,
-			      // and the value of dataRendererOptions.
+                              // and the value of dataRendererOptions.
 
     dataRendererOptions : undefined,    // Options that will be passed to the dataRenderer,
                                         // if that option is supplied.  Can be of any type.
@@ -195,7 +195,7 @@ options =
 
     noDataIndicator : object, // For setting up a mock plot with a data loading indicator if
                               // no data is specified.  Must have .show=true, .axes, and a
-			      // .indicator string that will be displayed.
+                              // .indicator string that will be displayed.
 
     // Plugin and renderer options.
     
