@@ -716,6 +716,22 @@
             dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
             dayNamesShort: ['Ni', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
             formatString: '%Y-%m-%d %H:%M:%S'
+        },
+
+        'nl': {
+            monthNames: ['Januari Februari Maart April Mei Juni July Augustus September Oktober November December'],
+            monthNamesShort: ['Jan Feb Mar Apr Mei Jun Jul Aug Sep Okt Nov Dec'],
+            dayNames: ['Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag'],
+            dayNamesShort: ['Zo Ma Di Wo Do Vr Za'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+
+        'sv': {
+            monthNames: ['januari februari mars april maj juni juli augusti september oktober november december'],
+            monthNamesShort: ['jan feb mar apr maj jun jul aug sep okt nov dec'],
+            dayNames: ['söndag måndag tisdag onsdag torsdag fredag lördag'],
+            dayNamesShort: ['sön mån tis ons tor fre lör'],
+            formatString: '%Y-%m-%d %H:%M:%S'
         }
     
     };
