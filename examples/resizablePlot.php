@@ -19,7 +19,7 @@
     margin: 2em;
   }
   
-    #resizable1, #resizable2 { 
+    #resizable1, #resizable2, #resizable3 { 
       width: 440px; 
       height: 330px;
       margin-top: 2em;
@@ -90,6 +90,18 @@
 
 </td></tr></table>
 
+<table><tr>
+  <td>
+
+<div id="resizable3" class="ui-widget-content">
+    <div id="chart3" style="height:96%; width:96%;"></div>
+</div>
+</td>
+<td>
+<p>The third plot shows resizing with a Meter Gauge plot.  Since a Meter Gauge doesn't have axes, resetAxes: trues doesn't have any effect. Instead, jqPlot will resize the chart if you set pretty much any other option (in this example, the title is set).</p>
+
+</td></tr></table>
+
 <pre class="code brush:js"></pre>
 
 
@@ -102,6 +114,7 @@
     var l1 = [18, 36, 41, 93, 100, 115, 133, 129, 119, 107, 91, 146, 169];
     var l2 = [[8, 66], [13, 46], [22,14]];
     var l3 = [[3.3, 7], [9.5, 22], [12.1, 37], [18.6, 95], [24, 102]];
+    var s1 = [1];
 
     var options = {
       title: "Lines",
@@ -116,6 +129,7 @@
     
     $("#resizable1").resizable({delay:20});
     $("#resizable2").resizable({delay:20, helper:'ui-resizable-helper'});
+    $("#resizable3").resizable({delay:20, helper:'ui-resizable-helper'});
 
     $('#resizable1').bind('resize', function(event, ui) {
         // pass in resetAxes: true option to get rid of old ticks and axis properties
@@ -131,8 +145,24 @@
         plot2.replot( { resetAxes:true } );
     });
     
+    $('#resizable3').bind('resizestop', function(event, ui) {
+        $('#chart3').height($('#resizable3').height()*0.96);
+        $('#chart3').width($('#resizable3').width()*0.96);
+        plot3.replot( { resetAxes:true, title: 'Resize' } );
+    });
+    
     var plot1 = $.jqplot('chart1', [l1, l3],  options);
     var plot2 = $.jqplot('chart2', [l1, l3],  options);
+
+    var plot3 = $.jqplot('chart3',[s1],{
+        title: 'Network Speed',
+        seriesDefaults: {
+            renderer: $.jqplot.MeterGaugeRenderer,
+            rendererOptions: {
+                label: 'MB/s'
+            }
+        }
+    });
 
   });
   
@@ -150,7 +180,8 @@
 
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
-  
+  <script class="include" type="text/javascript" src="../plugins/jqplot.meterGaugeRenderer.min.js"></script>
+
   <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" /> 
   <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
 
