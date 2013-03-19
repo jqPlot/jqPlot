@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project name="jqPlot" default="all" basedir=".">
     
     <!-- directories for building -->
@@ -11,7 +12,7 @@
     <property file="dist.props" />
     
     <!-- misc. properties -->
-    <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.2.jar" />
+    <property description="YUICompressor" name="YUICompressor" value="extras/yuicompressor-2.4.7.jar" />
     <loadfile description="Version to build" property="version" srcfile="version.txt" />
     <loadfile description="Copyright and license" property="copyright" srcfile="copyright.txt" />
     <loadfile description="Minified copyright" property="copyrightmin" srcfile="copyright_min.txt" />
@@ -92,20 +93,20 @@
         </copy>
         
         <replaceregexp match="@VERSION" flags="g" replace="${version}">
-			<fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
-		</replaceregexp>
+          <fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
+        </replaceregexp>
         
         <replaceregexp match="@VERSION" flags="g" replace="${version}">
-			<fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
-		</replaceregexp>
+          <fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
+        </replaceregexp>
         
         <replaceregexp match="@REVISION" flags="g" replace="${REVISION}">
-      <fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
-    </replaceregexp>
+          <fileset dir="${BUILD_DIR}" includes="jqplot.*.js"/>
+        </replaceregexp>
         
         <replaceregexp match="@REVISION" flags="g" replace="${REVISION}">
-      <fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
-    </replaceregexp>
+          <fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
+        </replaceregexp>
                 
         <!-- remove appropriate opening and closing of closures -->
         <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s" encoding="UTF8">
@@ -127,7 +128,7 @@
         </replaceregexp>
         
         <!-- now cat all files together to make one jqplot source file -->
-        <concat destfile="${BUILD_DIR}/${JQPLOT}" encoding="UTF8">
+        <concat destfile="${BUILD_DIR}/${JQPLOT}" encoding="UTF-8">
             <fileset dir="${BUILD_DIR}" includes="jqplot.core.js" />
             <fileset dir="${BUILD_DIR}">
               <include name="jqplot.*.js" />
@@ -253,15 +254,17 @@
         <echo message="Building minified sources with YUI Compressor" />
         <mkdir dir="${DIST_DIR}/temp" />
         <mkdir dir="${DIST_DIR}/plugins/temp" />
-        <echo message="minifing file: jquery.jqplot.js" />
+        <echo message="minifying file: jquery.jqplot.js" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
             <include name="jquery.jqplot.js" />
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
+          <arg value="--type" />
+          <arg value="js" />
           <arg value="--charset" /> 
-          <arg value="UTF8" />
+          <arg value="utf8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jquery.jqplot.js" to="temp/jquery.jqplot.min.js" />
@@ -275,20 +278,24 @@
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
+          <arg value="--type" />
+          <arg value="js" />
           <arg value="--charset" />
-          <arg value="UTF8" />
+          <arg value="utf8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="excanvas.js" to="temp/excanvas.min.js" />
         </apply>
 
-        <echo message="minifing file: jquery.jqplot.css" />
+        <echo message="minifying file: jquery.jqplot.css" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}">
           <fileset dir="${DIST_DIR}">
             <include name="jquery.jqplot.css" />
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
+          <arg value="--type" />
+          <arg value="css" />
           <arg value="--charset" />
           <arg value="UFT8" />
           <arg value="-o" />
@@ -296,7 +303,7 @@
           <mapper type="glob" from="jquery.jqplot.css" to="jquery.jqplot.min.css" />
         </apply>
 
-        <echo message="minifing file: examples.css" />
+        <echo message="minifying file: examples.css" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/examples">
           <fileset dir="${DIST_DIR}/examples">
             <include name="examples.css" />
@@ -306,13 +313,13 @@
           <arg value="--type" />
           <arg value="css" />
           <arg value="--charset" />
-          <arg value="UTF8" />
+          <arg value="utf8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="examples.css" to="examples.min.css" />
         </apply>
 
-        <echo message="minifing file: example.js" />
+        <echo message="minifying file: example.js" />
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/examples">
           <fileset dir="${DIST_DIR}/examples">
             <include name="example.js" />
@@ -322,13 +329,13 @@
           <arg value="--type" />
           <arg value="js" />
           <arg value="--charset" />
-          <arg value="UTF8" />
+          <arg value="utf8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="example.js" to="example.min.js" />
         </apply>
 
-        <echo message="minifing plugin files" />
+        <echo message="minifying plugin files" />
 
         <apply executable="java" parallel="false" verbose="true" dest="${DIST_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins">
@@ -337,14 +344,16 @@
           </fileset>
           <arg line="-jar" />
           <arg path="${YUICompressor}" />
+          <arg value="--type" />
+          <arg value="js" />
           <arg value="--charset" />
-          <arg value="UTF8" />
+          <arg value="utf8" />
           <arg value="-o" />
           <targetfile />
           <mapper type="glob" from="jqplot.*.js" to="temp/jqplot.*.min.js" />
         </apply>
         
-        <copy todir="${DIST_DIR}">
+        <copy todir="${DIST_DIR}" outputencoding="UTF-8">
           <fileset dir="${DIST_DIR}/temp" includes="*.min.js" />
           <filterchain>
             <concatfilter prepend="copyright_min.txt"/>
@@ -353,7 +362,7 @@
         
         <delete dir="${DIST_DIR}/temp" />
         
-        <copy todir="${DIST_DIR}/plugins">
+        <copy todir="${DIST_DIR}/plugins" outputencoding="UTF-8">
           <fileset dir="${DIST_DIR}/plugins/temp" includes="*.min.js" />
           <filterchain>
             <concatfilter prepend="copyright_min.txt"/>
@@ -363,20 +372,20 @@
         <echo message="doing regex replacements" />
 
         <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
-    			<fileset dir="${DIST_DIR}">
-    				<include name="jquery.jqplot.js"/>
-    				<include name="jquery.jqplot.min.js"/>
-    				<include name="jqplot.*.js"/>
-    				<include name="jqplot.*.min.js" />
-    			</fileset>
-    		</replaceregexp>
+          <fileset dir="${DIST_DIR}">
+            <include name="jquery.jqplot.js"/>
+            <include name="jquery.jqplot.min.js"/>
+            <include name="jqplot.*.js"/>
+            <include name="jqplot.*.min.js" />
+          </fileset>
+        </replaceregexp>
         
         <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
-    			<fileset dir="${DIST_DIR}/plugins">
-    				<include name="jqplot.*.js"/>
-    				<include name="jqplot.*.min.js" />
-    			</fileset>
-    		</replaceregexp>
+          <fileset dir="${DIST_DIR}/plugins">
+            <include name="jqplot.*.js"/>
+            <include name="jqplot.*.min.js" />
+          </fileset>
+        </replaceregexp>
         
         <replaceregexp match='jquery.js' replace='jquery.min.js' flags="g">
           <fileset dir="${DIST_DIR}/examples" includes="*.html" />
