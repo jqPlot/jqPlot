@@ -902,7 +902,7 @@
                                     tempgd.push(gd[i]);
                                     this._areaPoints.push(gd[i]);
                                     // do we have an axis crossing?
-                                    if (pd[i][1] * pd[i+1][1] < 0) {
+                                    if (pd[i][1] * pd[i+1][1] <= 0) {
                                         if (pd[i][1] < 0) {
                                             isnegative = true;
                                             opts.fillStyle = negativeColor;
