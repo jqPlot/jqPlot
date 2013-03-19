@@ -413,13 +413,12 @@
                 // will be center of hub.
                 this._center = [(cw-trans*offx)/2 + trans * offx, (ch-trans*offy)/2 + trans * offy];
             }
+            if (this._labelElem && this.labelPosition == 'bottom') {
+                this._center[1] -= this._labelElem.outerHeight(true);
+            }
+            
         }
 
-        
-        if (this._labelElem && this.labelPosition == 'bottom') {
-            this._center[1] -= this._labelElem.outerHeight(true);
-        }
-        
         this._radius = this.diameter/2;
         
         this.tickSpacing = 6000/this.diameter;
