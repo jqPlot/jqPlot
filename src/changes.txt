@@ -1,5 +1,23 @@
 Title: Change Log
 
+1.0.8:
+* Issue #375: sortMergedLabels does not sort string labels
+* Issue #279: Groups > 3 Causes Alignment Issues
+* Issue #439: IE can't display a customized legend in Quirks mode
+* Issue #482: "Undefined" error message when plotting a chart with no data
+* Issue #116: Don't mix spaces and tabs for indentation
+* Issue #564: Metergauge renderer not resizable when replotting
+* Issue #409: MeterGaugeRenderer replot/redraw offsets center
+* Issue #523: Adding rectangles to Canvas Overlay plugin
+* Issue #756: jqplot.min files contain non-UTF-8 characters
+* Issue #223: fillToZero does not color negative values when crossover point is 0
+* Pull Request #23: Adding rectangles to Canvas Overlay plugin
+* Pull Request #28: Cross-over points of 0 will actually change colors 
+* Pull Request #35: Don't highlight hidden bars or show tooltips for them 
+* Pull Request #41: Add dutch(nl) and svenska(sv) translations for dates
+* Add tooltip support for Pie Charts
+* Update to latest YUI compressor
+
 1.0.7:
 * Issue #726: Bug in sprintf %p, sometimes it outputs exponential form rather than decimal
 * Issue #717: Plot's preDrawHooks not called
