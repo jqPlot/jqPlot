@@ -1,34 +1,35 @@
+jQPlot
+======
 Pure JavaScript plotting plugin for jQuery.
 
-To learn how to use jqPlot, start with the Basic Usage Instructions below.  Then read the usage.txt and jqPlotOptions.txt files included with the distribution.
+[![Join the chat at https://gitter.im/jqPlot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jqPlot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-The jqPlot home page is at http://www.jqplot.com.
+**jqPlot home page**: http://www.jqplot.com.
 
-The users forum is at http://groups.google.com/group/jqplot-users.
+**Users forum**: http://groups.google.com/group/jqplot-users.
 
-The developers forum is at http://groups.google.com/group/jqplot-dev.
+**Developers forum**: http://groups.google.com/group/jqplot-dev.
 
-Examples and unit tests are at http://www.jqplot.com/tests.
+**Examples and unit tests**: http://www.jqplot.com/examples.
 
-Documentation is at http://www.jqplot.com/docs/.
+**Documentation**: http://www.jqplot.com/docs/.
 
-The project page and source code are at http://www.gibhub.com/jqPlot/jqPlot.
+**Project page and source code**: http://www.gibhub.com/jqPlot/jqPlot.
 
-Bugs, issues, feature requests: http://www.github.com/jqPlot/jqPlot/issues.
+**Bugs, issues, feature requests**: http://www.github.com/jqPlot/jqPlot/issues.
 
-Basic Usage Instructions:
+# Basic Usage Instructions:
 
 jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.9.1 is included in the distribution.  To use jqPlot, include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally the excanvas script to support IE version prior to IE 9 in your web page:
 
     <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
-    <script language="javascript" type="text/javascript" src="jquery-1.4.4.min.js"></script>
+    <script language="javascript" type="text/javascript" src="jquery-1.9.1.min.js"></script>
     <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
     <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
 
-For usage instructions, see **jqPlot Usage** in usage.txt.  For available options, see
-**jqPlot Option**s in jqPlotOptions.txt.
+For more information, see the [documentation](http://www.jqplot.com/docs) and [examples](http://www.jqplot.com/examples).
 
-Building from source:
+# Building from source:
 
 If you've cloned the repository, you can build a distribution from source.
 You need to have ant (http://ant.apache.org) installed.  You can simply 
@@ -39,7 +40,7 @@ There are 6 pertinent targets: clean, dist, min, docs, compress and all.  Use:
 
 to get a description of the various build targets. 
 
-Legal Notices:
+# Legal Notices:
 
 Copyright (c) 2009-2015 Chris Leonello
 
@@ -49,14 +50,14 @@ choose the license that best suits your project and use it accordingly.
 
 jqPlot includes date instance methods and printf/sprintf functions by other authors:
 
-Date instance methods:
+**Date instance methods**:
 
     author Ken Snyder (ken d snyder at gmail dot com)
     date 2008-09-10
     version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
     license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
 
-JavaScript printf/sprintf functions.
+**JavaScript printf/sprintf functions**.
 
     version 2007.04.27
     author Ash Searle

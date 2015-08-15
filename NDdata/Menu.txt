@@ -100,6 +100,7 @@ Group: API Documentation  {
       File: jqplot.PieRenderer  (plugins\jqplot.pieRenderer.js)
       File: jqplot.PointLabels  (plugins\jqplot.pointLabels.js)
       File: jqplot.pyramidAxisRenderer.js  (plugins\jqplot.pyramidAxisRenderer.js)
+      File: jqplot.pyramidGridRenderer.js  (no auto-title, plugins\jqplot.pyramidGridRenderer.js)
       File: jqplot.pyramidRenderer.js  (plugins\jqplot.pyramidRenderer.js)
       File: jqplot.Trendline  (plugins\jqplot.trendline.js)
       }  # Group: Plugins
