@@ -114,7 +114,7 @@ $(document).ready(function() {
   });
 
 });
-
+</script>
 
 <!-- End example scripts -->
 
