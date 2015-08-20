@@ -1757,11 +1757,16 @@
         this.args = [];
     };
     
-    $.jqplot.HooksManager.prototype.addOnce = function(fn, args) {
+    $.jqplot.HooksManager.prototype.addOnce = function (fn, args) {
+        
         args = args || [];
-        var havehook = false;
-        for (var i=0, l=this.hooks.length; i<l; i++) {
-            if (this.hooks[i] == fn) {
+        
+        var havehook = false,
+            i,
+            l;
+        
+        for (i = 0, l = this.hooks.length; i < l; i++) {
+            if (this.hooks[i] === fn) {
                 havehook = true;
             }
         }
@@ -1771,21 +1776,24 @@
         }
     };
     
-    $.jqplot.HooksManager.prototype.add = function(fn, args) {
+    $.jqplot.HooksManager.prototype.add = function (fn, args) {
         args = args || [];
         this.hooks.push(fn);
         this.args.push(args);
     };
     
     $.jqplot.EventListenerManager = function () {
-        this.hooks =[];
+        this.hooks = [];
     };
     
-    $.jqplot.EventListenerManager.prototype.addOnce = function(ev, fn) {
-        var havehook = false, h, i;
-        for (var i=0, l=this.hooks.length; i<l; i++) {
+    $.jqplot.EventListenerManager.prototype.addOnce = function (ev, fn) {
+        var havehook = false,
+            h,
+            i,
+            l;
+        for (i = 0, l = this.hooks.length; i < l; i++) {
             h = this.hooks[i];
-            if (h[0] == ev && h[1] == fn) {
+            if (h[0] === ev && h[1] === fn) {
                 havehook = true;
             }
         }
