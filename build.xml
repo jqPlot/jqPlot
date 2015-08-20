@@ -256,14 +256,40 @@
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
         </copy>
         
+        <!--
         <echo message="Copying jquery.jqplot.js to emc2.ui" />
         <copy todir="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8">
           <fileset dir="${DIST_DIR}">
             <include name="jquery.jqplot.js" />
           </fileset>
         </copy>
+        -->
         
         <echo message="jqPlot built." />
+        
+    </target>
+    
+    <target name="dev" depends="dist" description="Copy files to dev">
+        <echo message="Copying core to emc2.ui" />
+        
+        <copy todir="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8">
+          <fileset dir="${DIST_DIR}">
+            <include name="excanvas.js" />
+            <include name="excanvas.min.js" />
+            <include name="jquery.jqplot.js" />
+            <include name="jquery.jqplot.min.js" />
+            <include name="jquery.jqplot.css" />
+            <include name="jquery.jqplot.min.css" />
+          </fileset>
+        </copy>
+        
+        <echo message="Copying plugins to emc2.ui" />
+        
+        <copy todir="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8/plugins">
+          <fileset dir="${DIST_DIR}/plugins" includes="*" />
+        </copy>
+        
+        <echo message="jqPlot copied to dev." />
         
     </target>
 
@@ -546,7 +572,7 @@
         <echo message="clean then build distributable files and documentation." />
     </target>
 
-    <target name="all" depends="clean, build, dist, min" description="Clean and build distributable files.">
+    <target name="all" depends="clean, build, examples, dist, min" description="Clean and build distributable files.">
         <echo message="clean then build distributable files." />
     </target>
 
