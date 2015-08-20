@@ -3780,30 +3780,6 @@
             this.seriesStack.push(idx);
         };
         
-        // method: moveSeriesToBack
-        // This method requires jQuery 1.4+
-        // Moves the specified series canvas behind all other series canvases.
-        //
-        // Parameters:
-        // idx - 0 based index of the series to move.  This will be the index of the series
-        // as it was first passed into the jqplot function.
-        this.moveSeriesToBack = function (idx) {
-            idx = parseInt(idx, 10);
-            var stackIndex = $.inArray(idx, this.seriesStack);
-            // if already in back, return
-            if (stackIndex == 0 || stackIndex == -1) {
-                return;
-            }
-            var opidx = this.seriesStack[0];
-            var serelem = this.series[idx].canvas._elem.detach();
-            var shadelem = this.series[idx].shadowCanvas._elem.detach();
-            this.series[opidx].shadowCanvas._elem.before(shadelem);
-            this.series[opidx].canvas._elem.before(serelem);
-            this.previousSeriesStack = this.seriesStack.slice(0);
-            this.seriesStack.splice(stackIndex, 1);
-            this.seriesStack.unshift(idx);
-        };
-        
     }
     
     /**
@@ -3928,6 +3904,43 @@
         this.seriesStack = this.previousSeriesStack.slice(0);
         this.previousSeriesStack = temp;
     };
+    
+    /**
+     * method: moveSeriesToBack
+     * This method requires jQuery 1.4+
+     * Moves the specified series canvas behind all other series canvases.
+     * 
+     * Parameters:
+     * idx - 0 based index of the series to move.  This will be the index of the series
+     * as it was first passed into the jqplot function.
+     * @param {string} idx
+     */
+    JqPlot.prototype.moveSeriesToBack = function (idx) {
+        
+        idx = parseInt(idx, 10);
+
+        var stackIndex = $.inArray(idx, this.seriesStack),
+            opidx,
+            serelem,
+            shadelem;
+
+        // if already in back, return
+        if (stackIndex === 0 || stackIndex === -1) {
+            return;
+        }
+
+        opidx = this.seriesStack[0];
+        serelem = this.series[idx].canvas._elem.detach();
+        shadelem = this.series[idx].shadowCanvas._elem.detach();
+
+        this.series[opidx].shadowCanvas._elem.before(shadelem);
+        this.series[opidx].canvas._elem.before(serelem);
+        this.previousSeriesStack = this.seriesStack.slice(0);
+        this.seriesStack.splice(stackIndex, 1);
+        this.seriesStack.unshift(idx);
+        
+    };
+        
     
     /**
      * Computes a highlight color or array of highlight colors from given colors.
