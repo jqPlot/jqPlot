@@ -1141,23 +1141,23 @@
         this.show = true;
         // prop: fontFamily
         // css font-family spec for the text.
-        this.fontFamily;
+        this.fontFamily = null;
         // prop: fontSize
         // css font-size spec for the text.
-        this.fontSize ;
+        this.fontSize = null;
         // prop: textAlign
         // css text-align spec for the text.
-        this.textAlign;
+        this.textAlign = null;
         // prop: textColor
         // css color spec for the text.
-        this.textColor;
+        this.textColor = null;
         // prop: renderer
         // A class for creating a DOM element for the title,
         // see <$.jqplot.DivTitleRenderer>.
         this.renderer = $.jqplot.DivTitleRenderer;
         // prop: rendererOptions
         // renderer specific options passed to the renderer.
-        this.rendererOptions = {};   
+        this.rendererOptions = {};
         // prop: escapeHtml
         // True to escape special characters with their html entity equivalents
         // in title text.  "<" becomes &lt; and so on, so html tags are not rendered.
@@ -1167,18 +1167,18 @@
     Title.prototype = new $.jqplot.ElemContainer();
     Title.prototype.constructor = Title;
     
-    Title.prototype.init = function() {
+    Title.prototype.init = function () {
         if ($.isFunction(this.renderer)) {
-            this.renderer = new this.renderer();  
+            this.renderer = new this.renderer();
         }
         this.renderer.init.call(this, this.rendererOptions);
     };
     
-    Title.prototype.draw = function(width) {
+    Title.prototype.draw = function (width) {
         return this.renderer.draw.call(this, width);
     };
     
-    Title.prototype.pack = function() {
+    Title.prototype.pack = function () {
         this.renderer.pack.call(this);
     };
 
