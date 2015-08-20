@@ -2860,100 +2860,6 @@
                 this.postInitHooks.hooks[i].call(this, target, this.data, options);
             }
         };
-
-
-
-        // method: quickInit
-        // 
-        // Quick reinitialization plot for replotting.
-        // Does not parse options ore recreate axes and series.
-        // not called directly.
-        this.quickInit = function () {
-            // Plot should be visible and have a height and width.
-            // If plot doesn't have height and width for some
-            // reason, set it by other means.  Plot must not have
-            // a display:none attribute, however.
-            
-            this._height = this.target.height();
-            this._width = this.target.width();
-            
-            if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
-                throw new Error("Target dimension not set");
-            }
-            
-            this._plotDimensions.height = this._height;
-            this._plotDimensions.width = this._width;
-            this.grid._plotDimensions = this._plotDimensions;
-            this.title._plotDimensions = this._plotDimensions;
-            this.baseCanvas._plotDimensions = this._plotDimensions;
-            this.eventCanvas._plotDimensions = this._plotDimensions;
-            this.legend._plotDimensions = this._plotDimensions;
-            
-            for (var n in this.axes) {
-                this.axes[n]._plotWidth = this._width;
-                this.axes[n]._plotHeight = this._height;
-            }
-            
-            this.title._plotWidth = this._width;
-            
-            if (this.textColor) {
-                this.target.css('color', this.textColor);
-            }
-            if (this.fontFamily) {
-                this.target.css('font-family', this.fontFamily);
-            }
-            if (this.fontSize) {
-                this.target.css('font-size', this.fontSize);
-            }
-            
-            this._sumy = 0;
-            this._sumx = 0;
-            this.computePlotData();
-            for (var i=0; i<this.series.length; i++) {
-                // this.populatePlotData(this.series[i], i);
-                if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
-                    this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
-                }
-                this.series[i]._plotDimensions = this._plotDimensions;
-                this.series[i].canvas._plotDimensions = this._plotDimensions;
-                //this.series[i].init(i, this.grid.borderWidth);
-                this._sumy += this.series[i]._sumy;
-                this._sumx += this.series[i]._sumx;
-            }
-
-            var name;
-            
-            for (var j=0; j<12; j++) {
-                name = _axisNames[j];
-                // Memory Leaks patch : clear ticks elements
-                var t = this.axes[name]._ticks;
-                for (var i = 0; i < t.length; i++) {
-                  var el = t[i]._elem;
-                  if (el) {
-                    // if canvas renderer
-                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
-                      window.G_vmlCanvasManager.uninitElement(el.get(0));
-                    }
-                    el.emptyForce();
-                    el = null;
-                    t._elem = null;
-                  }
-                }
-                t = null;
-                
-                this.axes[name]._plotDimensions = this._plotDimensions;
-                this.axes[name]._ticks = [];
-                // this.axes[name].renderer.init.call(this.axes[name], {});
-            }
-            
-            if (this.sortData) {
-                sortData(this.series);
-            }
-            
-            this.grid._axes = this.axes;
-            
-            this.legend._series = this.series;
-        };
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -2972,6 +2878,118 @@
         })(this);
 
     }
+    
+    /**
+     * method: quickInit
+     * 
+     * Quick reinitialization plot for replotting.
+     * Does not parse options ore recreate axes and series.
+     * not called directly.
+     */
+    JqPlot.prototype.quickInit = function () {
+
+        var ax,
+            name,
+            i,
+            j,
+            l,
+            t,
+            el;
+
+        // Plot should be visible and have a height and width.
+        // If plot doesn't have height and width for some
+        // reason, set it by other means.  Plot must not have
+        // a display:none attribute, however.
+
+        this._height = this.target.height();
+        this._width = this.target.width();
+
+        if (this._height <= 0 || this._width <= 0 || !this._height || !this._width) {
+            throw new Error("Target dimension not set");
+        }
+
+        this._plotDimensions.height = this._height;
+        this._plotDimensions.width = this._width;
+        this.grid._plotDimensions = this._plotDimensions;
+        this.title._plotDimensions = this._plotDimensions;
+        this.baseCanvas._plotDimensions = this._plotDimensions;
+        this.eventCanvas._plotDimensions = this._plotDimensions;
+        this.legend._plotDimensions = this._plotDimensions;
+
+        for (ax in this.axes) {
+            if (this.axes.hasOwnProperty(ax)) {
+                this.axes[ax]._plotWidth = this._width;
+                this.axes[ax]._plotHeight = this._height;
+            }
+        }
+
+        this.title._plotWidth = this._width;
+
+        if (this.textColor) {
+            this.target.css('color', this.textColor);
+        }
+        if (this.fontFamily) {
+            this.target.css('font-family', this.fontFamily);
+        }
+        if (this.fontSize) {
+            this.target.css('font-size', this.fontSize);
+        }
+
+        this._sumy = 0;
+        this._sumx = 0;
+        this.computePlotData();
+
+        for (i = 0, l = this.series.length; i < l; i++) {
+
+            // this.populatePlotData(this.series[i], i);
+            if (this.series[i]._type === 'line' && this.series[i].renderer.bands.show) {
+                this.series[i].renderer.initBands.call(this.series[i], this.series[i].renderer.options, this);
+            }
+
+            this.series[i]._plotDimensions = this._plotDimensions;
+            this.series[i].canvas._plotDimensions = this._plotDimensions;
+
+            //this.series[i].init(i, this.grid.borderWidth);
+            this._sumy += this.series[i]._sumy;
+            this._sumx += this.series[i]._sumx;
+
+        }
+
+        for (j = 0; j < 12; j++) {
+
+            name = _axisNames[j];
+
+            // Memory Leaks patch : clear ticks elements
+            t = this.axes[name]._ticks;
+
+            for (i = 0, l = t.length; i < l; i++) {
+                el = t[i]._elem;
+                if (el) {
+                    // if canvas renderer
+                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement) {
+                        window.G_vmlCanvasManager.uninitElement(el.get(0));
+                    }
+                    el.emptyForce();
+                    el = null;
+                    t._elem = null;
+                }
+            }
+            t = null;
+
+            this.axes[name]._plotDimensions = this._plotDimensions;
+            this.axes[name]._ticks = [];
+            // this.axes[name].renderer.init.call(this.axes[name], {});
+        }
+
+        if (this.sortData) {
+            sortData(this.series);
+        }
+
+        this.grid._axes = this.axes;
+
+        this.legend._series = this.series;
+        
+    };
     
     /**
      *
