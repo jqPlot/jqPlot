@@ -3353,47 +3353,54 @@
             this.draw();
             this.target.trigger('jqplotPostReplot');
         };
-        
-        // method: redraw
-        // Empties the plot target div and redraws the plot.
-        // This enables plot data and properties to be changed
-        // and then to comletely clear the plot and redraw.
-        // redraw *will not* reinitialize any plot elements.
-        // That is, axes will not be autoscaled and defaults
-        // will not be reapplied to any plot elements.  redraw
-        // is used primarily with zooming. 
-        //
-        // Parameters:
-        // clear - false to not clear (empty) the plot container before redrawing (default: true).
-        this.redraw = function(clear) {
-            clear = (clear != null) ? clear : true;
-            this.target.trigger('jqplotPreRedraw');
-            if (clear) {
-                this.canvasManager.freeAllCanvases();
-                this.eventCanvas._elem.unbind();
-                // Dont think I bind any events to the target, this shouldn't be necessary.
-                // It will remove user's events.
-                // this.target.unbind();
-                this.target.empty();
-            }
-             for (var ax in this.axes) {
-                this.axes[ax]._ticks = [];
-            }
-            this.computePlotData();
-            // for (var i=0; i<this.series.length; i++) {
-            //     this.populatePlotData(this.series[i], i);
-            // }
-            this._sumy = 0;
-            this._sumx = 0;
-            for (var i=0, tsl = this.series.length; i<tsl; i++) {
-                this._sumy += this.series[i]._sumy;
-                this._sumx += this.series[i]._sumx;
-            }
-            this.draw();
-            this.target.trigger('jqplotPostRedraw');
-        };
    
     }
+    
+     /**
+     * method: redraw
+     * Empties the plot target div and redraws the plot.
+     * This enables plot data and properties to be changed
+     * and then to comletely clear the plot and redraw.
+     * redraw *will not* reinitialize any plot elements.
+     * That is, axes will not be autoscaled and defaults
+     * will not be reapplied to any plot elements.  redraw
+     * is used primarily with zooming. 
+     * 
+     * Parameters:
+     * clear - false to not clear (empty) the plot container before redrawing (default: true).
+    */
+    JqPlot.prototype.redraw = function (clear) {
+        var i,
+            ax,
+            tsl;
+        clear = (clear !== null) ? clear : true;
+        this.target.trigger('jqplotPreRedraw');
+        if (clear) {
+            this.canvasManager.freeAllCanvases();
+            this.eventCanvas._elem.unbind();
+            // Dont think I bind any events to the target, this shouldn't be necessary.
+            // It will remove user's events.
+            // this.target.unbind();
+            this.target.empty();
+        }
+        for (ax in this.axes) {
+            if (this.axes.hasOwnProperty(ax)) {
+                this.axes[ax]._ticks = [];
+            }
+        }
+        this.computePlotData();
+        // for (var i=0; i<this.series.length; i++) {
+        //     this.populatePlotData(this.series[i], i);
+        // }
+        this._sumy = 0;
+        this._sumx = 0;
+        for (i = 0, tsl = this.series.length; i < tsl; i++) {
+            this._sumy += this.series[i]._sumy;
+            this._sumx += this.series[i]._sumx;
+        }
+        this.draw();
+        this.target.trigger('jqplotPostRedraw');
+    };
     
     /**
      * method: draw
@@ -3701,7 +3708,8 @@
     /**
      *
      */
-     JqPlot.prototype.doFillBetweenLines = function () {
+    JqPlot.prototype.doFillBetweenLines = function () {
+
         var fb = this.fillBetween,
             sid1 = fb.series1,
             sid2 = fb.series2,
@@ -3739,6 +3747,7 @@
         opts = {fillStyle: color, fill: true, closePath: true};
 
         sr.draw(series1.shadowCanvas._ctx, gd, opts);
+
     };
     
     /**
@@ -3820,7 +3829,7 @@
         this.seriesStack = this.previousSeriesStack.slice(0);
         this.previousSeriesStack = temp;
     };
-    
+
     /**
      * method: moveSeriesToBack
      * This method requires jQuery 1.4+
@@ -3856,7 +3865,7 @@
         this.seriesStack.unshift(idx);
         
     };
-        
+    
     /**
      * method: moveSeriesToFront
      * This method requires jQuery 1.4+
@@ -3944,7 +3953,7 @@
         options = idx = i = series = ctx = l = null;
     };
     
-     /**
+    /**
      * @param {object} ev
      */
     JqPlot.prototype.onMouseLeave = function (ev) {
