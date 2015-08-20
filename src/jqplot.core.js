@@ -1182,7 +1182,6 @@
         this.renderer.pack.call(this);
     };
 
-
     /**
      * Class: Series
      * An individual data series object.  Cannot be instantiated directly, but created
@@ -1210,11 +1209,11 @@
         // prop: xaxis
         // which x axis to use with this series, either 'xaxis' or 'x2axis'.
         this.xaxis = 'xaxis';
-        this._xaxis;
+        this._xaxis = null;
         // prop: yaxis
         // which y axis to use with this series, either 'yaxis' or 'y2axis'.
         this.yaxis = 'yaxis';
-        this._yaxis;
+        this._yaxis = null;
         this.gridBorderWidth = 2.0;
         // prop: renderer
         // A class of a renderer which will draw the series, 
@@ -1233,11 +1232,11 @@
         this.showLabel = true;
         // prop: color
         // css color spec for the series
-        this.color;
+        this.color = null;
         // prop: negativeColor
         // css color spec used for filled (area) plots that are filled to zero and
         // the "useNegativeColors" option is true.
-        this.negativeColor;
+        this.negativeColor = null;
         // prop: lineWidth
         // width of the line in pixels.  May have different meanings depending on renderer.
         this.lineWidth = 2.5;
@@ -1286,18 +1285,27 @@
         this.showMarker = true;
         // prop: index
         // 0 based index of this series in the plot series array.
-        this.index;
+        this.index = null;
         // prop: fill
         // true or false, whether to fill under lines or in bars.
         // May not be implemented in all renderers.
         this.fill = false;
         // prop: fillColor
         // CSS color spec to use for fill under line.  Defaults to line color.
-        this.fillColor;
-        // prop: fillAlpha
+        this.fillColor = null;
+        // prop: fillGradient
+        // if true :enable gradient rendering for fill.
+		this.fillGradient = false;
+		// prop: fillGradientColor
+        // css colorif true :gradient Color combinated with Color.
+		this.fillGradientColor = null;
+		// prop: fillGradientDelay
+        // 0 for no delay,1 for no gradient.
+		this.fillGradientDelay = null;
+		// prop: fillAlpha
         // Alpha transparency to apply to the fill under the line.
         // Use this to adjust alpha separate from fill color.
-        this.fillAlpha;
+        this.fillAlpha = null;
         // prop: fillAndStroke
         // If true will stroke the line (with color this.color) as well as fill under it.
         // Applies only when fill is true.
@@ -1337,9 +1345,9 @@
         // stacked, _plotData is accumulation of stacking data.
         this._plotData = [];
         // _plotValues hold the individual x and y values that will be plotted for this series.
-        this._plotValues = {x:[], y:[]};
+        this._plotValues = {x: [], y: []};
         // statistics about the intervals between data points.  Used for auto scaling.
-        this._intervals = {x:{}, y:{}};
+        this._intervals = {x: {}, y: {}};
         // data from the previous series, for stacked charts.
         this._prevPlotData = [];
         this._prevGridData = [];
@@ -1358,22 +1366,29 @@
     Series.prototype = new $.jqplot.ElemContainer();
     Series.prototype.constructor = Series;
     
-    Series.prototype.init = function(index, gridbw, plot) {
+    Series.prototype.init = function (index, gridbw, plot) {
+        
+        var d = this.data,
+            temp = [],
+            i,
+            l,
+            comp,
+            comp2;
+        
         // weed out any null values in the data.
         this.index = index;
         this.gridBorderWidth = gridbw;
-        var d = this.data;
-        var temp = [], i, l;
-        for (i=0, l=d.length; i<l; i++) {
-            if (! this.breakOnNull) {
-                if (d[i] == null || d[i][0] == null || d[i][1] == null) {
+        
+        for (i = 0, l = d.length; i < l; i++) {
+            if (!this.breakOnNull) {
+                if (d[i] === null || d[i][0] === null || d[i][1] === null) {
+                    // svandecappelle modification to implements null values in canvas. TODO check non-regression.
+                    temp.push(d[i]);
                     continue;
-                }
-                else {
+                } else {
                     temp.push(d[i]);
                 }
-            }
-            else {
+            } else {
                 // TODO: figure out what to do with null values
                 // probably involve keeping nulls in data array
                 // and then updating renderers to break line
@@ -1382,6 +1397,7 @@
                 temp.push(d[i]);
             }
         }
+        
         this.data = temp;
 
         // parse the renderer options and apply default colors if not provided
@@ -1394,24 +1410,32 @@
             this.negativeColor = plot.negativeColorGenerator.get(this.index);
         }
 
-
         if (!this.fillColor) {
             this.fillColor = this.color;
         }
         if (this.fillAlpha) {
-            var comp = $.jqplot.normalize2rgb(this.fillColor);
-            var comp = $.jqplot.getColorComponents(comp);
-            this.fillColor = 'rgba('+comp[0]+','+comp[1]+','+comp[2]+','+this.fillAlpha+')';
+            comp = $.jqplot.normalize2rgb(this.fillColor);
+            comp = $.jqplot.getColorComponents(comp);
+            this.fillColor = 'rgba(' + comp[0] + ',' + comp[1] + ',' + comp[2] + ',' + this.fillAlpha + ')';
+            if (this.fillGradient && this.fillGradientColor) {
+                comp2 = $.jqplot.normalize2rgb(this.fillGradientColor);
+                comp2 = $.jqplot.getColorComponents(comp2);
+                this.fillGradientColor = 'rgba(' + comp2[0] + ',' + comp2[1] + ',' + comp2[2] + ',' + this.fillAlpha + ')';
+            }
         }
+			
         if ($.isFunction(this.renderer)) {
-            this.renderer = new this.renderer();  
+            this.renderer = new this.renderer();
         }
+        
         this.renderer.init.call(this, this.rendererOptions, plot);
+        
         this.markerRenderer = new this.markerRenderer();
+        
         if (!this.markerOptions.color) {
             this.markerOptions.color = this.color;
         }
-        if (this.markerOptions.show == null) {
+        if (typeof this.markerOptions.show === "undefined") {
             this.markerOptions.show = this.showMarker;
         }
         this.showMarker = this.markerOptions.show;
@@ -1422,32 +1446,40 @@
     // data - optional data point array to draw using this series renderer
     // gridData - optional grid data point array to draw using this series renderer
     // stackData - array of cumulative data for stacked plots.
-    Series.prototype.draw = function(sctx, opts, plot) {
-        var options = (opts == undefined) ? {} : opts;
-        sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
+    Series.prototype.draw = function (sctx, opts, plot) {
         
-        var j, data, gridData;
+        var options = (typeof opts === "undefined") ? {} : opts,
+            j,
+            l,
+            data,
+            gridData;
+        
+        sctx = (typeof sctx === "undefined") ? this.canvas._ctx : sctx;
         
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
+        for (j = 0, l = $.jqplot.preDrawSeriesHooks.length; j < l; j++) {
             $.jqplot.preDrawSeriesHooks[j].call(this, sctx, options);
         }
+        
         if (this.show) {
+            
             this.renderer.setGridData.call(this, plot);
+            
             if (!options.preventJqPlotSeriesDrawTrigger) {
                 $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
             }
+            
             data = [];
+            
             if (options.data) {
                 data = options.data;
-            }
-            else if (!this._stack) {
+            } else if (!this._stack) {
                 data = this.data;
-            }
-            else {
+            } else {
                 data = this._plotData;
             }
+            
             gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
 
             if (this._type === 'line' && this.renderer.smooth && this.renderer._smoothedData.length) {
@@ -1457,7 +1489,7 @@
             this.renderer.draw.call(this, sctx, gridData, options, plot);
         }
         
-        for (j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+        for (j = 0, l = $.jqplot.postDrawSeriesHooks.length; j < l; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options, plot);
         }
         
