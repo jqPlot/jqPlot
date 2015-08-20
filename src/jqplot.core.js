@@ -3031,73 +3031,6 @@
 
         };
         
-        // populate the _stackData and _plotData arrays for the plot and the series.
-        this.populatePlotData = function(series, index) {
-            // if a stacked chart, compute the stacked data
-            this._plotData = [];
-            this._stackData = [];
-            series._stackData = [];
-            series._plotData = [];
-            var plotValues = {x:[], y:[]};
-            if (this.stackSeries && !series.disableStack) {
-                series._stack = true;
-                var sidx = (series._stackAxis === 'x') ? 0 : 1;
-                // var idx = sidx ? 0 : 1;
-                // push the current data into stackData
-                //this._stackData.push(this.series[i].data);
-                var temp = $.extend(true, [], series.data);
-                // create the data that will be plotted for this series
-                var plotdata = $.extend(true, [], series.data);
-                var tempx, tempy, dval, stackval, comparator;
-                // for first series, nothing to add to stackData.
-                for (var j=0; j<index; j++) {
-                    var cd = this.series[j].data;
-                    for (var k=0; k<cd.length; k++) {
-                        dval = cd[k];
-                        tempx = (dval[0] != null) ? dval[0] : 0;
-                        tempy = (dval[1] != null) ? dval[1] : 0;
-                        temp[k][0] += tempx;
-                        temp[k][1] += tempy;
-                        stackval = (sidx) ? tempy : tempx;
-                        // only need to sum up the stack axis column of data
-                        // and only sum if it is of same sign.
-                        if (series.data[k][sidx] * stackval >= 0) {
-                            plotdata[k][sidx] += stackval;
-                        }
-                    }
-                }
-                for (var i=0; i<plotdata.length; i++) {
-                    plotValues.x.push(plotdata[i][0]);
-                    plotValues.y.push(plotdata[i][1]);
-                }
-                this._plotData.push(plotdata);
-                this._stackData.push(temp);
-                series._stackData = temp;
-                series._plotData = plotdata;
-                series._plotValues = plotValues;
-            }
-            else {
-                for (var i=0; i<series.data.length; i++) {
-                    plotValues.x.push(series.data[i][0]);
-                    plotValues.y.push(series.data[i][1]);
-                }
-                this._stackData.push(series.data);
-                this.series[index]._stackData = series.data;
-                this._plotData.push(series.data);
-                series._plotData = series.data;
-                series._plotValues = plotValues;
-            }
-            if (index>0) {
-                series._prevPlotData = this.series[index-1]._plotData;
-            }
-            series._sumy = 0;
-            series._sumx = 0;
-            for (i=series.data.length-1; i>-1; i--) {
-                series._sumy += series.data[i][1];
-                series._sumx += series.data[i][0];
-            }
-        };
-        
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
             var idx = 0;
@@ -3115,6 +3048,104 @@
         })(this);
 
     }
+    
+    /**
+     * Populates the _stackData and _plotData arrays for the plot and the series.
+     */
+    JqPlot.prototype.populatePlotData = function (series, index) {
+
+        var plotValues = {x: [], y: []},
+            sidx,
+            temp,
+            plotdata,
+            tempx,
+            tempy,
+            dval,
+            stackval,
+            comparator,
+            i,
+            j,
+            cd,
+            l,
+            k;
+
+        // if a stacked chart, compute the stacked data
+        this._plotData = [];
+        this._stackData = [];
+
+        series._stackData = [];
+        series._plotData = [];
+
+        if (this.stackSeries && !series.disableStack) {
+
+            series._stack = true;
+
+            sidx = (series._stackAxis === 'x') ? 0 : 1;
+            // var idx = sidx ? 0 : 1;
+            // push the current data into stackData
+            //this._stackData.push(this.series[i].data);
+            temp = $.extend(true, [], series.data);
+            // create the data that will be plotted for this series
+            plotdata = $.extend(true, [], series.data);
+
+            // for first series, nothing to add to stackData.
+            for (j = 0; j < index; j++) {
+                cd = this.series[j].data;
+                for (k = 0, l = cd.length; k < l; k++) {
+                    dval = cd[k];
+                    tempx = (dval[0] !== null) ? dval[0] : 0;
+                    tempy = (dval[1] !== null) ? dval[1] : 0;
+                    temp[k][0] += tempx;
+                    temp[k][1] += tempy;
+                    stackval = (sidx) ? tempy : tempx;
+                    // only need to sum up the stack axis column of data
+                    // and only sum if it is of same sign.
+                    if (series.data[k][sidx] * stackval >= 0) {
+                        plotdata[k][sidx] += stackval;
+                    }
+                }
+            }
+
+            for (i = 0, l = plotdata.length; i < l; i++) {
+                plotValues.x.push(plotdata[i][0]);
+                plotValues.y.push(plotdata[i][1]);
+            }
+
+            this._plotData.push(plotdata);
+            this._stackData.push(temp);
+
+            series._stackData = temp;
+            series._plotData = plotdata;
+            series._plotValues = plotValues;
+
+        } else {
+
+            for (i = 0, l = series.data.length; i < l; i++) {
+                plotValues.x.push(series.data[i][0]);
+                plotValues.y.push(series.data[i][1]);
+            }
+
+            this._stackData.push(series.data);
+            this.series[index]._stackData = series.data;
+            this._plotData.push(series.data);
+
+            series._plotData = series.data;
+            series._plotValues = plotValues;
+
+        }
+
+        if (index > 0) {
+            series._prevPlotData = this.series[index - 1]._plotData;
+        }
+
+        series._sumy = 0;
+        series._sumx = 0;
+
+        for (i = series.data.length - 1; i > -1; i--) {
+            series._sumy += series.data[i][1];
+            series._sumx += series.data[i][0];
+        }
+    };
     
     /**
      * @param {object} options
