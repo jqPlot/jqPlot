@@ -2450,24 +2450,28 @@
         this.canvasManager = new $.jqplot.CanvasManager();
 
         this.themeEngine = new $.jqplot.ThemeEngine();
-        
-        var seriesColorsIndex = 0;
-        
-        // function to safely return colors from the color array and wrap around at the end.
-        this.getNextSeriesColor = (function(t) {
-            var idx = 0;
-            var sc = t.seriesColors;
-            
-            return function () { 
+
+        /**
+         * Function to safely return colors from the color array and wrap around at the end.
+         * @param {object} t
+         * @returns
+         * @TODO: Figure out why this function is set to run immediately?
+         */
+        this.getNextSeriesColor = (function (t) {
+
+            var idx = 0,
+                sc = t.seriesColors;
+
+            return function () {
                 if (idx < sc.length) {
                     return sc[idx++];
-                }
-                else {
+                } else {
                     idx = 0;
                     return sc[idx++];
                 }
             };
-        })(this);
+
+        }(this));
 
     }
     
@@ -3053,7 +3057,6 @@
         this.grid._axes = this.axes;
 
         this.legend._series = this.series;
-        
     };
     
     /**
