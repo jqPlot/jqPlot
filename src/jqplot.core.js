@@ -3705,51 +3705,6 @@
             $(this).trigger(evt, [positions.gridPos, positions.dataPos, null, p]);
         };
         
-        // method: drawSeries
-        // Redraws all or just one series on the plot.  No axis scaling
-        // is performed and no other elements on the plot are redrawn.
-        // options is an options object to pass on to the series renderers.
-        // It can be an empty object {}.  idx is the series index
-        // to redraw if only one series is to be redrawn.
-        this.drawSeries = function(options, idx){
-            var i, series, ctx;
-            // if only one argument passed in and it is a number, use it ad idx.
-            idx = (typeof(options) === "number" && idx == null) ? options : idx;
-            options = (typeof(options) === "object") ? options : {};
-            // draw specified series
-            if (idx != undefined) {
-                series = this.series[idx];
-                ctx = series.shadowCanvas._ctx;
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                series.drawShadow(ctx, options, this);
-                ctx = series.canvas._ctx;
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                series.draw(ctx, options, this);
-                if (series.renderer.constructor == $.jqplot.BezierCurveRenderer) {
-                    if (idx < this.series.length - 1) {
-                        this.drawSeries(idx+1); 
-                    }
-                }
-            }
-            
-            else {
-                // if call series drawShadow method first, in case all series shadows
-                // should be drawn before any series.  This will ensure, like for 
-                // stacked bar plots, that shadows don't overlap series.
-                for (i=0; i<this.series.length; i++) {
-                    // first clear the canvas
-                    series = this.series[i];
-                    ctx = series.shadowCanvas._ctx;
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    series.drawShadow(ctx, options, this);
-                    ctx = series.canvas._ctx;
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    series.draw(ctx, options, this);
-                }
-            }
-            options = idx = i = series = ctx = null;
-        };
-        
     }
     
     /**
@@ -3947,6 +3902,56 @@
         this.seriesStack.push(idx);
     };
     
+    /**
+     * method: drawSeries
+     * Redraws all or just one series on the plot.  No axis scaling
+     * is performed and no other elements on the plot are redrawn.
+     * options is an options object to pass on to the series renderers.
+     * It can be an empty object {}.  idx is the series index
+     * to redraw if only one series is to be redrawn.
+     */
+    JqPlot.prototype.drawSeries = function (options, idx) {
+
+        var i,
+            l,
+            series,
+            ctx;
+
+        // if only one argument passed in and it is a number, use it ad idx.
+        idx = (typeof (options) === "number" && idx === null) ? options : idx;
+        options = (typeof (options) === "object") ? options : {};
+
+        // draw specified series
+        if (typeof idx !== "undefined") {
+            series = this.series[idx];
+            ctx = series.shadowCanvas._ctx;
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            series.drawShadow(ctx, options, this);
+            ctx = series.canvas._ctx;
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            series.draw(ctx, options, this);
+            if (series.renderer.constructor === $.jqplot.BezierCurveRenderer) {
+                if (idx < this.series.length - 1) {
+                    this.drawSeries(idx + 1);
+                }
+            }
+        } else {
+            // if call series drawShadow method first, in case all series shadows
+            // should be drawn before any series.  This will ensure, like for 
+            // stacked bar plots, that shadows don't overlap series.
+            for (i = 0; i < this.series.length; i++) {
+                // first clear the canvas
+                series = this.series[i];
+                ctx = series.shadowCanvas._ctx;
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                series.drawShadow(ctx, options, this);
+                ctx = series.canvas._ctx;
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                series.draw(ctx, options, this);
+            }
+        }
+        options = idx = i = series = ctx = l = null;
+    };
     
     /**
      * Computes a highlight color or array of highlight colors from given colors.
