@@ -89,6 +89,8 @@
     
     "use strict";
 
+    var _axisNames = ['yMidAxis', 'xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+
     // make sure undefined is undefined
     var undefined;
     
@@ -234,7 +236,7 @@
         }
 
         // @TODO Need to make sure we don't run into circular references...
-        plot = new jqPlot();
+        plot = new JqPlot();
         
         // remove any error class that may be stuck on target.
         $('#' + target).removeClass('jqplot-error');
@@ -1802,19 +1804,20 @@
         }
     };
     
-    $.jqplot.EventListenerManager.prototype.add = function(ev, fn) {
+    $.jqplot.EventListenerManager.prototype.add = function (ev, fn) {
         this.hooks.push([ev, fn]);
     };
-
-
-    var _axisNames = ['yMidAxis', 'xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
-
+    
     /**
+     * @constructor
      * Class: jqPlot
      * Plot object returned by call to $.jqplot.  Handles parsing user options,
      * creating sub objects (Axes, legend, title, series) and rendering the plot.
      */
-    function jqPlot() {
+    function JqPlot() {
+         
+        var seriesColorsIndex = 0;
+            
         // Group: Properties
         // These properties are specified at the top of the options object
         // like so:
@@ -3249,7 +3252,7 @@
             }
         };
 
-        jqPlot.prototype.doFillBetweenLines = function () {
+        JqPlot.prototype.doFillBetweenLines = function () {
             var fb = this.fillBetween;
             var sid1 = fb.series1;
             var sid2 = fb.series2;
