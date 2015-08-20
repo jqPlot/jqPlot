@@ -1698,23 +1698,27 @@
     $.jqplot.GenericCanvas.prototype = new $.jqplot.ElemContainer();
     $.jqplot.GenericCanvas.prototype.constructor = $.jqplot.GenericCanvas;
     
-    $.jqplot.GenericCanvas.prototype.createElement = function(offsets, clss, plotDimensions, plot) {
+    $.jqplot.GenericCanvas.prototype.createElement = function (offsets, clss, plotDimensions, plot) {
+        
         this._offsets = offsets;
-        var klass = 'jqplot';
-        if (clss != undefined) {
+        
+        var klass = 'jqplot',
+            elem;
+        
+        if (typeof clss !== "undefined") {
             klass = clss;
         }
-        var elem;
-
+        
         elem = plot.canvasManager.getCanvas();
         
         // if new plotDimensions supplied, use them.
-        if (plotDimensions != null) {
+        if (plotDimensions !== null) {
             this._plotDimensions = plotDimensions;
         }
         
         elem.width = this._plotDimensions.width - this._offsets.left - this._offsets.right;
         elem.height = this._plotDimensions.height - this._offsets.top - this._offsets.bottom;
+        
         this._elem = $(elem);
         this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
         
@@ -1723,10 +1727,12 @@
         elem = plot.canvasManager.initCanvas(elem);
         
         elem = null;
+        
         return this._elem;
+        
     };
     
-    $.jqplot.GenericCanvas.prototype.setContext = function() {
+    $.jqplot.GenericCanvas.prototype.setContext = function () {
         this._ctx = this._elem.get(0).getContext("2d");
         return this._ctx;
     };
