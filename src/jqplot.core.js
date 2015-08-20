@@ -88,8 +88,67 @@
 (function ($) {
     
     "use strict";
+    
+    var _axisNames = ['yMidAxis', 'xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'],
+        
+        /**
+         * Sorts the series data in increasing order.
+         * @param {array} series
+         */
+        sortData = function (series) {
 
-    var _axisNames = ['yMidAxis', 'xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
+            var d, sd, pd, ppd, ret,
+                i,
+                j,
+                l = series.length,
+                check,
+                bat,
+                n,
+                dlen,
+                /**
+                 *
+                 */
+                simplesort1 = function (a, b) {
+                    return a[1] - b[1];
+                },
+                /**
+                 *
+                 */
+                simplesort0 = function (a, b) {
+                    return a[0] - b[0];
+                };
+
+            for (i = 0; i < l; i++) {
+                bat = [series[i].data, series[i]._stackData, series[i]._plotData, series[i]._prevPlotData];
+                for (n = 0; n < 4; n++) {
+                    check = true;
+                    d = bat[n];
+                    if (series[i]._stackAxis === 'x') {
+                        for (j = 0, dlen = d.length; j < dlen; j++) {
+                            if (typeof (d[j][1]) !== "number") {
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            d.sort(simplesort1);
+                        }
+                    } else {
+                        for (j = 0, dlen = d.length; j < dlen; j++) {
+                            if (typeof (d[j][0]) !== "number") {
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            d.sort(simplesort0);
+                        }
+                    }
+                }
+
+            };
+
+        };
 
     // make sure undefined is undefined
     var undefined;
@@ -2561,41 +2620,6 @@
             this.legend._series = this.series;
         };
         
-        // sort the series data in increasing order.
-        function sortData(series) {
-            var d, sd, pd, ppd, ret;
-            for (var i=0; i<series.length; i++) {
-                var check;
-                var bat = [series[i].data, series[i]._stackData, series[i]._plotData, series[i]._prevPlotData];
-                for (var n=0; n<4; n++) {
-                    check = true;
-                    d = bat[n];
-                    if (series[i]._stackAxis == 'x') {
-                        for (var j = 0; j < d.length; j++) {
-                            if (typeof(d[j][1]) != "number") {
-                                check = false;
-                                break;
-                            }
-                        }
-                        if (check) {
-                            d.sort(function(a,b) { return a[1] - b[1]; });
-                        }
-                    }
-                    else {
-                        for (var j = 0; j < d.length; j++) {
-                            if (typeof(d[j][0]) != "number") {
-                                check = false;
-                                break;
-                            }
-                        }
-                        if (check) {
-                            d.sort(function(a,b) { return a[0] - b[0]; });
-                        }
-                    }
-                }
-               
-            }
-        }
 
         this.computePlotData = function() {
             this._plotData = [];
