@@ -932,19 +932,19 @@
         this.yoffset = 0;
         // prop: border
         // css spec for the border around the legend box.
-        this.border;
+        this.border = null;
         // prop: background
         // css spec for the background of the legend box.
-        this.background;
+        this.background = null;
         // prop: textColor
         // css color spec for the legend text.
-        this.textColor;
+        this.textColor = null;
         // prop: fontFamily
         // css font-family spec for the legend text.
-        this.fontFamily; 
+        this.fontFamily = null;
         // prop: fontSize
         // css font-size spec for the legend text.
-        this.fontSize ;
+        this.fontSize = null;
         // prop: rowSpacing
         // css padding-top spec for the rows in the legend.
         this.rowSpacing = '0.5em';
@@ -991,104 +991,106 @@
     Legend.prototype = new $.jqplot.ElemContainer();
     Legend.prototype.constructor = Legend;
     
-    Legend.prototype.setOptions = function(options) {
+    /**
+     * @param {object} options
+     */
+    Legend.prototype.setOptions = function (options) {
+        
         $.extend(true, this, options);
         
         // Try to emulate deprecated behaviour
         // if user has specified xoffset or yoffset, copy these to
         // the margin properties.
         
-        if (this.placement ==  'inside') {
+        if (this.placement ===  'inside') {
             this.placement = 'insideGrid';
         }
         
-        if (this.xoffset >0) {
-            if (this.placement == 'insideGrid') {
+        if (this.xoffset > 0) {
+            if (this.placement === 'insideGrid') {
                 switch (this.location) {
-                    case 'nw':
-                    case 'w':
-                    case 'sw':
-                        if (this.marginLeft == null) {
-                            this.marginLeft = this.xoffset + 'px';
-                        }
-                        this.marginRight = '0px';
-                        break;
-                    case 'ne':
-                    case 'e':
-                    case 'se':
-                    default:
-                        if (this.marginRight == null) {
-                            this.marginRight = this.xoffset + 'px';
-                        }
-                        this.marginLeft = '0px';
-                        break;
+                case 'nw':
+                case 'w':
+                case 'sw':
+                    if (this.marginLeft === null) {
+                        this.marginLeft = this.xoffset + 'px';
+                    }
+                    this.marginRight = '0px';
+                    break;
+                //case 'ne':
+                //case 'e':
+                //case 'se':
+                default:
+                    if (this.marginRight === null) {
+                        this.marginRight = this.xoffset + 'px';
+                    }
+                    this.marginLeft = '0px';
+                    break;
                 }
-            }
-            else if (this.placement == 'outside') {
+            } else if (this.placement === 'outside') {
                 switch (this.location) {
-                    case 'nw':
-                    case 'w':
-                    case 'sw':
-                        if (this.marginRight == null) {
-                            this.marginRight = this.xoffset + 'px';
-                        }
-                        this.marginLeft = '0px';
-                        break;
-                    case 'ne':
-                    case 'e':
-                    case 'se':
-                    default:
-                        if (this.marginLeft == null) {
-                            this.marginLeft = this.xoffset + 'px';
-                        }
-                        this.marginRight = '0px';
-                        break;
+                case 'nw':
+                case 'w':
+                case 'sw':
+                    if (this.marginRight === null) {
+                        this.marginRight = this.xoffset + 'px';
+                    }
+                    this.marginLeft = '0px';
+                    break;
+                //case 'ne':
+                //case 'e':
+                //case 'se':
+                default:
+                    if (this.marginLeft === null) {
+                        this.marginLeft = this.xoffset + 'px';
+                    }
+                    this.marginRight = '0px';
+                    break;
                 }
             }
             this.xoffset = 0;
         }
         
-        if (this.yoffset >0) {
-            if (this.placement == 'outside') {
+        if (this.yoffset > 0) {
+            if (this.placement === 'outside') {
                 switch (this.location) {
-                    case 'sw':
-                    case 's':
-                    case 'se':
-                        if (this.marginTop == null) {
-                            this.marginTop = this.yoffset + 'px';
-                        }
-                        this.marginBottom = '0px';
-                        break;
-                    case 'ne':
-                    case 'n':
-                    case 'nw':
-                    default:
-                        if (this.marginBottom == null) {
-                            this.marginBottom = this.yoffset + 'px';
-                        }
-                        this.marginTop = '0px';
-                        break;
+                case 'sw':
+                case 's':
+                case 'se':
+                    if (this.marginTop === null) {
+                        this.marginTop = this.yoffset + 'px';
+                    }
+                    this.marginBottom = '0px';
+                    break;
+                //case 'ne':
+                //case 'n':
+                //case 'nw':
+                default:
+                    if (this.marginBottom === null) {
+                        this.marginBottom = this.yoffset + 'px';
+                    }
+                    this.marginTop = '0px';
+                    break;
                 }
-            }
-            else if (this.placement == 'insideGrid') {
+            } else if (this.placement === 'insideGrid') {
                 switch (this.location) {
-                    case 'sw':
-                    case 's':
-                    case 'se':
-                        if (this.marginBottom == null) {
-                            this.marginBottom = this.yoffset + 'px';
-                        }
-                        this.marginTop = '0px';
-                        break;
-                    case 'ne':
-                    case 'n':
-                    case 'nw':
-                    default:
-                        if (this.marginTop == null) {
-                            this.marginTop = this.yoffset + 'px';
-                        }
-                        this.marginBottom = '0px';
-                        break;
+                case 'sw':
+                case 's':
+                case 'se':
+                    if (this.marginBottom === null) {
+                        this.marginBottom = this.yoffset + 'px';
+                    }
+                    this.marginTop = '0px';
+                    break;
+                //case 'ne':
+                //case 'n':
+                //case 'nw':
+                default:
+                    if (this.marginTop === null) {
+                        this.marginTop = this.yoffset + 'px';
+                    }
+                    this.marginBottom = '0px';
+                    break;
                 }
             }
             this.yoffset = 0;
@@ -1099,21 +1101,22 @@
         //
     };
     
-    Legend.prototype.init = function() {
+    Legend.prototype.init = function () {
         if ($.isFunction(this.renderer)) {
-            this.renderer = new this.renderer();  
+            this.renderer = new this.renderer();
         }
         this.renderer.init.call(this, this.rendererOptions);
     };
     
-    Legend.prototype.draw = function(offsets, plot) {
-        for (var i=0; i<$.jqplot.preDrawLegendHooks.length; i++){
+    Legend.prototype.draw = function (offsets, plot) {
+        var i, l;
+        for (i = 0, l = $.jqplot.preDrawLegendHooks.length; i < l; i++) {
             $.jqplot.preDrawLegendHooks[i].call(this, offsets);
         }
         return this.renderer.draw.call(this, offsets, plot);
     };
     
-    Legend.prototype.pack = function(offsets) {
+    Legend.prototype.pack = function (offsets) {
         this.renderer.pack.call(this, offsets);
     };
 
