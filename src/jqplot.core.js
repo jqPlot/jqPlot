@@ -3750,36 +3750,6 @@
             options = idx = i = series = ctx = null;
         };
         
-        // method: moveSeriesToFront
-        // This method requires jQuery 1.4+
-        // Moves the specified series canvas in front of all other series canvases.
-        // This effectively "draws" the specified series on top of all other series,
-        // although it is performed through DOM manipulation, no redrawing is performed.
-        //
-        // Parameters:
-        // idx - 0 based index of the series to move.  This will be the index of the series
-        // as it was first passed into the jqplot function.
-        this.moveSeriesToFront = function (idx) { 
-            idx = parseInt(idx, 10);
-            var stackIndex = $.inArray(idx, this.seriesStack);
-            // if already in front, return
-            if (stackIndex == -1) {
-                return;
-            }
-            if (stackIndex == this.seriesStack.length -1) {
-                this.previousSeriesStack = this.seriesStack.slice(0);
-                return;
-            }
-            var opidx = this.seriesStack[this.seriesStack.length -1];
-            var serelem = this.series[idx].canvas._elem.detach();
-            var shadelem = this.series[idx].shadowCanvas._elem.detach();
-            this.series[opidx].shadowCanvas._elem.after(shadelem);
-            this.series[opidx].canvas._elem.after(serelem);
-            this.previousSeriesStack = this.seriesStack.slice(0);
-            this.seriesStack.splice(stackIndex, 1);
-            this.seriesStack.push(idx);
-        };
-        
     }
     
     /**
@@ -3941,6 +3911,42 @@
         
     };
         
+    /**
+     * method: moveSeriesToFront
+     * This method requires jQuery 1.4+
+     * Moves the specified series canvas in front of all other series canvases.
+     * This effectively "draws" the specified series on top of all other series,
+     * although it is performed through DOM manipulation, no redrawing is performed.
+     * 
+     * Parameters:
+     * idx - 0 based index of the series to move.  This will be the index of the series
+     * as it was first passed into the jqplot function.
+     */
+    JqPlot.prototype.moveSeriesToFront = function (idx) {
+        var stackIndex,
+            opidx,
+            serelem,
+            shadelem;
+        idx = parseInt(idx, 10);
+        stackIndex = $.inArray(idx, this.seriesStack);
+        // if already in front, return
+        if (stackIndex === -1) {
+            return;
+        }
+        if (stackIndex === this.seriesStack.length - 1) {
+            this.previousSeriesStack = this.seriesStack.slice(0);
+            return;
+        }
+        opidx = this.seriesStack[this.seriesStack.length - 1];
+        serelem = this.series[idx].canvas._elem.detach();
+        shadelem = this.series[idx].shadowCanvas._elem.detach();
+        this.series[opidx].shadowCanvas._elem.after(shadelem);
+        this.series[opidx].canvas._elem.after(serelem);
+        this.previousSeriesStack = this.seriesStack.slice(0);
+        this.seriesStack.splice(stackIndex, 1);
+        this.seriesStack.push(idx);
+    };
+    
     
     /**
      * Computes a highlight color or array of highlight colors from given colors.
