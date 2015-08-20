@@ -3885,10 +3885,15 @@
             }
         };
         
-        this.activateTheme = function (name) {
-            this.themeEngine.activate(this, name);
-        };
+
     }
+    
+    /**
+     * @param {string} name
+     */
+    JqPlot.prototype.activateTheme = function (name) {
+        this.themeEngine.activate(this, name);
+    };
     
     
     /**
