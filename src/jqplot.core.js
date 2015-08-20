@@ -4908,4 +4908,4 @@
         yellowgreen: 'rgb(154, 205, 50)'
     };
     
-})(jQuery);
+}(jQuery));
