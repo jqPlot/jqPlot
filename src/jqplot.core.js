@@ -446,6 +446,7 @@
      *     are parsed.
      * $.jqplot.eventListenerHooks - called at the end of plot drawing, binds
      *     listeners to the event canvas which lays on top of the grid area.
+     * $.jqplot.preDrawAllSeriesHooks - called before the first serie drawn and after grid drawn.
      * $.jqplot.preDrawSeriesShadowHooks - called before series shadows are drawn.
      * $.jqplot.postDrawSeriesShadowHooks - called after series shadows are drawn.
      * 
@@ -467,6 +468,7 @@
     $.jqplot.postParseSeriesOptionsHooks = [];
     $.jqplot.eventListenerHooks = [];
     $.jqplot.preDrawSeriesShadowHooks = [];
+    $.jqplot.preDrawAllSeriesHooks = [];
     $.jqplot.postDrawSeriesShadowHooks = [];
 
     // A superclass holding some common properties and methods.
@@ -2044,6 +2046,7 @@
         this.preParseSeriesOptionsHooks = new $.jqplot.HooksManager();
         this.postParseSeriesOptionsHooks = new $.jqplot.HooksManager();
         this.eventListenerHooks = new $.jqplot.EventListenerManager();
+        this.preDrawAllSeriesHooks = new $.jqplot.HooksManager();
         this.preDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         this.postDrawSeriesShadowHooks = new $.jqplot.HooksManager();
 
