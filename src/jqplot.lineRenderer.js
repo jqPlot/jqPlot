@@ -163,7 +163,7 @@
         }
 
         // set the shape renderer options
-        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, linePattern:this.linePattern, closePath:this.fill};
+        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, linePattern:this.linePattern, closePath:this.fill,fillGradient:this.fillGradient,fillGradientColor:this.fillGradientColor,fillGradientDelay:this.fillGradientDelay};
         this.renderer.shapeRenderer.init(opts);
 
         var shadow_offset = options.shadowOffset;
@@ -790,7 +790,15 @@
         for (var i=0; i<data.length; i++) {
             // if not a line series or if no nulls in data, push the converted point onto the array.
             if (data[i][0] != null && data[i][1] != null) {
-                gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+
+                // svandecappelle 
+                if (this._xaxis.ticks !== undefined && typeof(data[i][0]) === "string"){
+                    gd.push([xp.call(this._xaxis, this._xaxis.ticks.indexOf(data[i][0]) + 1), yp.call(this._yaxis, data[i][1])]);
+                }else{
+                    gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);    
+                }
+
+                // Temp fixes #816: gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
             }
             // else if there is a null, preserve it.
             else if (data[i][0] == null) {
