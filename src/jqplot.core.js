@@ -2696,170 +2696,6 @@
                 }
             }
         };
-        // method: reInitialize
-        // reinitialize plot for replotting.
-        // not called directly.
-        this.reInitialize = function (data, opts) {
-            // Plot should be visible and have a height and width.
-            // If plot doesn't have height and width for some
-            // reason, set it by other means.  Plot must not have
-            // a display:none attribute, however.
-
-            var options = $.extend(true, {}, this.options, opts);
-
-            var target = this.targetId.substr(1);
-            var tdata = (data == null) ? this.data : data;
-
-            for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
-                $.jqplot.preInitHooks[i].call(this, target, tdata, options);
-            }
-
-            for (var i=0; i<this.preInitHooks.hooks.length; i++) {
-                this.preInitHooks.hooks[i].call(this, target, tdata, options);
-            }
-            
-            this._height = this.target.height();
-            this._width = this.target.width();
-            
-            if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
-                throw new Error("Target dimension not set");
-            }
-            
-            this._plotDimensions.height = this._height;
-            this._plotDimensions.width = this._width;
-            this.grid._plotDimensions = this._plotDimensions;
-            this.title._plotDimensions = this._plotDimensions;
-            this.baseCanvas._plotDimensions = this._plotDimensions;
-            this.eventCanvas._plotDimensions = this._plotDimensions;
-            this.legend._plotDimensions = this._plotDimensions;
-
-            var name,
-                t, 
-                j, 
-                axis;
-
-            for (var i=0, l=_axisNames.length; i<l; i++) {
-                name = _axisNames[i];
-                axis = this.axes[name];
-
-                // Memory Leaks patch : clear ticks elements
-                t = axis._ticks;
-                for (var j = 0, tlen = t.length; j < tlen; j++) {
-                  var el = t[j]._elem;
-                  if (el) {
-                    // if canvas renderer
-                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
-                      window.G_vmlCanvasManager.uninitElement(el.get(0));
-                    }
-                    el.emptyForce();
-                    el = null;
-                    t._elem = null;
-                  }
-                }
-                t = null;
-
-                delete axis.ticks;
-                delete axis._ticks;
-                this.axes[name] = new Axis(name);
-                this.axes[name]._plotWidth = this._width;
-                this.axes[name]._plotHeight = this._height;
-            }
-            
-            if (data) {
-                if (options.dataRenderer && $.isFunction(options.dataRenderer)) {
-                    if (options.dataRendererOptions) {
-                        this.dataRendererOptions = options.dataRendererOptions;
-                    }
-                    this.dataRenderer = options.dataRenderer;
-                    data = this.dataRenderer(data, this, this.dataRendererOptions);
-                }
-                
-                // make a copy of the data
-                this.data = $.extend(true, [], data);
-            }
-
-            if (opts) {
-                this.parseOptions(options);
-            }
-            
-            this.title._plotWidth = this._width;
-            
-            if (this.textColor) {
-                this.target.css('color', this.textColor);
-            }
-            if (this.fontFamily) {
-                this.target.css('font-family', this.fontFamily);
-            }
-            if (this.fontSize) {
-                this.target.css('font-size', this.fontSize);
-            }
-
-            this.title.init();
-            this.legend.init();
-            this._sumy = 0;
-            this._sumx = 0;
-
-            this.seriesStack = [];
-            this.previousSeriesStack = [];
-
-            this.computePlotData();
-            for (var i=0, l=this.series.length; i<l; i++) {
-                // set default stacking order for series canvases
-                this.seriesStack.push(i);
-                this.previousSeriesStack.push(i);
-                this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
-                this.series[i].canvas._plotDimensions = this._plotDimensions;
-                for (var j=0; j<$.jqplot.preSeriesInitHooks.length; j++) {
-                    $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
-                }
-                for (var j=0; j<this.preSeriesInitHooks.hooks.length; j++) {
-                    this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
-                }
-                // this.populatePlotData(this.series[i], i);
-                this.series[i]._plotDimensions = this._plotDimensions;
-                this.series[i].init(i, this.grid.borderWidth, this);
-                for (var j=0; j<$.jqplot.postSeriesInitHooks.length; j++) {
-                    $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
-                }
-                for (var j=0; j<this.postSeriesInitHooks.hooks.length; j++) {
-                    this.postSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
-                }
-                this._sumy += this.series[i]._sumy;
-                this._sumx += this.series[i]._sumx;
-            }
-
-            for (var i=0, l=_axisNames.length; i<l; i++) {
-                name = _axisNames[i];
-                axis = this.axes[name];
-
-                axis._plotDimensions = this._plotDimensions;
-                axis.init();
-                if (axis.borderColor == null) {
-                    if (name.charAt(0) !== 'x' && axis.useSeriesColor === true && axis.show) {
-                        axis.borderColor = axis._series[0].color;
-                    }
-                    else {
-                        axis.borderColor = this.grid.borderColor;
-                    }
-                }
-            }
-            
-            if (this.sortData) {
-                sortData(this.series);
-            }
-            this.grid.init();
-            this.grid._axes = this.axes;
-            
-            this.legend._series = this.series;
-
-            for (var i=0, l=$.jqplot.postInitHooks.length; i<l; i++) {
-                $.jqplot.postInitHooks[i].call(this, target, this.data, options);
-            }
-
-            for (var i=0, l=this.postInitHooks.hooks.length; i<l; i++) {
-                this.postInitHooks.hooks[i].call(this, target, this.data, options);
-            }
-        };
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -2878,6 +2714,189 @@
         })(this);
 
     }
+    
+    /**
+     * method: reInitialize
+     * reinitialize plot for replotting.
+     * not called directly.
+     */
+    JqPlot.prototype.reInitialize = function (data, opts) {
+
+        // Plot should be visible and have a height and width.
+        // If plot doesn't have height and width for some
+        // reason, set it by other means.  Plot must not have
+        // a display:none attribute, however.
+
+        var options = $.extend(true, {}, this.options, opts),
+            target = this.targetId.substr(1),
+            tdata = (data === null) ? this.data : data,
+            i,
+            l,
+            seriesLen,
+            name,
+            t,
+            j,
+            axis,
+            el,
+            tlen;
+
+        for (i = 0, l = $.jqplot.preInitHooks.length; i < l; i++) {
+            $.jqplot.preInitHooks[i].call(this, target, tdata, options);
+        }
+
+        for (i = 0, l = this.preInitHooks.hooks.length; i < l; i++) {
+            this.preInitHooks.hooks[i].call(this, target, tdata, options);
+        }
+
+        this._height = this.target.height();
+        this._width = this.target.width();
+
+        if (this._height <= 0 || this._width <= 0 || !this._height || !this._width) {
+            throw new Error("Target dimension not set");
+        }
+
+        this._plotDimensions.height = this._height;
+        this._plotDimensions.width = this._width;
+        this.grid._plotDimensions = this._plotDimensions;
+        this.title._plotDimensions = this._plotDimensions;
+        this.baseCanvas._plotDimensions = this._plotDimensions;
+        this.eventCanvas._plotDimensions = this._plotDimensions;
+        this.legend._plotDimensions = this._plotDimensions;
+
+        for (i = 0, l = _axisNames.length; i < l; i++) {
+
+            name = _axisNames[i];
+            axis = this.axes[name];
+
+            // Memory Leaks patch : clear ticks elements
+            t = axis._ticks;
+
+            for (j = 0, tlen = t.length; j < tlen; j++) {
+                el = t[j]._elem;
+                if (el) {
+                    // if canvas renderer
+                    if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement) {
+                        window.G_vmlCanvasManager.uninitElement(el.get(0));
+                    }
+                    el.emptyForce();
+                    el = null;
+                    t._elem = null;
+                }
+            }
+            t = null;
+
+            delete axis.ticks;
+            delete axis._ticks;
+            this.axes[name] = new Axis(name);
+            this.axes[name]._plotWidth = this._width;
+            this.axes[name]._plotHeight = this._height;
+        }
+
+        if (data) {
+            if (options.dataRenderer && $.isFunction(options.dataRenderer)) {
+                if (options.dataRendererOptions) {
+                    this.dataRendererOptions = options.dataRendererOptions;
+                }
+                this.dataRenderer = options.dataRenderer;
+                data = this.dataRenderer(data, this, this.dataRendererOptions);
+            }
+
+            // make a copy of the data
+            this.data = $.extend(true, [], data);
+        }
+
+        if (opts) {
+            this.parseOptions(options);
+        }
+
+        this.title._plotWidth = this._width;
+
+        if (this.textColor) {
+            this.target.css('color', this.textColor);
+        }
+        if (this.fontFamily) {
+            this.target.css('font-family', this.fontFamily);
+        }
+        if (this.fontSize) {
+            this.target.css('font-size', this.fontSize);
+        }
+
+        this.title.init();
+        this.legend.init();
+        this._sumy = 0;
+        this._sumx = 0;
+
+        this.seriesStack = [];
+        this.previousSeriesStack = [];
+
+        this.computePlotData();
+
+        for (i = 0, seriesLen = this.series.length; i < seriesLen; i++) {
+            
+            // set default stacking order for series canvases
+            this.seriesStack.push(i);
+            this.previousSeriesStack.push(i);
+            this.series[i].shadowCanvas._plotDimensions = this._plotDimensions;
+            this.series[i].canvas._plotDimensions = this._plotDimensions;
+            
+            for (j = 0, l = $.jqplot.preSeriesInitHooks.length; j < l; j++) {
+                $.jqplot.preSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+            }
+            
+            for (j = 0, l = this.preSeriesInitHooks.hooks.length; j < l; j++) {
+                this.preSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+            }
+            
+            // this.populatePlotData(this.series[i], i);
+            this.series[i]._plotDimensions = this._plotDimensions;
+            this.series[i].init(i, this.grid.borderWidth, this);
+            
+            for (j = 0, l = $.jqplot.postSeriesInitHooks.length; j < l; j++) {
+                $.jqplot.postSeriesInitHooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+            }
+            
+            for (j = 0, l = this.postSeriesInitHooks.hooks.length; j < l; j++) {
+                this.postSeriesInitHooks.hooks[j].call(this.series[i], target, this.data, this.options.seriesDefaults, this.options.series[i], this);
+            }
+            
+            this._sumy += this.series[i]._sumy;
+            this._sumx += this.series[i]._sumx;
+        }
+
+        for (i = 0, l = _axisNames.length; i < l; i++) {
+
+            name = _axisNames[i];
+            axis = this.axes[name];
+
+            axis._plotDimensions = this._plotDimensions;
+            axis.init();
+
+            if (axis.borderColor === null) {
+                if (name.charAt(0) !== 'x' && axis.useSeriesColor === true && axis.show) {
+                    axis.borderColor = axis._series[0].color;
+                } else {
+                    axis.borderColor = this.grid.borderColor;
+                }
+            }
+        }
+
+        if (this.sortData) {
+            sortData(this.series);
+        }
+
+        this.grid.init();
+        this.grid._axes = this.axes;
+
+        this.legend._series = this.series;
+
+        for (i = 0, l = $.jqplot.postInitHooks.length; i < l; i++) {
+            $.jqplot.postInitHooks[i].call(this, target, this.data, options);
+        }
+
+        for (i = 0, l = this.postInitHooks.hooks.length; i < l; i++) {
+            this.postInitHooks.hooks[i].call(this, target, this.data, options);
+        }
+    };
     
     /**
      * method: quickInit
