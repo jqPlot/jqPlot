@@ -484,9 +484,6 @@
             return null;
             
         };
-
-    // make sure undefined is undefined
-    var undefined;
     
     /**
      * 
