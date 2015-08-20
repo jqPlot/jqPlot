@@ -1598,8 +1598,6 @@
         }
     };
     
-
-
     /**
      * Class: Grid
      * 
@@ -1655,12 +1653,12 @@
         // prop: shadowAlpha
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.07';
-        this._left;
-        this._top;
-        this._right;
-        this._bottom;
-        this._width;
-        this._height;
+        this._left = null;
+        this._top = null;
+        this._right = null;
+        this._bottom = null;
+        this._width = null;
+        this._height = null;
         this._axes = [];
         // prop: renderer
         // Instance of a renderer which will actually render the grid,
@@ -1670,31 +1668,31 @@
         // Options to pass on to the renderer,
         // see <$.jqplot.CanvasGridRenderer>.
         this.rendererOptions = {};
-        this._offsets = {top:null, bottom:null, left:null, right:null};
+        this._offsets = {top: null, bottom: null, left: null, right: null};
     }
     
     Grid.prototype = new $.jqplot.ElemContainer();
     Grid.prototype.constructor = Grid;
     
-    Grid.prototype.init = function() {
+    Grid.prototype.init = function () {
         if ($.isFunction(this.renderer)) {
-            this.renderer = new this.renderer();  
+            this.renderer = new this.renderer();
         }
         this.renderer.init.call(this, this.rendererOptions);
     };
     
-    Grid.prototype.createElement = function(offsets,plot) {
+    Grid.prototype.createElement = function (offsets, plot) {
         this._offsets = offsets;
         return this.renderer.createElement.call(this, plot);
     };
     
-    Grid.prototype.draw = function() {
+    Grid.prototype.draw = function () {
         this.renderer.draw.call(this);
     };
     
-    $.jqplot.GenericCanvas = function() {
+    $.jqplot.GenericCanvas = function () {
         $.jqplot.ElemContainer.call(this);
-        this._ctx;  
+        this._ctx = null;
     };
     
     $.jqplot.GenericCanvas.prototype = new $.jqplot.ElemContainer();
