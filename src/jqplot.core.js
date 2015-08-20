@@ -770,26 +770,26 @@
         
     };
     
-    Axis.prototype.draw = function(ctx, plot) {
+    Axis.prototype.draw = function (ctx, plot) {
         // Memory Leaks patch
         if (this.__ticks) {
-          this.__ticks = null;
+            this.__ticks = null;
         }
 
         return this.renderer.draw.call(this, ctx, plot);
         
     };
     
-    Axis.prototype.set = function() {
+    Axis.prototype.set = function () {
         this.renderer.set.call(this);
     };
     
-    Axis.prototype.pack = function(pos, offsets) {
+    Axis.prototype.pack = function (pos, offsets) {
         if (this.show) {
             this.renderer.pack.call(this, pos, offsets);
         }
         // these properties should all be available now.
-        if (this._min == null) {
+        if (this._min === null) {
             this._min = this.min;
             this._max = this.max;
             this._tickInterval = this.tickInterval;
@@ -799,25 +799,33 @@
     };
     
     // reset the axis back to original values if it has been scaled, zoomed, etc.
-    Axis.prototype.reset = function() {
+    Axis.prototype.reset = function () {
         this.renderer.reset.call(this);
     };
     
-    Axis.prototype.resetScale = function(opts) {
+    Axis.prototype.resetScale = function (opts) {
         $.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
         this.resetDataBounds();
     };
     
-    Axis.prototype.resetDataBounds = function() {
+    Axis.prototype.resetDataBounds = function () {
         // Go through all the series attached to this axis and find
         // the min/max bounds for this axis.
-        var db = this._dataBounds;
+        var db = this._dataBounds,
+            l,
+            s,
+            d,
+            // check for when to force min 0 on bar series plots.
+            doforce = (this.show) ? true : false,
+            i = 0,
+            j = 0,
+            minyidx,
+            maxyidx;
+        
         db.min = null;
         db.max = null;
-        var l, s, d;
-        // check for when to force min 0 on bar series plots.
-        var doforce = (this.show) ? true : false;
-        for (var i=0; i<this._series.length; i++) {
+        
+        for (i = 0; i < this._series.length; i++) {
             s = this._series[i];
             if (s.show || this.scaleToHiddenSeries) {
                 d = s._plotData;
@@ -825,30 +833,30 @@
                     d = [[0, s.renderer.bands._min], [1, s.renderer.bands._max]];
                 }
 
-                var minyidx = 1, maxyidx = 1;
+                minyidx = 1;
+                maxyidx = 1;
 
-                if (s._type != null && s._type == 'ohlc') {
+                if (s._type !== null && s._type === 'ohlc') {
                     minyidx = 3;
                     maxyidx = 2;
                 }
                 
-                for (var j=0, l=d.length; j<l; j++) { 
-                    if (this.name == 'xaxis' || this.name == 'x2axis') {
-                        if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
+                for (j = 0, l = d.length; j < l; j++) {
+                    if (this.name === 'xaxis' || this.name === 'x2axis') {
+                        if ((d[j][0] !== null && d[j][0] < db.min) || db.min === null) {
                             db.min = d[j][0];
                         }
-                        if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
+                        if ((d[j][0] !== null && d[j][0] > db.max) || db.max === null) {
                             db.max = d[j][0];
                         }
-                    }              
-                    else {
-                        if ((d[j][minyidx] != null && d[j][minyidx] < db.min) || db.min == null) {
+                    } else {
+                        if ((d[j][minyidx] !== null && d[j][minyidx] < db.min) || db.min === null) {
                             db.min = d[j][minyidx];
                         }
-                        if ((d[j][maxyidx] != null && d[j][maxyidx] > db.max) || db.max == null) {
+                        if ((d[j][maxyidx] !== null && d[j][maxyidx] > db.max) || db.max === null) {
                             db.max = d[j][maxyidx];
                         }
-                    }              
+                    }
                 }
 
                 // Hack to not pad out bottom of bar plots unless user has specified a padding.
@@ -857,21 +865,15 @@
                 // If any series attached to axis is not a bar, wont force 0.
                 if (doforce && s.renderer.constructor !== $.jqplot.BarRenderer) {
                     doforce = false;
-                }
-
-                else if (doforce && this._options.hasOwnProperty('forceTickAt0') && this._options.forceTickAt0 == false) {
+                } else if (doforce && this._options.hasOwnProperty('forceTickAt0') && this._options.forceTickAt0 === false) {
                     doforce = false;
-                }
-
-                else if (doforce && s.renderer.constructor === $.jqplot.BarRenderer) {
-                    if (s.barDirection == 'vertical' && this.name != 'xaxis' && this.name != 'x2axis') { 
-                        if (this._options.pad != null || this._options.padMin != null) {
+                } else if (doforce && s.renderer.constructor === $.jqplot.BarRenderer) {
+                    if (s.barDirection === 'vertical' && this.name !== 'xaxis' && this.name !== 'x2axis') {
+                        if (this._options.pad !== null || this._options.padMin !== null) {
                             doforce = false;
                         }
-                    }
-
-                    else if (s.barDirection == 'horizontal' && (this.name == 'xaxis' || this.name == 'x2axis')) {
-                        if (this._options.pad != null || this._options.padMin != null) {
+                    } else if (s.barDirection === 'horizontal' && (this.name === 'xaxis' || this.name === 'x2axis')) {
+                        if (this._options.pad !== null || this._options.padMin !== null) {
                             doforce = false;
                         }
                     }
