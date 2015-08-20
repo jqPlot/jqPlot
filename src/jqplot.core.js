@@ -3273,41 +3273,6 @@
                 this.target.trigger('jqplotPostDraw', [this]);
             }
         };
-
-        JqPlot.prototype.doFillBetweenLines = function () {
-            var fb = this.fillBetween;
-            var sid1 = fb.series1;
-            var sid2 = fb.series2;
-            // first series should always be lowest index
-            var id1 = (sid1 < sid2) ? sid1 : sid2;
-            var id2 = (sid2 >  sid1) ? sid2 : sid1;
-
-            var series1 = this.series[id1];
-            var series2 = this.series[id2];
-
-            if (series2.renderer.smooth) {
-                var tempgd = series2.renderer._smoothedData.slice(0).reverse();
-            }
-            else {
-                var tempgd = series2.gridData.slice(0).reverse();
-            }
-
-            if (series1.renderer.smooth) {
-                var gd = series1.renderer._smoothedData.concat(tempgd);
-            }
-            else {
-                var gd = series1.gridData.concat(tempgd);
-            }
-
-            var color = (fb.color !== null) ? fb.color : this.series[sid1].fillColor;
-            var baseSeries = (fb.baseSeries !== null) ? fb.baseSeries : id1;
-
-            // now apply a fill to the shape on the lower series shadow canvas,
-            // so it is behind both series.
-            var sr = this.series[baseSeries].renderer.shapeRenderer;
-            var opts = {fillStyle: color, fill: true, closePath: true};
-            sr.draw(series1.shadowCanvas._ctx, gd, opts);
-        };
         
         this.bindCustomEvents = function() {
             this.eventCanvas._elem.bind('click', {plot:this}, this.onClick);
@@ -3887,6 +3852,49 @@
         
 
     }
+    
+    /**
+     *
+     */
+     JqPlot.prototype.doFillBetweenLines = function () {
+        var fb = this.fillBetween,
+            sid1 = fb.series1,
+            sid2 = fb.series2,
+        // first series should always be lowest index
+            id1 = (sid1 < sid2) ? sid1 : sid2,
+            id2 = (sid2 >  sid1) ? sid2 : sid1,
+
+            series1 = this.series[id1],
+            series2 = this.series[id2],
+            tempgd,
+            gd,
+            color,
+            baseSeries,
+            sr,
+            opts;
+
+        if (series2.renderer.smooth) {
+            tempgd = series2.renderer._smoothedData.slice(0).reverse();
+        } else {
+            tempgd = series2.gridData.slice(0).reverse();
+        }
+
+        if (series1.renderer.smooth) {
+            gd = series1.renderer._smoothedData.concat(tempgd);
+        } else {
+            gd = series1.gridData.concat(tempgd);
+        }
+
+        color = (fb.color !== null) ? fb.color : this.series[sid1].fillColor;
+        baseSeries = (fb.baseSeries !== null) ? fb.baseSeries : id1;
+
+        // now apply a fill to the shape on the lower series shadow canvas,
+        // so it is behind both series.
+        sr = this.series[baseSeries].renderer.shapeRenderer;
+        opts = {fillStyle: color, fill: true, closePath: true};
+
+        sr.draw(series1.shadowCanvas._ctx, gd, opts);
+    };
     
     /**
      * @param {string} name
