@@ -2955,82 +2955,6 @@
             this.legend._series = this.series;
         };
         
-
-        this.computePlotData = function() {
-            this._plotData = [];
-            this._stackData = [];
-            var series,
-                index,
-                l;
-
-
-            for (index=0, l=this.series.length; index<l; index++) {
-                series = this.series[index];
-                this._plotData.push([]);
-                this._stackData.push([]);
-                var cd = series.data;
-                this._plotData[index] = $.extend(true, [], cd);
-                this._stackData[index] = $.extend(true, [], cd);
-                series._plotData = this._plotData[index];
-                series._stackData = this._stackData[index];
-                var plotValues = {x:[], y:[]};
-
-                if (this.stackSeries && !series.disableStack) {
-                    series._stack = true;
-                    ///////////////////////////
-                    // have to check for nulls
-                    ///////////////////////////
-                    var sidx = (series._stackAxis === 'x') ? 0 : 1;
-
-                    for (var k=0, cdl=cd.length; k<cdl; k++) {
-                        var temp = cd[k][sidx];
-                        if (temp == null) {
-                            temp = 0;
-                        }
-                        this._plotData[index][k][sidx] = temp;
-                        this._stackData[index][k][sidx] = temp;
-
-                        if (index > 0) {
-                            for (var j=index; j--;) {
-                                var prevval = this._plotData[j][k][sidx];
-                                // only need to sum up the stack axis column of data
-                                // and only sum if it is of same sign.
-                                // if previous series isn't same sign, keep looking
-                                // at earlier series untill we find one of same sign.
-                                if (temp * prevval >= 0) {
-                                    this._plotData[index][k][sidx] += prevval;
-                                    this._stackData[index][k][sidx] += prevval;
-                                    break;
-                                } 
-                            }
-                        }
-                    }
-
-                }
-                else {
-                    for (var i=0; i<series.data.length; i++) {
-                        plotValues.x.push(series.data[i][0]);
-                        plotValues.y.push(series.data[i][1]);
-                    }
-                    this._stackData.push(series.data);
-                    this.series[index]._stackData = series.data;
-                    this._plotData.push(series.data);
-                    series._plotData = series.data;
-                    series._plotValues = plotValues;
-                }
-                if (index>0) {
-                    series._prevPlotData = this.series[index-1]._plotData;
-                }
-                series._sumy = 0;
-                series._sumx = 0;
-                for (i=series.data.length-1; i>-1; i--) {
-                    series._sumy += series.data[i][1];
-                    series._sumx += series.data[i][0];
-                }
-            }
-
-        };
-        
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
             var idx = 0;
@@ -3048,6 +2972,112 @@
         })(this);
 
     }
+    
+    /**
+     *
+     */
+    JqPlot.prototype.computePlotData = function () {
+
+        var series,
+            index,
+            i,
+            l,
+            j,
+            cd = [],
+            plotValues = {},
+            sidx,
+            k,
+            cdl,
+            temp,
+            prevval = null,
+            dtlen;
+
+        this._plotData = [];
+        this._stackData = [];
+
+        for (index = 0, l = this.series.length; index < l; index++) {
+
+            series = this.series[index];
+
+            this._plotData.push([]);
+            this._stackData.push([]);
+
+            cd = series.data;
+
+            this._plotData[index] = $.extend(true, [], cd);
+            this._stackData[index] = $.extend(true, [], cd);
+
+            series._plotData = this._plotData[index];
+            series._stackData = this._stackData[index];
+
+            plotValues = {x: [], y: []};
+
+            if (this.stackSeries && !series.disableStack) {
+
+                series._stack = true;
+
+                ///////////////////////////
+                // have to check for nulls
+                ///////////////////////////
+                sidx = (series._stackAxis === 'x') ? 0 : 1;
+
+                for (k = 0, cdl = cd.length; k < cdl; k++) {
+
+                    temp = cd[k][sidx];
+
+                    if (temp === null) {
+                        temp = 0;
+                    }
+
+                    this._plotData[index][k][sidx] = temp;
+                    this._stackData[index][k][sidx] = temp;
+
+                    if (index > 0) {
+                        j = index;
+                        while (j--) {
+                            //window.console.log("computePlotData", j, k, sidx, this._plotData[j][k]);
+                            if (this._plotData[j][k]) {
+                                prevval = this._plotData[j][k][sidx];
+                            }
+                            // only need to sum up the stack axis column of data
+                            // and only sum if it is of same sign.
+                            // if previous series isn't same sign, keep looking
+                            // at earlier series untill we find one of same sign.
+                            if (prevval && temp * prevval >= 0) {
+                                this._plotData[index][k][sidx] += prevval;
+                                this._stackData[index][k][sidx] += prevval;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                for (i = 0, dtlen = series.data.length; i < dtlen; i++) {
+                    plotValues.x.push(series.data[i][0]);
+                    plotValues.y.push(series.data[i][1]);
+                }
+                this._stackData.push(series.data);
+                this.series[index]._stackData = series.data;
+                this._plotData.push(series.data);
+                series._plotData = series.data;
+                series._plotValues = plotValues;
+            }
+
+            if (index > 0) {
+                series._prevPlotData = this.series[index - 1]._plotData;
+            }
+
+            series._sumy = 0;
+            series._sumx = 0;
+
+            for (i = series.data.length - 1; i > -1; i--) {
+                series._sumy += series.data[i][1];
+                series._sumx += series.data[i][0];
+            }
+        }
+
+    };
     
     /**
      * Populates the _stackData and _plotData arrays for the plot and the series.
