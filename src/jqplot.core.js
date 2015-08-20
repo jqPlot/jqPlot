@@ -616,10 +616,10 @@
         this.ticks = [];
         // prop: numberTicks
         // Desired number of ticks.  Default is to compute automatically.
-        this.numberTicks;
+        this.numberTicks = null;
         // prop: tickInterval
         // number of units between ticks.  Mutually exclusive with numberTicks.
-        this.tickInterval;
+        this.tickInterval = null;
         // prop: renderer
         // A class of a rendering engine that handles tick generation, 
         // scaling input data to pixel grid units and drawing the axis element.
@@ -665,13 +665,13 @@
         // True to include hidden series when computing axes bounds and scaling.
         this.scaleToHiddenSeries = false;
         // minimum and maximum values on the axis.
-        this._dataBounds = {min:null, max:null};
+        this._dataBounds = {min: null, max: null};
         // statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
         // holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
         this._intervalStats = [];
         // pixel position from the top left of the min value and max value on the axis.
-        this._offsets = {min:null, max:null};
-        this._ticks=[];
+        this._offsets = {min: null, max: null};
+        this._ticks = [];
         this._label = null;
         // prop: syncTicks
         // true to try and synchronize tick spacing across multiple axes so that ticks and
@@ -697,15 +697,17 @@
     Axis.prototype = new $.jqplot.ElemContainer();
     Axis.prototype.constructor = Axis;
     
-    Axis.prototype.init = function() {
+    Axis.prototype.init = function () {
+        
         if ($.isFunction(this.renderer)) {
-            this.renderer = new this.renderer();  
+            this.renderer = new this.renderer();
         }
         // set the axis name
         this.tickOptions.axis = this.name;
+        
         // if showMark or showLabel tick options not specified, use value of axis option.
         // showTicks overrides showTickMarks.
-        if (this.tickOptions.showMark == null) {
+        if (typeof this.tickOptions.showMark === "undefined") {
             this.tickOptions.showMark = this.showTicks;
         }
         if (this.tickOptions.showMark == null) {
