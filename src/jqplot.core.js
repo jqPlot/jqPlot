@@ -285,12 +285,14 @@
         
         var myCanvases = [];
         
-        this.getCanvas = function() {
-            var canvas;
-            var makeNew = true;
+        this.getCanvas = function () {
+            var canvas,
+                makeNew = true,
+                i,
+                l;
             
             if (!$.jqplot.use_excanvas) {
-                for (var i = 0, l = $.jqplot.CanvasManager.canvases.length; i < l; i++) {
+                for (i = 0, l = $.jqplot.CanvasManager.canvases.length; i < l; i++) {
                     if ($.jqplot.CanvasManager.free[i] === true) {
                         makeNew = false;
                         canvas = $.jqplot.CanvasManager.canvases[i];
@@ -307,34 +309,34 @@
                 myCanvases.push($.jqplot.CanvasManager.canvases.length);
                 $.jqplot.CanvasManager.canvases.push(canvas);
                 $.jqplot.CanvasManager.free.push(false);
-            }   
+            }
             
             return canvas;
         };
         
         // this method has to be used after settings the dimesions
         // on the element returned by getCanvas()
-        this.initCanvas = function(canvas) {
+        this.initCanvas = function (canvas) {
             if ($.jqplot.use_excanvas) {
                 return window.G_vmlCanvasManager.initElement(canvas);
             }
             return canvas;
         };
 
-        this.freeAllCanvases = function() {
-            for (var i = 0, l=myCanvases.length; i < l; i++) {
+        this.freeAllCanvases = function () {
+            var i, l;
+            for (i = 0, l = myCanvases.length; i < l; i++) {
                 this.freeCanvas(myCanvases[i]);
             }
             myCanvases = [];
         };
 
-        this.freeCanvas = function(idx) {
-            if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
+        this.freeCanvas = function (idx) {
+            if ($.jqplot.use_excanvas && typeof window.G_vmlCanvasManager.uninitElement !== "undefined") {
                 // excanvas can't be reused, but properly unset
                 window.G_vmlCanvasManager.uninitElement($.jqplot.CanvasManager.canvases[idx]);
                 $.jqplot.CanvasManager.canvases[idx] = null;
-            } 
-            else {
+            } else {
                 var canvas = $.jqplot.CanvasManager.canvases[idx];
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
                 $(canvas).unbind().removeAttr('class').removeAttr('style');
@@ -349,21 +351,23 @@
         };
         
     };
-
             
     // Convienence function that won't hang IE or FF without FireBug.
-    $.jqplot.log = function() {
+    $.jqplot.log = function () {
         if (window.console) {
             window.console.log.apply(window.console, arguments);
         }
     };
         
+    /**
+     * Settings and configuration
+     */
     $.jqplot.config = {
         addDomReference: false,
-        enablePlugins:false,
-        defaultHeight:300,
-        defaultWidth:400,
-        UTCAdjust:false,
+        enablePlugins: false,
+        defaultHeight: 300,
+        defaultWidth: 400,
+        UTCAdjust: false,
         timezoneOffset: new Date(new Date().getTimezoneOffset() * 60000),
         errorMessage: '',
         errorBackground: '',
@@ -372,7 +376,7 @@
         errorFontSize: '',
         errorFontStyle: '',
         errorFontWeight: '',
-        catchErrors: false,
+        catchErrors: true,      // debug mode
         defaultTickFormatString: "%.1f",
         defaultColors: [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
         defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"],
@@ -383,42 +387,39 @@
         pluginLocation: 'jqplot/src/plugins/'
     };
     
-    
-    $.jqplot.arrayMax = function( array ){
-        return Math.max.apply( Math, array );
+    $.jqplot.arrayMax = function (array) {
+        return Math.max.apply(Math, array);
     };
     
-    $.jqplot.arrayMin = function( array ){
-        return Math.min.apply( Math, array );
+    $.jqplot.arrayMin = function (array) {
+        return Math.min.apply(Math, array);
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
     
     // canvas related tests taken from modernizer:
     // Copyright (c) 2009 - 2010 Faruk Ates.
-    // http://www.modernizr.com
-    
-    $.jqplot.support_canvas = function() {
-        if (typeof $.jqplot.support_canvas.result == 'undefined') {
-            $.jqplot.support_canvas.result = !!document.createElement('canvas').getContext; 
+    // http://www.modernizr.com    
+    $.jqplot.support_canvas = function () {
+        if (typeof $.jqplot.support_canvas.result === 'undefined') {
+            $.jqplot.support_canvas.result = !!document.createElement('canvas').getContext;
         }
         return $.jqplot.support_canvas.result;
     };
             
-    $.jqplot.support_canvas_text = function() {
-        if (typeof $.jqplot.support_canvas_text.result == 'undefined') {
-            if (window.G_vmlCanvasManager !== undefined && window.G_vmlCanvasManager._version > 887) {
+    $.jqplot.support_canvas_text = function () {
+        if (typeof $.jqplot.support_canvas_text.result === 'undefined') {
+            if (window.G_vmlCanvasManager && window.G_vmlCanvasManager._version > 887) {
                 $.jqplot.support_canvas_text.result = true;
-            }
-            else {
-                $.jqplot.support_canvas_text.result = !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+            } else {
+                $.jqplot.support_canvas_text.result = !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText === 'function');
             }
              
         }
         return $.jqplot.support_canvas_text.result;
     };
     
-    $.jqplot.use_excanvas = ((!$.support.boxModel || !$.support.objectAll || !$support.leadingWhitespace) && !$.jqplot.support_canvas()) ? true : false;
+    $.jqplot.use_excanvas = ((!$.support.boxModel || !$.support.objectAll || !$.support.leadingWhitespace) && !$.jqplot.support_canvas()) ? true : false;
     
     /**
      * 
@@ -467,17 +468,26 @@
     $.jqplot.postDrawSeriesShadowHooks = [];
 
     // A superclass holding some common properties and methods.
-    $.jqplot.ElemContainer = function() {
-        this._elem;
-        this._plotWidth;
-        this._plotHeight;
-        this._plotDimensions = {height:null, width:null};
+    $.jqplot.ElemContainer = function () {
+        this._elem = null;
+        this._plotWidth = 0;
+        this._plotHeight = 0;
+        this._plotDimensions = {height: null, width: null};
     };
     
-    $.jqplot.ElemContainer.prototype.createElement = function(el, offsets, clss, cssopts, attrib) {
+    /**
+     * [[Description]]
+     * @param   {[[Type]]} el      [[Description]]
+     * @param   {[[Type]]} offsets [[Description]]
+     * @param   {[[Type]]} clss    [[Description]]
+     * @param   {[[Type]]} cssopts [[Description]]
+     * @param   {[[Type]]} attrib  [[Description]]
+     * @returns {[[Type]]} [[Description]]
+     */
+    $.jqplot.ElemContainer.prototype.createElement = function (el, offsets, clss, cssopts, attrib) {
         this._offsets = offsets;
-        var klass = clss || 'jqplot';
-        var elem = document.createElement(el);
+        var klass = clss || 'jqplot',
+            elem = document.createElement(el);
         this._elem = $(elem);
         this._elem.addClass(klass);
         this._elem.css(cssopts);
@@ -487,46 +497,43 @@
         return this._elem;
     };
     
-    $.jqplot.ElemContainer.prototype.getWidth = function() {
+    $.jqplot.ElemContainer.prototype.getWidth = function () {
         if (this._elem) {
             return this._elem.outerWidth(true);
-        }
-        else {
+        } else {
             return null;
         }
     };
     
-    $.jqplot.ElemContainer.prototype.getHeight = function() {
+    $.jqplot.ElemContainer.prototype.getHeight = function () {
         if (this._elem) {
             return this._elem.outerHeight(true);
-        }
-        else {
+        } else {
             return null;
         }
     };
     
-    $.jqplot.ElemContainer.prototype.getPosition = function() {
+    $.jqplot.ElemContainer.prototype.getPosition = function () {
         if (this._elem) {
             return this._elem.position();
-        }
-        else {
-            return {top:null, left:null, bottom:null, right:null};
+        } else {
+            return {top: null, left: null, bottom: null, right: null};
         }
     };
     
-    $.jqplot.ElemContainer.prototype.getTop = function() {
+    $.jqplot.ElemContainer.prototype.getTop = function () {
         return this.getPosition().top;
     };
     
-    $.jqplot.ElemContainer.prototype.getLeft = function() {
+    $.jqplot.ElemContainer.prototype.getLeft = function () {
         return this.getPosition().left;
     };
     
-    $.jqplot.ElemContainer.prototype.getBottom = function() {
+    $.jqplot.ElemContainer.prototype.getBottom = function () {
         return this._elem.css('bottom');
     };
     
-    $.jqplot.ElemContainer.prototype.getRight = function() {
+    $.jqplot.ElemContainer.prototype.getRight = function () {
         return this._elem.css('right');
     };
     
