@@ -1738,21 +1738,22 @@
     };
     
     // Memory Leaks patch
-    $.jqplot.GenericCanvas.prototype.resetCanvas = function() {
-      if (this._elem) {
-        if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement !== undefined) {
-           window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
-        }
+    $.jqplot.GenericCanvas.prototype.resetCanvas = function () {
         
-        //this._elem.remove();
-        this._elem.emptyForce();
-      }
+        if (this._elem) {
+            if ($.jqplot.use_excanvas && window.G_vmlCanvasManager.uninitElement) {
+                window.G_vmlCanvasManager.uninitElement(this._elem.get(0));
+            }
+
+            //this._elem.remove();
+            this._elem.emptyForce();
+        }
       
-      this._ctx = null;
+        this._ctx = null;
     };
     
     $.jqplot.HooksManager = function () {
-        this.hooks =[];
+        this.hooks = [];
         this.args = [];
     };
     
