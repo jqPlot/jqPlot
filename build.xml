@@ -6,6 +6,7 @@
     <property description="Build, work, temporary directory" name="BUILD_DIR" value="build" />
     <property description="Directory for distributable files" name="DIST_DIR" value="dist" />
     <property description="Directory for web site files" name="WEB_DIR" value="web" />
+    <property description="Directory for development, running in a browser" name="DEV_DIR" value="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8" />
 
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
@@ -272,7 +273,7 @@
     <target name="dev" depends="dist" description="Copy files to dev">
         <echo message="Copying core to emc2.ui" />
         
-        <copy todir="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8">
+        <copy todir="${DEV_DIR}">
           <fileset dir="${DIST_DIR}">
             <include name="excanvas.js" />
             <include name="excanvas.min.js" />
@@ -285,7 +286,7 @@
         
         <echo message="Copying plugins to emc2.ui" />
         
-        <copy todir="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8/plugins">
+        <copy todir="${DEV_DIR}">
           <fileset dir="${DIST_DIR}/plugins" includes="*" />
         </copy>
         
