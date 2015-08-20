@@ -3804,30 +3804,6 @@
             this.seriesStack.unshift(idx);
         };
         
-        // method: restorePreviousSeriesOrder
-        // This method requires jQuery 1.4+
-        // Restore the series canvas order to its previous state.
-        // Useful to put a series back where it belongs after moving
-        // it to the front.
-        this.restorePreviousSeriesOrder = function () {
-            var i, j, serelem, shadelem, temp, move, keep;
-            // if no change, return.
-            if (this.seriesStack == this.previousSeriesStack) {
-                return;
-            }
-            for (i=1; i<this.previousSeriesStack.length; i++) {
-                move = this.previousSeriesStack[i];
-                keep = this.previousSeriesStack[i-1];
-                serelem = this.series[move].canvas._elem.detach();
-                shadelem = this.series[move].shadowCanvas._elem.detach();
-                this.series[keep].shadowCanvas._elem.after(shadelem);
-                this.series[keep].canvas._elem.after(serelem);
-            }
-            temp = this.seriesStack.slice(0);
-            this.seriesStack = this.previousSeriesStack.slice(0);
-            this.previousSeriesStack = temp;
-        };
-
     }
     
     /**
@@ -3915,6 +3891,43 @@
 
     };
     
+    /**
+     * method: restorePreviousSeriesOrder
+     * This method requires jQuery 1.4+
+     * Restore the series canvas order to its previous state.
+     * Useful to put a series back where it belongs after moving
+     * it to the front.
+     */
+    JqPlot.prototype.restorePreviousSeriesOrder = function () {
+        
+        var i,
+            j,
+            l,
+            serelem,
+            shadelem,
+            temp,
+            move,
+            keep;
+
+        // if no change, return.
+        if (this.seriesStack === this.previousSeriesStack) {
+            return;
+        }
+
+        for (i = 1, l = this.previousSeriesStack.length; i < l; i++) {
+            move = this.previousSeriesStack[i];
+            keep = this.previousSeriesStack[i - 1];
+            serelem = this.series[move].canvas._elem.detach();
+            shadelem = this.series[move].shadowCanvas._elem.detach();
+            this.series[keep].shadowCanvas._elem.after(shadelem);
+            this.series[keep].canvas._elem.after(serelem);
+        }
+
+        temp = this.seriesStack.slice(0);
+
+        this.seriesStack = this.previousSeriesStack.slice(0);
+        this.previousSeriesStack = temp;
+    };
     
     /**
      * Computes a highlight color or array of highlight colors from given colors.
