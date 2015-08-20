@@ -279,11 +279,11 @@
                         theta = -Math.atan(-y / x);
                     } else if (x < 0) {
                         theta = Math.PI - Math.atan(-y / x);
-                    } else if (x == 0 && -y > 0) {
+                    } else if (x === 0 && -y > 0) {
                         theta = 3 * Math.PI / 2;
-                    } else if (x == 0 && -y < 0) {
+                    } else if (x === 0 && -y < 0) {
                         theta = Math.PI / 2;
-                    } else if (x == 0 && y == 0) {
+                    } else if (x === 0 && y === 0) {
                         theta = 0;
                     }
 
@@ -328,11 +328,11 @@
                         theta = -Math.atan(-y / x);
                     } else if (x < 0) {
                         theta = Math.PI - Math.atan(-y / x);
-                    } else if (x == 0 && -y > 0) {
+                    } else if (x === 0 && -y > 0) {
                         theta = 3 * Math.PI / 2;
-                    } else if (x == 0 && -y < 0) {
+                    } else if (x === 0 && -y < 0) {
                         theta = Math.PI / 2;
-                    } else if (x == 0 && y == 0) {
+                    } else if (x === 0 && y === 0) {
                         theta = 0;
                     }
 
@@ -397,19 +397,29 @@
 
                 case $.jqplot.FunnelRenderer:
 
+                    var v,
+                        vfirst,
+                        vlast,
+                        lex,
+                        rex,
+                        cv,
+                        findedge;
+                        
                     x = gridpos.x;
                     y = gridpos.y;
 
-                    var v = s._vertices,
-                        vfirst = v[0],
-                        vlast = v[v.length - 1],
-                        lex,
-                        rex,
-                        cv;
+                    v = s._vertices;
+                    vfirst = v[0];
+                    vlast = v[v.length - 1];
 
-                    // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
-
-                    function findedge(l, p1, p2) {
+                    /**
+                     * Equations of right and left sides, returns x, y values given height of section (y value and 2 points)
+                     * @param   {Number} l  
+                     * @param   {Array}    p1
+                     * @param   {Array}  p2 
+                     * @returns {Array}
+                     */
+                    findedge = function (l, p1, p2) {
 
                         var m,
                             b,
@@ -420,7 +430,7 @@
                         y = l + p1[1];
 
                         return [(y - b) / m, y];
-                    }
+                    };
 
                     // check each section
                     lex = findedge(y, vfirst[0], vlast[3]);
@@ -442,6 +452,12 @@
 
                 case $.jqplot.LineRenderer:
 
+                    var inside,
+                        numPoints,
+                        ii,
+                        vertex1,
+                        vertex2;
+                        
                     x = gridpos.x;
                     y = gridpos.y;
                     r = s.renderer;
@@ -451,19 +467,19 @@
                         if ((s.fill || (s.renderer.bands.show && s.renderer.bands.fill)) && (!plot.plugins.highlighter || !plot.plugins.highlighter.show)) {
 
                             // first check if it is in bounding box
-                            var inside = false;
+                            inside = false;
 
                             if (x > s._boundingBox[0][0] && x < s._boundingBox[1][0] && y > s._boundingBox[1][1] && y < s._boundingBox[0][1]) {
                                 // now check the crossing number   
 
-                                var numPoints = s._areaPoints.length;
-                                var ii;
+                                numPoints = s._areaPoints.length;
+                                
                                 j = numPoints - 1;
 
                                 for (ii = 0; ii < numPoints; ii++) {
 
-                                    var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+                                    vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                    vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
                                     if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y) {
                                         if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
@@ -497,7 +513,7 @@
                                 p = s.gridData[j];
 
                                 // neighbor looks different to OHLC chart.
-                                if (r.constructor == $.jqplot.OHLCRenderer) {
+                                if (r.constructor === $.jqplot.OHLCRenderer) {
 
                                     if (r.candleStick) {
 
@@ -544,7 +560,7 @@
                                     d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
 
                                     if (d <= threshold && (d <= d0 || d0 == null)) {
-                                       d0 = d;
+                                        d0 = d;
                                         return {
                                             seriesIndex: i,
                                             pointIndex: j,
@@ -576,7 +592,7 @@
                             p = s.gridData[j];
 
                             // neighbor looks different to OHLC chart.
-                            if (r.constructor == $.jqplot.OHLCRenderer) {
+                            if (r.constructor === $.jqplot.OHLCRenderer) {
 
                                 if (r.candleStick) {
                                     
