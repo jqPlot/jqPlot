@@ -1496,36 +1496,42 @@
         sctx = opts = plot = j = data = gridData = null;
     };
     
-    Series.prototype.drawShadow = function(sctx, opts, plot) {
-        var options = (opts == undefined) ? {} : opts;
-        sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
+    Series.prototype.drawShadow = function (sctx, opts, plot) {
         
-        var j, data, gridData;
+        var options = (typeof opts === "undefined") ? {} : opts,
+            j,
+            l,
+            data,
+            gridData;
+        
+        sctx = (typeof sctx === "undefined") ? this.shadowCanvas._ctx : sctx;
         
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
+        for (j = 0, l = $.jqplot.preDrawSeriesShadowHooks.length; j < l; j++) {
             $.jqplot.preDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
+        
         if (this.shadow) {
+            
             this.renderer.setGridData.call(this, plot);
 
             data = [];
+            
             if (options.data) {
                 data = options.data;
-            }
-            else if (!this._stack) {
+            } else if (!this._stack) {
                 data = this.data;
-            }
-            else {
+            } else {
                 data = this._plotData;
             }
+            
             gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
             this.renderer.drawShadow.call(this, sctx, gridData, options, plot);
         }
         
-        for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
+        for (j = 0, l = $.jqplot.postDrawSeriesShadowHooks.length; j < l; j++) {
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         
