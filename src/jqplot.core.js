@@ -3827,29 +3827,6 @@
             this.seriesStack = this.previousSeriesStack.slice(0);
             this.previousSeriesStack = temp;
         };
-        
-        // method: restoreOriginalSeriesOrder
-        // This method requires jQuery 1.4+
-        // Restore the series canvas order to its original order
-        // when the plot was created.
-        this.restoreOriginalSeriesOrder = function () {
-            var i, j, arr=[], serelem, shadelem;
-            for (i=0; i<this.series.length; i++) {
-                arr.push(i);
-            }
-            if (this.seriesStack == arr) {
-                return;
-            }
-            this.previousSeriesStack = this.seriesStack.slice(0);
-            this.seriesStack = arr;
-            for (i=1; i<this.seriesStack.length; i++) {
-                serelem = this.series[i].canvas._elem.detach();
-                shadelem = this.series[i].shadowCanvas._elem.detach();
-                this.series[i-1].shadowCanvas._elem.after(shadelem);
-                this.series[i-1].canvas._elem.after(serelem);
-            }
-        };
-        
 
     }
     
@@ -3901,6 +3878,41 @@
      */
     JqPlot.prototype.activateTheme = function (name) {
         this.themeEngine.activate(this, name);
+    };
+    
+    /**
+     * method: restoreOriginalSeriesOrder
+     * This method requires jQuery 1.4+
+     * Restore the series canvas order to its original order
+     * when the plot was created.
+     */
+    JqPlot.prototype.restoreOriginalSeriesOrder = function () {
+
+        var i,
+            j,
+            l,
+            arr = [],
+            serelem,
+            shadelem;
+
+        for (i = 0, l = this.series.length; i < l; i++) {
+            arr.push(i);
+        }
+
+        if (this.seriesStack === arr) {
+            return;
+        }
+
+        this.previousSeriesStack = this.seriesStack.slice(0);
+        this.seriesStack = arr;
+
+        for (i = 1; i < this.seriesStack.length; i++) {
+            serelem = this.series[i].canvas._elem.detach();
+            shadelem = this.series[i].shadowCanvas._elem.detach();
+            this.series[i - 1].shadowCanvas._elem.after(shadelem);
+            this.series[i - 1].canvas._elem.after(serelem);
+        }
+
     };
     
     
