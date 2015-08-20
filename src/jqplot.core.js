@@ -3295,24 +3295,43 @@
                 this.postParseOptionsHooks.hooks[i].call(this, options);
             }
         };
-        
-        // method: destroy
-        // Releases all resources occupied by the plot
-        this.destroy = function() {
-            this.canvasManager.freeAllCanvases();
-            if (this.eventCanvas && this.eventCanvas._elem) {
-                this.eventCanvas._elem.unbind();
-            }
-            // Couple of posts on Stack Overflow indicate that empty() doesn't
-            // always cear up the dom and release memory.  Sometimes setting
-            // innerHTML property to null is needed.  Particularly on IE, may 
-            // have to directly set it to null, bypassing $.
-            this.target.empty();
 
-            this.target[0].innerHTML = '';
-        };
-   
     }
+    
+    /**
+     * method: destroy
+     * Releases all resources occupied by the plot
+     */
+    JqPlot.prototype.destroy = function () {
+
+        var e,
+            events;
+
+        this.canvasManager.freeAllCanvases();
+
+        if (this.eventCanvas && this.eventCanvas._elem) {
+            this.eventCanvas._elem.unbind();
+        }
+
+        events = $._data(this.target[0], "events");
+        
+        // Unbind events
+        // For example, Cursor.zoomProxy bind jqplotZoom and jqplotResetZoom to element            
+        for (e in events) {
+            if (events.hasOwnProperty(e)) {
+                this.target.unbind(e);
+            }
+        }
+
+        // Couple of posts on Stack Overflow indicate that empty() doesn't
+        // always cear up the dom and release memory.  Sometimes setting
+        // innerHTML property to null is needed.  Particularly on IE, may 
+        // have to directly set it to null, bypassing $.
+        this.target.empty();
+
+        this.target[0].innerHTML = '';
+
+    };
     
     /**
      * method: replot
