@@ -179,14 +179,23 @@
             var temptop = top;
             var templeft = left;
 
+            var max_tries=800;
             for (var i=0; i<wl; i++) {
+                var oldw = w;
                 w += words[i];
-                if (context.measureText(w).width > tagwidth) {
+                // Merging merge#49 issue#794
+                if (oldw != '' && context.measureText(w).width > tagwidth) {
                     breaks.push(i);
                     w = '';
                     i--;
-                }   
+                    max_tries--;
+                }
+
+                if (max_tries<=0){
+                    break;
+                }
             }
+
             if (breaks.length === 0) {
                 // center text if necessary
                 if ($(el).css('textAlign') === 'center') {
@@ -306,7 +315,7 @@
     $.fn.jqplotToImageStr = function(options) {
         var imgCanvas = $(this).jqplotToImageCanvas(options);
         if (imgCanvas) {
-            return imgCanvas.toDataURL("image/png");
+            return imgCanvas.toDataURL("image/png;base64;");
         }
         else {
             return null;
@@ -334,7 +343,14 @@
     $.fn.jqplotSaveImage = function() {
         var imgData = $(this).jqplotToImageStr({});
         if (imgData) {
-            window.location.href = imgData.replace("image/png", "image/octet-stream");
+            var d = new Date().toISOString().slice(0, 19).replace(/-/g, "");
+            if($(this).find("#jqplot-download-link").length == 0){
+                $(this).append("<a id='jqplot-download-link' style='display:none;' href='" + imgData + "' download='chart-" + d + ".png"+"'></a>");
+            }else{
+                $(this).find('#jqplot-download-link').attr("href", imgData).attr("download", 'chart-' + d + '.png');
+            }
+
+            $("#jqplot-download-link").get(0).click();
         }
 
     };
