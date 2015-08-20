@@ -144,34 +144,20 @@
         </concat>
         
     </target>
-
-    <target name="dist" depends="build" description="Build uncompressed jqplot for creating distributions and web site.">
-        <echo message="Creating jqPlot distribution" />
+    
+    <target name="examples" depends="dist" description="Build examples">
+    
+        <echo message="Creating jqPlot examples" />
         
         <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${DIST_DIR}/plugins" />
         <mkdir dir="${DIST_DIR}/images" />
         <mkdir dir="${DIST_DIR}/examples" />
         
-        <!-- now copy files to dist dir. -->
-        <copy todir="${DIST_DIR}">
-          <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
-          <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
-          <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
-          <fileset dir="${BUILD_DIR}" includes="version.txt" />
-          <fileset dir="" includes="*.php" />
-          <fileset dir="" includes="style.css" />
-          <fileset dir="" includes="README.txt" />
-          <fileset dir="" includes="copyright.txt" />
-          <fileset dir="${SRC_DIR}" includes="*.txt" />
-          <fileset dir="${SRC_DIR}" includes="jquery.js" />
-          <fileset dir="${SRC_DIR}" includes="jquery.min.js" />
-        </copy>
-        
         <copy todir="${DIST_DIR}/examples">
           <fileset dir="${BUILD_DIR}/examples" />
         </copy>
-
+        
         <!-- fix up and generate html exmaples from php files -->
 
         <apply executable="php" parallel="false" dir="${DIST_DIR}/examples" verbose="true">
@@ -194,7 +180,6 @@
         <replaceregexp match='kcp_pyramid_by_age\.php' replace='kcp_pyramid_by_age\.html' flags="g">
           <fileset dir="${DIST_DIR}/examples" includes="kcp_quintiles.html" />
         </replaceregexp>
-
 
         <!-- now remove said php files -->
 
@@ -243,11 +228,43 @@
           </fileset>
         </replaceregexp>
         
+    </target>
+
+    <target name="dist" depends="build" description="Build uncompressed jqplot for creating distributions and web site.">
+        <echo message="Creating jqPlot distribution" />
+        
+        <mkdir dir="${DIST_DIR}" />
+        <mkdir dir="${DIST_DIR}/plugins" />
+        <mkdir dir="${DIST_DIR}/images" />
+        
+        <!-- now copy files to dist dir. -->
+        <copy todir="${DIST_DIR}">
+          <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
+          <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
+          <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
+          <fileset dir="${BUILD_DIR}" includes="version.txt" />
+          <fileset dir="" includes="*.php" />
+          <fileset dir="" includes="style.css" />
+          <fileset dir="" includes="README.txt" />
+          <fileset dir="" includes="copyright.txt" />
+          <fileset dir="${SRC_DIR}" includes="*.txt" />
+          <fileset dir="${SRC_DIR}" includes="jquery.js" />
+          <fileset dir="${SRC_DIR}" includes="jquery.min.js" />
+        </copy>
+        
         <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
         </copy>
         
+        <echo message="Copying jquery.jqplot.js to emc2.ui" />
+        <copy todir="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8">
+          <fileset dir="${DIST_DIR}">
+            <include name="jquery.jqplot.js" />
+          </fileset>
+        </copy>
+        
         <echo message="jqPlot built." />
+        
     </target>
 
     <target name="min" depends="dist" description="Minify sources with YUI compressor.">
