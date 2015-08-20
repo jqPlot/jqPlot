@@ -1,3 +1,6 @@
+/*jslint browser: true, plusplus: true, nomen: true, white: false, continue:true */
+/*global jQuery */
+
 /**
  * jqPlot
  * Pure JavaScript plotting plugin using jQuery
@@ -28,71 +31,106 @@
  *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
-(function($) {
+(function ($) {
+    
+    "use strict";
+    
     var objCounter = 0;
-    // class: $.jqplot.CanvasOverlay
-    $.jqplot.CanvasOverlay = function(opts){
-        var options = opts || {};
+    
+    /**
+     * @class $.jqplot.CanvasOverlay
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay = function (opts) {
+        
+        var options = opts || {},
+            objs,
+            objslen,
+            obj,
+            i,
+            element;
+        
         this.options = {
+            bellowSeries: false,
             show: $.jqplot.config.enablePlugins,
             deferDraw: false
         };
+        
         // prop: objects
         this.objects = [];
         this.objectNames = [];
         this.canvas = null;
-        this.markerRenderer = new $.jqplot.MarkerRenderer({style:'line'});
+        this.markerRenderer = new $.jqplot.MarkerRenderer({style: 'line'});
         this.markerRenderer.init();
         this.highlightObjectIndex = null;
+        
         if (options.objects) {
-            var objs = options.objects,
-                obj;
-            for (var i=0; i<objs.length; i++) {
+            
+            objs = options.objects;
+            
+            for (i = 0, objslen = objs.length; i < objslen; i++) {
+                
                 obj = objs[i];
-                for (var n in obj) {
-                    switch (n) {
+                
+                for (element in obj) {
+                    if (obj.hasOwnProperty(element)) {
+                        switch (element) {
                         case 'line':
-                            this.addLine(obj[n]);
+                            this.addLine(obj[element]);
                             break;
                         case 'horizontalLine':
-                            this.addHorizontalLine(obj[n]);
+                            this.addHorizontalLine(obj[element]);
                             break;
                         case 'dashedHorizontalLine':
-                            this.addDashedHorizontalLine(obj[n]);
+                            this.addDashedHorizontalLine(obj[element]);
                             break;
                         case 'verticalLine':
-                            this.addVerticalLine(obj[n]);
+                            this.addVerticalLine(obj[element]);
                             break;
                         case 'dashedVerticalLine':
-                            this.addDashedVerticalLine(obj[n]);
+                            this.addDashedVerticalLine(obj[element]);
                             break;
                         case 'rectangle':
-                            this.addRectangle(obj[n]);
+                            this.addRectangle(obj[element]);
+                            break;
+                        case 'workitem':
+                            this.addWorkItem(obj[element]);
                             break;
                         default:
                             break;
+                        }
                     }
-                }   
+                    
+                }
             }
         }
+        
         $.extend(true, this.options, options);
+        
     };
     
-    // called with scope of a plot object
+    /**
+     * Called with scope of a plot object
+     * @param {object} target 
+     * @param {object} data   
+     * @param {object} opts   
+     */
     $.jqplot.CanvasOverlay.postPlotInit = function (target, data, opts) {
         var options = opts || {};
         // add a canvasOverlay attribute to the plot
-        this.plugins.canvasOverlay = new $.jqplot.CanvasOverlay(options.canvasOverlay);     
+        this.plugins.canvasOverlay = new $.jqplot.CanvasOverlay(options.canvasOverlay);
     };
 
-
+    /**
+     * @class
+     */
     function LineBase() {
         this.uid = null;
         this.type = null;
         this.gridStart = null;
         this.gridStop = null;
         this.tooltipWidthFactor = 0;
-        this.options = {           
+        this.options = {
             // prop: name
             // Optional name for the overlay object.
             // Can be later used to retrieve the object by name.
@@ -153,32 +191,62 @@
             // prop: tooltipFormatString
             // Format string passed the x and y values of the cursor on the line.
             // e.g., 'Dogs: %.2f, Cats: %d'.
-            tooltipFormatString: '%d, %d'
+            tooltipFormatString: '%d, %d',
+
+            // SVA
+            // Format of values in x 
+            xformat: null,
+            yformat: null
         };
     }
     
+    /**
+     * @class WorkItem
+     * @classdesc A workitem which can be scheduled
+     * @param {object} options
+     */
+    function WorkItem(options) {
+        LineBase.call(this);
+        this.type = "workitem";
+        var opts = {
+            // x value for the start of the line, null to scale to axis min.
+            xmin: null,
+            // x value for the end of the line, null to scale to axis max.
+            xmax: null,
+            ymin: null,
+            ymax: null
+        };
+        $.extend(true, this.options, opts, options);
+    }
     
+    WorkItem.prototype = new LineBase();
+    WorkItem.prototype.constructor = WorkItem;
+    
+    /**
+     * @class Rectangle
+     * @classdesc A rectangle.
+     * @param {object} options
+     */
     function Rectangle(options) {
         LineBase.call(this);
         this.type = 'rectangle';
         var opts = {
-         // prop: xmin
-                // x value for the start of the line, null to scale to axis min.
-                xmin: null,
-                // prop: xmax
-                // x value for the end of the line, null to scale to axis max.
-                xmax: null,
-                // prop xOffset
-                // offset ends of the line inside the grid. Number
-                xOffset: '6px', // number or string. Number interpreted as units, string as pixels.
-                xminOffset: null,
-                xmaxOffset: null,
-                
-                ymin: null,
-                ymax: null,
-                yOffset: '6px', // number or string. Number interpreted as units, string as pixels.
-                yminOffset: null,
-                ymaxOffset: null
+            // prop: xmin
+            // x value for the start of the line, null to scale to axis min.
+            xmin: null,
+            // prop: xmax
+            // x value for the end of the line, null to scale to axis max.
+            xmax: null,
+            // prop xOffset
+            // offset ends of the line inside the grid. Number
+            xOffset: '6px', // number or string. Number interpreted as units, string as pixels.
+            xminOffset: null,
+            xmaxOffset: null,
+            ymin: null,
+            ymax: null,
+            yOffset: '6px', // number or string. Number interpreted as units, string as pixels.
+            yminOffset: null,
+            ymaxOffset: null
         };
         $.extend(true, this.options, opts, options);
 
@@ -189,11 +257,10 @@
 
     Rectangle.prototype = new LineBase();
     Rectangle.prototype.constructor = Rectangle;
-
     
     /**
-     * Class: Line
-     * A straight line.
+     * @class Line
+     * @classdesc A straight line.
      */
     function Line(options) {
         LineBase.call(this);
@@ -216,10 +283,9 @@
     Line.prototype = new LineBase();
     Line.prototype.constructor = Line;
 
-
     /**
-     * Class: HorizontalLine
-     * A straight horizontal line.
+     * @class HorizontalLine
+     * @classdesc A straight horizontal line.
      */
     function HorizontalLine(options) {
         LineBase.call(this);
@@ -249,11 +315,10 @@
 
     HorizontalLine.prototype = new LineBase();
     HorizontalLine.prototype.constructor = HorizontalLine;
-    
 
     /**
-     * Class: DashedHorizontalLine
-     * A straight dashed horizontal line.
+     * @class DashedHorizontalLine
+     * @classdesc A straight dashed horizontal line.
      */
     function DashedHorizontalLine(options) {
         LineBase.call(this);
@@ -269,7 +334,7 @@
             // Array of line, space settings in pixels.
             // Default is 8 pixel of line, 8 pixel of space.
             // Note, limit to a 2 element array b/c of bug with higher order arrays.
-            dashPattern: [8,8]
+            dashPattern: [8, 8]
         };
         $.extend(true, this.options, opts, options);
 
@@ -280,11 +345,10 @@
 
     DashedHorizontalLine.prototype = new LineBase();
     DashedHorizontalLine.prototype.constructor = DashedHorizontalLine;
-    
 
     /**
-     * Class: VerticalLine
-     * A straight vertical line.
+     * @class VerticalLine
+     * @classdesc A straight vertical line.
      */
     function VerticalLine(options) {
         LineBase.call(this);
@@ -307,10 +371,9 @@
     VerticalLine.prototype = new LineBase();
     VerticalLine.prototype.constructor = VerticalLine;
     
-
     /**
-     * Class: DashedVerticalLine
-     * A straight dashed vertical line.
+     * @class DashedVerticalLine
+     * @classdesc A straight dashed vertical line.
      */
     function DashedVerticalLine(options) {
         LineBase.call(this);
@@ -328,7 +391,7 @@
             // Array of line, space settings in pixels.
             // Default is 8 pixel of line, 8 pixel of space.
             // Note, limit to a 2 element array b/c of bug with higher order arrays.
-            dashPattern: [8,8]
+            dashPattern: [8, 8]
         };
         $.extend(true, this.options, opts, options);
 
@@ -340,73 +403,117 @@
     DashedVerticalLine.prototype = new LineBase();
     DashedVerticalLine.prototype.constructor = DashedVerticalLine;
     
-    $.jqplot.CanvasOverlay.prototype.addLine = function(opts) {
-        var line = new Line(opts);
-        line.uid = objCounter++;
-        this.objects.push(line);
-        this.objectNames.push(line.options.name);
+    /**
+     * Creates a line object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addLine = function (opts) {
+        var obj = new Line(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
     };
     
-    $.jqplot.CanvasOverlay.prototype.addHorizontalLine = function(opts) {
-        var line = new HorizontalLine(opts);
-        line.uid = objCounter++;
-        this.objects.push(line);
-        this.objectNames.push(line.options.name);
+    /**
+     * Creates a horizontal line object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addHorizontalLine = function (opts) {
+        var obj = new HorizontalLine(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
     };
     
-    $.jqplot.CanvasOverlay.prototype.addDashedHorizontalLine = function(opts) {
-        var line = new DashedHorizontalLine(opts);
-        line.uid = objCounter++;
-        this.objects.push(line);
-        this.objectNames.push(line.options.name);
+    /**
+     * Creates an dashed horizontal line object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addDashedHorizontalLine = function (opts) {
+        var obj = new DashedHorizontalLine(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
     };
     
-    $.jqplot.CanvasOverlay.prototype.addVerticalLine = function(opts) {
-        var line = new VerticalLine(opts);
-        line.uid = objCounter++;
-        this.objects.push(line);
-        this.objectNames.push(line.options.name);
+    /**
+     * Creates a vertical line object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addVerticalLine = function (opts) {
+        var obj = new VerticalLine(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
+    };
+   
+    /**
+     * Creates a dashed vertical line object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addDashedVerticalLine = function (opts) {
+        var obj = new DashedVerticalLine(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
     };
     
-    $.jqplot.CanvasOverlay.prototype.addDashedVerticalLine = function(opts) {
-        var line = new DashedVerticalLine(opts);
-        line.uid = objCounter++;
-        this.objects.push(line);
-        this.objectNames.push(line.options.name);
+    /**
+     * Creates a rectangle object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addRectangle = function (opts) {
+        var obj = new Rectangle(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
     };
     
-    $.jqplot.CanvasOverlay.prototype.addRectangle = function(opts) {
-        var line = new Rectangle(opts);
-        line.uid = objCounter++;
-        this.objects.push(line);
-        this.objectNames.push(line.options.name);
+    /**
+     * Creates a workitem object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addWorkItem = function (opts) {
+        var obj = new WorkItem(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
     };
     
-    $.jqplot.CanvasOverlay.prototype.removeObject = function(idx) {
+    /**
+     * Removes an object
+     * @param {number|string} idx
+     */
+    $.jqplot.CanvasOverlay.prototype.removeObject = function (idx) {
+        var id;
         // check if integer, remove by index
-        if ($.type(idx) == 'number') {
+        if ($.type(idx) === "number") {
             this.objects.splice(idx, 1);
             this.objectNames.splice(idx, 1);
-        }
         // if string, remove by name
-        else {
-            var id = $.inArray(idx, this.objectNames);
-            if (id != -1) {
+        } else {
+            id = $.inArray(idx, this.objectNames);
+            if (id !== -1) {
                 this.objects.splice(id, 1);
                 this.objectNames.splice(id, 1);
             }
         }
     };
     
-    $.jqplot.CanvasOverlay.prototype.getObject = function(idx) {
+    /**
+     * Returns an object
+     * @param {number|string} idx
+     * @returns {object}                          
+     */
+    $.jqplot.CanvasOverlay.prototype.getObject = function (idx) {
+        var id;
         // check if integer, remove by index
-        if ($.type(idx) == 'number') {
+        if ($.type(idx) === 'number') {
             return this.objects[idx];
-        }
         // if string, remove by name
-        else {
-            var id = $.inArray(idx, this.objectNames);
-            if (id != -1) {
+        } else {
+            id = $.inArray(idx, this.objectNames);
+            if (id !== -1) {
                 return this.objects[id];
             }
         }
@@ -415,482 +522,1042 @@
     // Set get as alias for getObject.
     $.jqplot.CanvasOverlay.prototype.get = $.jqplot.CanvasOverlay.prototype.getObject;
     
-    $.jqplot.CanvasOverlay.prototype.clear = function(plot) {
-        this.canvas._ctx.clearRect(0,0,this.canvas.getWidth(), this.canvas.getHeight());
+    /**
+     * Clears rectangles from the canvas
+     * @param {Object} plot
+     */
+    $.jqplot.CanvasOverlay.prototype.clear = function (plot) {
+        this.canvas._ctx.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
     };
     
-    $.jqplot.CanvasOverlay.prototype.draw = function(plot) {
-        var obj, 
+    /**
+     * Draws elements in the canvas
+     * @param {Object} plot [[Description]]
+     * @returns;
+     */
+    $.jqplot.CanvasOverlay.prototype.draw = function (plot) {
+        
+        plot.objectCounter = {};
+        
+        var self = this,
+            canvas = this.canvas,
+            obj,
             objs = this.objects,
+            objslen = objs.length,
             mr = this.markerRenderer,
             start,
-            stop;
-        if (this.options.show) {
-            this.canvas._ctx.clearRect(0,0,this.canvas.getWidth(), this.canvas.getHeight());
-            for (var k=0; k<objs.length; k++) {
-                obj = objs[k];
-                var opts = $.extend(true, {}, obj.options);
-                if (obj.options.show) {
-                    // style and shadow properties should be set before
-                    // every draw of marker renderer.
-                    mr.shadow = obj.options.shadow;
-                    obj.tooltipWidthFactor = obj.options.lineWidth / obj.options.showTooltipPrecision;
-                    switch (obj.type) {
-                        case 'line':
-                            // style and shadow properties should be set before
-                            // every draw of marker renderer.
-                            mr.style = 'line';
-                            opts.closePath = false;
-                            start = [plot.axes[obj.options.xaxis].series_u2p(obj.options.start[0]), plot.axes[obj.options.yaxis].series_u2p(obj.options.start[1])];
-                            stop = [plot.axes[obj.options.xaxis].series_u2p(obj.options.stop[0]), plot.axes[obj.options.yaxis].series_u2p(obj.options.stop[1])];
-                            obj.gridStart = start;
-                            obj.gridStop = stop;
-                            mr.draw(start, stop, this.canvas._ctx, opts);
-                            break;
-                        case 'horizontalLine':
-                            
-                            // style and shadow properties should be set before
-                            // every draw of marker renderer.
-                            if (obj.options.y != null) {
-                                mr.style = 'line';
-                                opts.closePath = false;
-                                var xaxis = plot.axes[obj.options.xaxis],
-                                    xstart,
-                                    xstop,
-                                    y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y),
-                                    xminoff = obj.options.xminOffset || obj.options.xOffset,
-                                    xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
-                                if (obj.options.xmin != null) {
-                                    xstart = xaxis.series_u2p(obj.options.xmin);
-                                }
-                                else if (xminoff != null) {
-                                    if ($.type(xminoff) == "number") {
-                                        xstart = xaxis.series_u2p(xaxis.min + xminoff);
-                                    }
-                                    else if ($.type(xminoff) == "string") {
-                                        xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
-                                    }
-                                }
-                                if (obj.options.xmax != null) {
-                                    xstop = xaxis.series_u2p(obj.options.xmax);
-                                }
-                                else if (xmaxoff != null) {
-                                    if ($.type(xmaxoff) == "number") {
-                                        xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
-                                    }
-                                    else if ($.type(xmaxoff) == "string") {
-                                        xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
-                                    }
-                                }
-                                if (xstop != null && xstart != null) {
-                                    obj.gridStart = [xstart, y];
-                                    obj.gridStop = [xstop, y];
-                                    mr.draw([xstart, y], [xstop, y], this.canvas._ctx, opts);
-                                }
-                            }
-                            break;
+            stop,
+            k,
+            opts,
+            
+            /**
+             * Draws a line
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererLine = function (mr, opts, obj, plot) {
+            
+                var xstart,
+                    xstop,
+                    ystart,
+                    ystop,
+                    start,
+                    stop;
+                
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                mr.style = 'line';
+                opts.closePath = false;
+                
+                if (obj.options.xformat && obj.options.xformat.type === "date") {
 
-                        case 'dashedHorizontalLine':
-                            
-                            var dashPat = obj.options.dashPattern;
-                            var dashPatLen = 0;
-                            for (var i=0; i<dashPat.length; i++) {
-                                dashPatLen += dashPat[i];
-                            }
+                    if (obj.options.xformat.format) {
+                        xstart = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.start[0], obj.options.xformat.format)).getTime());
+                        xstop = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.stop[0], obj.options.xformat.format)).getTime());
+                    } else {
+                        xstart = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate(obj.options.start[0]));
+                        xstop = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate(obj.options.stop[0]));
+                    }
+                    
+                } else {
+                    xstart = plot.axes[obj.options.xaxis].series_u2p(obj.options.start[0]);
+                    xstop = plot.axes[obj.options.xaxis].series_u2p(obj.options.stop[0]);
+                }
+                
+                if (obj.options.yformat && obj.options.yformat.type === "date") {
+                    if (typeof obj.options.yformat.format !== "undefined") {
+                        //console.log($.jsDate.strftime(obj.options.start[1], obj.options.yformat.format));
+                        ystart = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.start[1], obj.options.yformat.format)).getTime());
+                        ystop = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.stop[1], obj.options.yformat.format)).getTime());
+                    } else {
+                        ystart = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate(obj.options.start[1]));
+                        ystop = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate(obj.options.stop[1]));
+                    }
+                } else {
+                    ystart = plot.axes[obj.options.yaxis].series_u2p(obj.options.start[1]);
+                    ystop = plot.axes[obj.options.yaxis].series_u2p(obj.options.stop[1]);
+                }
 
-                            // style and shadow properties should be set before
-                            // every draw of marker renderer.
-                            if (obj.options.y != null) {
-                                mr.style = 'line';
-                                opts.closePath = false;
-                                var xaxis = plot.axes[obj.options.xaxis],
-                                    xstart,
-                                    xstop,
-                                    y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y),
-                                    xminoff = obj.options.xminOffset || obj.options.xOffset,
-                                    xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
-                                if (obj.options.xmin != null) {
-                                    xstart = xaxis.series_u2p(obj.options.xmin);
-                                }
-                                else if (xminoff != null) {
-                                    if ($.type(xminoff) == "number") {
-                                        xstart = xaxis.series_u2p(xaxis.min + xminoff);
-                                    }
-                                    else if ($.type(xminoff) == "string") {
-                                        xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
-                                    }
-                                }
-                                if (obj.options.xmax != null) {
-                                    xstop = xaxis.series_u2p(obj.options.xmax);
-                                }
-                                else if (xmaxoff != null) {
-                                    if ($.type(xmaxoff) == "number") {
-                                        xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
-                                    }
-                                    else if ($.type(xmaxoff) == "string") {
-                                        xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
-                                    }
-                                }
-                                if (xstop != null && xstart != null) {
-                                    obj.gridStart = [xstart, y];
-                                    obj.gridStop = [xstop, y];
-                                    var numDash = Math.ceil((xstop - xstart)/dashPatLen);
-                                    var b=xstart, e;
-                                    for (var i=0; i<numDash; i++) {
-                                        for (var j=0; j<dashPat.length; j+=2) {
-                                            e = b+dashPat[j];
-                                            mr.draw([b, y], [e, y], this.canvas._ctx, opts);
-                                            b += dashPat[j];
-                                            if (j < dashPat.length-1) {
-                                                b += dashPat[j+1];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            break;
+                start = [xstart, ystart];
+                stop = [xstop, ystop];
 
-                        case 'verticalLine':
-                            
-                            // style and shadow properties should be set before
-                            // every draw of marker renderer.
-                            if (obj.options.x != null) {
-                                mr.style = 'line';
-                                opts.closePath = false;
-                                var yaxis = plot.axes[obj.options.yaxis],
-                                    ystart,
-                                    ystop,
-                                    x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x),
-                                    yminoff = obj.options.yminOffset || obj.options.yOffset,
-                                    ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
-                                if (obj.options.ymin != null) {
-                                    ystart = yaxis.series_u2p(obj.options.ymin);
-                                }
-                                else if (yminoff != null) {
-                                    if ($.type(yminoff) == "number") {
-                                        ystart = yaxis.series_u2p(yaxis.min - yminoff);
-                                    }
-                                    else if ($.type(yminoff) == "string") {
-                                        ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
-                                    }
-                                }
-                                if (obj.options.ymax != null) {
-                                    ystop = yaxis.series_u2p(obj.options.ymax);
-                                }
-                                else if (ymaxoff != null) {
-                                    if ($.type(ymaxoff) == "number") {
-                                        ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
-                                    }
-                                    else if ($.type(ymaxoff) == "string") {
-                                        ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
-                                    }
-                                }
-                                if (ystop != null && ystart != null) {
-                                    obj.gridStart = [x, ystart];
-                                    obj.gridStop = [x, ystop];
-                                    mr.draw([x, ystart], [x, ystop], this.canvas._ctx, opts);
-                                }
-                            }
-                            break;
+                obj.gridStart = start;
+                obj.gridStop = stop;
 
-                        case 'dashedVerticalLine':
-                            
-                            var dashPat = obj.options.dashPattern;
-                            var dashPatLen = 0;
-                            for (var i=0; i<dashPat.length; i++) {
-                                dashPatLen += dashPat[i];
-                            }
+                mr.draw(start, stop, canvas._ctx, opts);
+                
+            },
+            
+            /**
+             * Draws a horizontal line
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererHorizontalLine = function (mr, opts, obj, plot) {
+            
+                var xaxis,
+                    yaxis,
+                    xstart,
+                    ystart,
+                    xstop,
+                    ystop,
+                    y,
+                    xminoff,
+                    xmaxoff;
+                
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                if (obj.options.y === null) {
+                    return;
+                }
 
-                            // style and shadow properties should be set before
-                            // every draw of marker renderer.
-                            if (obj.options.x != null) {
-                                mr.style = 'line';
-                                opts.closePath = false;
-                                var yaxis = plot.axes[obj.options.yaxis],
-                                    ystart,
-                                    ystop,
-                                    x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x),
-                                    yminoff = obj.options.yminOffset || obj.options.yOffset,
-                                    ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
-                                if (obj.options.ymin != null) {
-                                    ystart = yaxis.series_u2p(obj.options.ymin);
-                                }
-                                else if (yminoff != null) {
-                                    if ($.type(yminoff) == "number") {
-                                        ystart = yaxis.series_u2p(yaxis.min - yminoff);
-                                    }
-                                    else if ($.type(yminoff) == "string") {
-                                        ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
-                                    }
-                                }
-                                if (obj.options.ymax != null) {
-                                    ystop = yaxis.series_u2p(obj.options.ymax);
-                                }
-                                else if (ymaxoff != null) {
-                                    if ($.type(ymaxoff) == "number") {
-                                        ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
-                                    }
-                                    else if ($.type(ymaxoff) == "string") {
-                                        ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
-                                    }
-                                }
+                mr.style = 'line';
+                opts.closePath = false;
 
+                xaxis = plot.axes[obj.options.xaxis];
+                y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y);
+                xminoff = obj.options.xminOffset || obj.options.xOffset;
+                xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
 
-                                if (ystop != null && ystart != null) {
-                                    obj.gridStart = [x, ystart];
-                                    obj.gridStop = [x, ystop];
-                                    var numDash = Math.ceil((ystart - ystop)/dashPatLen);
-                                    var firstDashAdjust = ((numDash * dashPatLen) - (ystart - ystop))/2.0;
-                                    var b=ystart, e, bs, es;
-                                    for (var i=0; i<numDash; i++) {
-                                        for (var j=0; j<dashPat.length; j+=2) {
-                                            e = b - dashPat[j];
-                                            if (e < ystop) {
-                                                e = ystop;
-                                            }
-                                            if (b < ystop) {
-                                                b = ystop;
-                                            }
-                                            // es = e;
-                                            // if (i == 0) {
-                                            //  es += firstDashAdjust;
-                                            // }
-                                            mr.draw([x, b], [x, e], this.canvas._ctx, opts);
-                                            b -= dashPat[j];
-                                            if (j < dashPat.length-1) {
-                                                b -= dashPat[j+1];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-                            
-                        case 'rectangle':
-                            // style and shadow properties should be set before
-                            // every draw of marker renderer.
-                            mr.style = 'line';
-                            opts.closePath = true;
-                            
-                            var xaxis = plot.axes[obj.options.xaxis],
-                                    xstart,
-                                    xstop,
-                                    y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y),
-                                    xminoff = obj.options.xminOffset || obj.options.xOffset,
-                                    xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
-                            if (obj.options.xmin != null) {
-                                xstart = xaxis.series_u2p(obj.options.xmin);
-                            }
-                            else if (xminoff != null) {
-                                if ($.type(xminoff) == "number") {
-                                    xstart = xaxis.series_u2p(xaxis.min + xminoff);
-                                }
-                                else if ($.type(xminoff) == "string") {
-                                    xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
-                                }
-                            }
-                            if (obj.options.xmax != null) {
-                                xstop = xaxis.series_u2p(obj.options.xmax);
-                            }
-                            else if (xmaxoff != null) {
-                                if ($.type(xmaxoff) == "number") {
-                                    xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
-                                }
-                                else if ($.type(xmaxoff) == "string") {
-                                    xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
-                                }
-                            }
-                            
-                            var yaxis = plot.axes[obj.options.yaxis],
-                                ystart,
-                                ystop,
-                                x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x),
-                                yminoff = obj.options.yminOffset || obj.options.yOffset,
-                                ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
-                            if (obj.options.ymin != null) {
-                                ystart = yaxis.series_u2p(obj.options.ymin);
-                            }
-                            else if (yminoff != null) {
-                                if ($.type(yminoff) == "number") {
-                                    ystart = yaxis.series_u2p(yaxis.min - yminoff);
-                                }
-                                else if ($.type(yminoff) == "string") {
-                                    ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
-                                }
-                            }
-                            if (obj.options.ymax != null) {
-                                ystop = yaxis.series_u2p(obj.options.ymax);
-                            }
-                            else if (ymaxoff != null) {
-                                if ($.type(ymaxoff) == "number") {
-                                    ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
-                                }
-                                else if ($.type(ymaxoff) == "string") {
-                                    ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
-                                }
-                            }
-                            
-
-                            if (xstop != null && xstart != null && ystop != null && ystart != null) {
-                                obj.gridStart = [xstart, ystart];
-                                obj.gridStop = [xstop, ystop];
-                                
-                                this.canvas._ctx.fillStyle = obj.options.color;
-                                this.canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop - ystart);
-                            }
-                            break;
-
-                        default:
-                            break;
+                if (obj.options.yformat && obj.options.yformat.type === "date") {
+                    if (obj.options.yformat.format) {
+                        y = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.y, obj.options.yformat.format)).getTime());
+                    } else {
+                        y = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate(obj.options.y).getTime());
                     }
                 }
-            }
+
+                if (obj.options.xmin !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstart = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmin, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstart = xaxis.series_u2p($.jsDate.createDate(obj.options.xmin).getTime());
+                        }
+                    } else {
+                        xstart = xaxis.series_u2p(obj.options.xmin);
+                    }
+                } else if (xminoff !== null) {
+                    if ($.type(xminoff) === "number") {
+                        xstart = xaxis.series_u2p(xaxis.min + xminoff);
+                    } else if ($.type(xminoff) === "string") {
+                        xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
+                    }
+                }
+                
+                if (obj.options.xmax !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstop = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmax, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstop = xaxis.series_u2p($.jsDate.createDate(obj.options.xmax).getTime());
+                        }
+                    } else {
+                        xstop = xaxis.series_u2p(obj.options.xmax);
+                    }
+                } else if (xmaxoff !== null) {
+                    if ($.type(xmaxoff) === "number") {
+                        xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
+                    } else if ($.type(xmaxoff) === "string") {
+                        xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
+                    }
+                }
+                
+                if (xstop !== null && xstart !== null) {
+                    obj.gridStart = [xstart, y];
+                    obj.gridStop = [xstop, y];
+                    mr.draw([xstart, y], [xstop, y], canvas._ctx, opts);
+                }
+                
+            },
+            
+            /**
+             * Draws a dashed horizontal line
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererDashedHorizontalLine = function (mr, opts, obj, plot) {
+            
+                var dashPat = obj.options.dashPattern,
+                    dashPatLen = 0,
+                    i,
+                    xaxis,
+                    xstart,
+                    xstop,
+                    y,
+                    x,
+                    xminoff,
+                    xmaxoff,
+                    numDash,
+                    b,
+                    e,
+                    j;
+
+                for (i = 0; i < dashPat.length; i++) {
+                    dashPatLen += dashPat[i];
+                }
+
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                if (obj.options.y === null) {
+                    return;
+                }
+                    
+                mr.style = 'line';
+                opts.closePath = false;
+
+                xaxis = plot.axes[obj.options.xaxis];
+                y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y);
+                xminoff = obj.options.xminOffset || obj.options.xOffset;
+                xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
+
+                if (obj.options.yformat && obj.options.yformat.type === "date") {
+                    if (obj.options.yformat.format) {
+                        y = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.y, obj.options.yformat.format)).getTime());
+                    } else {
+                        y = plot.axes[obj.options.yaxis].series_u2p($.jsDate.createDate(obj.options.y).getTime());
+                    }
+                }
+
+                if (obj.options.xmin !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstart = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmin, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstart = xaxis.series_u2p($.jsDate.createDate(obj.options.xmin).getTime());
+                        }
+                    } else {
+                        xstart = xaxis.series_u2p(obj.options.xmin);
+                    }
+                } else if (xminoff !== null) {
+                    if ($.type(xminoff) === "number") {
+                        xstart = xaxis.series_u2p(xaxis.min + xminoff);
+                    } else if ($.type(xminoff) === "string") {
+                        xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
+                    }
+                }
+                
+                if (obj.options.xmax !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstop = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmax, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstop = xaxis.series_u2p($.jsDate.createDate(obj.options.xmax).getTime());
+                        }
+                    } else {
+                        xstop = xaxis.series_u2p(obj.options.xmax);
+                    }
+                } else if (xmaxoff !== null) {
+                    if ($.type(xmaxoff) === "number") {
+                        xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
+                    } else if ($.type(xmaxoff) === "string") {
+                        xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
+                    }
+                }
+                
+                if (xstop !== null && xstart !== null) {
+                    obj.gridStart = [xstart, y];
+                    obj.gridStop = [xstop, y];
+                    numDash = Math.ceil((xstop - xstart) / dashPatLen);
+                    b = xstart;
+                    for (i = 0; i < numDash; i++) {
+                        for (j = 0; j < dashPat.length; j += 2) {
+                            e = b + dashPat[j];
+                            mr.draw([b, y], [e, y], canvas._ctx, opts);
+                            b += dashPat[j];
+                            if (j < dashPat.length - 1) {
+                                b += dashPat[j + 1];
+                            }
+                        }
+                    }
+                }
+                
+            },
+            
+            /**
+             * Draws a vertical line
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererVerticalLine = function (mr, opts, obj, plot) {
+            
+                var xaxis,
+                    yaxis,
+                    ystop,
+                    ystart,
+                    x,
+                    yminoff,
+                    ymaxoff;
+                
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                if (obj.options.x === null) {
+                    return;
+                }
+                
+                mr.style = 'line';
+                opts.closePath = false;
+                
+                yaxis = plot.axes[obj.options.yaxis];
+                x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x);
+                yminoff = obj.options.yminOffset || obj.options.yOffset;
+                ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
+                
+                if (obj.options.xformat && obj.options.xformat.type === "date") {
+                    if (obj.options.xformat.format) {
+                        x = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.x, obj.options.xformat.format)).getTime());
+                    } else {
+                        x = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate(obj.options.x).getTime());
+                    }
+                }
+
+                if (obj.options.ymin !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystart = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymin, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystart = yaxis.series_u2p($.jsDate.createDate(obj.options.ymin).getTime());
+                        }
+                    } else {
+                        ystart = yaxis.series_u2p(obj.options.ymin);
+                    }
+                } else if (yminoff !== null) {
+                    if ($.type(yminoff) === "number") {
+                        ystart = yaxis.series_u2p(yaxis.min - yminoff);
+                    } else if ($.type(yminoff) === "string") {
+                        ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
+                    }
+                }
+                
+                if (obj.options.ymax !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystop = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymax, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystop = yaxis.series_u2p($.jsDate.createDate(obj.options.ymax).getTime());
+                        }
+                    } else {
+                        ystop = yaxis.series_u2p(obj.options.ymax);
+                    }
+                } else if (ymaxoff !== null) {
+                    if ($.type(ymaxoff) === "number") {
+                        ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
+                    } else if ($.type(ymaxoff) === "string") {
+                        ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
+                    }
+                }
+                
+                if (ystop !== null && ystart !== null) {
+                    obj.gridStart = [x, ystart];
+                    obj.gridStop = [x, ystop];
+                    mr.draw([x, ystart], [x, ystop], canvas._ctx, opts);
+                }
+                
+            },
+            
+            /**
+             * Draws a dashed vertical line
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererDashedVerticalLine = function (mr, opts, obj, plot) {
+            
+                var dashPat,
+                    dashPatLen,
+                    yaxis,
+                    ystop,
+                    ystart,
+                    x,
+                    yminoff,
+                    ymaxoff,
+                    i,
+                    numDash,
+                    firstDashAdjust,
+                    b,
+                    e,
+                    bs,
+                    es,
+                    j;
+                
+                dashPat = obj.options.dashPattern;
+                dashPatLen = 0;
+
+                for (i = 0; i < dashPat.length; i++) {
+                    dashPatLen += dashPat[i];
+                }
+
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                if (obj.options.x === null) {
+                    return;
+                }
+                
+                mr.style = 'line';
+                opts.closePath = false;
+                
+                yaxis = plot.axes[obj.options.yaxis];
+                x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x);
+                yminoff = obj.options.yminOffset || obj.options.yOffset;
+                ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
+                
+                if (obj.options.xformat && obj.options.xformat.type === "date") {
+                    if (obj.options.xformat.format) {
+                        x = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.x, obj.options.xformat.format)).getTime());
+                    } else {
+                        x = plot.axes[obj.options.xaxis].series_u2p($.jsDate.createDate(obj.options.x).getTime());
+                    }
+                }
+
+                if (obj.options.ymin !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystart = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymin, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystart = yaxis.series_u2p($.jsDate.createDate(obj.options.ymin).getTime());
+                        }
+                    } else {
+                        ystart = yaxis.series_u2p(obj.options.ymin);
+                    }
+                } else if (yminoff !== null) {
+                    if ($.type(yminoff) === "number") {
+                        ystart = yaxis.series_u2p(yaxis.min - yminoff);
+                    } else if ($.type(yminoff) === "string") {
+                        ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
+                    }
+                }
+                
+                if (obj.options.ymax !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystop = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymax, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystop = yaxis.series_u2p($.jsDate.createDate(obj.options.ymax).getTime());
+                        }
+                    } else {
+                        ystop = yaxis.series_u2p(obj.options.ymax);
+                    }
+                } else if (ymaxoff !== null) {
+                    if ($.type(ymaxoff) === "number") {
+                        ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
+                    } else if ($.type(ymaxoff) === "string") {
+                        ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
+                    }
+                }
+                
+                if (ystop !== null && ystart !== null) {
+                    obj.gridStart = [x, ystart];
+                    obj.gridStop = [x, ystop];
+                    numDash = Math.ceil((ystart - ystop) / dashPatLen);
+                    firstDashAdjust = ((numDash * dashPatLen) - (ystart - ystop)) / 2.0;
+                    b = ystart;
+                    for (i = 0; i < numDash; i++) {
+                        for (j = 0; j < dashPat.length; j += 2) {
+                            e = b - dashPat[j];
+                            if (e < ystop) {
+                                e = ystop;
+                            }
+                            if (b < ystop) {
+                                b = ystop;
+                            }
+                            // es = e;
+                            // if (i == 0) {
+                            //  es += firstDashAdjust;
+                            // }
+                            mr.draw([x, b], [x, e], canvas._ctx, opts);
+                            b -= dashPat[j];
+                            if (j < dashPat.length - 1) {
+                                b -= dashPat[j + 1];
+                            }
+                        }
+                    }
+                }
+                
+            },
+            
+            /**
+             * Draws a rectangle
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererRectangle = function (mr, opts, obj, plot) {
+            
+                var xaxis,
+                    xstart = null,
+                    xstop = null,
+                    yaxis,
+                    ystart = null,
+                    ystop = null,
+                    y,
+                    x,
+                    xminoff,
+                    xmaxoff,
+                    yminoff,
+                    ymaxoff;
+                
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                mr.style = 'line';
+                opts.closePath = true;
+
+                xaxis = plot.axes[obj.options.xaxis];
+                y = plot.axes[obj.options.yaxis].series_u2p(obj.options.y);
+                xminoff = obj.options.xminOffset || obj.options.xOffset;
+                xmaxoff = obj.options.xmaxOffset || obj.options.xOffset;
+
+                if (obj.options.xmin !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstart = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmin, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstart = xaxis.series_u2p($.jsDate.createDate(obj.options.xmin).getTime());
+                        }
+                    } else {
+                        xstart = xaxis.series_u2p(obj.options.xmin);
+                    }
+                } else if (xminoff !== null) {
+                    if ($.type(xminoff) === "number") {
+                        xstart = xaxis.series_u2p(xaxis.min + xminoff);
+                    } else if ($.type(xminoff) === "string") {
+                        xstart = xaxis.series_u2p(xaxis.min) + parseFloat(xminoff);
+                    }
+                }
+
+                if (obj.options.xmax !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstop = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmax, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstop = xaxis.series_u2p($.jsDate.createDate(obj.options.xmax).getTime());
+                        }
+                    } else {
+                        xstop = xaxis.series_u2p(obj.options.xmax);
+                    }
+                } else if (xmaxoff !== null) {
+                    if ($.type(xmaxoff) === "number") {
+                        xstop = xaxis.series_u2p(xaxis.max - xmaxoff);
+                    } else if ($.type(xmaxoff) === "string") {
+                        xstop = xaxis.series_u2p(xaxis.max) - parseFloat(xmaxoff);
+                    }
+                }
+
+                yaxis = plot.axes[obj.options.yaxis];
+                x = plot.axes[obj.options.xaxis].series_u2p(obj.options.x);
+                yminoff = obj.options.yminOffset || obj.options.yOffset;
+                ymaxoff = obj.options.ymaxOffset || obj.options.yOffset;
+                
+                if (obj.options.ymin !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystart = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymin, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystart = yaxis.series_u2p($.jsDate.createDate(obj.options.ymin).getTime());
+                        }
+                    } else {
+                        ystart = yaxis.series_u2p(obj.options.ymin);
+                    }
+                } else if (yminoff !== null) {
+                    if ($.type(yminoff) === "number") {
+                        ystart = yaxis.series_u2p(yaxis.min - yminoff);
+                    } else if ($.type(yminoff) === "string") {
+                        ystart = yaxis.series_u2p(yaxis.min) - parseFloat(yminoff);
+                    }
+                }
+                
+                if (obj.options.ymax !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystop = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymax, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystop = yaxis.series_u2p($.jsDate.createDate(obj.options.ymax).getTime());
+                        }
+                    } else {
+                        ystop = yaxis.series_u2p(obj.options.ymax);
+                    }
+                } else if (ymaxoff !== null) {
+                    if ($.type(ymaxoff) === "number") {
+                        ystop = yaxis.series_u2p(yaxis.max + ymaxoff);
+                    } else if ($.type(ymaxoff) === "string") {
+                        ystop = yaxis.series_u2p(yaxis.max) + parseFloat(ymaxoff);
+                    }
+                }
+
+                if (xstop !== null && xstart !== null && ystop !== null && ystart !== null) {
+                    obj.gridStart = [xstart, ystart];
+                    obj.gridStop = [xstop, ystop];
+                    canvas._ctx.fillStyle = obj.options.color;
+                    canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop - ystart);
+                }
+                
+            },
+            
+            /**
+             * Draws a WorkItem
+             * @param {object} mr   [[Description]]
+             * @param {object} opts [[Description]]
+             * @param {Object}   obj  [[Description]]
+             * @param {object} plot [[Description]]
+             */
+            rendererWorkItem = function (mr, opts, obj, plot) {
+            
+                var maxWorkItems = 5,
+                    xaxis,
+                    yaxis,
+                    xstart = null,
+                    ystart = null,
+                    xstop = null,
+                    ystop = null,
+                    workItemHeight = 0,
+                    maxHeight = 0,
+                    maxWidth = 0,
+                    nrOfWorkItems = plot.objectCounter.workitem.total, // obj.type
+                    currentWorkItem = plot.objectCounter.workitem.current,  // integer
+                    $target = plot.target,
+                    $workitem = $("<div />", {
+                        "class": "jqplot-workitem",
+                        "style": "position:absolute;"
+                    });
+                
+                //console.log("plot", plot);
+                
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                mr.style = 'line';
+                opts.closePath = true;
+                
+                xaxis = plot.axes[obj.options.xaxis];
+                yaxis = plot.axes[obj.options.yaxis];
+                
+                maxHeight = plot.grid._height || canvas._plotDimensions.height;
+                maxWidth = plot.grid._width || canvas._plotDimensions.width;
+                
+                // Find the time on the xaxis based upon the given xmin
+                
+                //xstart = xaxis.series_u2p(obj.options.xmin);
+                //xstop = xaxis.series_u2p(xaxis.max);
+                
+                if (obj.options.xmin !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstart = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmin, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstart = xaxis.series_u2p($.jsDate.createDate(obj.options.xmin).getTime());
+                        }
+                    } else {
+                        xstart = xaxis.series_u2p(obj.options.xmin);
+                    }
+                }
+                
+                if (obj.options.xmax !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstop = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmax, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstop = xaxis.series_u2p($.jsDate.createDate(obj.options.xmax).getTime());
+                        }
+                    } else {
+                        xstop = xaxis.series_u2p(obj.options.xmax);
+                    }
+                }
+                
+                // Calculated where on the yaxis the element will be displayed
+                
+                // Fill the whole plot with the work items
+                //workItemHeight = maxHeight / nrOfWorkItems;
+                //ystart = -(workItemHeight - currentWorkItem * workItemHeight);
+                //ystop = workItemHeight * currentWorkItem;
+                
+                workItemHeight = maxHeight / maxWorkItems;
+                
+                ystart = -(workItemHeight - currentWorkItem * workItemHeight);
+                ystop = workItemHeight;
+                
+                //console.log("objectCounter", obj.type, nrOfWorkItems, currentWorkItem);
+                
+                if (xstop !== null && xstart !== null && ystop !== null && ystart !== null) {
+                    
+                    obj.gridStart = [xstart, ystart];
+                    obj.gridStop = [xstop, ystop];
+                    
+                    // Not using canvas elements, but you could if you wanted to.
+                    //canvas._ctx.fillStyle = obj.options.color;
+                    
+                    //console.log("workitem", xstart, ystart, xstop - xstart, ystop - ystart);
+                    
+                    // x, y, width, height 
+                    //canvas._ctx.fillRect(0, 0, 100, 100);
+                    //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
+                    
+                    // Don't generate work items which won't be visible
+                    if (xstart >= 0 && xstart < plot.grid._width) {
+                    
+                        $workitem.css({
+                            "top": ystart + plot._gridPadding.top + "px",
+                            "left": xstart + plot._gridPadding.left + "px",
+                            "height": ystop + "px",
+                            "width": xstop - xstart + "px",
+                            "backgroundColor": obj.options.color || ""
+                        });
+
+                        if (obj.options.icon) {
+                            $workitem.addClass("icon-" + obj.options.icon);
+                        }
+
+                        if (obj.options.content) {
+                            $workitem.html(obj.options.content);
+                        }
+
+                        if (obj.options.className) {
+                            $workitem.addClass(obj.options.className);
+                        }
+
+                        $target.append($workitem);
+                        
+                    }
+                    
+                }
+                
+            };
+        
+        
+        if (!this.options.show) {
+            return;
         }
+        
+        // @TODO here if I want to have z-index different on all overlay; 
+        this.canvas._ctx.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+        
+        // Clear all existing div inside the plot.target
+        $(plot.target).find(".jqplot-workitem").remove();
+
+        // Count how many objects for each type we have to render
+        for (k = 0; k < objslen; k++) {
+            
+            obj = objs[k];
+            opts = $.extend(true, {}, obj.options);
+
+            // Skip parsing if the obj should not be shown
+            if (!obj.options.show) {
+                continue;
+            }
+            
+            if (!plot.objectCounter[obj.type]) {
+                plot.objectCounter[obj.type] = {
+                    total: 1,
+                    current: 0
+                };
+            } else {
+                plot.objectCounter[obj.type].total++;
+            }
+            
+        }
+        
+        // Do the actual rendering of each object
+        for (k = 0; k < objslen; k++) {
+
+            obj = objs[k];
+            opts = $.extend(true, {}, obj.options);
+
+            // Skip parsing if the obj should not be shown
+            if (!obj.options.show) {
+                continue;
+            }
+            
+            if (!plot.objectCounter[obj.type]) {
+                plot.objectCounter[obj.type].current = 1;
+            } else {
+                plot.objectCounter[obj.type].current++;
+            }
+
+            // style and shadow properties should be set before
+            // every draw of marker renderer.
+            mr.shadow = obj.options.shadow;
+
+            obj.tooltipWidthFactor = obj.options.lineWidth / obj.options.showTooltipPrecision;
+
+            switch (obj.type) {
+
+            case 'line':
+                rendererLine(mr, opts, obj, plot);
+                break;
+
+            case 'horizontalLine':
+                rendererHorizontalLine(mr, opts, obj, plot);
+                break;
+
+            case 'dashedHorizontalLine':
+                rendererDashedHorizontalLine(mr, opts, obj, plot);
+                break;
+
+            case 'verticalLine':
+                rendererVerticalLine(mr, opts, obj, plot);
+                break;
+
+            case 'dashedVerticalLine':
+                rendererDashedVerticalLine(mr, opts, obj, plot);
+                break;
+
+            case 'rectangle':
+                rendererRectangle(mr, opts, obj, plot);
+                break;
+                    
+            case 'workitem':
+                rendererWorkItem(mr, opts, obj, plot);
+                break;
+
+            default:
+                break;
+            }
+
+        }
+        
     };
     
-    // called within context of plot
-    // create a canvas which we can draw on.
-    // insert it before the eventCanvas, so eventCanvas will still capture events.
-    $.jqplot.CanvasOverlay.postPlotDraw = function() {
-        var co = this.plugins.canvasOverlay;
+    /**
+     * Called within context of plot
+     * Creates a canvas which we can draw on.
+     * Inserts it before the eventCanvas, so eventCanvas will still capture events.
+     */
+    $.jqplot.CanvasOverlay.postPlotDraw = function () {
+        
+        var co = this.plugins.canvasOverlay,
+            targetCanvas;
+        
         // Memory Leaks patch    
         if (co && co.highlightCanvas) {
             co.highlightCanvas.resetCanvas();
             co.highlightCanvas = null;
         }
+        
         co.canvas = new $.jqplot.GenericCanvas();
         
-        this.eventCanvas._elem.before(co.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));
+        //this.eventCanvas._elem.before(co.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));
+        targetCanvas = this.eventCanvas;
+        
+        if (this.plugins.canvasOverlay.options.bellowSeries === true) {
+            targetCanvas = this.bellowSeriesCanvas;
+        }
+        
+        targetCanvas._elem.before(co.canvas.createElement(this._gridPadding, 'jqplot-overlayCanvas-canvas', this._plotDimensions, this));
+
         co.canvas.setContext();
+        
         if (!co.deferDraw) {
             co.draw(this);
         }
 
-        var elem = document.createElement('div');
-        co._tooltipElem = $(elem);
-        elem = null;
-        co._tooltipElem.addClass('jqplot-canvasOverlay-tooltip');
-        co._tooltipElem.css({position:'absolute', display:'none'});
+        co._tooltipElem = $('<div/>', { 'class': 'jqplot-canvasOverlay-tooltip' }).css({ position: 'absolute', display: 'none'});
         
-        this.eventCanvas._elem.before(co._tooltipElem);
-        this.eventCanvas._elem.bind('mouseleave', { elem: co._tooltipElem }, function (ev) { ev.data.elem.hide(); });
+        targetCanvas._elem.before(co._tooltipElem);
+        targetCanvas._elem.bind('mouseleave', { elem: co._tooltipElem }, function (ev) { ev.data.elem.hide(); });
 
-        var co = null;
+        co = null;
+        
     };
 
-
+    /**
+     * Displays tooltip
+     * @param {Object}   plot
+     * @param {Object}   obj
+     * @param {array} gridpos
+     * @param {array} datapos
+     */
     function showTooltip(plot, obj, gridpos, datapos) {
-        var co = plot.plugins.canvasOverlay;
-        var elem = co._tooltipElem;
-
-        var opts = obj.options, x, y;
-
+        
+        var co = plot.plugins.canvasOverlay,
+            elem = co._tooltipElem,
+            opts = obj.options,
+            x,
+            y;
+        
         elem.html($.jqplot.sprintf(opts.tooltipFormatString, datapos[0], datapos[1]));
         
         switch (opts.tooltipLocation) {
-            case 'nw':
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
-                break;
-            case 'n':
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true)/2;
-                y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
-                break;
-            case 'ne':
-                x = gridpos[0] + plot._gridPadding.left + opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
-                break;
-            case 'e':
-                x = gridpos[0] + plot._gridPadding.left + opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top - elem.outerHeight(true)/2;
-                break;
-            case 'se':
-                x = gridpos[0] + plot._gridPadding.left + opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset;
-                break;
-            case 's':
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true)/2;
-                y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset;
-                break;
-            case 'sw':
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset;
-                break;
-            case 'w':
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top - elem.outerHeight(true)/2;
-                break;
-            default: // same as 'nw'
-                x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
-                y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
-                break;
+        case 'nw':
+            x = gridpos[0] - plot._gridPadding.left - elem.outerWidth(true) * 1.5 - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
+            break;
+        case 'n':
+            x = gridpos[0] - elem.outerWidth(true) - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) * 1.5;
+            break;
+        case 'ne':
+            x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) / 1.5 - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
+            break;
+        case 'e':
+            x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) / 1.5 - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top - elem.outerHeight(true) / 2;
+            break;
+        case 'se':
+            x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) / 1.5 - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset + elem.outerHeight(true) * 0.5;
+            break;
+        case 's':
+            x = gridpos[0] - elem.outerWidth(true) - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset + elem.outerHeight(true) * 0.5;
+            break;
+        case 'sw':
+            x = gridpos[0] - plot._gridPadding.left - elem.outerWidth(true) * 1.5 - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top + opts.tooltipOffset + elem.outerHeight(true) * 0.5;
+            break;
+        case 'w':
+            x = gridpos[0] - plot._gridPadding.left - elem.outerWidth(true) * 1.5 - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top - elem.outerHeight(true) / 2;
+            break;
+        default: // same as 'nw'
+            x = gridpos[0] + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset;
+            y = gridpos[1] + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true);
+            break;
         }
 
-        elem.css('left', x);
-        elem.css('top', y);
+        elem.css({ 'left': x, 'top': y, 'zIndex': 1 });
+        
         if (opts.fadeTooltip) {
-            // Fix for stacked up animations.  Thnanks Trevor!
-            elem.stop(true,true).fadeIn(opts.tooltipFadeSpeed);
-        }
-        else {
+            // Fix for stacked up animations. Thanks Trevor!
+            elem.stop(true, true).fadeIn(opts.tooltipFadeSpeed);
+        } else {
             elem.show();
         }
         elem = null;
     }
 
-
+    /**
+     * Used in handleMove
+     * @param   {array} point  [[Description]]
+     * @param   {array} lstart [[Description]]
+     * @param   {array} lstop  [[Description]]
+     * @param   {number} width  [[Description]]
+     * @returns {boolean} is near a line
+     */
     function isNearLine(point, lstart, lstop, width) {
+        
+        var rx,
+            ry,
+            px,
+            py,
+            qx,
+            qy,
+            l,
+            eps,
+            res,
+            ret;
+        
         // r is point to test, p and q are end points.
-        var rx = point[0];
-        var ry = point[1];
-        var px = Math.round(lstop[0]);
-        var py = Math.round(lstop[1]);
-        var qx = Math.round(lstart[0]);
-        var qy = Math.round(lstart[1]);
+        rx = point[0];
+        ry = point[1];
+        px = Math.round(lstop[0]);
+        py = Math.round(lstop[1]);
+        qx = Math.round(lstart[0]);
+        qy = Math.round(lstart[1]);
 
-        var l = Math.sqrt(Math.pow(px-qx, 2) + Math.pow(py-qy, 2));
+        l = Math.sqrt(Math.pow(px - qx, 2) + Math.pow(py - qy, 2));
 
         // scale error term by length of line.
-        var eps = width*l;
-        var res = Math.abs((qx-px) * (ry-py) - (qy-py) * (rx-px));
-        var ret = (res < eps) ? true : false;
+        eps = width * l;
+        res = Math.abs((qx - px) * (ry - py) - (qy - py) * (rx - px));
+        ret = (res < eps) ? true : false;
+        
         return ret;
     }
     
+    /**
+     * Used in handleMove 
+     * @param   {array} point  [[Description]]
+     * @param   {array} lstart [[Description]]
+     * @param   {array} lstop  [[Description]]
+     * @param   {number} width  [[Description]]
+     * @returns {boolean} is near a rectangle
+     */
     function isNearRectangle(point, lstart, lstop, width) {
-        // r is point to test, p and q are end points.
-        var rx = point[0];
-        var ry = point[1];
-        var px = Math.round(lstop[0]);
-        var py = Math.round(lstop[1]);
-        var qx = Math.round(lstart[0]);
-        var qy = Math.round(lstart[1]);
         
-        var temp;
+        var rx,
+            ry,
+            px,
+            py,
+            qx,
+            qy,
+            temp,
+            ret;
+        
+        // r is point to test, p and q are end points.
+        rx = point[0];
+        ry = point[1];
+        px = Math.round(lstop[0]);
+        py = Math.round(lstop[1]);
+        qx = Math.round(lstart[0]);
+        qy = Math.round(lstart[1]);
+
         if (px > qx) { temp = px; px = qx; qx = temp; }
         if (py > qy) { temp = py; py = qy; qy = temp; }
         
-        var ret = (rx >= px && rx <= qx && ry >= py && ry <= qy);
+        ret = (rx >= px && rx <= qx && ry >= py && ry <= qy);
         
         return ret;
     }
 
-
+    /**
+     * Handles displaying tooltip at correct place 
+     * @param {Object}   ev       [[Description]]
+     * @param {Object}   gridpos  [[Description]]
+     * @param {array} datapos  [[Description]]
+     * @param {array} neighbor [[Description]]
+     * @param {Object}   plot     [[Description]]
+     */
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        var co = plot.plugins.canvasOverlay;
-        var objs = co.objects;
-        var l = objs.length;
-        var obj, haveHighlight=false;
-        var elem;
-        for (var i=0; i<l; i++) {
+        
+        var co = plot.plugins.canvasOverlay,
+            objs = co.objects,
+            l = objs.length,
+            obj,
+            haveHighlight = false,
+            elem,
+            i,
+            n;
+        
+        for (i = 0; i < l; i++) {
+            
             obj = objs[i];
+
             if (obj.options.showTooltip) {
-            	var n;
+                
                 if (obj.type === 'rectangle') {
-                 n = isNearRectangle([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
+                    n = isNearRectangle([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
                 } else {
-                 n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
+                    n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
                 }
+                
                 datapos = [plot.axes[obj.options.xaxis].series_p2u(gridpos.x), plot.axes[obj.options.yaxis].series_p2u(gridpos.y)];
 
                 // cases:
@@ -901,97 +1568,100 @@
                 //    not near any line, no highlighting
 
                 // near line, not currently highlighting
-                if (n && co.highlightObjectIndex == null) {
+
+                if (n && co.highlightObjectIndex === null) {
+                    
                     switch (obj.type) {
-                        case 'line':
-                            showTooltip(plot, obj, [gridpos.x, gridpos.y], datapos);
-                            break;
+                    case 'line':
+                        showTooltip(plot, obj, [gridpos.x, gridpos.y], datapos);
+                        break;
 
-                        case 'horizontalLine':
-                        case 'dashedHorizontalLine':
-                            showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
-                            break;
+                    case 'horizontalLine':
+                    case 'dashedHorizontalLine':
+                        showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
+                        break;
 
-                        case 'verticalLine':
-                        case 'dashedVerticalLine':
-                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
-                            break;
-                            
-                        case 'rectangle':
-                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
-                            break;
-                            
-                        default:
-                            break;
-                    } 
+                    case 'verticalLine':
+                    case 'dashedVerticalLine':
+                        showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
+                        break;
+
+                    case 'rectangle':
+                        showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
+                        break;
+
+                    default:
+                        break;
+                    }
+                    
                     co.highlightObjectIndex = i;
                     haveHighlight = true;
                     break;
-                }
-
+                
                 // near line, highlighting another line.
-                else if (n && co.highlightObjectIndex !== i) {
+                } else if (n && co.highlightObjectIndex !== i) {
+                    
                     // turn off tooltip.
                     elem = co._tooltipElem;
+                    
                     if (obj.fadeTooltip) {
                         elem.fadeOut(obj.tooltipFadeSpeed);
-                    }
-                    else {
+                    } else {
                         elem.hide();
                     }
 
                     // turn on right tooltip.
                     switch (obj.type) {
-                        case 'line':
-                            showTooltip(plot, obj, [gridpos.x, gridpos.y], datapos);
-                            break;
+                    case 'line':
+                        showTooltip(plot, obj, [gridpos.x, gridpos.y], datapos);
+                        break;
 
-                        case 'horizontalLine':
-                        case 'dashedHorizontalLine':
-                            showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
-                            break;
+                    case 'horizontalLine':
+                    case 'dashedHorizontalLine':
+                        showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
+                        break;
 
-                        case 'verticalLine':
-                        case 'dashedVerticalLine':
-                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
-                            break;
-                            
-                        case 'rectangle':
-                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
-                            break;
-                            
-                        default:
-                            break;
+                    case 'verticalLine':
+                    case 'dashedVerticalLine':
+                        showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
+                        break;
+
+                    case 'rectangle':
+                        showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
+                        break;
+
+                    default:
+                        break;
                     }
 
                     co.highlightObjectIndex = i;
                     haveHighlight = true;
                     break;
-                }
-
+                    
                 // near line, already highlighting this line, update
-                else if (n) {
+                } else if (n) {
+                    
                     switch (obj.type) {
-                        case 'line':
-                            showTooltip(plot, obj, [gridpos.x, gridpos.y], datapos);
-                            break;
+                    case 'line':
+                        showTooltip(plot, obj, [gridpos.x, gridpos.y], datapos);
+                        break;
 
-                        case 'horizontalLine':
-                        case 'dashedHorizontalLine':
-                            showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
-                            break;
+                    case 'horizontalLine':
+                    case 'dashedHorizontalLine':
+                        showTooltip(plot, obj, [gridpos.x, obj.gridStart[1]], [datapos[0], obj.options.y]);
+                        break;
 
-                        case 'verticalLine':
-                        case 'dashedVerticalLine':
-                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
-                            break;
-                            
-                        case 'rectangle':
-                            showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
-                            break;
-                            
-                        default:
-                            break;
+                    case 'verticalLine':
+                    case 'dashedVerticalLine':
+                        showTooltip(plot, obj, [obj.gridStart[0], gridpos.y], [obj.options.x, datapos[1]]);
+                        break;
+
+                    case 'rectangle':
+                        showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
+                        break;
+
+                    default:
+                        break;
                     }
 
                     haveHighlight = true;
@@ -1006,8 +1676,7 @@
             obj = co.getObject(co.highlightObjectIndex);
             if (obj.fadeTooltip) {
                 elem.fadeOut(obj.tooltipFadeSpeed);
-            }
-            else {
+            } else {
                 elem.hide();
             }
             co.highlightObjectIndex = null;
@@ -1018,4 +1687,4 @@
     $.jqplot.postDrawHooks.push($.jqplot.CanvasOverlay.postPlotDraw);
     $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
 
-})(jQuery);
+}(jQuery));
