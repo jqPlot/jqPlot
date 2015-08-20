@@ -3113,190 +3113,243 @@
                 }
             };
         })(this);
+
+    }
     
-        this.parseOptions = function(options){
-            for (var i=0; i<this.preParseOptionsHooks.hooks.length; i++) {
-                this.preParseOptionsHooks.hooks[i].call(this, options);
-            }
-            for (var i=0; i<$.jqplot.preParseOptionsHooks.length; i++) {
-                $.jqplot.preParseOptionsHooks[i].call(this, options);
-            }
-            this.options = $.extend(true, {}, this.defaults, options);
-            var opts = this.options;
-            this.animate = opts.animate;
-            this.animateReplot = opts.animateReplot;
-            this.stackSeries = opts.stackSeries;
-            if ($.isPlainObject(opts.fillBetween)) {
+    /**
+     * @param {object} options
+     */
+    JqPlot.prototype.parseOptions = function (options) {
 
-                var temp = ['series1', 'series2', 'color', 'baseSeries', 'fill'], 
-                    tempi;
-
-                for (var i=0, l=temp.length; i<l; i++) {
-                    tempi = temp[i];
-                    if (opts.fillBetween[tempi] != null) {
-                        this.fillBetween[tempi] = opts.fillBetween[tempi];
-                    }
-                }
-            }
-
-            if (opts.seriesColors) {
-                this.seriesColors = opts.seriesColors;
-            }
-            if (opts.negativeSeriesColors) {
-                this.negativeSeriesColors = opts.negativeSeriesColors;
-            }
-            if (opts.captureRightClick) {
-                this.captureRightClick = opts.captureRightClick;
-            }
-            this.defaultAxisStart = (options && options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
-            this.colorGenerator.setColors(this.seriesColors);
-            this.negativeColorGenerator.setColors(this.negativeSeriesColors);
-            // var cg = new this.colorGenerator(this.seriesColors);
-            // var ncg = new this.colorGenerator(this.negativeSeriesColors);
-            // this._gridPadding = this.options.gridPadding;
-            $.extend(true, this._gridPadding, opts.gridPadding);
-            this.sortData = (opts.sortData != null) ? opts.sortData : this.sortData;
-            for (var i=0; i<12; i++) {
-                var n = _axisNames[i];
-                var axis = this.axes[n];
-                axis._options = $.extend(true, {}, opts.axesDefaults, opts.axes[n]);
-                $.extend(true, axis, opts.axesDefaults, opts.axes[n]);
-                axis._plotWidth = this._width;
-                axis._plotHeight = this._height;
-            }
-            // if (this.data.length == 0) {
-            //     this.data = [];
-            //     for (var i=0; i<this.options.series.length; i++) {
-            //         this.data.push(this.options.series.data);
-            //     }    
-            // }
-                
-            var normalizeData = function(data, dir, start) {
+        var i = 0,
+            j = 0,
+            l = 0,
+            dataLen = 0,
+            opts,
+            temp = ['series1', 'series2', 'color', 'baseSeries', 'fill'],
+            tempi,
+            n,
+            axis,
+            /**
+             * [[Description]]
+             * @param   {[[Type]]} data  [[Description]]
+             * @param   {[[Type]]} dir   [[Description]]
+             * @param   {[[Type]]} start [[Description]]
+             * @returns {[[Type]]} [[Description]]
+             */
+            normalizeData = function (data, dir, start) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
-                var temp = [];
-                var i, l;
+                var temp = [],
+                    i,
+                    l,
+                    j;
+
                 dir = dir || 'vertical';
+
                 if (!$.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
-                    for (i=0, l=data.length; i<l; i++) {
-                        if (dir == 'vertical') {
-                            temp.push([start + i, data[i]]);   
-                        }
-                        else {
-                            temp.push([data[i], start+i]);
+                    for (i = 0, l = data.length; i < l; i++) {
+                        if (dir === 'vertical') {
+                            temp.push([start + i, data[i]]);
+                        } else {
+                            temp.push([data[i], start + i]);
                         }
                     }
-                }            
-                else {
+                } else {
                     // we have a properly formatted data series, copy it.
                     $.extend(true, temp, data);
                 }
                 return temp;
-            };
+            },
+            colorIndex = 0,
+            sopts,
+            dir = 'vertical';
 
-            var colorIndex = 0;
-            this.series = [];
-            for (var i=0; i<this.data.length; i++) {
-                var sopts = $.extend(true, {index: i}, {seriesColors:this.seriesColors, negativeSeriesColors:this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions:{animation:{show: this.animate}}});
-                // pass in options in case something needs set prior to initialization.
-                var temp = new Series(sopts);
-                for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
-                    $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+        for (i = 0, l = this.preParseOptionsHooks.hooks.length; i < l; i++) {
+            this.preParseOptionsHooks.hooks[i].call(this, options);
+        }
+
+        for (i = 0, l = $.jqplot.preParseOptionsHooks.length; i < l; i++) {
+            $.jqplot.preParseOptionsHooks[i].call(this, options);
+        }
+
+        this.options = $.extend(true, {}, this.defaults, options);
+        opts = this.options;
+
+        this.animate = opts.animate;
+        this.animateReplot = opts.animateReplot;
+        this.stackSeries = opts.stackSeries;
+
+        if ($.isPlainObject(opts.fillBetween)) {
+            for (i = 0, l = temp.length; i < l; i++) {
+                tempi = temp[i];
+                if (opts.fillBetween[tempi] !== null) {
+                    this.fillBetween[tempi] = opts.fillBetween[tempi];
                 }
-                for (var j=0; j<this.preParseSeriesOptionsHooks.hooks.length; j++) {
-                    this.preParseSeriesOptionsHooks.hooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+            }
+        }
+
+        if (opts.seriesColors) {
+            this.seriesColors = opts.seriesColors;
+        }
+        if (opts.negativeSeriesColors) {
+            this.negativeSeriesColors = opts.negativeSeriesColors;
+        }
+        if (opts.captureRightClick) {
+            this.captureRightClick = opts.captureRightClick;
+        }
+
+        this.defaultAxisStart = (options && typeof options.defaultAxisStart !== "undefined") ? options.defaultAxisStart : this.defaultAxisStart;
+
+        this.colorGenerator.setColors(this.seriesColors);
+        this.negativeColorGenerator.setColors(this.negativeSeriesColors);
+
+        // var cg = new this.colorGenerator(this.seriesColors);
+        // var ncg = new this.colorGenerator(this.negativeSeriesColors);
+        // this._gridPadding = this.options.gridPadding;
+        $.extend(true, this._gridPadding, opts.gridPadding);
+
+        this.sortData = (typeof opts.sortData !== "undefined") ? opts.sortData : this.sortData;
+
+        for (i = 0; i < 12; i++) {
+            n = _axisNames[i];
+            axis = this.axes[n];
+            axis._options = $.extend(true, {}, opts.axesDefaults, opts.axes[n]);
+            $.extend(true, axis, opts.axesDefaults, opts.axes[n]);
+            axis._plotWidth = this._width;
+            axis._plotHeight = this._height;
+        }
+        // if (this.data.length == 0) {
+        //     this.data = [];
+        //     for (var i=0; i<this.options.series.length; i++) {
+        //         this.data.push(this.options.series.data);
+        //     }    
+        // }
+
+        this.series = [];
+
+        for (i = 0, dataLen = this.data.length; i < dataLen; i++) {
+
+            sopts = $.extend(true, {index: i}, {
+                seriesColors: this.seriesColors,
+                negativeSeriesColors: this.negativeSeriesColors
+            }, this.options.seriesDefaults, this.options.series[i], {
+                rendererOptions: {
+                    animation: {
+                        show: this.animate
+                    }
                 }
-                // Now go back and apply the options to the series.  Really should just do this during initializaiton, but don't want to
-                // mess up preParseSeriesOptionsHooks at this point.
-                $.extend(true, temp, sopts);
-                var dir = 'vertical';
-                if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
-                    dir = 'horizontal';
-                    temp._stackAxis = 'x';
-                    temp._primaryAxis = '_yaxis';
-                }
-                temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
-                switch (temp.xaxis) {
-                    case 'xaxis':
-                        temp._xaxis = this.axes.xaxis;
-                        break;
-                    case 'x2axis':
-                        temp._xaxis = this.axes.x2axis;
-                        break;
-                    default:
-                        break;
-                }
-                temp._yaxis = this.axes[temp.yaxis];
-                temp._xaxis._series.push(temp);
-                temp._yaxis._series.push(temp);
-                if (temp.show) {
+            });
+            
+            // pass in options in case something needs set prior to initialization.
+            temp = new Series(sopts);
+
+            for (j = 0, l = $.jqplot.preParseSeriesOptionsHooks.length; j < l; j++) {
+                $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+            }
+
+            for (j = 0, l = this.preParseSeriesOptionsHooks.hooks.length; j < l; j++) {
+                this.preParseSeriesOptionsHooks.hooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
+            }
+
+            // Now go back and apply the options to the series.  Really should just do this during initializaiton, but don't want to
+            // mess up preParseSeriesOptionsHooks at this point.
+            $.extend(true, temp, sopts);
+
+            if (temp.renderer === $.jqplot.BarRenderer && temp.rendererOptions && temp.rendererOptions.barDirection === 'horizontal') {
+                dir = 'horizontal';
+                temp._stackAxis = 'x';
+                temp._primaryAxis = '_yaxis';
+            }
+
+            temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
+
+            switch (temp.xaxis) {
+            case 'xaxis':
+                temp._xaxis = this.axes.xaxis;
+                break;
+            case 'x2axis':
+                temp._xaxis = this.axes.x2axis;
+                break;
+            default:
+                break;
+            }
+
+            temp._yaxis = this.axes[temp.yaxis];
+            temp._xaxis._series.push(temp);
+            temp._yaxis._series.push(temp);
+
+            if (temp.show) {
+                temp._xaxis.show = true;
+                temp._yaxis.show = true;
+            } else {
+                if (temp._xaxis.scaleToHiddenSeries) {
                     temp._xaxis.show = true;
+                }
+                if (temp._yaxis.scaleToHiddenSeries) {
                     temp._yaxis.show = true;
                 }
-                else {
-                    if (temp._xaxis.scaleToHiddenSeries) {
-                        temp._xaxis.show = true;
-                    }
-                    if (temp._yaxis.scaleToHiddenSeries) {
-                        temp._yaxis.show = true;
-                    }
-                }
+            }
 
-                // // parse the renderer options and apply default colors if not provided
-                // if (!temp.color && temp.show != false) {
-                //     temp.color = cg.next();
-                //     colorIndex = cg.getIndex() - 1;;
-                // }
-                // if (!temp.negativeColor && temp.show != false) {
-                //     temp.negativeColor = ncg.get(colorIndex);
-                //     ncg.setIndex(colorIndex);
-                // }
-                if (!temp.label) {
-                    temp.label = 'Series '+ (i+1).toString();
-                }
-                // temp.rendererOptions.show = temp.show;
-                // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
-                this.series.push(temp);  
-                for (var j=0; j<$.jqplot.postParseSeriesOptionsHooks.length; j++) {
-                    $.jqplot.postParseSeriesOptionsHooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
-                }
-                for (var j=0; j<this.postParseSeriesOptionsHooks.hooks.length; j++) {
-                    this.postParseSeriesOptionsHooks.hooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
-                }
+            // // parse the renderer options and apply default colors if not provided
+            // if (!temp.color && temp.show != false) {
+            //     temp.color = cg.next();
+            //     colorIndex = cg.getIndex() - 1;;
+            // }
+            // if (!temp.negativeColor && temp.show != false) {
+            //     temp.negativeColor = ncg.get(colorIndex);
+            //     ncg.setIndex(colorIndex);
+            // }
+            if (!temp.label) {
+                temp.label = 'Series ' + (i + 1).toString();
             }
-            
-            // copy the grid and title options into this object.
-            $.extend(true, this.grid, this.options.grid);
-            // if axis border properties aren't set, set default.
-            for (var i=0, l=_axisNames.length; i<l; i++) {
-                var n = _axisNames[i];
-                var axis = this.axes[n];
-                if (axis.borderWidth == null) {
-                    axis.borderWidth =this.grid.borderWidth;
-                }
-            }
-            
-            if (typeof this.options.title == 'string') {
-                this.title.text = this.options.title;
-            }
-            else if (typeof this.options.title == 'object') {
-                $.extend(true, this.title, this.options.title);
-            }
-            this.title._plotWidth = this._width;
-            this.legend.setOptions(this.options.legend);
-            
-            for (var i=0; i<$.jqplot.postParseOptionsHooks.length; i++) {
-                $.jqplot.postParseOptionsHooks[i].call(this, options);
-            }
-            for (var i=0; i<this.postParseOptionsHooks.hooks.length; i++) {
-                this.postParseOptionsHooks.hooks[i].call(this, options);
-            }
-        };
 
-    }
+            // temp.rendererOptions.show = temp.show;
+            // $.extend(true, temp.renderer, {color:this.seriesColors[i]}, this.rendererOptions);
+            this.series.push(temp);
+
+            for (j = 0, l = $.jqplot.postParseSeriesOptionsHooks.length; j < l; j++) {
+                $.jqplot.postParseSeriesOptionsHooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
+            }
+
+            for (j = 0, l = this.postParseSeriesOptionsHooks.hooks.length; j < l; j++) {
+                this.postParseSeriesOptionsHooks.hooks[j].call(this.series[i], this.options.seriesDefaults, this.options.series[i]);
+            }
+        }
+
+        // copy the grid and title options into this object.
+        $.extend(true, this.grid, this.options.grid);
+
+        // if axis border properties aren't set, set default.
+        for (i = 0, l = _axisNames.length; i < l; i++) {
+            n = _axisNames[i];
+            axis = this.axes[n];
+            if (axis.borderWidth === null) {
+                axis.borderWidth = this.grid.borderWidth;
+            }
+        }
+
+        if (typeof this.options.title === 'string') {
+            this.title.text = this.options.title;
+        } else if (typeof this.options.title === 'object') {
+            $.extend(true, this.title, this.options.title);
+        }
+
+        this.title._plotWidth = this._width;
+        this.legend.setOptions(this.options.legend);
+
+        for (i = 0, l = $.jqplot.postParseOptionsHooks.length; i < l; i++) {
+            $.jqplot.postParseOptionsHooks[i].call(this, options);
+        }
+
+        for (i = 0, l = this.postParseOptionsHooks.hooks.length; i < l; i++) {
+            this.postParseOptionsHooks.hooks[i].call(this, options);
+        }
+
+    };
     
     /**
      * method: destroy
