@@ -1,3 +1,6 @@
+/*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
+/*global jQuery */
+
 /**
  * Title: jqPlot Charts
  * 
@@ -82,80 +85,98 @@
  * 
  */
 
-(function($) {
+(function ($) {
+    
+    "use strict";
+
     // make sure undefined is undefined
     var undefined;
     
-    $.fn.emptyForce = function() {
-      for ( var i = 0, elem; (elem = $(this)[i]) != null; i++ ) {
-        // Remove element nodes and prevent memory leaks
-        if ( elem.nodeType === 1 ) {
-          $.cleanData( elem.getElementsByTagName("*") );
-        }
-  
-        // Remove any remaining nodes
-        if ($.jqplot.use_excanvas) {
-          elem.outerHTML = "";
-        }
-        else {
-          while ( elem.firstChild ) {
-            elem.removeChild( elem.firstChild );
-          }
+    /**
+     * 
+     */
+    $.fn.emptyForce = function () {
+        
+        var i,
+            elem;
+        
+        for (i = 0, elem; typeof (elem = $(this)[i]) !== "undefined"; i++) {
+            
+            // Remove element nodes and prevent memory leaks
+            if (elem.nodeType === 1) {
+                $.cleanData(elem.getElementsByTagName("*"));
+            }
+
+            // Remove any remaining nodes
+            if ($.jqplot.use_excanvas) {
+                elem.outerHTML = "";
+            } else {
+                while (elem.firstChild) {
+                    elem.removeChild(elem.firstChild);
+                }
+            }
+
+            elem = null;
         }
 
-        elem = null;
-      }
-  
-      return $(this);
+        return $(this);
     };
   
-    $.fn.removeChildForce = function(parent) {
-      while ( parent.firstChild ) {
-        this.removeChildForce( parent.firstChild );
-        parent.removeChild( parent.firstChild );
-      }
+    /**
+     * @param {object} parent 
+     */
+    $.fn.removeChildForce = function (parent) {
+        while (parent.firstChild) {
+            this.removeChildForce(parent.firstChild);
+            parent.removeChild(parent.firstChild);
+        }
     };
 
-    $.fn.jqplot = function() {
-        var datas = [];
-        var options = [];
+    /**
+     *
+     */
+    $.fn.jqplot = function () {
+        
+        var datas = [],
+            options = [],
+            i,
+            l;
+        
         // see how many data arrays we have
-        for (var i=0, l=arguments.length; i<l; i++) {
+        for (i = 0, l = arguments.length; i < l; i++) {
             if ($.isArray(arguments[i])) {
                 datas.push(arguments[i]);
-            }
-            else if ($.isPlainObject(arguments[i])) {
+            } else if ($.isPlainObject(arguments[i])) {
                 options.push(arguments[i]);
             }
         }
 
-        return this.each(function(index) {
-            var tid, 
-                plot, 
+        return this.each(function (index) {
+            var tid,
+                plot,
                 $this = $(this),
                 dl = datas.length,
                 ol = options.length,
-                data, 
+                data,
                 opts;
 
             if (index < dl) {
                 data = datas[index];
-            }
-            else {
-                data = dl ? datas[dl-1] : null;
+            } else {
+                data = dl ? datas[dl - 1] : null;
             }
 
             if (index < ol) {
                 opts = options[index];
-            }
-            else {
-                opts = ol ? options[ol-1] : null;
+            } else {
+                opts = ol ? options[ol - 1] : null;
             }
 
             // does el have an id?
             // if not assign it one.
             tid = $this.attr('id');
-            if (tid === undefined) {
+            
+            if (typeof tid === "undefined") {
                 tid = 'jqplot_target_' + $.jqplot.targetCounter++;
                 $this.attr('id', tid);
             }
@@ -163,9 +184,9 @@
             plot = $.jqplot(tid, data, opts);
 
             $this.data('jqplot', plot);
+            
         });
     };
-
 
     /**
      * Namespace: $.jqplot
@@ -190,21 +211,20 @@
      * defaultWidth - Default height for plots where no css height specification exists.  This
      *   is a jqplot wide default.
      */
-
-    $.jqplot = function(target, data, options) {
-        var _data = null, _options = null;
+    $.jqplot = function (target, data, options) {
+        
+        var _data = null,
+            _options = null,
+            plot,
+            msg;
 
         if (arguments.length === 3) {
             _data = data;
             _options = options;
-        }
-
-        else if (arguments.length === 2) {
+        } else if (arguments.length === 2) {
             if ($.isArray(data)) {
                 _data = data;
-            }
-
-            else if ($.isPlainObject(data)) {
+            } else if ($.isPlainObject(data)) {
                 _options = data;
             }
         }
@@ -213,9 +233,11 @@
             _data = _options.data;
         }
 
-        var plot = new jqPlot();
+        // @TODO Need to make sure we don't run into circular references...
+        plot = new jqPlot();
+        
         // remove any error class that may be stuck on target.
-        $('#'+target).removeClass('jqplot-error');
+        $('#' + target).removeClass('jqplot-error');
         
         if ($.jqplot.config.catchErrors) {
             try {
@@ -223,20 +245,21 @@
                 plot.draw();
                 plot.themeEngine.init.call(plot);
                 return plot;
+            } catch (e) {
+                msg = $.jqplot.config.errorMessage || e.message;
+                $('#' + target)
+                    .append('<div class="jqplot-error-message">' + msg + '</div>')
+                    .addClass('jqplot-error')
+                    .css({
+                        background: $.jqplot.config.errorBackground,
+                        border: $.jqplot.config.errorBorder,
+                        fontFamily: $.jqplot.config.errorFontFamily,
+                        fontSize: $.jqplot.config.errorFontSize,
+                        fontStyle: $.jqplot.config.errorFontStyle,
+                        fontWeight: $.jqplot.config.errorFontWeight
+                    });
             }
-            catch(e) {
-                var msg = $.jqplot.config.errorMessage || e.message;
-                $('#'+target).append('<div class="jqplot-error-message">'+msg+'</div>');
-                $('#'+target).addClass('jqplot-error');
-                document.getElementById(target).style.background = $.jqplot.config.errorBackground;
-                document.getElementById(target).style.border = $.jqplot.config.errorBorder;
-                document.getElementById(target).style.fontFamily = $.jqplot.config.errorFontFamily;
-                document.getElementById(target).style.fontSize = $.jqplot.config.errorFontSize;
-                document.getElementById(target).style.fontStyle = $.jqplot.config.errorFontStyle;
-                document.getElementById(target).style.fontWeight = $.jqplot.config.errorFontWeight;
-            }
-        }
-        else {        
+        } else {
             plot.init(target, _data, _options);
             plot.draw();
             plot.themeEngine.init.call(plot);
@@ -252,10 +275,10 @@
     // canvas manager to reuse canvases on the plot.
     // Should help solve problem of canvases not being freed and
     // problem of waiting forever for firefox to decide to free memory.
-    $.jqplot.CanvasManager = function() {
+    $.jqplot.CanvasManager = function () {
         // canvases are managed globally so that they can be reused
         // across plots after they have been freed
-        if (typeof $.jqplot.CanvasManager.canvases == 'undefined') {
+        if (typeof $.jqplot.CanvasManager.canvases === 'undefined') {
             $.jqplot.CanvasManager.canvases = [];
             $.jqplot.CanvasManager.free = [];
         }
@@ -3771,90 +3794,101 @@
     }
     
     
-    // conpute a highlight color or array of highlight colors from given colors.
-    $.jqplot.computeHighlightColors  = function(colors) {
-        var ret;
+    /**
+     * Computes a highlight color or array of highlight colors from given colors.
+     * @param {array} colors
+     */
+    $.jqplot.computeHighlightColors  = function (colors) {
+        var ret,
+            i,
+            rgba,
+            newrgb,
+            sum,
+            j,
+            l;
         if ($.isArray(colors)) {
             ret = [];
-            for (var i=0; i<colors.length; i++){
-                var rgba = $.jqplot.getColorComponents(colors[i]);
-                var newrgb = [rgba[0], rgba[1], rgba[2]];
-                var sum = newrgb[0] + newrgb[1] + newrgb[2];
-                for (var j=0; j<3; j++) {
+            for (i = 0, l = colors.length; i < l; i++) {
+                rgba = $.jqplot.getColorComponents(colors[i]);
+                newrgb = [rgba[0], rgba[1], rgba[2]];
+                sum = newrgb[0] + newrgb[1] + newrgb[2];
+                for (j = 0; j < 3; j++) {
                     // when darkening, lowest color component can be is 60.
                     newrgb[j] = (sum > 660) ?  newrgb[j] * 0.85 : 0.73 * newrgb[j] + 90;
                     newrgb[j] = parseInt(newrgb[j], 10);
-                    (newrgb[j] > 255) ? 255 : newrgb[j];
+                    newrgb[j] = (newrgb[j] > 255) ? 255 : newrgb[j];
                 }
                 // newrgb[3] = (rgba[3] > 0.4) ? rgba[3] * 0.4 : rgba[3] * 1.5;
                 // newrgb[3] = (rgba[3] > 0.5) ? 0.8 * rgba[3] - .1 : rgba[3] + 0.2;
                 newrgb[3] = 0.3 + 0.35 * rgba[3];
-                ret.push('rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+newrgb[3]+')');
+                ret.push('rgba(' + newrgb[0] + ',' + newrgb[1] + ',' + newrgb[2] + ',' + newrgb[3] + ')');
             }
-        }
-        else {
-            var rgba = $.jqplot.getColorComponents(colors);
-            var newrgb = [rgba[0], rgba[1], rgba[2]];
-            var sum = newrgb[0] + newrgb[1] + newrgb[2];
-            for (var j=0; j<3; j++) {
+        } else {
+            rgba = $.jqplot.getColorComponents(colors);
+            newrgb = [rgba[0], rgba[1], rgba[2]];
+            sum = newrgb[0] + newrgb[1] + newrgb[2];
+            for (j = 0; j < 3; j++) {
                 // when darkening, lowest color component can be is 60.
                 // newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
                 // newrgb[j] = parseInt(newrgb[j], 10);
-                newrgb[j] = (sum > 660) ?  newrgb[j] * 0.85 : 0.73 * newrgb[j] + 90;
+                newrgb[j] = (sum > 660) ? newrgb[j] * 0.85 : 0.73 * newrgb[j] + 90;
                 newrgb[j] = parseInt(newrgb[j], 10);
-                (newrgb[j] > 255) ? 255 : newrgb[j];
+                newrgb[j] = (newrgb[j] > 255) ? 255 : newrgb[j];
             }
             // newrgb[3] = (rgba[3] > 0.4) ? rgba[3] * 0.4 : rgba[3] * 1.5;
             // newrgb[3] = (rgba[3] > 0.5) ? 0.8 * rgba[3] - .1 : rgba[3] + 0.2;
             newrgb[3] = 0.3 + 0.35 * rgba[3];
-            ret = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+newrgb[3]+')';
+            ret = 'rgba(' + newrgb[0] + ',' + newrgb[1] + ',' + newrgb[2] + ',' + newrgb[3] + ')';
         }
         return ret;
     };
         
-   $.jqplot.ColorGenerator = function(colors) {
+    /**
+     * @param {array} colors
+     */
+    $.jqplot.ColorGenerator = function (colors) {
+        
         colors = colors || $.jqplot.config.defaultColors;
+        
         var idx = 0;
         
-        this.next = function () { 
+        this.next = function () {
             if (idx < colors.length) {
                 return colors[idx++];
-            }
-            else {
+            } else {
                 idx = 0;
                 return colors[idx++];
             }
         };
         
-        this.previous = function () { 
+        this.previous = function () {
             if (idx > 0) {
                 return colors[idx--];
-            }
-            else {
-                idx = colors.length-1;
+            } else {
+                idx = colors.length - 1;
                 return colors[idx];
             }
         };
         
         // get a color by index without advancing pointer.
-        this.get = function(i) {
-            var idx = i - colors.length * Math.floor(i/colors.length);
+        this.get = function (i) {
+            var idx = i - colors.length * Math.floor(i / colors.length);
             return colors[idx];
         };
         
-        this.setColors = function(c) {
+        this.setColors = function (c) {
             colors = c;
         };
         
-        this.reset = function() {
+        this.reset = function () {
             idx = 0;
         };
 
-        this.getIndex = function() {
+        this.getIndex = function () {
             return idx;
         };
 
-        this.setIndex = function(index) {
+        this.setIndex = function (index) {
             idx = index;
         };
     };
@@ -3862,37 +3896,45 @@
     // convert a hex color string to rgb string.
     // h - 3 or 6 character hex string, with or without leading #
     // a - optional alpha
-    $.jqplot.hex2rgb = function(h, a) {
-        h = h.replace('#', '');
-        if (h.length == 3) {
-            h = h.charAt(0)+h.charAt(0)+h.charAt(1)+h.charAt(1)+h.charAt(2)+h.charAt(2);
-        }
+    $.jqplot.hex2rgb = function (h, a) {
+        
         var rgb;
-        rgb = 'rgba('+parseInt(h.slice(0,2), 16)+', '+parseInt(h.slice(2,4), 16)+', '+parseInt(h.slice(4,6), 16);
-        if (a) {
-            rgb += ', '+a;
+        
+        h = h.replace('#', '');
+        
+        if (h.length === 3) {
+            h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
         }
+        
+        rgb = 'rgba(' + parseInt(h.slice(0, 2), 16) + ', ' + parseInt(h.slice(2, 4), 16) + ', ' + parseInt(h.slice(4, 6), 16);
+        
+        if (a) {
+            rgb += ', ' + a;
+        }
+        
         rgb += ')';
+        
         return rgb;
     };
     
     // convert an rgb color spec to a hex spec.  ignore any alpha specification.
-    $.jqplot.rgb2hex = function(s) {
-        var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *(?:, *[0-9.]*)?\)/;
-        var m = s.match(pat);
-        var h = '#';
-        for (var i=1; i<4; i++) {
-            var temp;
-            if (m[i].search(/%/) != -1) {
-                temp = parseInt(255*m[i]/100, 10).toString(16);
-                if (temp.length == 1) {
-                    temp = '0'+temp;
+    $.jqplot.rgb2hex = function (s) {
+        var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *(?:, *[0-9.]*)?\)/,
+            m = s.match(pat),
+            h = '#',
+            i,
+            temp;
+        
+        for (i = 1; i < 4; i++) {
+            if (m[i].search(/%/) !== -1) {
+                temp = parseInt(255 * m[i] / 100, 10).toString(16);
+                if (temp.length === 1) {
+                    temp = '0' + temp;
                 }
-            }
-            else {
+            } else {
                 temp = parseInt(m[i], 10).toString(16);
-                if (temp.length == 1) {
-                    temp = '0'+temp;
+                if (temp.length === 1) {
+                    temp = '0' + temp;
                 }
             }
             h += temp;
@@ -3901,36 +3943,126 @@
     };
     
     // given a css color spec, return an rgb css color spec
-    $.jqplot.normalize2rgb = function(s, a) {
-        if (s.search(/^ *rgba?\(/) != -1) {
-            return s; 
-        }
-        else if (s.search(/^ *#?[0-9a-fA-F]?[0-9a-fA-F]/) != -1) {
+    $.jqplot.normalize2rgb = function (s, a) {
+        if (s.search(/^ *rgba?\(/) !== -1) {
+            return s;
+        } else if (s.search(/^ *#?[0-9a-fA-F]?[0-9a-fA-F]/) !== -1) {
             return $.jqplot.hex2rgb(s, a);
-        }
-        else {
+        } else {
             throw new Error('Invalid color spec');
         }
     };
     
-    // extract the r, g, b, a color components out of a css color spec.
-    $.jqplot.getColorComponents = function(s) {
+    /**
+     * Extracts the r, g, b, a color components out of a css color spec.
+     * @param   {string} s [[Description]]
+     * @returns {string} [[Description]]
+     */
+    $.jqplot.getColorComponents = function (s) {
+        
         // check to see if a color keyword.
         s = $.jqplot.colorKeywordMap[s] || s;
-        var rgb = $.jqplot.normalize2rgb(s);
-        var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *,? *([0-9.]* *)?\)/;
-        var m = rgb.match(pat);
-        var ret = [];
-        for (var i=1; i<4; i++) {
-            if (m[i].search(/%/) != -1) {
-                ret[i-1] = parseInt(255*m[i]/100, 10);
-            }
-            else {
-                ret[i-1] = parseInt(m[i], 10);
+        
+        var rgb = $.jqplot.normalize2rgb(s),
+            pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *,? *([0-9.]* *)?\)/,
+            m = rgb.match(pat),
+            ret = [],
+            i;
+        
+        for (i = 1; i < 4; i++) {
+            if (m[i].search(/%/) !== -1) {
+                ret[i - 1] = parseInt(255 * m[i] / 100, 10);
+            } else {
+                ret[i - 1] = parseInt(m[i], 10);
             }
         }
-        ret[3] = parseFloat(m[4]) ? parseFloat(m[4]) : 1.0;
+        ret[3] = parseFloat(m[4]) || 1.0;
         return ret;
+    };
+
+    /**
+     * know if a color is dark or not
+     * @param   {string} color
+     * @returns {boolean}
+     */
+    $.jqplot.isDarkColor = function (color) {
+        
+        var L = 0,
+            rgba = this.getColorRGB(color);
+        
+        if (rgba !== null) {
+            color = rgba;
+        } else {
+            color = $.jqplot.getColorComponents(color);
+        }
+        
+        if (color !== null) {
+            L = 0.300 * (color[0] / 255) + 0.590 * (color[1] / 255) + 0.110 * (color[2] / 255);
+        }
+        
+        return (L < 0.45);
+        
+    };
+
+    /**
+     * Gets the RGB color value for a given color
+     * @param   {String}   color [[Description]]
+     * @returns {[[Type]]} [[Description]]
+     */
+    $.jqplot.getColorRGB = function (color) {
+        
+        var rgbError = [0, 0, 0],
+            red,
+            green,
+            blue,
+            rgbString,
+            rgb,
+            strLen = color.length;
+        
+        if (strLen && color.lastIndexOf("rgb") !== -1) {
+            
+            color = color.replace("rgba", "");
+            color = color.replace("rgb", "");
+            color = color.replace("\\(", "");
+            color = color.replace("\\)", "");
+            color = color.replace(" ", "");
+            
+            rgbString = color.split(",");
+            
+            red = parseInt(rgbString[0], 10);
+            green = parseInt(rgbString[1], 10);
+            blue = parseInt(rgbString[2], 10);
+            
+            rgb = [red, green, blue];
+            
+            return rgb;
+            
+        } else if (strLen && color.indexOf("#") === 0) {
+            
+            // eg. #F90
+            if (strLen === 4) {
+                red = color.substr(1, 1);
+                green = color.substr(2, 1);
+                blue = color.substr(3, 1);
+            // eg. #FF9900    
+            } else {
+                red = color.substr(1, 2);
+                green = color.substr(3, 2);
+                blue = color.substr(5, 2);
+            }
+            
+            red = parseInt(red, 16);
+            green = parseInt(green, 16);
+            blue = parseInt(blue, 16);
+            
+            rgb = [red, green, blue];
+            
+            return rgb;
+            
+        } else {
+            return null;
+        }
+        
     };
     
     $.jqplot.colorKeywordMap = {
@@ -4082,6 +4214,5 @@
         yellow: 'rgb(255, 255, 0)',
         yellowgreen: 'rgb(154, 205, 50)'
     };
-
     
 })(jQuery);
