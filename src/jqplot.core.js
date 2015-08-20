@@ -1841,7 +1841,21 @@
         // prop: axes
         // up to 4 axes are supported, each with its own options, 
         // See <Axis> for axis specific options.
-        this.axes = {xaxis: new Axis('xaxis'), yaxis: new Axis('yaxis'), x2axis: new Axis('x2axis'), y2axis: new Axis('y2axis'), y3axis: new Axis('y3axis'), y4axis: new Axis('y4axis'), y5axis: new Axis('y5axis'), y6axis: new Axis('y6axis'), y7axis: new Axis('y7axis'), y8axis: new Axis('y8axis'), y9axis: new Axis('y9axis'), yMidAxis: new Axis('yMidAxis')};
+        this.axes = {
+            xaxis: new Axis('xaxis'),
+            yaxis: new Axis('yaxis'),
+            x2axis: new Axis('x2axis'),
+            y2axis: new Axis('y2axis'),
+            y3axis: new Axis('y3axis'),
+            y4axis: new Axis('y4axis'),
+            y5axis: new Axis('y5axis'),
+            y6axis: new Axis('y6axis'),
+            y7axis: new Axis('y7axis'),
+            y8axis: new Axis('y8axis'),
+            y9axis: new Axis('y9axis'),
+            yMidAxis: new Axis('yMidAxis')
+        };
+        // jqplot base canvas. Lowest canvas.
         this.baseCanvas = new $.jqplot.GenericCanvas();
         // true to intercept right click events and fire a 'jqplotRightClick' event.
         // this will also block the context menu.
@@ -1857,22 +1871,22 @@
         // A callable which can be used to preprocess data passed into the plot.
         // Will be called with 3 arguments: the plot data, a reference to the plot,
         // and the value of dataRendererOptions.
-        this.dataRenderer;
+        this.dataRenderer = null;
         // prop: dataRendererOptions
         // Options that will be passed to the dataRenderer.
         // Can be of any type.
-        this.dataRendererOptions;
+        this.dataRendererOptions = null;
         this.defaults = {
             // prop: axesDefaults
             // default options that will be applied to all axes.
             // see <Axis> for axes options.
             axesDefaults: {},
-            axes: {xaxis:{}, yaxis:{}, x2axis:{}, y2axis:{}, y3axis:{}, y4axis:{}, y5axis:{}, y6axis:{}, y7axis:{}, y8axis:{}, y9axis:{}, yMidAxis:{}},
+            axes: {xaxis: {}, yaxis: {}, x2axis: {}, y2axis: {}, y3axis: {}, y4axis: {}, y5axis: {}, y6axis: {}, y7axis: {}, y8axis: {}, y9axis: {}, yMidAxis: {}},
             // prop: seriesDefaults
             // default options that will be applied to all series.
             // see <Series> for series options.
             seriesDefaults: {},
-            series:[]
+            series: []
         };
         // prop: defaultAxisStart
         // 1-D data series are internally converted into 2-D [x,y] data point arrays
@@ -1888,6 +1902,9 @@
         // a hidden container, call the replot method when the container is shown.
         this.drawIfHidden = false;
         this.eventCanvas = new $.jqplot.GenericCanvas();
+
+        this.bellowSeriesCanvas = new $.jqplot.GenericCanvas();
+
         // prop: fillBetween
         // Fill between 2 line series in a plot.
         // Options object:
@@ -1907,10 +1924,10 @@
         };
         // prop; fontFamily
         // css spec for the font-family attribute.  Default for the entire plot.
-        this.fontFamily;
+        this.fontFamily = null;
         // prop: fontSize
         // css spec for the font-size attribute.  Default for the entire plot.
-        this.fontSize;
+        this.fontSize = null;
         // prop: grid
         // See <Grid> for grid specific options.
         this.grid = new Grid();
@@ -1919,7 +1936,7 @@
         this.legend = new Legend();
         // prop: noDataIndicator
         // Options to set up a mock plot with a data loading indicator if no data is specified.
-        this.noDataIndicator = {    
+        this.noDataIndicator = {
             show: false,
             indicator: 'Loading Data...',
             axes: {
@@ -1973,12 +1990,12 @@
         // a shortcut for axis syncTicks options.  Not implemented yet.
         this.syncYTicks = true;
         // the jquery object for the dom target.
-        this.target = null; 
+        this.target = null;
         // The id of the dom element to render the plot into
         this.targetId = null;
         // prop textColor
         // css spec for the css color attribute.  Default for the entire plot.
-        this.textColor;
+        this.textColor = null;
         // prop: title
         // Title object.  See <Title> for specific options.  As a shortcut, you
         // can specify the title option as just a string like: title: 'My Plot'
@@ -2003,11 +2020,13 @@
         // merged with the the appropriate data from _stackData according to the stackAxis.
         this._plotData = [];
         this._width = null;
-        this._height = null; 
-        this._plotDimensions = {height:null, width:null};
-        this._gridPadding = {top:null, right:null, bottom:null, left:null};
-        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10};
+        this._height = null;
+        this._plotDimensions = {height: null, width: null};
+        this._gridPadding = {top: null, right: null, bottom: null, left: null};
+        this._defaultGridPadding = {top: 10, right: 10, bottom: 23, left: 10};
 
+        // Setting up $.jqplot plugins
+        
         this._addDomReference = $.jqplot.config.addDomReference;
 
         this.preInitHooks = new $.jqplot.HooksManager();
@@ -2027,7 +2046,7 @@
         this.eventListenerHooks = new $.jqplot.EventListenerManager();
         this.preDrawSeriesShadowHooks = new $.jqplot.HooksManager();
         this.postDrawSeriesShadowHooks = new $.jqplot.HooksManager();
-        
+
         this.colorGenerator = new $.jqplot.ColorGenerator();
         this.negativeColorGenerator = new $.jqplot.ColorGenerator();
 
