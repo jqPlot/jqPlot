@@ -2671,30 +2671,6 @@
             for (var i=0; i<this.postInitHooks.hooks.length; i++) {
                 this.postInitHooks.hooks[i].call(this, target, this.data, options);
             }
-        };  
-        
-        // method: resetAxesScale
-        // Reset the specified axes min, max, numberTicks and tickInterval properties to null
-        // or reset these properties on all axes if no list of axes is provided.
-        //
-        // Parameters:
-        // axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
-        this.resetAxesScale = function(axes, options) {
-            var opts = options || {};
-            var ax = axes || this.axes;
-            if (ax === true) {
-                ax = this.axes;
-            }
-            if ($.isArray(ax)) {
-                for (var i = 0; i < ax.length; i++) {
-                    this.axes[ax[i]].resetScale(opts[ax[i]]);
-                }
-            }
-            else if (typeof(ax) === 'object') {
-                for (var name in ax) {
-                    this.axes[name].resetScale(opts[name]);
-                }
-            }
         };
         
         // function to safely return colors from the color array and wrap around at the end.
@@ -2714,6 +2690,38 @@
         })(this);
 
     }
+    
+    /**
+     * method: resetAxesScale
+     * Reset the specified axes min, max, numberTicks and tickInterval properties to null
+     * or reset these properties on all axes if no list of axes is provided.
+     * 
+     * Parameters:
+     * axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
+     */
+    JqPlot.prototype.resetAxesScale = function (axes, options) {
+        var opts = options || {},
+            ax = axes || this.axes,
+            i,
+            l,
+            name;
+
+        if (ax === true) {
+            ax = this.axes;
+        }
+
+        if ($.isArray(ax)) {
+            for (i = 0, l = ax.length; i < l; i++) {
+                this.axes[ax[i]].resetScale(opts[ax[i]]);
+            }
+        } else if (typeof (ax) === 'object') {
+            for (name in ax) {
+                if (ax.hasOwnProperty(name)) {
+                    this.axes[name].resetScale(opts[name]);
+                }
+            }
+        }
+    };
     
     /**
      * method: reInitialize
