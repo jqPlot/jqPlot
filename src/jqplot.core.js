@@ -146,9 +146,39 @@
                     }
                 }
 
+            }
+
+        },
+        
+        /**
+         * @param {object} ev
+         * @return {object}
+         */
+        getEventPosition = function (ev) {
+
+            var plot = ev.data.plot,
+                go = plot.eventCanvas._elem.offset(),
+                gridPos = {x: ev.pageX - go.left, y: ev.pageY - go.top},
+                dataPos = {xaxis: null, yaxis: null, x2axis: null, y2axis: null, y3axis: null, y4axis: null, y5axis: null, y6axis: null, y7axis: null, y8axis: null, y9axis: null, yMidAxis: null},
+                an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis', 'yMidAxis'],
+                ax = plot.axes,
+                n,
+                axis;
+
+            for (n = 11; n > 0; n--) {
+                axis = an[n - 1];
+                if (ax[axis].show) {
+                    dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
+                }
+            }
+
+            return {
+                offsets: go,
+                gridPos: gridPos,
+                dataPos: dataPos
             };
 
-        };
+		};
 
     // make sure undefined is undefined
     var undefined;
@@ -3315,24 +3345,6 @@
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
             }
         };
-        
-        function getEventPosition(ev) {
-            var plot = ev.data.plot;
-            var go = plot.eventCanvas._elem.offset();
-            var gridPos = {x:ev.pageX - go.left, y:ev.pageY - go.top};
-            var dataPos = {xaxis:null, yaxis:null, x2axis:null, y2axis:null, y3axis:null, y4axis:null, y5axis:null, y6axis:null, y7axis:null, y8axis:null, y9axis:null, yMidAxis:null};
-            var an = ['xaxis', 'yaxis', 'x2axis', 'y2axis', 'y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis', 'yMidAxis'];
-            var ax = plot.axes;
-            var n, axis;
-            for (n=11; n>0; n--) {
-                axis = an[n-1];
-                if (ax[axis].show) {
-                    dataPos[axis] = ax[axis].series_p2u(gridPos[axis.charAt(0)]);
-                }
-            }
-
-            return {offsets:go, gridPos:gridPos, dataPos:dataPos};
-        }
         
         
         // function to check if event location is over a area area
