@@ -1226,9 +1226,12 @@
                             "top": ystart + plot._gridPadding.top + "px",
                             "left": xstart + plot._gridPadding.left + "px",
                             "height": ystop + "px",
-                            "width": xstop - xstart + "px",
-                            "backgroundColor": obj.options.color || ""
+                            "width": xstop - xstart + "px"
                         });
+                        
+                        if (obj.options.backgroundColor) {
+                            $workitem.css("backgroundColor", obj.options.backgroundColor);
+                        }
 
                         if (obj.options.icon) {
                             $workitem.addClass("icon-" + obj.options.icon);
