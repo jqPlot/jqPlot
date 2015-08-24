@@ -1,4 +1,3 @@
-﻿
 /**
  * @fileOverview Date parsing and formatting operations without extending the Date built-in object.
  * @author Chris Leonello
