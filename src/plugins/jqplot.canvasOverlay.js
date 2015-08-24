@@ -1123,6 +1123,123 @@
             },
             
             /**
+             * Draws a HTML element
+             * @param {Object} mr   [[Description]]
+             * @param {Object} opts [[Description]]
+             * @param {Object} obj  [[Description]]
+             * @param {Object} plot [[Description]]
+             */
+            rendererHTML = function (mr, opts, obj, plot) {
+            
+                var xaxis,
+                    yaxis,
+                    xstart = null,
+                    ystart = null,
+                    xstop = null,
+                    ystop = null,
+                    maxHeight = 0,
+                    maxWidth = 0,
+                    width = 0,
+                    height = 0,
+                    $target = plot.target,
+                    $el = $("<div />", {
+                        "class": "jqplot-html",
+                        "style": "position:absolute;"
+                    });
+                
+                xaxis = plot.axes[obj.options.xaxis];
+                yaxis = plot.axes[obj.options.yaxis];
+                
+                maxHeight = plot.grid._height || canvas._plotDimensions.height;
+                maxWidth = plot.grid._width || canvas._plotDimensions.width;
+                
+                if (obj.options.xmin !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstart = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmin, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstart = xaxis.series_u2p($.jsDate.createDate(obj.options.xmin).getTime());
+                        }
+                    } else {
+                        xstart = xaxis.series_u2p(obj.options.xmin);
+                    }
+                }
+                
+                if (obj.options.xmax !== null) {
+                    if (obj.options.xformat && obj.options.xformat.type === "date") {
+                        if (obj.options.xformat.format) {
+                            xstop = xaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.xmax, obj.options.xformat.format)).getTime());
+                        } else {
+                            xstop = xaxis.series_u2p($.jsDate.createDate(obj.options.xmax).getTime());
+                        }
+                    } else {
+                        xstop = xaxis.series_u2p(obj.options.xmax);
+                    }
+                }
+                
+                if (obj.options.ymin !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystart = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymin, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystart = yaxis.series_u2p($.jsDate.createDate(obj.options.ymin).getTime());
+                        }
+                    } else {
+                        ystart = yaxis.series_u2p(obj.options.ymin);
+                    }
+                }
+                
+                if (obj.options.ymax !== null) {
+                    if (obj.options.yformat && obj.options.yformat.type === "date") {
+                        if (obj.options.yformat.format) {
+                            ystop = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymax, obj.options.yformat.format)).getTime());
+                        } else {
+                            ystop = yaxis.series_u2p($.jsDate.createDate(obj.options.ymax).getTime());
+                        }
+                    } else {
+                        ystop = yaxis.series_u2p(obj.options.ymax);
+                    }
+                }
+                
+                width = obj.options.width || 0;
+                height = obj.options.height || 0;
+                
+                if (xstop !== null && xstart !== null && ystop !== null && ystart !== null) {
+                    
+                    obj.gridStart = [xstart, ystart];
+                    obj.gridStop = [xstop, ystop];
+                    
+                    // Not using canvas elements, but you could if you wanted to.
+                    //canvas._ctx.fillStyle = obj.options.color;
+                    
+                    //console.log("workitem", xstart, ystart, xstop - xstart, ystop - ystart);
+                    
+                    // x, y, width, height 
+                    //canvas._ctx.fillRect(0, 0, 100, 100);
+                    //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
+                    
+                    $el.css({
+                        "top": ystart + plot._gridPadding.top + "px",
+                        "left": xstart + plot._gridPadding.left + "px",
+                        "height": height + "px",
+                        "width": width + "px"
+                    });
+
+                    if (obj.options.content) {
+                        $el.html(obj.options.content);
+                    }
+
+                    if (obj.options.className) {
+                        $el.addClass(obj.options.className);
+                    }
+
+                    $target.append($el);
+                    
+                }
+                
+            },
+            
+            /**
              * Draws a WorkItem
              * @param {object} mr   [[Description]]
              * @param {object} opts [[Description]]
@@ -1333,6 +1450,10 @@
 
             case 'rectangle':
                 rendererRectangle(mr, opts, obj, plot);
+                break;
+                    
+            case 'html':
+                rendererHTML(mr, opts, obj, plot);
                 break;
                     
             case 'workitem':
