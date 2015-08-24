@@ -5,19 +5,35 @@
 
 <!-- Example scripts go here -->
 
-        
-    <div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
-    <button onclick="lineup()">Up</button>
-    <button onclick="linedown()">Down</button>
+<style>
+    .jqplot-workitem {
+        background-color: rgba(255,155,155, 0.5);
+    }
+    .jqplot-timer {
+        border-left: 2px solid black;
+        display: flex;
+        align-items: flex-end;
+        font-size: 14px;
+        padding-left: 3px;
+    }
+</style>
 
+<div id="chart1" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+<button onclick="lineup()">Up</button>
+<button onclick="linedown()">Down</button>
 <pre class="code prettyprint brush: js"></pre>
 
-    <div id="chart2" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+<div id="chart2" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
 <pre class="code prettyprint brush: js"></pre>
 
-  
-  <script class="code" type="text/javascript">
-$(document).ready(function(){
+<div id="chart3" style="margin-top:20px; margin-left:20px; width:400px; height:300px;"></div>
+<pre class="code prettyprint brush: js"></pre>
+
+
+<script class="code" type="text/javascript">
+      
+$(function(){
+    
     var s1 = [[2009, 3.5], [2010, 4.4], [2011, 6.0], [2012, 9.1], [2013, 12.0], [2014, 14.4]];
     
     var grid = {
@@ -27,6 +43,9 @@ $(document).ready(function(){
     };
     
     plot1 = $.jqplot('chart1', [s1], {
+        
+        title: "Chart with canvas overlay 1",
+        
         series:[{
             renderer:$.jqplot.BarRenderer,
             rendererOptions: {
@@ -42,12 +61,22 @@ $(document).ready(function(){
         canvasOverlay: {
             show: true,
             objects: [
-                {horizontalLine: {
+                {rectangle: {
                     name: 'barney',
-                    y: 4,
-                    lineWidth: 6,
-                    color: 'rgb(100, 55, 124)',
-                    shadow: false
+                    xformat: {
+                        type: 'date',
+                        format: '%Y-%m-%d %H:%M:%S'
+                    },
+                    xmin: '2008-09-01 05:00:00',
+                    xmax: '2008-09-04 05:00:00',
+                    ymin: [0],
+                    ymax: [8],
+                    xOffset: 0,
+                    color: 'rgba(122, 122, 122,0.5)',
+                    shadow: false,
+                    showTooltip: true,
+                    tooltipLocation: 'ne',
+                    tooltipFormatString: '<b><i><span style="color:red;">Passe</span></i></b> %.2f',
                 }},
                 {horizontalLine: {
                     name: 'fred',
@@ -103,10 +132,12 @@ function linedown() {
     co.draw(plot1);
 }
 
-    </script>
+</script>
 
 <script class="code" type="text/javascript">
-$(document).ready(function(){
+    
+$(function() {
+    
     var s2 = [[9, 3.5], [15, 4.4], [22, 6.0], [38, 9.1], [51, 12.0], [62, 14.4]];
     
     var grid = {
@@ -116,6 +147,7 @@ $(document).ready(function(){
     };
     
     plot2 = $.jqplot('chart2', [s2], {
+        title: "Chart with canvas overlay 2",
         grid: grid,
         canvasOverlay: {
             show: true,
@@ -169,6 +201,166 @@ $(document).ready(function(){
     
 });
 
+</script>
+
+<script class="code" type="text/javascript">
+    
+$(function() {
+    
+    var s3 = [],
+        grid,
+        generateHourTicks,
+        generateTimePointData,
+        i,
+        len,
+        entry,
+        element = [],
+        prognosis = [],
+        now = new Date(),
+        nowHHMM = ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2);
+    
+    grid = {
+        gridLineWidth: 1.5,
+        gridLineColor: 'rgb(235,235,235)',
+        drawGridlines: true
+    };
+    
+    /**
+     * Generates an array of ticks
+     * @param   {Number} [interval=1]
+     * @returns {Array}
+     */
+    generateHourTicks = function (interval) {
+                
+        interval = interval || 15;  // Every 15 minutes
+
+        var nrOfTimePoint = 28,     // For 7 hours
+            now = new Date(),
+            out = [],
+            hour,
+            min,
+            thetime,
+            i;
+
+        now.setHours(now.getHours() - 2);
+        now.setMinutes(0);
+        now.setSeconds(0);
+        
+        for (i = 0; i < nrOfTimePoint; i += 1) {
+            hour = ("0" + now.getHours()).slice(-2);
+            min = ("0" + now.getMinutes()).slice(-2);
+            thetime = hour + ":" + min;
+            out.push([thetime, null]);
+            now.setMinutes(now.getMinutes() + interval);
+        }
+
+        return out;
+
+    };
+    
+    /**
+     * Fake data to fill the graphs
+     */
+    generateTimePointData = function () {
+
+        var limit = 96, //every 60 minutes
+            intervalBetweenPoints = 15 * 60 * 1000, // 15 minutes in milliseconds
+            //duration = 12 * 60 * 60 * 1000, // hours in milliseconds
+            now = new Date(),
+            //start = new Date(new Date().setTime(now.getTime() - duration)),
+            start = new Date(new Date().setHours(0, 0, 0, 0)),
+            timestamp,
+            power = 0,
+            out = [],
+            i = 0,
+            getRandomInt = function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            };
+
+        for (i = 0; i < limit; i += 1) {
+
+            timestamp = new Date(new Date().setTime(start.getTime() + (i * intervalBetweenPoints)));
+
+            //power = (i > 10 && i < 65) ? getRandomInt(0, 2500) : 0;
+            power = getRandomInt(1500, 2000);
+
+            out.push({
+                power: power,
+                time: +(timestamp.getTime() / 1000).toFixed(),
+                timestamp: timestamp.toISOString()
+            });
+
+        }
+
+        //console.log("generateTimePointData", out);
+
+        return out;
+
+    };
+    
+    prognosis = generateTimePointData();
+    
+    for (i = 0, len = prognosis.length; i < len; i += 1) {
+        entry = prognosis[i];
+        if (entry.power > -1) {
+            element.push([entry.time * 1000, entry.power]);
+        }
+    }
+
+    s3 = element;
+    
+    
+    
+    plot3 = $.jqplot('chart3', [s3], {
+        title: "Chart with canvas overlay 3",
+        grid: grid,
+        axes: {
+            yaxis: {
+                min: 0
+            },
+            xaxis: {
+                renderer: $.jqplot.DateAxisRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                ticks: generateHourTicks(),
+                tickOptions: {
+                    formatString: "%H:%M",
+                    showGridline: true,
+                    labelFullHoursOnly: true
+                }
+            }
+        },
+        canvasOverlay: {
+            show: true,
+            objects: [
+                {workitem: {
+                    xformat: {
+                        type: 'date',
+                        format: '%H:%M'
+                    },
+                    name: "test3",
+                    xmin: '15:00',
+                    xmax: '18:00',
+                    showTooltip: true
+                }},
+                {html: {
+                    name: 'Joe',
+                    xformat: {
+                        type: 'date',
+                        format: '%H:%M'
+                    },
+                    height: 45,     // px
+                    width: 50,
+                    className: "jqplot-timer",
+                    xmin: nowHHMM,
+                    xmax: nowHHMM,
+                    y: -45,
+                    content: nowHHMM
+                }}
+            ]
+        }
+    });
+    
+});
 
 </script>
 
@@ -184,6 +376,7 @@ $(document).ready(function(){
 
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasAxisTickRenderer.js"></script>
   <script language="javascript" type="text/javascript" src="../src/plugins/jqplot.canvasOverlay.js"></script>
