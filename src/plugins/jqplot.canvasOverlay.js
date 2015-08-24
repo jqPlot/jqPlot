@@ -93,6 +93,9 @@
                         case 'rectangle':
                             this.addRectangle(obj[element]);
                             break;
+                        case 'html':
+                            this.addHTML(obj[element]);
+                            break;
                         case 'workitem':
                             this.addWorkItem(obj[element]);
                             break;
@@ -199,6 +202,28 @@
             yformat: null
         };
     }
+    
+    /**
+     * @class HTMLEl
+     * @classdesc A HTML element
+     * @param {object} options
+     */
+    function HTMLEl(options) {
+        LineBase.call(this);
+        this.type = "html";
+        var opts = {
+            // x value for the start of the line, null to scale to axis min.
+            xmin: null,
+            // x value for the end of the line, null to scale to axis max.
+            xmax: null,
+            ymin: null,
+            ymax: null
+        };
+        $.extend(true, this.options, opts, options);
+    }
+    
+    HTMLEl.prototype = new LineBase();
+    HTMLEl.prototype.constructor = HTMLEl;
     
     /**
      * @class WorkItem
@@ -475,6 +500,17 @@
      */
     $.jqplot.CanvasOverlay.prototype.addWorkItem = function (opts) {
         var obj = new WorkItem(opts);
+        obj.uid = objCounter++;
+        this.objects.push(obj);
+        this.objectNames.push(obj.options.name);
+    };
+    
+    /**
+     * Creates a HTML object
+     * @param {object} opts
+     */
+    $.jqplot.CanvasOverlay.prototype.addHTML = function (opts) {
+        var obj = new HTMLEl(opts);
         obj.uid = objCounter++;
         this.objects.push(obj);
         this.objectNames.push(obj.options.name);
@@ -1132,26 +1168,42 @@
             rendererHTML = function (mr, opts, obj, plot) {
             
                 var xaxis,
-                    yaxis,
                     xstart = null,
-                    ystart = null,
                     xstop = null,
+                    yaxis,
+                    ystart = null,
                     ystop = null,
-                    maxHeight = 0,
-                    maxWidth = 0,
-                    width = 0,
-                    height = 0,
+                    maxHeight,
+                    maxWidth,
+                    height,
+                    width,
                     $target = plot.target,
                     $el = $("<div />", {
                         "class": "jqplot-html",
                         "style": "position:absolute;"
-                    });
+                    }),
+                    horizontalPosition;
+                
+                // style and shadow properties should be set before
+                // every draw of marker renderer.
+                mr.style = 'line';
+                opts.closePath = true;
                 
                 xaxis = plot.axes[obj.options.xaxis];
                 yaxis = plot.axes[obj.options.yaxis];
                 
                 maxHeight = plot.grid._height || canvas._plotDimensions.height;
                 maxWidth = plot.grid._width || canvas._plotDimensions.width;
+                
+                // Find the time on the xaxis based upon the given xmin
+                
+                //xstart = xaxis.series_u2p(obj.options.xmin);
+                //xstop = xaxis.series_u2p(xaxis.max);
+                
+                horizontalPosition = obj.options.horitonalPositioning || "bottom";
+                
+                height = obj.options.height || 40;
+                width = obj.options.width || 100;
                 
                 if (obj.options.xmin !== null) {
                     if (obj.options.xformat && obj.options.xformat.type === "date") {
@@ -1177,32 +1229,8 @@
                     }
                 }
                 
-                if (obj.options.ymin !== null) {
-                    if (obj.options.yformat && obj.options.yformat.type === "date") {
-                        if (obj.options.yformat.format) {
-                            ystart = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymin, obj.options.yformat.format)).getTime());
-                        } else {
-                            ystart = yaxis.series_u2p($.jsDate.createDate(obj.options.ymin).getTime());
-                        }
-                    } else {
-                        ystart = yaxis.series_u2p(obj.options.ymin);
-                    }
-                }
-                
-                if (obj.options.ymax !== null) {
-                    if (obj.options.yformat && obj.options.yformat.type === "date") {
-                        if (obj.options.yformat.format) {
-                            ystop = yaxis.series_u2p($.jsDate.createDate($.jsDate.strftime(obj.options.ymax, obj.options.yformat.format)).getTime());
-                        } else {
-                            ystop = yaxis.series_u2p($.jsDate.createDate(obj.options.ymax).getTime());
-                        }
-                    } else {
-                        ystop = yaxis.series_u2p(obj.options.ymax);
-                    }
-                }
-                
-                width = obj.options.width || 0;
-                height = obj.options.height || 0;
+                ystart = obj.options.y || 0;
+                ystop = obj.options.height || 100;
                 
                 if (xstop !== null && xstart !== null && ystop !== null && ystart !== null) {
                     
@@ -1219,11 +1247,17 @@
                     //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
                     
                     $el.css({
-                        "top": ystart + plot._gridPadding.top + "px",
                         "left": xstart + plot._gridPadding.left + "px",
                         "height": height + "px",
                         "width": width + "px"
                     });
+                    
+                    if (horizontalPosition === "bottom") {
+                        $el.css({ "bottom": ystart + plot._gridPadding.bottom + "px"});
+                    } else {
+                        $el.css({ "top": ystart + plot._gridPadding.top + "px"});
+                    }
+                    
 
                     if (obj.options.content) {
                         $el.html(obj.options.content);
