@@ -1282,7 +1282,7 @@
              */
             rendererWorkItem = function (mr, opts, obj, plot) {
             
-                var maxWorkItems = 5,
+                var maxWorkItems = (typeof plot.options.canvasOverlay.maxWorkItems !== "undefined") ? plot.options.canvasOverlay.maxWorkItems : 5,
                     xaxis,
                     yaxis,
                     xstart = null,
@@ -1298,7 +1298,8 @@
                     $workitem = $("<div />", {
                         "class": "jqplot-workitem",
                         "style": "position:absolute;"
-                    });
+                    }),
+                    fillup = (typeof plot.options.canvasOverlay.fillup !== "undefined") ? plot.options.canvasOverlay.fillup : true;
                 
                 //console.log("plot", plot);
                 
@@ -1345,14 +1346,15 @@
                 // Calculated where on the yaxis the element will be displayed
                 
                 // Fill the whole plot with the work items
-                //workItemHeight = maxHeight / nrOfWorkItems;
-                //ystart = -(workItemHeight - currentWorkItem * workItemHeight);
-                //ystop = workItemHeight * currentWorkItem;
-                
-                workItemHeight = maxHeight / maxWorkItems;
-                
-                ystart = -(workItemHeight - currentWorkItem * workItemHeight);
-                ystop = workItemHeight;
+                if (fillup) {
+                    workItemHeight = maxHeight / nrOfWorkItems;
+                    ystart = -(workItemHeight - currentWorkItem * workItemHeight);
+                    ystop = workItemHeight * currentWorkItem;
+                } else {
+                    workItemHeight = maxHeight / maxWorkItems;
+                    ystart = -(workItemHeight - currentWorkItem * workItemHeight);
+                    ystop = workItemHeight;
+                }
                 
                 //console.log("objectCounter", obj.type, nrOfWorkItems, currentWorkItem);
                 
@@ -1376,7 +1378,7 @@
                         $workitem.css({
                             "top": ystart + plot._gridPadding.top + "px",
                             "left": xstart + plot._gridPadding.left + "px",
-                            "height": ystop + "px",
+                            "height": workItemHeight + "px",
                             "width": xstop - xstart + "px"
                         });
                         
