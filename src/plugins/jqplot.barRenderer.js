@@ -397,7 +397,7 @@
         // 'vertical' = up and down bars, 'horizontal' = side to side bars
         this.barDirection = 'vertical';
         // prop: barWidth
-        // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
+        // Width of the bar in pixels (auto by default).  null = calculated automatically.
         this.barWidth = null;
         // prop: shadowOffset
         // offset of the shadow from the slice and offset of 
@@ -449,6 +449,8 @@
             _supported: true
         };
         this._type = 'bar';
+        // prop: onTick
+        this.onTick = false;
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver === null) {
@@ -466,6 +468,7 @@
 
         // really should probably do this
         $.extend(true, this.renderer, options);
+        
         // fill is still needed to properly draw the legend.
         // bars have to be filled.
         this.fill = true;
@@ -584,23 +587,36 @@
         nticks = paxis.numberTicks;
         nbins = (nticks - 1) / 2;
         
-        // so, now we have total number of axis values.
-        if (paxis.name === 'xaxis' || paxis.name === 'x2axis') {
-            if (this._stack) {
-                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin;
-            } else {
-                this.barWidth = ((paxis._offsets.max - paxis._offsets.min) / nbins  - this.barPadding * (nseries - 1) - this.barMargin * 2) / nseries;
-                // this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/nseries;
+        if (this.onTick) {
+            
+            if (this.barDirection === 'vertical') {
+                this.barWidth = Math.floor(paxis._plotWidth / nticks);
+            } else if (this.barDirection === 'horizontal') {
+                this.barWidth = Math.floor(paxis._plotHeight / nticks);
             }
+            
         } else {
-            if (this._stack) {
-                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin;
+            
+            // so, now we have total number of axis values.
+            if (paxis.name === 'xaxis' || paxis.name === 'x2axis') {
+                if (this._stack) {
+                    this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin;
+                } else {
+                    this.barWidth = ((paxis._offsets.max - paxis._offsets.min) / nbins  - this.barPadding * (nseries - 1) - this.barMargin * 2) / nseries;
+                    // this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/nseries;
+                }
             } else {
-                this.barWidth = ((paxis._offsets.min - paxis._offsets.max) / nbins  - this.barPadding * (nseries - 1) - this.barMargin * 2) / nseries;
-                // this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/nseries;
+                if (this._stack) {
+                    this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin;
+                } else {
+                    this.barWidth = ((paxis._offsets.min - paxis._offsets.max) / nbins  - this.barPadding * (nseries - 1) - this.barMargin * 2) / nseries;
+                    // this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/nseries;
+                }
             }
         }
+        
         return [nvals, nseries];
+        
     };
 
     /**
@@ -647,6 +663,10 @@
         yaxis = this.yaxis;
         xp = this._xaxis.series_u2p;
         yp = this._yaxis.series_u2p;
+        
+        if (this.onTick) {
+            shadow = false;
+        }
 
         // clear out data colors.
         this._dataColors = [];
@@ -745,16 +765,34 @@
                     
                     // @TODO make the bar render on the tick
                     if (!this.fillToZero || this._plotData[i][1] >= 0) {
-                        points.push([base - this.barWidth / 2, ystart]);
-                        points.push([base - this.barWidth / 2, gridData[i][1]]);
-                        points.push([base + this.barWidth / 2, gridData[i][1]]);
-                        points.push([base + this.barWidth / 2, ystart]);
+                        
+                        if (!this.onTick) {
+                            points.push([base - this.barWidth / 2, ystart]);
+                            points.push([base - this.barWidth / 2, gridData[i][1]]);
+                            points.push([base + this.barWidth / 2, gridData[i][1]]);
+                            points.push([base + this.barWidth / 2, ystart]);
+                        } else {
+                            points.push([base, ystart]);
+                            points.push([base, gridData[i][1]]);
+                            points.push([base - this.barWidth, gridData[i][1]]);
+                            points.push([base - this.barWidth, ystart]);
+                        }
+                        
                     // for negative bars make sure points are always ordered clockwise
                     } else {
-                        points.push([base - this.barWidth / 2, gridData[i][1]]);
-                        points.push([base - this.barWidth / 2, ystart]);
-                        points.push([base + this.barWidth / 2, ystart]);
-                        points.push([base + this.barWidth / 2, gridData[i][1]]);
+                        
+                        if (!this.onTick) {
+                            points.push([base - this.barWidth / 2, gridData[i][1]]);
+                            points.push([base - this.barWidth / 2, ystart]);
+                            points.push([base + this.barWidth / 2, ystart]);
+                            points.push([base + this.barWidth / 2, gridData[i][1]]);
+                        } else {
+                            points.push([base, gridData[i][1]]);
+                            points.push([base, ystart]);
+                            points.push([base - this.barWidth, ystart]);
+                            points.push([base - this.barWidth, gridData[i][1]]);
+                        }
+                        
                     }
                     
                     this._barPoints.push(points);
@@ -767,9 +805,12 @@
                         delete sopts.fillStyle;
                         this.renderer.shadowRenderer.draw(ctx, points, sopts);
                     }
+                    
                     clr = opts.fillStyle || this.color;
+                    
                     this._dataColors.push(clr);
                     this.renderer.shapeRenderer.draw(ctx, points, opts);
+                    
                 }
                 
             } else if (this.barDirection === 'horizontal') {
@@ -909,7 +950,7 @@
         xp = this._xaxis.series_u2p;
         yp = this._yaxis.series_u2p;
         
-        if (this._stack && this.shadow) {
+        if (!this.onTick && this._stack && this.shadow) {
             
             if (this.barWidth === null) {
                 this.renderer.setBarWidth.call(this);
@@ -991,6 +1032,7 @@
                 }
             }
         }
+        
     };
     
 }(jQuery));
