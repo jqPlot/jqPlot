@@ -228,9 +228,10 @@
                     for (j = 0; j < s._barPoints.length; j++) {
 
                         points = s._barPoints[j];
-                        p = s.gridData[j];
-
-                        if (x > points[0][0] && x < points[2][0] && y > points[2][1] && y < points[0][1]) {
+                        p = s.gridData[j];                      
+                        
+                        // @see https://github.com/jqPlot/jqPlot/issues/7
+                        if (x > points[0][0] && x < points[2][0] && ((y > points[2][1] && y < points[0][1])  || (y > points[0][1] && y < points[2][1])) ) {
                             return {
                                 seriesIndex: s.index,
                                 pointIndex: j,
