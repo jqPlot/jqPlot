@@ -1177,6 +1177,9 @@
                     maxWidth,
                     height,
                     width,
+                    left,
+                    top,
+                    bottom,
                     $target = plot.target,
                     $el = $("<div />", {
                         "class": "jqplot-html",
@@ -1237,6 +1240,10 @@
                     obj.gridStart = [xstart, ystart];
                     obj.gridStop = [xstop, ystop];
                     
+                    left = xstart + plot._gridPadding.left;
+                    top = ystart + plot._gridPadding.top;
+                    bottom = ystart + plot._gridPadding.bottom;
+                    
                     // Not using canvas elements, but you could if you wanted to.
                     //canvas._ctx.fillStyle = obj.options.color;
                     
@@ -1247,17 +1254,16 @@
                     //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
                     
                     $el.css({
-                        "left": xstart + plot._gridPadding.left + "px",
+                        "left": left + "px",
                         "height": height + "px",
                         "width": width + "px"
                     });
                     
                     if (horizontalPosition === "bottom") {
-                        $el.css({ "bottom": ystart + plot._gridPadding.bottom + "px"});
+                        $el.css({ "bottom": bottom + "px"});
                     } else {
-                        $el.css({ "top": ystart + plot._gridPadding.top + "px"});
+                        $el.css({ "top": top + "px"});
                     }
-                    
 
                     if (obj.options.content) {
                         $el.html(obj.options.content);
@@ -1712,7 +1718,7 @@
 
             if (obj.options.showTooltip) {
                 
-                if (obj.type === 'rectangle') {
+                if (obj.type === 'rectangle' || obj.type === 'workitem') {
                     n = isNearRectangle([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
                 } else {
                     n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
@@ -1747,6 +1753,7 @@
                         break;
 
                     case 'rectangle':
+                    case 'workitem':
                         showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
                         break;
 
@@ -1787,6 +1794,7 @@
                         break;
 
                     case 'rectangle':
+                    case 'workitem':
                         showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
                         break;
 
@@ -1817,6 +1825,7 @@
                         break;
 
                     case 'rectangle':
+                    case 'workitem':
                         showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
                         break;
 
