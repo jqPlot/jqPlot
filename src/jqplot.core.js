@@ -1,5 +1,5 @@
 /*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
-/*global jQuery */
+/*global jQuery, console, jqPlot */
 
 /**
  * Title: jqPlot Charts
@@ -85,7 +85,7 @@
  * 
  */
 
-(function ($) {
+(function ($, window) {
     
     "use strict";
     
@@ -186,57 +186,34 @@
         * @param {object} plot
 -       */
         checkIntersection = function (gridpos, plot) {
-            
+
             var series = plot.series,
                 i,
                 j,
                 k,
                 s,
-                r,
-                x,
-                y,
-                theta,
-                sm,
-                sa,
-                minang,
-                maxang,
-                d0,
-                d,
-                p,
-                pp,
-                points,
-                bw,
                 hp,
-                threshold,
-                t,
-                ret = null,
-                yp;
-            
-            for (k = plot.seriesStack.length - 1; k >= 0; k--) {
                 
-                i = plot.seriesStack[k];
-                s = series[i];
-                hp = s._highlightThreshold;
-                
-                switch (s.renderer.constructor) {
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererBar = function (gridpos, s) {
+                    
+                    var j,
+                        l,
+                        x = gridpos.x,
+                        y = gridpos.y,
+                        points,
+                        p;
+                    
+                    for (j = 0, l = s._barPoints.length; j < l; j++) {
                         
-                case $.jqplot.BarRenderer:
-
-                    x = gridpos.x;
-                    y = gridpos.y;
-
-                    for (j = 0; j < s._barPoints.length; j++) {
-
                         points = s._barPoints[j];
                         p = s.gridData[j];
                         
-                        /*
-                        console.log("points", points, "x", x, "y", y);
-                        console.log("test", (x > points[0][0] && x < points[2][0] && ((y > points[2][1] && y < points[0][1]) || (y > points[0][1] && y < points[2][1]))));
-                        */
-                        
-                        // @see https://github.com/jqPlot/jqPlot/issues/7
-                        if ((x > points[0][0] && x < points[2][0]) && ((y > points[2][1] && y < points[0][1]) || (y > points[0][1] && y < points[2][1]))) {
+                        if (x > points[0][0] && x < points[2][0] && y > points[2][1] && y < points[0][1]) {
                             return {
                                 seriesIndex: s.index,
                                 pointIndex: j,
@@ -246,19 +223,29 @@
                             };
                         }
                     }
-
-                    break;
-
-                case $.jqplot.PyramidRenderer:
-
-                    x = gridpos.x;
-                    y = gridpos.y;
-
-                    for (j = 0; j < s._barPoints.length; j++) {
-
+                    
+                },
+                    
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererPyramid = function (gridpos, s) {
+                
+                    var j,
+                        l,
+                        x = gridpos.x,
+                        y = gridpos.y,
+                        points,
+                        p,
+                        hp = s._highlightThreshold;
+                    
+                    for (j = 0, l = s._barPoints.length; j < l; j++) {
+                        
                         points = s._barPoints[j];
                         p = s.gridData[j];
-
+                        
                         if (x > points[0][0] + hp[0][0] && x < points[2][0] + hp[2][0] && y > points[2][1] && y < points[0][1]) {
                             return {
                                 seriesIndex: s.index,
@@ -269,11 +256,27 @@
                             };
                         }
                     }
-
-                    break;
-
-                case $.jqplot.DonutRenderer:
-
+                    
+                },
+                
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererDonut = function (gridpos, s) {
+                
+                    var sa,
+                        x,
+                        y,
+                        r,
+                        theta,
+                        sm,
+                        minang,
+                        maxang,
+                        j,
+                        l;
+                    
                     sa = s.startAngle / 180 * Math.PI;
                     x = gridpos.x - s._center[0];
                     y = gridpos.y - s._center[1];
@@ -292,7 +295,6 @@
                     } else if (x === 0 && y === 0) {
                         theta = 0;
                     }
-
                     if (sa) {
                         theta -= sa;
                         if (theta < 0) {
@@ -305,7 +307,7 @@
                     sm = s.sliceMargin / 180 * Math.PI;
 
                     if (r < s._radius && r > s._innerRadius) {
-                        for (j = 0; j < s.gridData.length; j++) {
+                        for (j = 0, l = s.gridData.length; j < l; j++) {
                             minang = (j > 0) ? s.gridData[j - 1][1] + sm : sm;
                             maxang = s.gridData[j][1];
                             if (theta > minang && theta < maxang) {
@@ -318,11 +320,27 @@
                             }
                         }
                     }
-
-                    break;
-
-                case $.jqplot.PieRenderer:
-
+                
+                },
+                
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererPie = function (gridpos, s) {
+                
+                    var sa,
+                        x,
+                        y,
+                        r,
+                        theta,
+                        sm,
+                        minang,
+                        maxang,
+                        j,
+                        l;
+                    
                     sa = s.startAngle / 180 * Math.PI;
                     x = gridpos.x - s._center[0];
                     y = gridpos.y - s._center[1];
@@ -354,7 +372,7 @@
                     sm = s.sliceMargin / 180 * Math.PI;
 
                     if (r < s._radius) {
-                        for (j = 0; j < s.gridData.length; j++) {
+                        for (j = 0, l = s.gridData.length; j < l; j++) {
                             minang = (j > 0) ? s.gridData[j - 1][1] + sm : sm;
                             maxang = s.gridData[j][1];
                             if (theta > minang && theta < maxang) {
@@ -367,19 +385,30 @@
                             }
                         }
                     }
-
-                    break;
-
-                case $.jqplot.BubbleRenderer:
-
+                
+                },
+                
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererBubble = function (gridpos, s) {
+                
+                    var x,
+                        y,
+                        ret = null,
+                        p,
+                        d,
+                        d0,
+                        j,
+                        l;
+                    
                     x = gridpos.x;
                     y = gridpos.y;
 
-                    ret = null;
-
                     if (s.show) {
-
-                        for (j = 0; j < s.gridData.length; j++) {
+                        for (j = 0, l = s.gridData.length; j < l; j++) {
                             p = s.gridData[j];
                             d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
                             if (d <= p[2] && (d <= d0 || d0 === null)) {
@@ -392,218 +421,45 @@
                                 };
                             }
                         }
-
                         if (ret !== null) {
                             return ret;
                         }
-
                     }
-
-                    break;
-
-                case $.jqplot.FunnelRenderer:
-
-                    var v,
-                        vfirst,
-                        vlast,
-                        lex,
-                        rex,
-                        cv,
-                        findedge;
-                        
-                    x = gridpos.x;
-                    y = gridpos.y;
-
-                    v = s._vertices;
-                    vfirst = v[0];
-                    vlast = v[v.length - 1];
-
-                    /**
-                     * Equations of right and left sides, returns x, y values given height of section (y value and 2 points)
-                     * @param   {Number} l  
-                     * @param   {Array}    p1
-                     * @param   {Array}  p2 
-                     * @returns {Array}
-                     */
-                    findedge = function (l, p1, p2) {
-
-                        var m,
-                            b,
-                            y;
-
-                        m = (p1[1] - p2[1]) / (p1[0] - p2[0]);
-                        b = p1[1] - m * p1[0];
-                        y = l + p1[1];
-
-                        return [(y - b) / m, y];
-                    };
-
-                    // check each section
-                    lex = findedge(y, vfirst[0], vlast[3]);
-                    rex = findedge(y, vfirst[1], vlast[2]);
-
-                    for (j = 0; j < v.length; j++) {
-                        cv = v[j];
-                        if (y >= cv[0][1] && y <= cv[3][1] && x >= lex[0] && x <= rex[0]) {
-                            return {
-                                seriesIndex: s.index,
-                                pointIndex: j,
-                                gridData: null,
-                                data: s.data[j]
-                            };
-                        }
-                    }
-
-                    break;
-
-                case $.jqplot.LineRenderer:
-
-                    var inside,
-                        numPoints,
-                        ii,
-                        vertex1,
-                        vertex2;
-                        
+                
+                },
+                
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererDefault = function (gridpos, s) {
+                
+                    var x,
+                        y,
+                        r,
+                        t,
+                        threshold,
+                        j,
+                        l,
+                        p,
+                        yp,
+                        d,
+                        d0;
+                    
                     x = gridpos.x;
                     y = gridpos.y;
                     r = s.renderer;
-
+                    
                     if (s.show) {
-
-                        if ((s.fill || (s.renderer.bands.show && s.renderer.bands.fill)) && (!plot.plugins.highlighter || !plot.plugins.highlighter.show)) {
-
-                            // first check if it is in bounding box
-                            inside = false;
-
-                            if (x > s._boundingBox[0][0] && x < s._boundingBox[1][0] && y > s._boundingBox[1][1] && y < s._boundingBox[0][1]) {
-                                // now check the crossing number   
-
-                                numPoints = s._areaPoints.length;
-                                
-                                j = numPoints - 1;
-
-                                for (ii = 0; ii < numPoints; ii++) {
-
-                                    vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
-
-                                    if ((vertex1[1] < y && vertex2[1] >= y) || (vertex2[1] < y && vertex1[1] >= y)) {
-                                        if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
-                                            inside = !inside;
-                                        }
-                                    }
-
-                                    j = ii;
-                                }
-                            }
-
-                            if (inside) {
-                                return {
-                                    seriesIndex: i,
-                                    pointIndex: null,
-                                    gridData: s.gridData,
-                                    data: s.data,
-                                    points: s._areaPoints
-                                };
-                            }
-
-                            break;
-
-                        } else {
-
-                            t = s.markerRenderer.size / 2 + s.neighborThreshold;
-                            threshold = (t > 0) ? t : 0;
-
-                            for (j = 0; j < s.gridData.length; j++) {
-
-                                p = s.gridData[j];
-
-                                // neighbor looks different to OHLC chart.
-                                if (r.constructor === $.jqplot.OHLCRenderer) {
-
-                                    if (r.candleStick) {
-
-                                        yp = s._yaxis.series_u2p;
-
-                                        if (x >= p[0] - r._bodyWidth / 2 && x <= p[0] + r._bodyWidth / 2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                            return {
-                                                seriesIndex: i,
-                                                pointIndex: j,
-                                                gridData: p,
-                                                data: s.data[j]
-                                            };
-                                        }
-                                    // if an open hi low close chart 
-                                    } else if (!r.hlc) {
-
-                                        yp = s._yaxis.series_u2p;
-
-                                        if (x >= p[0] - r._tickLength && x <= p[0] + r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                            return {
-                                                seriesIndex: i,
-                                                pointIndex: j,
-                                                gridData: p,
-                                                data: s.data[j]
-                                            };
-                                        }
-                                    // a hi low close chart
-                                    } else {
-
-                                        yp = s._yaxis.series_u2p;
-
-                                        if (x >= p[0] - r._tickLength && x <= p[0] + r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
-                                            return {
-                                                seriesIndex: i,
-                                                pointIndex: j,
-                                                gridData: p,
-                                                data: s.data[j]
-                                            };
-                                        }
-                                    }
-
-                                } else if (p[0] !== null && p[1] !== null) {
-
-                                    d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
-
-                                    if (d <= threshold && (d <= d0 || d0 === null)) {
-                                        d0 = d;
-                                        return {
-                                            seriesIndex: i,
-                                            pointIndex: j,
-                                            gridData: p,
-                                            data: s.data[j]
-                                        };
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-                    break;
-
-                default:
-
-                    x = gridpos.x;
-                    y = gridpos.y;
-                    r = s.renderer;
-
-                    if (s.show) {
-
                         t = s.markerRenderer.size / 2 + s.neighborThreshold;
                         threshold = (t > 0) ? t : 0;
-
-                        for (j = 0; j < s.gridData.length; j++) {
-
+                        for (j = 0, l = s.gridData.length; j < s.gridData.length; j++) {
                             p = s.gridData[j];
-
                             // neighbor looks different to OHLC chart.
                             if (r.constructor === $.jqplot.OHLCRenderer) {
-
                                 if (r.candleStick) {
-                                    
                                     yp = s._yaxis.series_u2p;
-                                    
                                     if (x >= p[0] - r._bodyWidth / 2 && x <= p[0] + r._bodyWidth / 2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
                                         return {
                                             seriesIndex: i,
@@ -614,9 +470,7 @@
                                     }
                                 // if an open hi low close chart
                                 } else if (!r.hlc) {
-
                                     yp = s._yaxis.series_u2p;
-
                                     if (x >= p[0] - r._tickLength && x <= p[0] + r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
                                         return {
                                             seriesIndex: i,
@@ -627,9 +481,7 @@
                                     }
                                 // a hi low close chart
                                 } else {
-
                                     yp = s._yaxis.series_u2p;
-
                                     if (x >= p[0] - r._tickLength && x <= p[0] + r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
                                         return {
                                             seriesIndex: i,
@@ -641,9 +493,7 @@
                                 }
 
                             } else {
-
                                 d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
-
                                 if (d <= threshold && (d <= d0 || d0 === null)) {
                                     d0 = d;
                                     return {
@@ -653,19 +503,228 @@
                                         data: s.data[j]
                                     };
                                 }
-
                             }
                         }
                     }
+                    
+                },
+                
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererFunnel = function (gridpos, s) {
+                
+                    var x = gridpos.x,
+                        y = gridpos.y,
+                        v = s._vertices,
+                        vfirst = v[0],
+                        vlast = v[v.length - 1],
+                        lex,
+                        rex,
+                        cv,
+                        j,
+                        l,
+                        /**
+                         *  Equations of right and left sides, returns x, y values given height of section (y value and 2 points)
+                         */
+                        findedge = function (l, p1, p2) {
+                            var m = (p1[1] - p2[1]) / (p1[0] - p2[0]),
+                                b = p1[1] - m * p1[0],
+                                y = l + p1[1];
+                            return [(y - b) / m, y];
+                        };
 
+                    // check each section
+                    lex = findedge(y, vfirst[0], vlast[3]);
+                    rex = findedge(y, vfirst[1], vlast[2]);
+
+                    for (j = 0, l = v.length; j < l; j++) {
+                        cv = v[j];
+                        if (y >= cv[0][1] && y <= cv[3][1] && x >= lex[0] && x <= rex[0]) {
+                            return {
+                                seriesIndex: s.index,
+                                pointIndex: j,
+                                gridData: null,
+                                data: s.data[j]
+                            };
+                        }
+                    }
+                    
+                },
+                
+                /**
+                 * @param {object} gridpos
+                 * @param {object} s
+                 * @returns {object}
+                 */
+                rendererLine = function (gridpos, s) {
+                
+                    var x,
+                        y,
+                        r,
+                        threshold,
+                        t,
+                        j,
+                        l,
+                        p,
+                        d,
+                        d0,
+                        yp,
+                        inside = false,
+                        numPoints,
+                        ii,
+                        vertex1,
+                        vertex2;
+                    
+                    x = gridpos.x;
+                    y = gridpos.y;
+                    r = s.renderer;
+
+                    if (s.show) {
+
+                        if ((s.fill || (s.renderer.bands.show && s.renderer.bands.fill)) && (!plot.plugins.highlighter || !plot.plugins.highlighter.show)) {
+                            
+                            // first check if it is in bounding box
+                            inside = false;
+
+                            if (x > s._boundingBox[0][0] && x < s._boundingBox[1][0] && y > s._boundingBox[1][1] && y < s._boundingBox[0][1]) {
+                                // now check the crossing number   
+
+                                numPoints = s._areaPoints.length;
+                                j = numPoints - 1;
+
+                                for (ii = 0; ii < numPoints; ii++) {
+                                    
+                                    vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                    vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+
+                                    if ((vertex1[1] < y && vertex2[1] >= y) || (vertex2[1] < y && vertex1[1] >= y)) {
+                                        if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                            inside = !inside;
+                                        }
+                                    }
+
+                                    j = ii;
+                                }
+                                
+                            }
+                            
+                            if (inside) {
+                                return {
+                                    seriesIndex: i,
+                                    pointIndex: null,
+                                    gridData: s.gridData,
+                                    data: s.data,
+                                    points: s._areaPoints
+                                };
+                            }
+
+                        } else {
+                            
+                            t = s.markerRenderer.size / 2 + s.neighborThreshold;
+                            threshold = (t > 0) ? t : 0;
+                            
+                            for (j = 0, l = s.gridData.length; j < l; j++) {
+                                
+                                p = s.gridData[j];
+                                // neighbor looks different to OHLC chart.
+                                
+                                if (r.constructor === $.jqplot.OHLCRenderer) {
+                                    if (r.candleStick) {
+                                        yp = s._yaxis.series_u2p;
+                                        if (x >= p[0] - r._bodyWidth / 2 && x <= p[0] + r._bodyWidth / 2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                            return {
+                                                seriesIndex: i,
+                                                pointIndex: j,
+                                                gridData: p,
+                                                data: s.data[j]
+                                            };
+                                        }
+                                    // if an open hi low close chart
+                                    } else if (!r.hlc) {
+                                        yp = s._yaxis.series_u2p;
+                                        if (x >= p[0] - r._tickLength && x <= p[0] + r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
+                                            return {
+                                                seriesIndex: i,
+                                                pointIndex: j,
+                                                gridData: p,
+                                                data: s.data[j]
+                                            };
+                                        }
+                                    // a hi low close chart
+                                    } else {
+                                        yp = s._yaxis.series_u2p;
+                                        if (x >= p[0] - r._tickLength && x <= p[0] + r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
+                                            return {
+                                                seriesIndex: i,
+                                                pointIndex: j,
+                                                gridData: p,
+                                                data: s.data[j]
+                                            };
+                                        }
+                                    }
+
+                                } else if (p[0] !== null && p[1] !== null) {
+                                    d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
+                                    if (d <= threshold && (d <= d0 || typeof d0 === "undefined")) {
+                                        d0 = d;
+                                        return {
+                                            seriesIndex: i,
+                                            pointIndex: j,
+                                            gridData: p,
+                                            data: s.data[j]
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                };
+            
+            
+            for (k = plot.seriesStack.length - 1; k >= 0; k--) {
+
+                i = plot.seriesStack[k];
+                s = series[i];
+
+                switch (s.renderer.constructor) {
+
+                case $.jqplot.BarRenderer:
+                    return rendererBar(gridpos, s);
+
+                case $.jqplot.PyramidRenderer:
+                    return rendererPyramid(gridpos, s);
+
+                case $.jqplot.DonutRenderer:
+                    return rendererDonut(gridpos, s);
+
+                case $.jqplot.PieRenderer:
+                    return rendererPie(gridpos, s);
+
+                case $.jqplot.BubbleRenderer:
+                    return rendererBubble(gridpos, s);
+
+                case $.jqplot.FunnelRenderer:
+                    return rendererFunnel(gridpos, s);
+
+                case $.jqplot.LineRenderer:
+                    return rendererLine(gridpos, s);
+
+                default:
+                    return rendererDefault(gridpos, s);
                     break;
                         
                 }
+                        
             }
-            
+
             return null;
-            
+
         };
+    
     
     /**
      * 
@@ -1052,15 +1111,6 @@
         this._plotDimensions = {height: null, width: null};
     };
     
-    /**
-     * [[Description]]
-     * @param   {[[Type]]} el      [[Description]]
-     * @param   {[[Type]]} offsets [[Description]]
-     * @param   {[[Type]]} clss    [[Description]]
-     * @param   {[[Type]]} cssopts [[Description]]
-     * @param   {[[Type]]} attrib  [[Description]]
-     * @returns {[[Type]]} [[Description]]
-     */
     $.jqplot.ElemContainer.prototype.createElement = function (el, offsets, clss, cssopts, attrib) {
         this._offsets = offsets;
         var klass = clss || 'jqplot',
@@ -1275,23 +1325,19 @@
     Axis.prototype.constructor = Axis;
     
     Axis.prototype.init = function () {
-        
         if ($.isFunction(this.renderer)) {
             this.renderer = new this.renderer();
         }
         // set the axis name
         this.tickOptions.axis = this.name;
-        
         // if showMark or showLabel tick options not specified, use value of axis option.
         // showTicks overrides showTickMarks.
         if (typeof this.tickOptions.showMark === "undefined") {
             this.tickOptions.showMark = this.showTicks;
         }
-        
         if (typeof this.tickOptions.showTickMarks === "undefined") {
             this.tickOptions.showTickMarks = this.showTickMarks;
         }
-        
         if (typeof this.tickOptions.showLabel === "undefined") {
             this.tickOptions.showLabel = this.showTicks;
         }
@@ -1301,38 +1347,30 @@
         } else {
             this.labelOptions.label = this.label;
         }
-        
         if (this.showLabel === false) {
             this.labelOptions.show = false;
         }
-        
         // set the default padMax, padMin if not specified
         // special check, if no padding desired, padding
         // should be set to 1.0
         if (this.pad === 0) {
             this.pad = 1.0;
         }
-        
         if (this.padMax === 0) {
             this.padMax = 1.0;
         }
-        
         if (this.padMin === 0) {
             this.padMin = 1.0;
         }
-        
         if (this.padMax === null) {
             this.padMax = (this.pad - 1) / 2 + 1;
         }
-        
         if (this.padMin === null) {
             this.padMin = (this.pad - 1) / 2 + 1;
         }
-        
         // now that padMin and padMax are correctly set, reset pad in case user has supplied 
         // padMin and/or padMax
         this.pad = this.padMax + this.padMin - 1;
-        
         if (this.min !== null || this.max !== null) {
             this.autoscale = false;
         }
@@ -1342,7 +1380,6 @@
         } else if (this.syncTicks === null) {
             this.syncTicks = false;
         }
-        
         this.renderer.init.call(this, this.rendererOptions);
         
     };
@@ -2012,7 +2049,7 @@
         if (!this.markerOptions.color) {
             this.markerOptions.color = this.color;
         }
-        if (typeof this.markerOptions.show === "undefined") {
+        if (this.markerOptions.show === null) {
             this.markerOptions.show = this.showMarker;
         }
         this.showMarker = this.markerOptions.show;
@@ -2697,10 +2734,8 @@
         if (this._addDomReference) {
             this.target.data('jqplot', this);
         }
-        
         // remove any error class that may be stuck on target.
         this.target.removeClass('jqplot-error');
-        
         if (!this.target.get(0)) {
             throw new Error("No plot target specified");
         }
@@ -2709,7 +2744,6 @@
         if (this.target.css('position') === 'static') {
             this.target.css('position', 'relative');
         }
-        
         if (!this.target.hasClass('jqplot-target')) {
             this.target.addClass('jqplot-target');
         }
@@ -3254,7 +3288,7 @@
             k,
             cdl,
             temp,
-            prevval = null,
+            prevval,
             dtlen;
 
         this._plotData = [];
@@ -3300,15 +3334,12 @@
                     if (index > 0) {
                         j = index;
                         while (j--) {
-                            //window.console.log("computePlotData", j, k, sidx, this._plotData[j][k]);
-                            if (this._plotData[j][k]) {
-                                prevval = this._plotData[j][k][sidx];
-                            }
+                            prevval = this._plotData[j][k][sidx];
                             // only need to sum up the stack axis column of data
                             // and only sum if it is of same sign.
                             // if previous series isn't same sign, keep looking
                             // at earlier series untill we find one of same sign.
-                            if (prevval && temp * prevval >= 0) {
+                            if (temp * prevval >= 0) {
                                 this._plotData[index][k][sidx] += prevval;
                                 this._stackData[index][k][sidx] += prevval;
                                 break;
@@ -3456,13 +3487,6 @@
             tempi,
             n,
             axis,
-            /**
-             * [[Description]]
-             * @param   {[[Type]]} data  [[Description]]
-             * @param   {[[Type]]} dir   [[Description]]
-             * @param   {[[Type]]} start [[Description]]
-             * @returns {[[Type]]} [[Description]]
-             */
             normalizeData = function (data, dir, start) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
@@ -3559,17 +3583,7 @@
 
         for (i = 0, dataLen = this.data.length; i < dataLen; i++) {
 
-            sopts = $.extend(true, {index: i}, {
-                seriesColors: this.seriesColors,
-                negativeSeriesColors: this.negativeSeriesColors
-            }, this.options.seriesDefaults, this.options.series[i], {
-                rendererOptions: {
-                    animation: {
-                        show: this.animate
-                    }
-                }
-            });
-            
+            sopts = $.extend(true, {index: i}, { seriesColors: this.seriesColors, negativeSeriesColors: this.negativeSeriesColors}, this.options.seriesDefaults, this.options.series[i], {rendererOptions: {animation: {show:  this.animate}}});
             // pass in options in case something needs set prior to initialization.
             temp = new Series(sopts);
 
@@ -4914,4 +4928,4 @@
         yellowgreen: 'rgb(154, 205, 50)'
     };
     
-}(jQuery));
+}(jQuery, window));
