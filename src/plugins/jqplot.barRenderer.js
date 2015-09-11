@@ -763,7 +763,6 @@
                         }
                     }
                     
-                    // @TODO make the bar render on the tick
                     if (!this.fillToZero || this._plotData[i][1] >= 0) {
                         
                         if (!this.onTick) {
@@ -774,8 +773,8 @@
                         } else {
                             points.push([base, ystart]);
                             points.push([base, gridData[i][1]]);
-                            points.push([base - this.barWidth, gridData[i][1]]);
-                            points.push([base - this.barWidth, ystart]);
+                            points.push([base + this.barWidth, gridData[i][1]]);
+                            points.push([base + this.barWidth, ystart]);
                         }
                         
                     // for negative bars make sure points are always ordered clockwise
@@ -789,8 +788,8 @@
                         } else {
                             points.push([base, gridData[i][1]]);
                             points.push([base, ystart]);
-                            points.push([base - this.barWidth, ystart]);
-                            points.push([base - this.barWidth, gridData[i][1]]);
+                            points.push([base + this.barWidth, ystart]);
+                            points.push([base + this.barWidth, gridData[i][1]]);
                         }
                         
                     }

@@ -229,8 +229,14 @@
 
                         points = s._barPoints[j];
                         p = s.gridData[j];
-
-                        if (x > points[0][0] && x < points[2][0] && y > points[2][1] && y < points[0][1]) {
+                        
+                        /*
+                        console.log("points", points, "x", x, "y", y);
+                        console.log("test", (x > points[0][0] && x < points[2][0] && ((y > points[2][1] && y < points[0][1]) || (y > points[0][1] && y < points[2][1]))));
+                        */
+                        
+                        // @see https://github.com/jqPlot/jqPlot/issues/7
+                        if ((x > points[0][0] && x < points[2][0]) && ((y > points[2][1] && y < points[0][1]) || (y > points[0][1] && y < points[2][1]))) {
                             return {
                                 seriesIndex: s.index,
                                 pointIndex: j,
@@ -376,7 +382,7 @@
                         for (j = 0; j < s.gridData.length; j++) {
                             p = s.gridData[j];
                             d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
-                            if (d <= p[2] && (d <= d0 || d0 == null)) {
+                            if (d <= p[2] && (d <= d0 || d0 === null)) {
                                 d0 = d;
                                 ret = {
                                     seriesIndex: i,
@@ -387,7 +393,7 @@
                             }
                         }
 
-                        if (ret != null) {
+                        if (ret !== null) {
                             return ret;
                         }
 
@@ -481,7 +487,7 @@
                                     vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
                                     vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
-                                    if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y) {
+                                    if ((vertex1[1] < y && vertex2[1] >= y) || (vertex2[1] < y && vertex1[1] >= y)) {
                                         if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
                                             inside = !inside;
                                         }
@@ -555,11 +561,11 @@
                                         }
                                     }
 
-                                } else if (p[0] != null && p[1] != null) {
+                                } else if (p[0] !== null && p[1] !== null) {
 
                                     d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
 
-                                    if (d <= threshold && (d <= d0 || d0 == null)) {
+                                    if (d <= threshold && (d <= d0 || d0 === null)) {
                                         d0 = d;
                                         return {
                                             seriesIndex: i,
@@ -638,7 +644,7 @@
 
                                 d = Math.sqrt((x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]));
 
-                                if (d <= threshold && (d <= d0 || d0 == null)) {
+                                if (d <= threshold && (d <= d0 || d0 === null)) {
                                     d0 = d;
                                     return {
                                         seriesIndex: i,
