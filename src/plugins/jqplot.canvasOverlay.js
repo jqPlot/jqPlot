@@ -1718,7 +1718,7 @@
 
             if (obj.options.showTooltip) {
                 
-                if (obj.type === 'rectangle') {
+                if (obj.type === 'rectangle' || obj.type === 'workitem') {
                     n = isNearRectangle([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
                 } else {
                     n = isNearLine([gridpos.x, gridpos.y], obj.gridStart, obj.gridStop, obj.tooltipWidthFactor);
@@ -1753,6 +1753,7 @@
                         break;
 
                     case 'rectangle':
+                    case 'workitem':
                         showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
                         break;
 
@@ -1793,6 +1794,7 @@
                         break;
 
                     case 'rectangle':
+                    case 'workitem':
                         showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
                         break;
 
@@ -1823,6 +1825,7 @@
                         break;
 
                     case 'rectangle':
+                    case 'workitem':
                         showTooltip(plot, obj, [ev.pageX, gridpos.y], [obj.options.x, datapos[1]]);
                         break;
 
