@@ -455,7 +455,7 @@
         <echo message="Minified sources built." />
     </target>
     
-    <target name="web" depends="dist, min, docs" description="Create jqPlot.com web site">
+    <target name="web" depends="dist, min" description="Create jqPlot.com web site">
         <echo message="Building web site" />
         <mkdir dir="${WEB_DIR}" />
         <copy todir="${WEB_DIR}">
@@ -474,10 +474,14 @@
         <copy todir="${WEB_DIR}/images">
           <fileset dir="${DIST_DIR}/images"/>
         </copy>
+        
+        <!--
         <copy todir="${WEB_DIR}/docs">
           <fileset dir="${DIST_DIR}/docs"/>
         </copy>
+        -->
 
+        <!--
         <echo message="Creating test folder for web site" />
             <mkdir dir="${WEB_DIR}/tests" />
             <copy todir="${WEB_DIR}/tests">
@@ -499,10 +503,12 @@
               <fileset dir="${WEB_DIR}/tests" includes="opener.php" />
             </replaceregexp>
         <echo message="Test folder finished" />
+        -->
 
         <copy todir="${WEB_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins"/>
         </copy>
+        
     </target>
     
   <target name="compress" depends="dist, min, docs" description="Create the zip, gzip, and bzip compressed archives for downloading">
