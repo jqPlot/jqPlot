@@ -1296,10 +1296,11 @@
                     xstop = null,
                     ystop = null,
                     workItemHeight = 0,
+                    workItemWidth = 0,
                     maxHeight = 0,
                     maxWidth = 0,
                     nrOfWorkItems = plot.objectCounter.workitem.total, // obj.type
-                    currentWorkItem = plot.objectCounter.workitem.current,  // integer
+                    currentWorkItemIndex = plot.objectCounter.workitem.current,  // integer
                     $target = plot.target,
                     $workitem = $("<div />", {
                         "class": "jqplot-workitem",
@@ -1354,15 +1355,15 @@
                 // Fill the whole plot with the work items
                 if (fillup) {
                     workItemHeight = maxHeight / nrOfWorkItems;
-                    ystart = -(workItemHeight - currentWorkItem * workItemHeight);
-                    ystop = workItemHeight * currentWorkItem;
+                    ystart = -(workItemHeight - currentWorkItemIndex * workItemHeight);
+                    ystop = workItemHeight * currentWorkItemIndex;
                 } else {
                     workItemHeight = maxHeight / maxWorkItems;
-                    ystart = -(workItemHeight - currentWorkItem * workItemHeight);
+                    ystart = -(workItemHeight - currentWorkItemIndex * workItemHeight);
                     ystop = workItemHeight;
                 }
                 
-                //console.log("objectCounter", obj.type, nrOfWorkItems, currentWorkItem);
+                //console.log("objectCounter", obj.type, nrOfWorkItems, currentWorkItemIndex);
                 
                 if (xstop !== null && xstart !== null && ystop !== null && ystart !== null) {
                     
@@ -1378,35 +1379,66 @@
                     //canvas._ctx.fillRect(0, 0, 100, 100);
                     //canvas._ctx.fillRect(xstart, ystart, xstop - xstart, ystop);
                     
-                    // Don't generate work items which won't be visible
-                    if (xstart >= 0 && xstart < plot.grid._width) {
+                    workItemWidth = xstop - xstart;
                     
-                        $workitem.css({
-                            "top": ystart + plot._gridPadding.top + "px",
-                            "left": xstart + plot._gridPadding.left + "px",
-                            "height": workItemHeight + "px",
-                            "width": xstop - xstart + "px"
-                        });
+                    // Don't generate work items which won't be visible
+                    // @TODO Change the width of the work items which won't be completely visible.
+                    if (xstart < 0 || xstart >= maxWidth || xstart + workItemWidth >= maxWidth) {
                         
-                        if (obj.options.backgroundColor) {
-                            $workitem.css("backgroundColor", obj.options.backgroundColor);
+                        //console.log("workitem %s falls off the grid", obj.options.name);
+                        //console.log("xstart", xstart, "maxWidth", maxWidth, "maxWidth - xstart", maxWidth - xstart, "workItemWidth", workItemWidth);
+                        
+                        // xstart lies before the start of the graph
+                        if (xstart < 0) {
+                            //console.log("workitem %s Before the grid start", obj.options.name);
+                            workItemWidth = workItemWidth - Math.abs(xstart);
+                            xstart = 0;
                         }
-
-                        if (obj.options.icon) {
-                            $workitem.addClass("icon-" + obj.options.icon);
+                        
+                        // xstart lies after the grid width
+                        if (xstart >= maxWidth) {
+                            //console.log("workitem %s After the grid start", obj.options.name);
+                            // the workitem cannot be rendered
+                            return;
                         }
-
-                        if (obj.options.content) {
-                            $workitem.html(obj.options.content);
+                        
+                        // the total width of the workitem falls beyond the grid
+                        if (xstart + workItemWidth >= maxWidth) {
+                            //console.log("workitem %s workItemWidth %f is bigger than grid width %f", obj.options.name, xstart + workItemWidth, maxWidth);
+                            // Set the workItemWidth to the grid width - start
+                            workItemWidth = maxWidth - xstart;
                         }
-
-                        if (obj.options.className) {
-                            $workitem.addClass(obj.options.className);
-                        }
-
-                        $target.append($workitem);
                         
                     }
+                    
+                    //console.log("workitem %s", obj.options.name, "xstart", xstart, "workItemWidth", workItemWidth);
+                    
+                    // render the workitem
+                    
+                    $workitem.css({
+                        "top": ystart + plot._gridPadding.top + "px",
+                        "left": xstart + plot._gridPadding.left + "px",
+                        "height": workItemHeight + "px",
+                        "width": workItemWidth + "px"
+                    });
+
+                    if (obj.options.backgroundColor) {
+                        $workitem.css("backgroundColor", obj.options.backgroundColor);
+                    }
+
+                    if (obj.options.icon) {
+                        $workitem.addClass("icon-" + obj.options.icon);
+                    }
+
+                    if (obj.options.content) {
+                        $workitem.html(obj.options.content);
+                    }
+
+                    if (obj.options.className) {
+                        $workitem.addClass(obj.options.className);
+                    }
+
+                    $target.append($workitem);
                     
                 }
                 
