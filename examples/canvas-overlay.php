@@ -227,30 +227,36 @@ $(function() {
     
     /**
      * Generates an array of ticks
-     * @param   {Number} [interval=1]
+     * @param {Object} start Date object
+     * @param   {object} options 
      * @returns {Array}
      */
-    generateHourTicks = function (interval) {
-                
-        interval = interval || 15;  // Every 15 minutes
+    generateHourTicks = function (options) {
+        
+        options = options || {};
 
-        var nrOfTimePoint = 28,     // For 7 hours
-            now = new Date(),
+        var interval = (typeof options.interval !== "undefined") ? options.interval : 15,  // Every 15 minutes
+            nrofhours = (typeof options.nrofhours !== "undefined") ? options.nrofhours : 6,
+            nrOfTimePoint = (nrofhours * 60 / interval),     // For 6 hours = 24 / 4 = 6
+            now = options.start || new Date(),
+            delta = (typeof options.delta !== "undefined") ? options.delta : 2,
+            startHour = 0,
             out = [],
-            hour,
-            min,
-            thetime,
-            i;
+            i = 0;
 
-        now.setHours(now.getHours() - 2);
+        startHour = now.getHours() - delta;
+
+        //now = new Date(now.setDate(now.getDate() - 1)); // start from yesterday
+        
+        // Start two hours ago from now
+        now.setHours(startHour);
         now.setMinutes(0);
         now.setSeconds(0);
         
-        for (i = 0; i < nrOfTimePoint; i += 1) {
-            hour = ("0" + now.getHours()).slice(-2);
-            min = ("0" + now.getMinutes()).slice(-2);
-            thetime = hour + ":" + min;
-            out.push([thetime, null]);
+        for (i = 0; i <= nrOfTimePoint; i += 1) {
+            // Create "null" timestamps
+            out.push([now.getTime(), null]);
+            // Advance to next interval
             now.setMinutes(now.getMinutes() + interval);
         }
 
@@ -340,7 +346,45 @@ $(function() {
                     name: "test3",
                     xmin: '15:00',
                     xmax: '18:00',
-                    showTooltip: true
+                    showTooltip: true,
+                    icon: "iconTest3",
+                    content: "<div>test3 - 15:00 to 18:00</div>"
+                }},
+                {workitem: {
+                    xformat: {
+                        type: 'date',
+                        format: '%H:%M'
+                    },
+                    name: "test4",
+                    xmin: '10:14',
+                    xmax: '14:32',
+                    showTooltip: true,
+                    icon: "iconTest4",
+                    content: "<div>test4 - 10:14 to 14:32</div>"
+                }},
+                {workitem: {
+                    xformat: {
+                        type: 'date',
+                        format: '%H:%M'
+                    },
+                    name: "test5",
+                    xmin: '18:00',
+                    xmax: '20:00',
+                    showTooltip: true,
+                    icon: "iconTest5",
+                    content: "<div>test5 - 18:00 to 20:00</div>"
+                }},
+                {workitem: {
+                    xformat: {
+                        type: 'date',
+                        format: '%H:%M'
+                    },
+                    name: "test6",
+                    xmin: '22:22',
+                    xmax: '23:30',
+                    showTooltip: true,
+                    icon: "iconTest6",
+                    content: "<div>test6 - 22:22 to 23:30</div>"
                 }},
                 {html: {
                     name: 'Joe',
