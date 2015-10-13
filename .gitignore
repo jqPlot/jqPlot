@@ -1,4 +1,5 @@
-build
-dist
-web
-*.bak
+build/**
+dist/**
+NDdata/**
+node_modules/
+tests/
