@@ -14,8 +14,8 @@
   },
   "maintainers": [
     {
-      "name": "Chris Leonello",
-      "email": "chris@jqplot.com",
+      "name": "Paul Pritchard",
+      "email": "jqplotdev@gmail.com",
       "url": "http://jqplot.com"
     }
   ],
@@ -29,10 +29,10 @@
       "url": "http://www.jqplot.com/docs/files/MIT-LICENSE-txt.html"
     }
   ],
-  "bugs": "http://www.bitbucket.org/cleonello/jqplot/issues/",
+  "bugs": "https://github.com/jqPlot/jqPlot/issues",
   "homepage": "http://jqplot.com",
   "docs": "http://www.jqplot.com/docs/",
-  "download": "http://bitbucket.org/cleonello/jqplot/downloads/",
+  "download": "http://jqplot.com/download/",
   "dependencies": {
     "jquery": ">=1.4"
   }
