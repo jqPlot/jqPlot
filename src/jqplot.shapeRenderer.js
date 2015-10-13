@@ -35,7 +35,6 @@
     // If a filled shape is desired, closePath = true must also be set to close
     // the shape.
     $.jqplot.ShapeRenderer = function(options){
-        
         this.lineWidth = 1.5;
         // prop: linePattern
         // line pattern 'dashed', 'dotted', 'solid', some combination
@@ -72,7 +71,16 @@
         this.strokeStyle = '#999999';
         // prop: fillStyle
         // css color spec for the fill style.
-        this.fillStyle = '#999999'; 
+        this.fillStyle = '#999999';
+		 // prop: fillGradient
+        // if true :enable gradient rendering for fill.
+		this.fillGradient = false;
+		// prop: fillGradientColor
+        // css colorif true :gradient Color combinated with Color.
+		this.fillGradientColor = '#FFFFFF';
+		// prop: fillGradientDelay
+        // 0 for no delay,1 for no gradient.
+		this.fillGradientDelay = 0.5;
         
         $.extend(true, this, options);
     };
@@ -103,7 +111,15 @@
         ctx.lineJoin = opts.lineJoin || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
         ctx.strokeStyle = (opts.strokeStyle || opts.color) || this.strokeStyle;
-        ctx.fillStyle = opts.fillStyle || this.fillStyle;
+         if (opts.fillGradient || this.fillGradient){
+			var grd = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+			grd.addColorStop(opts.fillGradientDelay || this.fillGradientDelay,opts.fillStyle || this.fillStyle);
+			grd.addColorStop(1, opts.fillGradientColor || this.fillGradientColor);
+            ctx.fillStyle = grd;
+		}
+		else{
+			ctx.fillStyle = opts.fillStyle || this.fillStyle;
+		}
         ctx.beginPath();
         if (isarc) {
             ctx.arc(points[0], points[1], points[2], points[3], points[4], true);   

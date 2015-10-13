@@ -1,4 +1,3 @@
-﻿
 /**
  * @fileOverview Date parsing and formatting operations without extending the Date built-in object.
  * @author Chris Leonello
@@ -659,7 +658,7 @@
             monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
             dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
             dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
-            formatString: '%Y-%m-%d %H:%M:%S'
+            formatString: '%d-%m-%Y %H:%M:%S'
         },
         
         'de': {
@@ -732,13 +731,22 @@
             dayNames: ['söndag','måndag','tisdag','onsdag','torsdag','fredag','lördag'],
             dayNamesShort: ['sön','mån','tis','ons','tor','fre','lör'],
             formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        // Merging merge#44
+        'fi': {
+            monthNames: ['tammikuu','helmikuu','maaliskuu','huhtikuu','toukokuu','kesäkuu','heinäkuu','elokuu','syyskuu','lokakuu','marraskuu','joulukuu'],
+            monthNamesShort: ['tammi','helmi','maalis','huhti','touko','kesä','heinä','elo','syys','loka','marras','joulu'],
+            dayNames: ['sunnuntai','maanantai','tiistai','keskiviikko','torstai','perjantai','lauantai'],
+            dayNamesShort: ['su','ma','ti','ke','to','pe','la'],
+            formatString: '%Y-%m-%d %H:%M:%S'
         }
-    
+
     };
     
     // Set english variants to 'en'
     jsDate.regional['en-US'] = jsDate.regional['en-GB'] = jsDate.regional['en'];
-    
+    jsDate.config.gwtintegration = true;
+
     /**
      * Try to determine the users locale based on the lang attribute of the html page.  Defaults to 'en'
      * if it cannot figure out a locale of if the locale does not have a localization defined.
@@ -747,14 +755,23 @@
      
     jsDate.regional.getLocale = function () {
         var l = jsDate.config.defaultLocale;
-        
-        if ( document && document.getElementsByTagName('html') && document.getElementsByTagName('html')[0].lang ) {
-            l = document.getElementsByTagName('html')[0].lang;
-            if (!jsDate.regional.hasOwnProperty(l)) {
-                l = jsDate.config.defaultLocale;
+
+        if (jsDate.config.gwtintegration && window['__gwt_Locale'] !== undefined){
+            var tmpl =  window['__gwt_Locale'];
+            if(jsDate.regional.hasOwnProperty(tmpl.replace("_","-"))){
+                l =  tmpl.replace("_","-");
+            }else if(jsDate.regional.hasOwnProperty(tmpl.split('_')[0])){
+                l = tmpl.split('_')[0];
+            }
+        }else{    
+            if ( document && document.getElementsByTagName('html') && document.getElementsByTagName('html')[0].lang ) {
+                l = document.getElementsByTagName('html')[0].lang;
+                if (!jsDate.regional.hasOwnProperty(l)) {
+                    l = jsDate.config.defaultLocale;
+                }
             }
         }
-        
+
         return l;
     };
     
