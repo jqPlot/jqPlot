@@ -32,13 +32,17 @@ For more information, see the [documentation](http://www.jqplot.com/docs) and [e
 # Building from source:
 
 If you've cloned the repository, you can build a distribution from source.
-You need to have ant (http://ant.apache.org) installed.  You can simply 
-type "ant" from the jqplot directory to build the default "all" target.  
-There are 6 pertinent targets: clean, dist, min, docs, compress and all.  Use:
+You need to have grunt (http://gruntjs.com/) installed.  To build a full 
+distribution of jqplot: 
 
-> ant -p
+1. Change to the jplot root directory.
 
-to get a description of the various build targets. 
+2. Install project dependencies with
+	> npm install
+
+3. Run Grunt with
+	> grunt
+
 
 # Legal Notices:
 
