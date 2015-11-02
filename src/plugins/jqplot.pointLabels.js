@@ -273,7 +273,9 @@
         for (var i=0; i<p._elems.length; i++) {
             // Memory Leaks patch
             // p._elems[i].remove();
-            p._elems[i].emptyForce();
+            if(p._elems[i]) {
+                p._elems[i].emptyForce();
+            }
         }
         p._elems.splice(0, p._elems.length);
 
@@ -294,7 +296,7 @@
             for (var i=0, l=p._labels.length; i < l; i++) {
                 var label = p._labels[i];
                 
-                if (label == null || (p.hideZeros && parseInt(label, 10) == 0)) {
+                if (label == null || (p.hideZeros && parseFloat(label) == 0)) {
                     continue;
                 }
                 
