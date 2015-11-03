@@ -130,9 +130,9 @@ $(document).ready(function(){
         showDataLabels: true,
         // By default, data labels show the percentage of the donut/pie.
         // You can show the data 'value' or data 'label' instead.
-        dataLabels: 'value'
+        dataLabels: 'value',
         // "totalLabel=true" uses the centre of the donut for the total amount
-        totalLabel: true;
+        totalLabel: true
       }
     }
   });
