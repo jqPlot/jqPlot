@@ -30,7 +30,13 @@
 <div id="chart3" style="height:300px; width:500px;"></div>
 
 <pre class="code prettyprint brush: js"></pre>
-  
+
+<p>For donuts you can fill the empty space in the centre with useful total sum information.</p>
+
+<div id="chart4" style="height:300px; width:500px;"></div>
+
+<pre class="code prettyprint brush: js"></pre>
+
 <script class="code" type="text/javascript">
 $(document).ready(function(){
   var data = [
@@ -99,6 +105,34 @@ $(document).ready(function(){
         // By default, data labels show the percentage of the donut/pie.
         // You can show the data 'value' or data 'label' instead.
         dataLabels: 'value'
+      }
+    }
+  });
+});
+</script>
+
+<script class="code" type="text/javascript">
+$(document).ready(function(){
+  var data = [
+    ['Heavy Industry', 12],['Retail', 9], ['Light Industry', 14], 
+    ['Out of home', 16],['Commuting', 7], ['Orientation', 9]
+  ];
+  
+  var plot4 = $.jqplot('chart4', [data], {
+    seriesDefaults: {
+      // make this a donut chart.
+      renderer:$.jqplot.DonutRenderer,
+      rendererOptions:{
+        // Donut's can be cut into slices like pies.
+        sliceMargin: 3,
+        // Pies and donuts can start at any arbitrary angle.
+        startAngle: -90,
+        showDataLabels: true,
+        // By default, data labels show the percentage of the donut/pie.
+        // You can show the data 'value' or data 'label' instead.
+        dataLabels: 'value'
+        // "totalLabel=true" uses the centre of the donut for the total amount
+        totalLabel: true;
       }
     }
   });
