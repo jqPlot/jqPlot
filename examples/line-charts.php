@@ -112,7 +112,7 @@ $(document).ready(function(){
           {
             // Change our line width and use a diamond shaped marker.
             lineWidth:2, 
-            markerOptions: { style:'dimaond' }
+            markerOptions: { style:'diamond' }
           }, 
           {
             // Don't show a line, just show markers.
