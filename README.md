@@ -29,16 +29,32 @@ jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.9.1 is inc
 
 For more information, see the [documentation](http://www.jqplot.com/docs) and [examples](http://www.jqplot.com/examples).
 
-# Building from source:
+# Building from source
 
 If you've cloned the repository, you can build a distribution from source.
-You need to have ant (http://ant.apache.org) installed.  You can simply 
-type "ant" from the jqplot directory to build the default "all" target.  
-There are 6 pertinent targets: clean, dist, min, docs, compress and all.  Use:
 
-> ant -p
+## Requirements and build tools
 
-to get a description of the various build targets. 
+- Install [NodeJS](https://nodejs.org/en/download/)
+- jQplot is [a NPM module](https://docs.npmjs.com/getting-started/what-is-npm)
+- Grunt is used to build the application and documentation from source. [What is Grunt](http://gruntjs.com/getting-started)
+
+## Getting started
+
+1. Fork the repo
+2. Clone the repository into the folder of your choice.
+3. Install Node.JS
+4. Run `npm install` to install the necessary "npm" dependencies like "grunt".
+
+## Building with grunt
+
+Build the application and all the documentation, plus create the zip file, ready for distribution with this command:
+
+> grunt
+
+Create the application without compression for local use with the command:
+
+> grunt build
 
 # Legal Notices:
 

@@ -1307,6 +1307,7 @@
         this._sumy = 0;
         this._sumx = 0;
         this._type = '';
+        this.step = false;
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
