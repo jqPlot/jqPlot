@@ -1,4 +1,4 @@
-<?php 
+<?php
     $title = "Charts with Fill Between Lines";
     // $plotTargets = array (array('id'=>'chart1', 'width'=>600, 'height'=>400));
 ?>
@@ -36,7 +36,7 @@
         var l2 = [4,   8,  9, 10, 8,   6];
         var l3 = [9,  13, 14, 16, 17, 19];
         var l4 = [15, 17, 16, 18, 13, 11];
-        
+
         var plot1 = $.jqplot("chart1", [l0, l1, l2, l3, l4], {
             title: "Fill between 2 lines",
             axesDefaults: {
@@ -48,16 +48,16 @@
             //////
             fillBetween: {
                 // series1: Required, if missing won't fill.
-                series1: 1,
+                series1: [1, 3],
                 // series2: Required, if  missing won't fill.
-                series2: 3,
+                series2: [2, 4],
                 // color: Optional, defaults to fillColor of series1.
                 color: "rgba(227, 167, 111, 0.7)",
                 // baseSeries:  Optional.  Put fill on a layer below this series
                 // index.  Defaults to 0 (first series).  If an index higher than 0 is
                 // used, fill will hide series below it.
                 baseSeries: 0,
-                // fill:  Optional, defaults to true.  False to turn off fill.  
+                // fill:  Optional, defaults to true.  False to turn off fill.
                 fill: true
             },
             seriesDefaults: {
@@ -75,9 +75,28 @@
         // bind a function to the change button to update the plot's fillBetween series
         // and replot().
         $("button[name=changeFill]").click(function(e) {
-        	plot1.fillBetween.series1 = parseInt($("input[name=series1]").val());
-        	plot1.fillBetween.series2 = parseInt($("input[name=series2]").val());
+
+            var val1 = $("input[name=series1]").val();
+            var val2 = $("input[name=series2]").val();
+
+            val1 = val1.split(",");
+            val2 = val2.split(",");
+
+            val1.map(function(i) { return parseInt(i); });
+            val2.map(function(i) { return parseInt(i); });
+
+            if (val1.length === 1) {
+                val1 = val1[0];
+            }
+
+            if (val2.length === 1) {
+                val2 = val2[0];
+            }
+
+        	plot1.fillBetween.series1 = val1;
+        	plot1.fillBetween.series2 = val2;
         	plot1.replot();
+
         });
     });
     </script>
