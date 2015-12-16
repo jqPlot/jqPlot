@@ -15,7 +15,7 @@ Pure JavaScript plotting plugin for jQuery.
 
 **Documentation**: http://www.jqplot.com/docs/
 
-**Project page and source code**: http://www.gibhub.com/jqPlot/jqPlot
+**Project page and source code**: http://www.github.com/jqPlot/jqPlot
 
 **Bugs, issues, feature requests**: http://www.github.com/jqPlot/jqPlot/issues
 
