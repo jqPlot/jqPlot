@@ -28,7 +28,7 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-copy": "*",
     "grunt-contrib-cssmin": "*",
-    "grunt-contrib-jshint": "*",
+    "grunt-jslint": "*",
     "grunt-contrib-uglify": "*",
     "grunt-git-revision": "*",
     "grunt-natural-docs": "^0.1.1"
