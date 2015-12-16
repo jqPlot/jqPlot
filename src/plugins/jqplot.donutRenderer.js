@@ -132,6 +132,9 @@
         // prop: showDataLabels
         // true to show data labels on slices.
         this.showDataLabels = false;
+        // prop: totalLabel
+        // true to show total label in the centre
+        this.totalLabel = false;
         // prop: dataLabelFormatString
         // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
         this.dataLabelFormatString = null;
@@ -263,6 +266,7 @@
             td[i][1] = stack[i] * fact;
             td[i][2] = data[i][1]/tot;
         }
+        this._totalAmount = tot;        
         return td;
     };
     
@@ -450,7 +454,10 @@
                 labelelem.css({left: x, top: y});
             }
         }
-               
+        if (this.totalLabel) {
+            var totalLabel = $('<div class="jqplot-data-label" style="position:absolute">' + this._totalAmount + '</div>').insertAfter(plot.eventCanvas._elem);
+            totalLabel.css({left: this._center[0], top: this._center[1]});
+        }
     };
     
     $.jqplot.DonutAxisRenderer = function() {
