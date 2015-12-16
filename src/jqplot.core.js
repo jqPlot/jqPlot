@@ -3114,8 +3114,33 @@
                 }
 
                 var fb = this.fillBetween;
-                if (fb.fill && fb.series1 !== fb.series2 && fb.series1 < seriesLength && fb.series2 < seriesLength && series[fb.series1]._type === 'line' && series[fb.series2]._type === 'line') {
+                if(typeof fb.series1 == 'number'){
+                    if(fb.fill&&fb.series1!==fb.series2&&fb.series1<seriesLength&&fb.series2<seriesLength&&series[fb.series1]._type==="line"&&series[fb.series2]._type==="line")
                     this.doFillBetweenLines();
+                }
+                else{
+                    if(fb.series1 != null && fb.series2 != null){
+                        var doFb = false;
+                        if(fb.series1.length === fb.series2.length){
+                            var tempSeries1 = 0;
+                            var tempSeries2 = 0;
+                            
+                            for(var cnt = 0; cnt < fb.series1.length; cnt++){
+                                tempSeries1 = fb.series1[cnt];
+                                tempSeries2 = fb.series2[cnt];
+                                if(tempSeries1!==tempSeries2&&tempSeries1<seriesLength&&tempSeries2<seriesLength&&series[tempSeries1]._type==="line"&&series[tempSeries2]._type==="line"){
+                                    doFb = true;
+                                }
+                                else{
+                                    doFb = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if(fb.fill && doFb){
+                            this.doFillBetweenLines();
+                        }
+                    }
                 }
 
                 for (var i=0, l=$.jqplot.postDrawHooks.length; i<l; i++) {
@@ -3157,37 +3182,47 @@
 
         jqPlot.prototype.doFillBetweenLines = function () {
             var fb = this.fillBetween;
+            var series = this.series;
             var sid1 = fb.series1;
             var sid2 = fb.series2;
-            // first series should always be lowest index
-            var id1 = (sid1 < sid2) ? sid1 : sid2;
-            var id2 = (sid2 >  sid1) ? sid2 : sid1;
+            var id1 = 0, id2 = 0;
 
-            var series1 = this.series[id1];
-            var series2 = this.series[id2];
-
-            if (series2.renderer.smooth) {
-                var tempgd = series2.renderer._smoothedData.slice(0).reverse();
+            function fill(id1, id2){
+                var series1 = series[id1];
+                var series2 = series[id2];
+                if (series2.renderer.smooth)
+                    var tempgd = series2.renderer._smoothedData.slice(0).reverse();
+                else
+                    var tempgd = series2.gridData.slice(0).reverse();
+                if (series1.renderer.smooth)
+                    var gd = series1.renderer._smoothedData.concat(tempgd);
+                else
+                    var gd = series1.gridData.concat(tempgd);
+                var color = fb.color !== null ? fb.color : series[sid1].fillColor;
+                var baseSeries = fb.baseSeries !== null ? fb.baseSeries : id1;
+                var sr =
+                    series[baseSeries].renderer.shapeRenderer;
+                var opts =
+                {
+                    fillStyle : color,
+                    fill : true,
+                    closePath : true
+                };
+                sr.draw(series1.shadowCanvas._ctx, gd, opts)
             }
-            else {
-                var tempgd = series2.gridData.slice(0).reverse();
-            }
 
-            if (series1.renderer.smooth) {
-                var gd = series1.renderer._smoothedData.concat(tempgd);
+            if(typeof sid1 == 'number' && typeof sid2 == 'number'){
+                id1 = sid1 < sid2 ? sid1 : sid2;
+                id2 = sid2 > sid1 ? sid2 : sid1;
+                fill(id1, id2);
             }
-            else {
-                var gd = series1.gridData.concat(tempgd);
+            else{
+                for(var cnt = 0; cnt < sid1.length ; cnt++){
+                    id1 = sid1[cnt] < sid2[cnt] ? sid1[cnt] : sid2[cnt];
+                    id2 = sid2[cnt] > sid1[cnt] ? sid2[cnt] : sid1[cnt];
+                    fill(id1, id2);
+                }
             }
-
-            var color = (fb.color !== null) ? fb.color : this.series[sid1].fillColor;
-            var baseSeries = (fb.baseSeries !== null) ? fb.baseSeries : id1;
-
-            // now apply a fill to the shape on the lower series shadow canvas,
-            // so it is behind both series.
-            var sr = this.series[baseSeries].renderer.shapeRenderer;
-            var opts = {fillStyle: color, fill: true, closePath: true};
-            sr.draw(series1.shadowCanvas._ctx, gd, opts);
         };
         
         this.bindCustomEvents = function() {
