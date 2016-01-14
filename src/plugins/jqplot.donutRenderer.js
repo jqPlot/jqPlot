@@ -397,7 +397,10 @@
         else {
             this._thickness = this.thickness || mindim / 2 / (this._numberSeries + 1) * 0.85;
         }
-
+        if (this._diameter < 6) {
+            $.jqplot.log("Diameter of donut too small, not rendering.");
+            return;
+        }
         var r = this._radius = this._diameter/2;
         this._innerRadius = this._radius - this._thickness;
         var sa = this.startAngle / 180 * Math.PI;
