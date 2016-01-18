@@ -33,5 +33,5 @@
     "grunt-git-revision": "*",
     "grunt-natural-docs": "^0.1.1"
   },
-  "license": "MIT"
+  "license": "(MIT AND GPL-2.0)"
 }
