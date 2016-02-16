@@ -1,6 +1,6 @@
 {
   "name": "jqplot",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "jqPlot is a plotting and charting plugin for the jQuery Javascript framework. jqPlot produces beautiful line, bar and pie charts with many features.",
   "author": "Chris Leonello <chris@jqplot.com>",
   "contributors": [

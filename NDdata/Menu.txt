@@ -90,6 +90,7 @@ Group: API Documentation  {
       File: jqplot.donutRenderer.js  (plugins\jqplot.donutRenderer.js)
       File: jqplot.dragable.js  (plugins\jqplot.dragable.js)
       File: jqplot.enhancedLegendRenderer.js  (plugins\jqplot.enhancedLegendRenderer.js)
+      File: jqplot.enhancedPieLegendRenderer.js  (plugins\jqplot.enhancedPieLegendRenderer.js)
       File: jqplot.funnelRenderer.js  (plugins\jqplot.funnelRenderer.js)
       File: jqplot.highlighter.js  (plugins\jqplot.highlighter.js)
       File: jqplot.logAxisRenderer.js  (plugins\jqplot.logAxisRenderer.js)
