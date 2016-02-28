@@ -617,7 +617,7 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.pyramidRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
-    <script class="include" type="text/javascript" src="http:/ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+    <script class="include" type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
 
 <!-- End additional plugins -->
