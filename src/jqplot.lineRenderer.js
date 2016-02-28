@@ -1014,7 +1014,11 @@
                                 fasgd = this.gridData;
                             }
                             for (i=0; i<fasgd.length; i++) {
-                                this.markerRenderer.draw(fasgd[i][0], fasgd[i][1], ctx, opts.markerOptions);
+                                var markerOptions = opts.markerOptions || {};
+                                if (this.markerOptionsCallback) {
+                                    markerOptions = $.extend(true, markerOptions, this.markerOptionsCallback(plot, this, i, this.data[i], gd[i]) || {});
+                                }
+                                this.markerRenderer.draw(fasgd[i][0], fasgd[i][1], ctx, markerOptions);
                             }
                         }
                     }
@@ -1084,8 +1088,12 @@
                     gd = this.gridData;
                 }
                 for (i=0; i<gd.length; i++) {
+                    var markerOptions = opts.markerOptions || {};
+                    if (this.markerOptionsCallback) {
+                        markerOptions = $.extend(true, markerOptions, this.markerOptionsCallback(plot, this, i, this.data[i], gd[i]) || {});
+                    }
                     if (gd[i][0] != null && gd[i][1] != null) {
-                        this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                        this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, markerOptions);
                     }
                 }
             }
