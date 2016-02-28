@@ -8,7 +8,10 @@
 
 <p class="text">This has a vertical cursor and highlights all the points that are neighbours of that cursor.</p>
 <div id="chart1" style="margin:20px;height:440px; width:640px;"></div>
-<p class="text">This is the same example, but also uses the "update" callback to display the values in a separate table.</p>
+<p class="text">This is the same example, but also uses the "update" callback to display the values in a separate table.
+
+In this example, you can also click to freeze the cursor at the current position: the cursor will remain at that position even if you move the mouse.
+The cursor can be released by clicking again.</p>
 <table id="values2" style="height: 80px">
 </table>
 <div id="chart2" style="margin:20px;height:440px; width:640px;"></div>
@@ -105,15 +108,15 @@ $(document).ready(function(){
             show: false
         },
         highlightingCursor: {
-            show: true
+            show: true,
+            showVerticalLine: true
         },
         cursor:{
             show: true,
             zoom: true,
             showTooltip: false,
             constrainZoomTo: 'x',
-            autoscaleConstraint: true,
-            showVerticalLine: true
+            autoscaleConstraint: true
         } 
     };
 });
@@ -130,6 +133,9 @@ $(document).ready(function(){
 // <![CDATA[
 $(document).ready(function(){
     var options = $.extend(true, {}, baseOptions);
+	
+	options.highlightingCursor.freezeCursorOnClick = true;
+	
     options.highlightingCursor.update = function(event, action, gridpos, datapos, seriesDataPoints, plot) {
         $('#values2').empty();
         if (action == 'move' && seriesDataPoints != null) {

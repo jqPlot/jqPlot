@@ -24,10 +24,16 @@
     $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
     $.jqplot.eventListenerHooks.push(['jqplotMouseEnter', handleEnter]);
     $.jqplot.eventListenerHooks.push(['jqplotMouseLeave', handleLeave]);
+    $.jqplot.eventListenerHooks.push(['jqplotClick', handleClick]);
     
     /**
      */
     $.jqplot.HighlightingCursor = function(options) {
+        this.show = $.jqplot.config.enablePlugins;
+        this.showVerticalLine = true;
+        this.freezeCursorOnClick = false;
+        this.frozenCursor = false;
+        this.shapeRenderer = new $.jqplot.ShapeRenderer();
         $.extend(true, this, options);
     };
     
@@ -45,6 +51,12 @@
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     $.jqplot.HighlightingCursor.postPlotDraw = function() {
+        var c = this.plugins.highlightingCursor;
+        if (c.showVerticalLine) {
+            c.cursorCanvas = new $.jqplot.GenericCanvas();
+            this.eventCanvas._elem.before(c.cursorCanvas.createElement(this._gridPadding, 'jqplot-highlighthingCursor-canvas', this._plotDimensions, this));
+            c.cursorCanvas.setContext();
+        }
     };
     
     $.jqplot.preInitHooks.push($.jqplot.HighlightingCursor.init);
@@ -52,6 +64,7 @@
     
     // This is the draw function from the $.jqplot.Highlighter plugin.
     function draw(plot, neighbor) {
+        var c = plot.plugins.highlightingCursor;
         var hl = plot.plugins.highlighter;
         var s = plot.series[neighbor.seriesIndex];
         var smr = s.markerRenderer;
@@ -75,22 +88,40 @@
                 y_pos -= s._barNudge;
             }
         }
-        mr.draw(x_pos, y_pos, hl.highlightCanvas._ctx);
+        mr.draw(x_pos, y_pos, c.cursorCanvas._ctx);
     }
     
     function handleEnter(ev, gridpos, datapos, neighbor, plot) {
-        if (plot.plugins.highlightingCursor.update != null) {
-            plot.plugins.highlightingCursor.update(ev, 'enter', gridpos, datapos, null, plot);
+        var hc = plot.plugins.highlightingCursor;
+        if (hc.update != null) {
+            hc.update(ev, 'enter', gridpos, datapos, null, plot);
         }
     }
     
     function handleLeave(ev, gridpos, datapos, neighbor, plot) {
-        if (plot.plugins.highlightingCursor.update != null) {
-            plot.plugins.highlightingCursor.update(ev, 'leave', gridpos, datapos, null, plot);
+        var hc = plot.plugins.highlightingCursor;
+        if (hc.update != null) {
+            hc.update(ev, 'leave', gridpos, datapos, null, plot);
         }
     }
     
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        var hc = plot.plugins.highlightingCursor;
+        if (!hc.frozenCursor) {
+            handleCursorMove(ev, gridpos, datapos, neighbor, plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        var hc = plot.plugins.highlightingCursor;
+        if (hc.freezeCursorOnClick) {
+            hc.frozenCursor = !hc.frozenCursor;
+        }
+    }
+    
+    function handleCursorMove(ev, gridpos, datapos, neighbor, plot) {
+        var c = plot.plugins.highlightingCursor;
+            
         var seriesDataPoints = [];
         $.each(plot.series, function(seriesIdx, series) {
             var candidateDataPoint = null;
@@ -117,10 +148,13 @@
             seriesDataPoints[seriesIdx] = candidateDataPoint;
         });
       
-        if (plot.plugins.highlightingCursor.show) {
-            var hl = plot.plugins.highlighter;
-            var ctx = hl.highlightCanvas._ctx;
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        if (c.show) {
+            var ctx = c.cursorCanvas._ctx;
+            ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+            if (c.showVerticalLine) {
+                c.shapeRenderer.draw(ctx, [[gridpos.x, 0], [gridpos.x, ctx.canvas.height]]);
+            }
+            
             $.each(seriesDataPoints, function(idx, neighbor) {
                 if (neighbor != null
                         && plot.series[neighbor.seriesIndex].showHighlight
@@ -130,8 +164,8 @@
             });
         }
         
-        if (plot.plugins.highlightingCursor.update != null) {
-            plot.plugins.highlightingCursor.update(ev, 'move', gridpos, datapos, seriesDataPoints, plot);
+        if (c.update != null) {
+            c.update(ev, 'move', gridpos, datapos, seriesDataPoints, plot);
         }
     }
 })(jQuery);
