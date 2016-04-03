@@ -129,7 +129,7 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        banner: '/* <%= pkg.name %> <%= pkg.version %> | (c) 2009-<%= grunt.template.today("yyyy") %> Chris Leonello | jplot.com\n   jsDate | (c) 2010-<%= grunt.template.today("yyyy") %> Chris Leonello\n */\n'
+        banner: '/* <%= pkg.name %> <%= pkg.version %> | (c) 2009-<%= grunt.template.today("yyyy") %> Chris Leonello | jqplot.com\n   jsDate | (c) 2010-<%= grunt.template.today("yyyy") %> Chris Leonello\n */\n'
       },
       dist: {
         files: {
