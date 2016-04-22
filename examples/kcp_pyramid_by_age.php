@@ -217,7 +217,7 @@
                                 <li><input class="color" type="color" id="colorMale" value="#526D2C" /> Male</li>
                                 <li><input class="color" type="color" id="colorFemale" value="#77933C" /> Female</li>
                                 <li><input class="color" type="color" id="colorBackground" value="#ffffff" /> Background</li>
-                                <li><input class="color" type="color" id="colorPlotBands" value="f5ebd7" /> Plot Bands</li>
+                                <li><input class="color" type="color" id="colorPlotBands" value="#f5ebd7" /> Plot Bands</li>
                             </ul>
                         </td>
                     </tr>

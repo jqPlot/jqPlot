@@ -19,7 +19,7 @@
     margin: 2em;
   }
   
-    #resizable1, #resizable2, #resizable3 { 
+    #resizable1, #resizable2, #resizable3, #resizable4, #resizable5 {
       width: 440px; 
       height: 330px;
       margin-top: 2em;
@@ -102,6 +102,30 @@
 
 </td></tr></table>
 
+<table><tr>
+      <td>
+<div id="resizable4" class="ui-widget-content">
+    <div id="chart4" style="height:96%; width:96%;"></div>
+</div>
+</td>
+<td>
+
+<p>The fourth plot shows a resizable bar chart.</p>
+</td>
+</tr></table>
+
+    <table><tr>
+      <td>
+<div id="resizable5" class="ui-widget-content">
+    <div id="chart5" style="height:96%; width:96%;"></div>
+</div>
+</td>
+<td>
+
+<p>The fifth plot shows a resizable bar chart, with a fixed bar width.</p>
+</td>
+</tr></table>
+
 <pre class="code brush:js"></pre>
 
 
@@ -130,6 +154,8 @@
     $("#resizable1").resizable({delay:20});
     $("#resizable2").resizable({delay:20, helper:'ui-resizable-helper'});
     $("#resizable3").resizable({delay:20, helper:'ui-resizable-helper'});
+    $("#resizable4").resizable({delay:20});
+    $("#resizable5").resizable({delay:20});
 
     $('#resizable1').bind('resize', function(event, ui) {
         // pass in resetAxes: true option to get rid of old ticks and axis properties
@@ -151,6 +177,13 @@
         plot3.replot( { resetAxes:true, title: 'Resize' } );
     });
     
+    $('#resizable4').bind('resize', function(event, ui) {
+        plot4.replot( { resetAxes: true } );
+    });
+    $('#resizable5').bind('resize', function(event, ui) {
+        plot5.replot( { resetAxes: true } );
+    });
+    
     var plot1 = $.jqplot('chart1', [l1, l3],  options);
     var plot2 = $.jqplot('chart2', [l1, l3],  options);
 
@@ -160,6 +193,39 @@
             renderer: $.jqplot.MeterGaugeRenderer,
             rendererOptions: {
                 label: 'MB/s'
+            }
+        }
+    });
+    
+    var s1 = [2, 6, 7, 10];
+    var s2 = [7, 5, 3, 2];
+    var ticks = ['a', 'b', 'c', 'd'];
+    
+    var plot4 = $.jqplot('chart4', [s1, s2], {
+        seriesDefaults: {
+            renderer:$.jqplot.BarRenderer,
+            pointLabels: { show: true }
+        },
+        axes: {
+            xaxis: {
+                renderer: $.jqplot.CategoryAxisRenderer,
+                ticks: ticks
+            }
+        }
+    });
+    
+    var plot5 = $.jqplot('chart5', [s1, s2], {
+        seriesDefaults: {
+            renderer:$.jqplot.BarRenderer,
+            rendererOptions: {
+                barWidth: 15,
+            },
+            pointLabels: { show: true }
+        },
+        axes: {
+            xaxis: {
+                renderer: $.jqplot.CategoryAxisRenderer,
+                ticks: ticks
             }
         }
     });
@@ -180,7 +246,9 @@
 
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script>
-  <script class="include" type="text/javascript" src="../plugins/jqplot.meterGaugeRenderer.min.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.meterGaugeRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.barRenderer.js"></script>
+  <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
 
   <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" /> 
   <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
