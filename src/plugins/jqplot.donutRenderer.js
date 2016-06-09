@@ -396,7 +396,12 @@
             this._thickness = this.thickness || (od - this.innerDiameter - 2.0*ringmargin*this._numberSeries) / this._numberSeries/2.0;
         }
         else {
-            this._thickness = this.thickness || mindim / 2 / (this._numberSeries + 1) * 0.85;
+            // allow use of percentage values for thickness
+            if (this.thickness < 1) {
+                this._thickness = mindim / 2 * this.thickness;
+            } else {
+                this._thickness = this.thickness || mindim / 2 / (this._numberSeries + 1) * 0.85;
+            }
         }
         if (this._diameter < 6) {
             $.jqplot.log("Diameter of donut too small, not rendering.");
