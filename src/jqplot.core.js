@@ -3213,7 +3213,7 @@
                     var gd = series1.renderer._smoothedData.concat(tempgd);
                 else
                     var gd = series1.gridData.concat(tempgd);
-                var color = fb.color !== null ? fb.color : series[sid1].fillColor;
+                var color = fb.color !== null ? fb.color : series[id1].fillColor;
                 var baseSeries = fb.baseSeries !== null ? fb.baseSeries : id1;
                 var sr =
                     series[baseSeries].renderer.shapeRenderer;
