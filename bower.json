@@ -1,0 +1,47 @@
+
+{
+  "name": "jqplot",
+  "description": "jqPlot is a plotting and charting plugin for the jQuery Javascript framework. jqPlot produces beautiful charts with many features.",
+  "keywords": [ "plotting", "chart", "charts", "charting", "graphing" ],
+  "homepage": "http://www.jqplot.com",
+  "authors": [
+    {
+      "name": "Chris Leonello",
+      "email": "chris@jqplot.com",
+      "homepage": "http://www.jqplot.com"
+    }
+  ],
+  "license": [
+    "MIT",
+    "GPL-2.0"
+  ],
+  "main": [
+    "js/jquery.jqplot.min.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jqPlot/jqPlot"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-compress": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-jslint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-git-revision": "*",
+    "grunt-natural-docs": "^0.1.1"
+  },
+  "ignore": [
+    "**/.*",
+    "extras",
+    "NDdata",
+    "test",
+    "tests"
+  ],
+  "private": false
+}
