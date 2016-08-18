@@ -3051,10 +3051,6 @@
                 
                 if (this.legend.placement === 'outsideGrid') {
                     legendPadding = {top:this.title.getHeight(), left: 0, right: 0, bottom: 0};
-                    if (this.legend.location === 's') {
-                        legendPadding.left = this._gridPadding.left;
-                        legendPadding.right = this._gridPadding.right;
-                    }
                 }
                 
                 ax.xaxis.pack({position:'absolute', bottom:this._gridPadding.bottom - ax.xaxis.getHeight(), left:0, width:this._width}, {min:this._gridPadding.left, max:this._width - this._gridPadding.right});
@@ -3217,7 +3213,7 @@
                     var gd = series1.renderer._smoothedData.concat(tempgd);
                 else
                     var gd = series1.gridData.concat(tempgd);
-                var color = fb.color !== null ? fb.color : series[sid1].fillColor;
+                var color = fb.color !== null ? fb.color : series[id1].fillColor;
                 var baseSeries = fb.baseSeries !== null ? fb.baseSeries : id1;
                 var sr =
                     series[baseSeries].renderer.shapeRenderer;

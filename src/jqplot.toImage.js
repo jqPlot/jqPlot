@@ -232,7 +232,7 @@
 
             // somehow in here, for divs within divs, the width of the inner div should be used instead of the canvas.
 
-            if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip')) {
+            if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip') && !$(el).hasClass('jqplot-canvasOverlay-tooltip')) {
                 $(el).children().each(function() {
                     _jqpToImage(this, left, top);
                 });
