@@ -151,7 +151,7 @@
         var greenColors = ["#526D2C", "#77933C", "#C57225", "#C57225"];
         var blueColors = ["#3F7492", "#4F9AB8", "#C57225", "#C57225"];
 
-        // To accomodate changing y axis, need to keep track of plot options, so they are defined separately
+        // To accommodate changing y axis, need to keep track of plot options, so they are defined separately
         // changing axes will require recreating the plot, so need to keep 
         // track of state changes.
         var plotOptions = {

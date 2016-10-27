@@ -893,7 +893,7 @@
         // prop: placement
         // "insideGrid" places legend inside the grid area of the plot.
         // "outsideGrid" places the legend outside the grid but inside the plot container, 
-        // shrinking the grid to accomodate the legend.
+        // shrinking the grid to accommodate the legend.
         // "inside" synonym for "insideGrid", 
         // "outside" places the legend ouside the grid area, but does not shrink the grid which
         // can cause the legend to overflow the plot container.
