@@ -58,7 +58,7 @@ $(document).ready(function(){
             {label:'Airfare'}
         ],
         // Show the legend and put it outside the grid, but inside the
-        // plot container, shrinking the grid to accomodate the legend.
+        // plot container, shrinking the grid to accommodate the legend.
         // A value of "outside" would not shrink the grid and allow
         // the legend to overflow the container.
         legend: {
