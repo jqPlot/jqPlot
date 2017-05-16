@@ -88,10 +88,14 @@
         // background color of the inside of the gauge.
         this.background = "#efefef";
         // prop: ringColor
-        // color of the outer ring, hub, and needle of the gauge.
+        // color of the outer ring of the gauge.
         this.ringColor = "#BBC6D0";
-        // needle color not implemented yet.
-        this.needleColor = "#C3D3E5";
+        // prop: hubColor
+        // color of the hub
+        this.hubColor = "#333333";
+        // prop: needleColor
+        // needle color of the gauge.
+        this.needleColor = "#C3D3E5"; 
         // prop: tickColor
         // color of the tick marks around the gauge.
         this.tickColor = "#989898";
@@ -383,7 +387,7 @@
         if (!this.diameter) {
             if (this.semiCircular) {
                 if ( w >= 2*h) {
-                    if (!this.ringWidth) {
+                    if (this.ringWidth === null) {
                         this.ringWidth = 2*h/35;
                     }
                     this.needleThickness = this.needleThickness || 2+Math.pow(this.ringWidth, 0.8);
@@ -391,7 +395,7 @@
                     this.diameter = 2 * (h - 2*this.innerPad);
                 }
                 else {
-                    if (!this.ringWidth) {
+                    if (this.ringWidth === null) {
                         this.ringWidth = w/35;
                     }
                     this.needleThickness = this.needleThickness || 2+Math.pow(this.ringWidth, 0.8);
@@ -403,7 +407,7 @@
                 this._center = [(cw - trans * offx)/2 + trans * offx,  (ch + trans*offy - this.padding - this.ringWidth - this.innerPad)];
             }
             else {
-                if (!this.ringWidth) {
+                if (this.ringWidth === null) {
                     this.ringWidth = d/35;
                 }
                 this.needleThickness = this.needleThickness || 2+Math.pow(this.ringWidth, 0.8);
@@ -430,7 +434,9 @@
         this.shadowOffset = 0.5 + this.ringWidth/9;
         this.shadowWidth = this.ringWidth*1;
         
-        this.tickPadding = 3 + Math.pow(this.diameter/20, 0.7);
+        if (this.tickPadding === null) {
+            this.tickPadding = 3 + Math.pow(this.diameter/20, 0.7);
+        }
         this.tickOuterRadius = this._radius - this.ringWidth/2 - this.tickPadding;
         this.tickLength = (this.showTicks) ? this._radius/13 : 0;
         
@@ -668,7 +674,7 @@
             
             ctx.save();
             ctx.beginPath();  
-            ctx.fillStyle = this.ringColor;
+            ctx.fillStyle = this.hubColor;
             ctx.arc(0 ,0, this.hubRadius,hubsa, hubea, false);
             ctx.closePath();
             ctx.fill();
@@ -797,8 +803,8 @@
             
             ctx.save();
             ctx.beginPath();
-            ctx.fillStyle = this.ringColor;
-            ctx.strokeStyle = this.ringColor;
+            ctx.fillStyle = this.needleColor;
+            ctx.strokeStyle = this.needleColor;
             this.needleLength = (this.tickOuterRadius - this.tickLength) * 0.85;
             this.needleThickness = (this.needleThickness < 2) ? 2 : this.needleThickness;
             var endwidth = this.needleThickness * 0.4;
