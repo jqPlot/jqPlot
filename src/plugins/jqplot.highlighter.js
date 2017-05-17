@@ -180,7 +180,7 @@
     // called within context of plot
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
-    $.jqplot.Highlighter.postPlotDraw = function () {
+    $.jqplot.Highlighter.postPlotDraw = function() {
         // Memory Leaks patch
         if (this.plugins.highlighter && this.plugins.highlighter.highlightCanvas) {
             this.plugins.highlighter.highlightCanvas.resetCanvas();
@@ -201,7 +201,7 @@
         this.plugins.highlighter._tooltipElem = $(elem);
         elem = null;
         this.plugins.highlighter._tooltipElem.addClass('jqplot-highlighter-tooltip');
-        this.plugins.highlighter._tooltipElem.css({ position: 'absolute', display: 'none' });
+        this.plugins.highlighter._tooltipElem.css({position:'absolute', display:'none'});
 
         this.eventCanvas._elem.before(this.plugins.highlighter._tooltipElem);
     };
@@ -261,7 +261,7 @@
             var str;
             var xstr = xf(xfstr, data[0]);
             var ystrs = [];
-            for (var i = 1; i < opts.yvalues + 1; i++) {
+            for (var i=1; i<opts.yvalues+1; i++) {
                 ystrs.push(yf(yfstr, data[i]));
             }
             if (typeof opts.formatString === 'string') {
@@ -421,13 +421,13 @@
                 break;
         }
         if (series.renderer.constructor == $.jqplot.BarRenderer) {
-            if (series.barDirection == 'vertical') {
-                x += series._barNudge;
-            }
-            else {
-                y -= series._barNudge;
-            }
-        }
+    	    if (series.barDirection == 'vertical') {
+    	        x += series._barNudge;
+    	    }
+    	    else {
+    	        y -= series._barNudge;
+    	    }
+    	}
         elem.css('left', x);
         elem.css('top', y);
         if (opts.fadeTooltip) {
