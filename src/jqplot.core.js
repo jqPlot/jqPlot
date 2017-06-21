@@ -2064,7 +2064,7 @@
             var hasData = false;
             if (data != null && $.isArray(data) === true) {
                 for (var i = 0; i < data.length; i++) {
-                    if ($.isArray(data[I]) === true && data[i].length > 0) {
+                    if ($.isArray(data[i]) === true && data[i].length > 0) {
                         hasData = true;
                         break;
                     };
