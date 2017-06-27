@@ -75,7 +75,7 @@ Important note:  For jqplot builds r529 and above (0.9.7r529 and higher), you mu
 enable plugins via either the { show: true } plugin option to the plot or by using 
 the $.jqplot.config.enablePlugins = true; config options set on the page before plot creation.
 Only plugins that can be immediately active upon loading are affected.  This includes 
-non-renderer plugins like cursor, dragable, highlighter, and trendline.
+non-renderer plugins like cursor, draggable, highlighter, and trendline.
 
 Here is the same $.jqplot call 
 but with a log y axis:

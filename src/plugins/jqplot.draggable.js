@@ -31,11 +31,10 @@
 (function($) {
 
     /**
-     * Class: $.jqplot.Dragable
-     * Plugin to make plotted points dragable by the user.
-     * Deprecated: please use $.jqplot.Draggable instead
+     * Class: $.jqplot.Draggable
+     * Plugin to make plotted points draggable by the user.
      */
-    $.jqplot.Dragable = function(options) {
+    $.jqplot.Draggable = function(options) {
         // Group: Properties
         this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
         this.shapeRenderer = new $.jqplot.ShapeRenderer();
@@ -68,37 +67,37 @@
 
 
     // called within scope of series
-    $.jqplot.Dragable.parseOptions = function (defaults, opts) {
+    $.jqplot.Draggable.parseOptions = function (defaults, opts) {
         var options = opts || {};
         var common = defaults || {};
-        var dragable = $.extend(true, {}, common.dragable, options.dragable);
-        this.plugins.dragable = new $.jqplot.Dragable(dragable);
+        var draggable = $.extend(true, {}, common.draggable, options.draggable);
+        this.plugins.draggable = new $.jqplot.Draggable(draggable);
         // since this function is called before series options are parsed,
         // we can set this here and it will be overridden if needed.
-        this.isDragable = $.jqplot.config.enablePlugins;
+        this.isDraggable = $.jqplot.config.enablePlugins;
     };
 
     // called within context of plot
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     // add a new DragCanvas object to the plot plugins to handle drawing on this new canvas.
-    $.jqplot.Dragable.postPlotDraw = function() {
+    $.jqplot.Draggable.postPlotDraw = function() {
         // Memory Leaks patch
-        if (this.plugins.dragable && this.plugins.dragable.highlightCanvas) {
-            this.plugins.dragable.highlightCanvas.resetCanvas();
-            this.plugins.dragable.highlightCanvas = null;
+        if (this.plugins.draggable && this.plugins.draggable.highlightCanvas) {
+            this.plugins.draggable.highlightCanvas.resetCanvas();
+            this.plugins.draggable.highlightCanvas = null;
         }
 
-        this.plugins.dragable = {previousCursor:'auto', isOver:false};
-        this.plugins.dragable.dragCanvas = new DragCanvas();
+        this.plugins.draggable = {previousCursor:'auto', isOver:false};
+        this.plugins.draggable.dragCanvas = new DragCanvas();
 
-        this.eventCanvas._elem.before(this.plugins.dragable.dragCanvas.createElement(this._gridPadding, 'jqplot-dragable-canvas', this._plotDimensions, this));
-        var dctx = this.plugins.dragable.dragCanvas.setContext();
+        this.eventCanvas._elem.before(this.plugins.draggable.dragCanvas.createElement(this._gridPadding, 'jqplot-draggable-canvas', this._plotDimensions, this));
+        var dctx = this.plugins.draggable.dragCanvas.setContext();
     };
 
-    //$.jqplot.preInitHooks.push($.jqplot.Dragable.init);
-    $.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Dragable.parseOptions);
-    $.jqplot.postDrawHooks.push($.jqplot.Dragable.postPlotDraw);
+    //$.jqplot.preInitHooks.push($.jqplot.Draggable.init);
+    $.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Draggable.parseOptions);
+    $.jqplot.postDrawHooks.push($.jqplot.Draggable.postPlotDraw);
     $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
     $.jqplot.eventListenerHooks.push(['jqplotMouseDown', handleDown]);
     $.jqplot.eventListenerHooks.push(['jqplotMouseUp', handleUp]);
@@ -106,7 +105,7 @@
 
     function initDragPoint(plot, neighbor) {
         var s = plot.series[neighbor.seriesIndex];
-        var drag = s.plugins.dragable;
+        var drag = s.plugins.draggable;
 
         // first, init the mark renderer for the dragged point
         var smr = s.markerRenderer;
@@ -129,11 +128,11 @@
     }
 
     function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        if (plot.plugins.dragable.dragCanvas.isDragging) {
-            var dc = plot.plugins.dragable.dragCanvas;
+        if (plot.plugins.draggable.dragCanvas.isDragging) {
+            var dc = plot.plugins.draggable.dragCanvas;
             var dp = dc._neighbor;
             var s = plot.series[dp.seriesIndex];
-            var drag = s.plugins.dragable;
+            var drag = s.plugins.draggable;
             var gd = s.gridData;
 
             // compute the new grid position with any constraints.
@@ -160,8 +159,8 @@
         }
         else if (neighbor != null) {
             var series = plot.series[neighbor.seriesIndex];
-            if (series.isDragable) {
-                var dc = plot.plugins.dragable.dragCanvas;
+            if (series.isDraggable) {
+                var dc = plot.plugins.draggable.dragCanvas;
                 if (!dc.isOver) {
                     dc._cursors.push(ev.target.style.cursor);
                     ev.target.style.cursor = "pointer";
@@ -170,7 +169,7 @@
             }
         }
         else if (neighbor == null) {
-            var dc = plot.plugins.dragable.dragCanvas;
+            var dc = plot.plugins.draggable.dragCanvas;
             if (dc.isOver) {
                 ev.target.style.cursor = dc._cursors.pop();
                 dc.isOver = false;
@@ -179,12 +178,12 @@
     }
 
     function handleDown(ev, gridpos, datapos, neighbor, plot) {
-        var dc = plot.plugins.dragable.dragCanvas;
+        var dc = plot.plugins.draggable.dragCanvas;
         dc._cursors.push(ev.target.style.cursor);
         if (neighbor != null) {
             var s = plot.series[neighbor.seriesIndex];
-            var drag = s.plugins.dragable;
-            if (s.isDragable && !dc.isDragging) {
+            var drag = s.plugins.draggable;
+            if (s.isDraggable && !dc.isDragging) {
                 dc._neighbor = neighbor;
                 dc.isDragging = true;
                 initDragPoint(plot, neighbor);
@@ -202,8 +201,8 @@
     }
 
     function handleUp(ev, gridpos, datapos, neighbor, plot) {
-        if (plot.plugins.dragable.dragCanvas.isDragging) {
-            var dc = plot.plugins.dragable.dragCanvas;
+        if (plot.plugins.draggable.dragCanvas.isDragging) {
+            var dc = plot.plugins.draggable.dragCanvas;
             // clear the canvas
             var ctx = dc._ctx;
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -211,7 +210,7 @@
             // redraw the series canvas at the new point.
             var dp = dc._neighbor;
             var s = plot.series[dp.seriesIndex];
-            var drag = s.plugins.dragable;
+            var drag = s.plugins.draggable;
             // compute the new grid position with any constraints.
             var x = (drag.constrainTo == 'y') ? dp.data[0] : datapos[s.xaxis];
             var y = (drag.constrainTo == 'x') ? dp.data[1] : datapos[s.yaxis];
