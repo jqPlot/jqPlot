@@ -31,7 +31,7 @@
     "grunt-jslint": "*",
     "grunt-contrib-uglify": "*",
     "grunt-git-revision": "*",
-    "grunt-natural-docs": "^0.1.1"
+    "grunt-natural-docs": "^1.0.1"
   },
   "license": "(MIT AND GPL-2.0)"
 }
