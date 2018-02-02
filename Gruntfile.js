@@ -58,6 +58,7 @@ module.exports = function(grunt) {
           {cwd: 'build', src: ['jquery.jqplot.css'], dest: 'dist', expand: true},
           {cwd: 'build', src: ['jquery.jqplot.min.css'], dest: 'dist', expand: true},
           {cwd: 'build', src: ['excanvas.js'], dest: 'dist', expand: true},
+          {cwd: 'build', src: ['excanvas.min.js'], dest: 'dist', expand: true},
           {cwd: 'build', src: ['version.txt'], dest: 'dist', expand: true},
           {cwd: 'build', src: ['plugins/*'], dest: 'dist', expand: true},
           {src: ['README.md'], dest: 'dist', expand: true},
@@ -134,6 +135,7 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'dist/jquery.<%= pkg.name %>.min.js': ['dist/jquery.<%= pkg.name %>.js'],
+          'dist/excanvas.min.js': ['dist/excanvas.js'],
           'dist/examples/example.min.js': ['dist/examples/example.js']
         }
       },
