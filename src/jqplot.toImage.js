@@ -292,7 +292,12 @@
             }
 
             else if (tagname == 'canvas') {
-                newContext.drawImage(el, left, top);
+                // newContext.drawImage(el, left, top);
+                // chart not scale correctly for high dpi canvas, need w,h for the fix:
+                var h = $(el).innerHeight() - 2 * parseInt($(el).css('padding-top'), 10);
+                var w = $(el).innerWidth() - 2 * parseInt($(el).css('padding-left'), 10);
+
+                newContext.drawImage(el, left, top, w, h);
             }
         }
         $(this).children().each(function() {
