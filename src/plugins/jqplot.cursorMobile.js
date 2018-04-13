@@ -28,7 +28,7 @@
 	$.jqplot.eventListenerHooks.push(['touchstart', handleTouchStart]);
 	$.jqplot.eventListenerHooks.push(['touchmove', handleTouchMove]);
 	$.jqplot.eventListenerHooks.push(['touchend', handleTouchEnd]);
-	var touch;
+	var touch = null;
 	function handleTouchStart(ev) {
 		if (ev.originalEvent && ev.originalEvent.touches && ev.originalEvent.touches.length > 0) {
 			touch = ev.originalEvent.touches[0];
@@ -42,6 +42,7 @@
 				}
 			});
 			plot.eventCanvas._elem.trigger(mouseDownEvent);
+			return false;
 		}
 	}
 	function handleTouchMove(ev) {
@@ -56,10 +57,10 @@
 					plot: plot
 				},
 				preventDefault: function () {
-					return true;
 				}
 			});
 			plot.eventCanvas._elem.trigger(mouseMoveEvent);
+			return false;
 		}
 	}
 	function handleTouchEnd(ev) {
@@ -74,6 +75,8 @@
 				}
 			});
 			plot.eventCanvas._elem.trigger(mouseUpEvent);
+			touch = null;
+			return false;
 		}
 	}
 })(jQuery);
