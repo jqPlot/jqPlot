@@ -408,7 +408,7 @@
     	        y -= series._barNudge;
     	    }
     	}
-        elem.css('left', x);
+        elem.css('left', x < 0 ? 0: x);
         elem.css('top', y);
         if (opts.fadeTooltip) {
             // Fix for stacked up animations.  Thnanks Trevor!
