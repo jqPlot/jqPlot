@@ -114,7 +114,7 @@ $(document).ready(function() {
   });
 
 });
-
+</script>
 
 <!-- End example scripts -->
 
@@ -129,6 +129,7 @@ $(document).ready(function() {
     <script class="include" language="javascript" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
     <script class="include" language="javascript" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
     <script class="include" language="javascript" type="text/javascript" src="../src/plugins/jqplot.dateAxisRenderer.js"></script>
+    <script class="include" language="javascript" type="text/javascript" src="../src/plugins/jqplot.pieRenderer.min.js"></script>
 
 <!-- End additional plugins -->
 

@@ -6,6 +6,7 @@
     <property description="Build, work, temporary directory" name="BUILD_DIR" value="build" />
     <property description="Directory for distributable files" name="DIST_DIR" value="dist" />
     <property description="Directory for web site files" name="WEB_DIR" value="web" />
+    <property description="Directory for development, running in a browser" name="DEV_DIR" value="C:/Users/Johan/Projects/cgi.enbw/eclipse/workspace-1507/emc2.ui/www/res/js/jqplot-1.0.8" />
 
     <!-- Files names for distribution -->
     <property name="JQPLOT" value="jquery.jqplot.js" />
@@ -25,14 +26,14 @@
     <property description="NaturalDocs" name="ND" value="${basedir}/extras/NaturalDocs/NaturalDocs" />
     <property description="NaturalDocs" value="${basedir}/extras/NaturalDocs/NaturalDocs.bat" dir="${basedir}/extras/NaturalDocs">
     -->
-    <exec executable="hg" outputproperty="HG_ID">
-      <arg value="id"/>
-      <arg value="-n"/>
+
+    <exec executable="git" outputproperty="HG_ID">
+      <arg value="tag"/>
     </exec>
 
-    <exec executable="hg" outputproperty="REVISION">
-      <arg value="id"/>
-      <arg value="-n"/>
+    <exec executable="git" outputproperty="REVISION">
+      <arg value="rev-parse"/>
+      <arg value="HEAD"/>
     </exec>
 
     <!-- MAIN -->
@@ -107,8 +108,9 @@
         <replaceregexp match="@REVISION" flags="g" replace="${REVISION}">
           <fileset dir="${BUILD_DIR}/plugins" includes="jqplot.*.js"/>
         </replaceregexp>
-                
-        <!-- remove appropriate opening and closing of closures -->
+            
+        <!-- Why remove the closures? -->
+        <!-- remove appropriate opening and closing of closures
         <replaceregexp match=".*?\(function\(\$\) \{" replace="" flags="s" encoding="UTF8">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
@@ -117,7 +119,9 @@
             <exclude name="jqplot.core.js" />
           </fileset>
         </replaceregexp>
+        -->
         
+        <!--
         <replaceregexp match="\}\)\(jQuery\)\;(?!.*\}\)\(jQuery\)\;)" replace="" encoding="UTF8">
           <fileset dir="${BUILD_DIR}">
             <include name="jqplot.*.js" />
@@ -126,6 +130,7 @@
             <exclude name="jqplot.effects.blind.js" />
           </fileset>
         </replaceregexp>
+        -->
         
         <!-- now cat all files together to make one jqplot source file -->
         <concat destfile="${BUILD_DIR}/${JQPLOT}" encoding="UTF-8">
@@ -144,34 +149,20 @@
         </concat>
         
     </target>
-
-    <target name="dist" depends="build" description="Build uncompressed jqplot for creating distributions and web site.">
-        <echo message="Creating jqPlot distribution" />
+    
+    <target name="examples" depends="dist" description="Build examples">
+    
+        <echo message="Creating jqPlot examples" />
         
         <mkdir dir="${DIST_DIR}" />
         <mkdir dir="${DIST_DIR}/plugins" />
         <mkdir dir="${DIST_DIR}/images" />
         <mkdir dir="${DIST_DIR}/examples" />
         
-        <!-- now copy files to dist dir. -->
-        <copy todir="${DIST_DIR}">
-          <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
-          <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
-          <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
-          <fileset dir="${BUILD_DIR}" includes="version.txt" />
-          <fileset dir="" includes="*.php" />
-          <fileset dir="" includes="style.css" />
-          <fileset dir="" includes="README.txt" />
-          <fileset dir="" includes="copyright.txt" />
-          <fileset dir="${SRC_DIR}" includes="*.txt" />
-          <fileset dir="${SRC_DIR}" includes="jquery.js" />
-          <fileset dir="${SRC_DIR}" includes="jquery.min.js" />
-        </copy>
-        
         <copy todir="${DIST_DIR}/examples">
           <fileset dir="${BUILD_DIR}/examples" />
         </copy>
-
+        
         <!-- fix up and generate html exmaples from php files -->
 
         <apply executable="php" parallel="false" dir="${DIST_DIR}/examples" verbose="true">
@@ -194,7 +185,6 @@
         <replaceregexp match='kcp_pyramid_by_age\.php' replace='kcp_pyramid_by_age\.html' flags="g">
           <fileset dir="${DIST_DIR}/examples" includes="kcp_quintiles.html" />
         </replaceregexp>
-
 
         <!-- now remove said php files -->
 
@@ -243,14 +233,63 @@
           </fileset>
         </replaceregexp>
         
+    </target>
+
+    <target name="dist" depends="build" description="Build uncompressed jqplot for creating distributions and web site.">
+        <echo message="Creating jqPlot distribution" />
+        
+        <mkdir dir="${DIST_DIR}" />
+        <mkdir dir="${DIST_DIR}/plugins" />
+        <mkdir dir="${DIST_DIR}/images" />
+        
+        <!-- now copy files to dist dir. -->
+        <copy todir="${DIST_DIR}">
+          <fileset dir="${BUILD_DIR}" includes="${JQPLOT}" />
+          <fileset dir="${BUILD_DIR}" includes="jquery.jqplot.css" />
+          <fileset dir="${BUILD_DIR}" includes="excanvas.js" />
+          <fileset dir="${BUILD_DIR}" includes="version.txt" />
+          <fileset dir="" includes="*.php" />
+          <fileset dir="" includes="style.css" />
+          <fileset dir="" includes="README.txt" />
+          <fileset dir="" includes="copyright.txt" />
+          <fileset dir="${SRC_DIR}" includes="*.txt" />
+          <fileset dir="${SRC_DIR}" includes="jquery.js" />
+          <fileset dir="${SRC_DIR}" includes="jquery.min.js" />
+        </copy>
+        
         <copy todir="${DIST_DIR}/plugins">
           <fileset dir="${BUILD_DIR}/plugins" includes="*" />
         </copy>
         
         <echo message="jqPlot built." />
+        
+    </target>
+    
+    <target name="dev" depends="dist" description="Copy files to dev">
+        <echo message="Copying core to emc2.ui" />
+        
+        <copy todir="${DEV_DIR}">
+          <fileset dir="${DIST_DIR}">
+            <include name="excanvas.js" />
+            <include name="excanvas.min.js" />
+            <include name="jquery.jqplot.js" />
+            <include name="jquery.jqplot.min.js" />
+            <include name="jquery.jqplot.css" />
+            <include name="jquery.jqplot.min.css" />
+          </fileset>
+        </copy>
+        
+        <echo message="Copying plugins to emc2.ui" />
+        
+        <copy todir="${DEV_DIR}/plugins">
+          <fileset dir="${DIST_DIR}/plugins" includes="*" />
+        </copy>
+        
+        <echo message="jqPlot copied to dev." />
+        
     </target>
 
-    <target name="min" depends="dist" description="Minify sources with YUI compressor.">
+    <target name="min" depends="dist, examples" description="Minify sources with YUI compressor.">
         <echo message="Building minified sources with YUI Compressor" />
         <mkdir dir="${DIST_DIR}/temp" />
         <mkdir dir="${DIST_DIR}/plugins/temp" />
@@ -371,7 +410,7 @@
         
         <echo message="doing regex replacements" />
 
-        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version} r${HG_ID}_${REVISION}">
           <fileset dir="${DIST_DIR}">
             <include name="jquery.jqplot.js"/>
             <include name="jquery.jqplot.min.js"/>
@@ -380,7 +419,7 @@
           </fileset>
         </replaceregexp>
         
-        <replaceregexp match="@VERSION" flags="g" replace="${version}r${HG_ID}">
+        <replaceregexp match="@VERSION" flags="g" replace="${version} r${HG_ID}_${REVISION}">
           <fileset dir="${DIST_DIR}/plugins">
             <include name="jqplot.*.js"/>
             <include name="jqplot.*.min.js" />
@@ -416,7 +455,7 @@
         <echo message="Minified sources built." />
     </target>
     
-    <target name="web" depends="dist, min, docs" description="Create jqPlot.com web site">
+    <target name="web" depends="dist, min" description="Create jqPlot.com web site">
         <echo message="Building web site" />
         <mkdir dir="${WEB_DIR}" />
         <copy todir="${WEB_DIR}">
@@ -435,10 +474,14 @@
         <copy todir="${WEB_DIR}/images">
           <fileset dir="${DIST_DIR}/images"/>
         </copy>
+        
+        <!--
         <copy todir="${WEB_DIR}/docs">
           <fileset dir="${DIST_DIR}/docs"/>
         </copy>
+        -->
 
+        <!--
         <echo message="Creating test folder for web site" />
             <mkdir dir="${WEB_DIR}/tests" />
             <copy todir="${WEB_DIR}/tests">
@@ -460,10 +503,12 @@
               <fileset dir="${WEB_DIR}/tests" includes="opener.php" />
             </replaceregexp>
         <echo message="Test folder finished" />
+        -->
 
         <copy todir="${WEB_DIR}/plugins">
           <fileset dir="${DIST_DIR}/plugins"/>
         </copy>
+        
     </target>
     
   <target name="compress" depends="dist, min, docs" description="Create the zip, gzip, and bzip compressed archives for downloading">
@@ -498,7 +543,7 @@
         </exec>
         <!-- put files back -->
         <move file="${BUILD_DIR}/jquery.jqplot.js.bak" tofile="${BUILD_DIR}/jquery.jqplot.js"/>
-        <replaceregexp match="@VERSION" replace="${version}r${HG_ID}" flags="g">
+        <replaceregexp match="@VERSION" replace="${version} r${HG_ID}_${REVISION}" flags="g">
           <fileset dir="${DIST_DIR}/docs/index" includes="*.html" />
           <fileset dir="${DIST_DIR}/docs/files" includes="*.html" />
         </replaceregexp>
@@ -529,7 +574,7 @@
         <echo message="clean then build distributable files and documentation." />
     </target>
 
-    <target name="all" depends="clean, build, dist, min" description="Clean and build distributable files.">
+    <target name="all" depends="clean, build, examples, dist, min" description="Clean and build distributable files.">
         <echo message="clean then build distributable files." />
     </target>
 

@@ -1,3 +1,5 @@
+/*jslint browser: true, plusplus: true, nomen: true, white: false, continue: true */
+/*global jQuery */
 /**
  * jqPlot
  * Pure JavaScript plotting plugin using jQuery
@@ -28,17 +30,25 @@
  *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
-(function($) {
-    // class: $.jqplot.AxisTickRenderer
-    // A "tick" object showing the value of a tick/gridline on the plot.
-    $.jqplot.AxisTickRenderer = function(options) {
+(function ($) {
+    
+    "use strict";
+    
+    /**
+     * @class $.jqplot.AxisTickRenderer
+     * @classdesc A "tick" object showing the value of a tick/gridline on the plot.
+     * @param {Object} options
+     */
+    $.jqplot.AxisTickRenderer = function (options) {
+        
         // Group: Properties
         $.jqplot.ElemContainer.call(this);
+        
         // prop: mark
         // tick mark on the axis.  One of 'inside', 'outside', 'cross', '' or null.
         this.mark = 'outside';
         // name of the axis associated with this tick
-        this.axis;
+        this.axis = null;
         // prop: showMark
         // whether or not to show the mark on the axis.
         this.showMark = true;
@@ -83,30 +93,42 @@
         this.formatString = '';
         // prop: fontFamily
         // css spec for the font-family css attribute.
-        this.fontFamily;
+        this.fontFamily = null;
         // prop: fontSize
         // css spec for the font-size css attribute.
-        this.fontSize;
+        this.fontSize = null;
         // prop: textColor
         // css spec for the color attribute.
-        this.textColor;
+        this.textColor = null;
         // prop: escapeHTML
         // true to escape HTML entities in the label.
         this.escapeHTML = false;
-        this._elem;
+        this._elem = null;
         this._breakTick = false;
         
         $.extend(true, this, options);
+        
     };
     
-    $.jqplot.AxisTickRenderer.prototype.init = function(options) {
+    /**
+     * Init
+     * @param {Object} options
+     */
+    $.jqplot.AxisTickRenderer.prototype.init = function (options) {
         $.extend(true, this, options);
     };
     
     $.jqplot.AxisTickRenderer.prototype = new $.jqplot.ElemContainer();
     $.jqplot.AxisTickRenderer.prototype.constructor = $.jqplot.AxisTickRenderer;
     
-    $.jqplot.AxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
+    /**
+     * Sets the tick
+     * @param   {String}  value    
+     * @param   {String}  axisName 
+     * @param   {Boolean}  isMinor
+     * @returns {Object}
+     */
+    $.jqplot.AxisTickRenderer.prototype.setTick = function (value, axisName, isMinor) {
         this.value = value;
         this.axis = axisName;
         if (isMinor) {
@@ -115,13 +137,23 @@
         return this;
     };
     
-    $.jqplot.AxisTickRenderer.prototype.draw = function() {
+    /**
+     * Draws the axis
+     * @returns {Object}
+     */
+    $.jqplot.AxisTickRenderer.prototype.draw = function () {
+        
+        var style,
+            s;
+        
         if (this.label === null) {
             this.label = this.prefix + this.formatter(this.formatString, this.value) + this.suffix;
         }
-        var style = {position: 'absolute'};
+        
+        style = {position: 'absolute'};
+        
         if (Number(this.label)) {
-            style['whitSpace'] = 'nowrap';
+            style.whiteSpace = 'nowrap';
         }
         
         // Memory Leaks patch
@@ -130,62 +162,81 @@
             this._elem = null;
         }
 
-        this._elem = $(document.createElement('div'));
-        this._elem.addClass("jqplot-"+this.axis+"-tick");
+        this._elem = $("<div/>", { "class": "jqplot-" + this.axis + "-tick" });
         
         if (!this.escapeHTML) {
             this._elem.html(this.label);
-        }
-        else {
+        } else {
             this._elem.text(this.label);
         }
         
         this._elem.css(style);
 
-        for (var s in this._styles) {
-            this._elem.css(s, this._styles[s]);
+        for (s in this._styles) {
+            if (this._styles.hasOwnProperty(s)) {
+                this._elem.css(s, this._styles[s]);
+            }
         }
+        
         if (this.fontFamily) {
             this._elem.css('font-family', this.fontFamily);
         }
+        
         if (this.fontSize) {
             this._elem.css('font-size', this.fontSize);
         }
+        
         if (this.textColor) {
             this._elem.css('color', this.textColor);
         }
+        
         if (this._breakTick) {
-          this._elem.addClass('jqplot-breakTick');
+            this._elem.addClass('jqplot-breakTick');
         }
         
         return this._elem;
     };
-        
+    
+    /**
+     * Default Tick Formatter
+     * @param   {String}   format
+     * @param   {String} val    The date
+     * @returns {String}
+     */
     $.jqplot.DefaultTickFormatter = function (format, val) {
-        if (typeof val == 'number') {
+        if (typeof val === 'number') {
             if (!format) {
                 format = $.jqplot.config.defaultTickFormatString;
             }
             return $.jqplot.sprintf(format, val);
-        }
-        else {
+        } else {
             return String(val);
         }
     };
-        
+    
+    /**
+     * Percent Tick Formatter
+     * @param   {String}   format
+     * @param   {String}   val
+     * @returns {String}
+     */
     $.jqplot.PercentTickFormatter = function (format, val) {
-        if (typeof val == 'number') {
+        if (typeof val === 'number') {
             val = 100 * val;
             if (!format) {
                 format = $.jqplot.config.defaultTickFormatString;
             }
             return $.jqplot.sprintf(format, val);
-        }
-        else {
+        } else {
             return String(val);
         }
     };
     
-    $.jqplot.AxisTickRenderer.prototype.pack = function() {
+    /**
+     * @TODO
+     */
+    $.jqplot.AxisTickRenderer.prototype.pack = function () {
+        // TODO
     };
-})(jQuery);
+    
+}(jQuery));
