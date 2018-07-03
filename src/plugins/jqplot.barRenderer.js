@@ -57,6 +57,9 @@
         // prop: barWidth
         // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
         this.barWidth = null;
+        // prop: barMinWidth
+        // Minimum width of the bar in pixels if barWidth is set to auto (2 by default).
+        this.barMinWidth = 2;
         // prop: shadowOffset
         // offset of the shadow from the slice and offset of 
         // each succesive stroke of the shadow from the last.
@@ -272,6 +275,9 @@
                 this.barWidth = ((paxis._offsets.min - paxis._offsets.max)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
                 // this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/nseries;
             }
+        }
+        if (this.barWidth < this.barMinWidth) {
+            this.barWidth = this.barMinWidth;
         }
         return [nvals, nseries];
     };
