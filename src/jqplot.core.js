@@ -3447,7 +3447,7 @@
                         for (j=0; j<v.length; j++) {
                             cv = v[j];
                             if (y >= cv[0][1] && y <= cv[3][1] && x >= lex[0] && x <= rex[0]) {
-                                return {seriesIndex:s.index, pointIndex:j, gridData:null, data:s.data[j]};
+                                return {seriesIndex:s.index, pointIndex:j, gridData:[gridpos.x,gridpos.y], data:s.data[j]};
                             }
                         }         
                         break;           
