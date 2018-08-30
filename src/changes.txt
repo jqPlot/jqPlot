@@ -1,5 +1,8 @@
 Title: Change Log
 
+Master
+* Fixes draggable mispelled as "dragable".  
+
 1.0.9:
 * Convert toolchain to grunt
 * Add "step" chart style

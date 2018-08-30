@@ -183,16 +183,15 @@ directly above the point I'm highlighting:
 >     highlighter:{tooltipFadeSpeed:'slow', tooltipLocation:'n'}
 > }
 
-Other plugins, like dragable and trendlines, add their options in with
-the series.   (Yes, that's the correct name for the dragable plugin; it
-doesn't use the correct spelling of "draggable".)
+Other plugins, like draggable and trendlines, add their options in with
+the series.
 This is because both of those plugins can have different
 options for different series in the plot.  So, if you wanted to specify the
-color for the dragable plugin and constrain it to drag only on the x axis as well
+color for the draggable plugin and constrain it to drag only on the x axis as well
 as specify the color of the trend line you could do:
 
 > series:[{
->     dragable: {
+>     draggable: {
 >         color: '#ff3366',
 >         constrainTo: 'x'
 >     },
@@ -205,7 +204,7 @@ This would apply those options to the first series only.  If you had 2 series
 and wanted to turn off dragging and trend lines on the second series, you could do:
 
 > series:[{
->     dragable: {
+>     draggable: {
 >         color: '#ff3366',
 >         constrainTo: 'x'
 >     },
@@ -213,14 +212,14 @@ and wanted to turn off dragging and trend lines on the second series, you could 
 >         color: '#cccccc'
 >     }
 > }, {
->    isDragable: false,
+>    isDraggable: false,
 >    trendline:{
 >        show: false
 >    }
 > }]
 
-Note, series draggability is turned off with the "isDragable" option directly on 
-the series itself, not with a suboption of "dragable".  This may be improved 
+Note, series draggability is turned off with the "isDraggable" option directly on 
+the series itself, not with a suboption of "draggable".  This may be improved 
 in the future.
 
 I hope this is helpful. 
@@ -238,6 +237,6 @@ options object.
 plot.grid.shadow = false), but you'll have to issue the appropriate
 calls to possibly reinitialize and redraw the plot.  jqPlot can
 definitely handle this to change the plot after creation (this is how
-the dragable plugin updates the plot data and the trend line plugin
+the draggable plugin updates the plot data and the trend line plugin
 recomputes itself when data changes).  This hasn't been documented
 yet, however.

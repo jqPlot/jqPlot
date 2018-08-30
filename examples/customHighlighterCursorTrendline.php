@@ -59,7 +59,7 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.categoryAxisRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.highlighter.js"></script>
-    <script class="include" type="text/javascript" src="../src/plugins/jqplot.dragable.js"></script>
+    <script class="include" type="text/javascript" src="../src/plugins/jqplot.draggable.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.trendline.js"></script> 
 
 <!-- End additional plugins -->
