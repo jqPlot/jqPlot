@@ -1,4 +1,4 @@
-jQPlot
+jQPlot (DEPRECATED)
 ======
 
 THIS REPOSITORY WILL BE [ARCHIVED](https://help.github.com/articles/about-archiving-repositories/) ON SEPTEMBER 30 2018,
