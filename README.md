@@ -1,6 +1,13 @@
 jQPlot
 ======
 
+THIS REPOSITORY WILL BE [ARCHIVED](https://help.github.com/articles/about-archiving-repositories/) ON SEPTEMBER 30 2018,
+UNLESS SOMEBODY WANTS TO TAKE OVER RESPONSIBILITY OF BEING OWNER.
+
+Contact Johan if you're interested to become owner of this project.
+
+---
+
 Pure JavaScript plotting plugin for jQuery.
 
 [![Join the chat at https://gitter.im/jqPlot](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jqPlot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
