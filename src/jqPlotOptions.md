@@ -1,23 +1,16 @@
-Title: jqPlot Options
+# jqPlot Options
 
-**This document is out of date.  While the options described here should still be 
-relevent and valid, it has not been updated for many new options.  Sorry for
-this inconvenience.**
+> **This document is out of date and incomplete.** While the options described here should still be relevent and valid, it has not been updated for many new options. Sorry for this inconvenience.
 
-This document describes the options available to jqPlot.  These are set with the 
-third argument to the $.jqplot('target', data, options) function. Options are 
-described using the following convention:
+This document describes the options available to jqPlot. These are set with the third argument to the ``$.jqplot('target', data, options)`` function. Options are described using the following convention:
 
-{{{ 
+```
 property: default, // notes 
-}}}
+```
 
-This document is not complete!  Not all options are shown!  
-Further information about the options can be found in the online API 
-documentation.  For details on how the options relate to the API documentation,
-see the <Options Tutorial> in the optionsTutorial.txt file.
+Further information about the options can be found in the online API documentation. For details on how the options relate to the API documentation, see the <Options Tutorial> in the optionsTutorial.md file.
 
-{{{
+```
 options = 
 {
     seriesColors: [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12", 
@@ -323,10 +316,9 @@ options =
         }
     }
 }
-}}}
+```
 
-
-Options to be described:
+## Options to be described
      
     lineRenderer: 
     .markerOptions?
