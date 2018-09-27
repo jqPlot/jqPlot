@@ -2060,7 +2060,18 @@
                 $.extend(true, this.noDataIndicator, options.noDataIndicator);
             }
             
-            if (data == null || $.isArray(data) == false || data.length == 0 || $.isArray(data[0]) == false || data[0].length == 0) {
+			// check for any data
+            var hasData = false;
+            if (data != null && $.isArray(data) === true) {
+                for (var i = 0; i < data.length; i++) {
+                    if ($.isArray(data[i]) === true && data[i].length > 0) {
+                        hasData = true;
+                        break;
+                    };
+                }
+            };
+
+            if (!hasData) {
                 
                 if (this.noDataIndicator.show == false) {
                     throw new Error("No data specified");
@@ -2102,7 +2113,13 @@
             
             // make a copy of the data
             this.data = $.extend(true, [], data);
-            
+            // fix missing data entries
+            for (var i = 0; i < this.data.length; i++) {
+                if ($.isArray(data[i]) == false) {
+                    this.data[i] = [];
+                };
+            };
+			
             this.parseOptions(options);
             
             if (this.textColor) {
