@@ -921,7 +921,7 @@
                 document.selection.empty();
             }
             else if (sel && !sel().isCollapsed) {
-                sel().collapse();
+                sel().collapse(ev.currentTarget, 0);
             }
             drawZoomBox.call(c);
             ctx = null;
