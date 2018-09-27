@@ -28,7 +28,7 @@
  *     "This code is unrestricted: you are free to use it however you like."
  *
  */
-(function($) {
+(function ($) {
     $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
 
     /**
@@ -72,7 +72,7 @@
      * > }
      *
      */
-    $.jqplot.Highlighter = function(options) {
+    $.jqplot.Highlighter = function (options) {
         // Group: Properties
         //
         //prop: show
@@ -83,10 +83,10 @@
         // Renderer will assimilate attributes from the data point being highlighted,
         // so no attributes need set on the renderer directly.
         // Default is to turn off shadow drawing on the highlighted point.
-        this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+        this.markerRenderer = new $.jqplot.MarkerRenderer({ shadow: false });
         // prop: showMarker
         // true to show the marker
-        this.showMarker  = true;
+        this.showMarker = true;
         // prop: lineWidthAdjust
         // Pixels to add to the lineWidth of the highlight.
         this.lineWidthAdjust = 2.5;
@@ -97,7 +97,7 @@
         // Show a tooltip with data point values.
         this.showTooltip = true;
         // prop: tooltipLocation
-        // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+        // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw' or 'auto'
         this.tooltipLocation = 'nw';
         // prop: fadeTooltip
         // true = fade in/out tooltip, flase = show/hide tooltip
@@ -158,13 +158,13 @@
     };
 
     var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var locationIndicies = { 'nw': 0, 'n': 1, 'ne': 2, 'e': 3, 'se': 4, 's': 5, 'sw': 6, 'w': 7 };
     var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
 
     // axis.renderer.tickrenderer.formatter
 
     // called with scope of plot
-    $.jqplot.Highlighter.init = function (target, data, opts){
+    $.jqplot.Highlighter.init = function (target, data, opts) {
         var options = opts || {};
         // add a highlighter attribute to the plot
         this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
@@ -220,8 +220,8 @@
         mr.size = smr.size + hl.sizeAdjust;
         var rgba = $.jqplot.getColorComponents(smr.color);
         var newrgb = [rgba[0], rgba[1], rgba[2]];
-        var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
-        mr.color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
+        var alpha = (rgba[3] >= 0.6) ? rgba[3] * 0.6 : rgba[3] * (2 - rgba[3]);
+        mr.color = 'rgba(' + newrgb[0] + ',' + newrgb[1] + ',' + newrgb[2] + ',' + alpha + ')';
         mr.init();
         var x_pos = s.gridData[neighbor.pointIndex][0];
         var y_pos = s.gridData[neighbor.pointIndex][1];
@@ -296,13 +296,13 @@
                     case 'both':
                     case 'xy':
                         str = xstr;
-                        for (var i=0; i<ystrs.length; i++) {
+                        for (var i = 0; i < ystrs.length; i++) {
                             str += opts.tooltipSeparator + ystrs[i];
                         }
                         break;
                     case 'yx':
                         str = '';
-                        for (var i=0; i<ystrs.length; i++) {
+                        for (var i = 0; i < ystrs.length; i++) {
                             str += ystrs[i] + opts.tooltipSeparator;
                         }
                         str += xstr;
@@ -315,7 +315,7 @@
                         break;
                     default: // same as 'xy'
                         str = xstr;
-                        for (var i=0; i<ystrs.length; i++) {
+                        for (var i = 0; i < ystrs.length; i++) {
                             str += opts.tooltipSeparator + ystrs[i];
                         }
                         break;
@@ -325,7 +325,7 @@
         }
         else {
             var str;
-            if (typeof opts.formatString ===  'string') {
+            if (typeof opts.formatString === 'string') {
                 str = $.jqplot.sprintf.apply($.jqplot.sprintf, [opts.formatString].concat(data));
             }
 
@@ -350,25 +350,45 @@
             str = opts.tooltipContentEditor(str, neighbor.seriesIndex, neighbor.pointIndex, plot);
         }
         elem.html(str);
-        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
+        var gridpos = { x: neighbor.gridData[0], y: neighbor.gridData[1] };
         var ms = 0;
         var fact = 0.707;
         if (series.markerRenderer.show == true) {
-            ms = (series.markerRenderer.size + opts.sizeAdjust)/2;
+            ms = (series.markerRenderer.size + opts.sizeAdjust) / 2;
         }
 
-        var loc = locations;
-        if (series.fillToZero && series.fill && data[1] < 0) {
-          loc = oppositeLocations;
+        var locVal = '';
+        if (opts.tooltipLocation === 'auto') {
+            var hw = (plot._width / 2);
+            var hh = (plot._height / 2);
+            if (gridpos.y <= hh) {
+                locVal = 's';
+            }
+            else if (gridpos.y > hh) {
+                locVal = 'n';
+            }
+            if (gridpos.x <= hw) {
+                locVal += 'e';
+            }
+            else if (gridpos.x > hw) {
+                locVal += 'w';
+            }
+            /* Center x and center y adds no value */
+        } else {
+            var loc = locations;
+            if (series.fillToZero && series.fill && data[1] < 0) {
+                loc = oppositeLocations;
+            }
+            locVal = loc[locationIndicies[opts.tooltipLocation]];
         }
 
-        switch (loc[locationIndicies[opts.tooltipLocation]]) {
+        switch (locVal) {
             case 'nw':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
                 var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - fact * ms;
                 break;
             case 'n':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) / 2;
                 var y = gridpos.y + plot._gridPadding.top - opts.tooltipOffset - elem.outerHeight(true) - ms;
                 break;
             case 'ne':
@@ -377,14 +397,14 @@
                 break;
             case 'e':
                 var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + ms;
-                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true) / 2;
                 break;
             case 'se':
                 var x = gridpos.x + plot._gridPadding.left + opts.tooltipOffset + fact * ms;
                 var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + fact * ms;
                 break;
             case 's':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) / 2;
                 var y = gridpos.y + plot._gridPadding.top + opts.tooltipOffset + ms;
                 break;
             case 'sw':
@@ -393,7 +413,7 @@
                 break;
             case 'w':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - ms;
-                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true) / 2;
                 break;
             default: // same as 'nw'
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - opts.tooltipOffset - fact * ms;
@@ -412,7 +432,7 @@
         elem.css('top', y);
         if (opts.fadeTooltip) {
             // Fix for stacked up animations.  Thnanks Trevor!
-            elem.stop(true,true).fadeIn(opts.tooltipFadeSpeed);
+            elem.stop(true, true).fadeIn(opts.tooltipFadeSpeed);
         }
         else {
             elem.show();
@@ -464,7 +484,7 @@
                     plot.moveSeriesToFront(neighbor.seriesIndex);
                 }
             }
-            // check to see if we're highlighting the wrong point.
+                // check to see if we're highlighting the wrong point.
             else if (neighbor != null && hl.isHighlighting && hl.currentNeighbor != neighbor) {
                 // highlighting the wrong point.
 
