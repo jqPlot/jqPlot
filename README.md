@@ -1,12 +1,5 @@
-jQPlot (DEPRECATED)
+jQPlot
 ======
-
-THIS REPOSITORY WILL BE [ARCHIVED](https://help.github.com/articles/about-archiving-repositories/) ON SEPTEMBER 30 2018,
-UNLESS SOMEBODY WANTS TO TAKE OVER RESPONSIBILITY OF BEING OWNER.
-
-Contact Johan if you're interested to become owner of this project.
-
----
 
 Pure JavaScript plotting plugin for jQuery.
 
