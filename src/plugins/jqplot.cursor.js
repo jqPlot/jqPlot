@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2013 Chris Leonello
+ * Copyright (c) 2009-2016 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -444,14 +444,52 @@
                             axes[ax]._ticks = [];
                         }
                     }
+                }
+                for (var ax in datapos) {
+                    if ((c.constrainZoomTo == 'x' && ax.charAt(0) == 'y' && c.autoscaleConstraint)) {
+                        dp = datapos[ax];
+                        if (dp != null) {
+                            curax = axes[ax];
                             
-                    // if ((c.constrainZoomTo == 'x' && ax.charAt(0) == 'y' && c.autoscaleConstraint) || (c.constrainZoomTo == 'y' && ax.charAt(0) == 'x' && c.autoscaleConstraint)) {
-                    //     dp = datapos[ax];
-                    //     if (dp != null) {
-                    //         axes[ax].max == null;
-                    //         axes[ax].min = null;
-                    //     }
-                    // }
+                            curax.min = axes[ax]._options.min;
+                            curax.max = axes[ax]._options.max;
+                            
+                            if (axes[ax]._options.min == null || axes[ax]._options.max == null) {
+                                var seriesMin = null;
+                                var seriesMax = null;
+                                $.each(plot.series, function(seriesIdx, seriesObj) {
+                                   if (seriesObj.yaxis == ax) {
+                                       var xaxis = axes[seriesObj.xaxis];
+                                       var i;
+                                       var d = seriesObj._plotData;
+                                       for (i = 0; i < d.length; i++) {
+                                           var point = d[i];
+                                           if (point[0] >= xaxis.min && point[0] <= xaxis.max) {
+                                               if (seriesMin == null || point[1] < seriesMin) {
+                                                   seriesMin = point[1];
+                                               }
+                                               if (seriesMax == null || point[1] > seriesMax) {
+                                                   seriesMax = point[1];
+                                               }
+                                           }
+                                       }
+                                   }
+                                });
+                                
+                                if (axes[ax]._options.min != null) {
+                                    seriesMin = axes[ax]._options.min;
+                                }
+                                if (axes[ax]._options.max != null) {
+                                    seriesMax = axes[ax]._options.max;
+                                }
+                                var r = $.jqplot.LinearTickGenerator(seriesMin, seriesMax, null, null, (axes[ax]._options.min != null), (axes[ax]._options.max != null));
+                                curax.min = r[0];
+                                curax.max = r[1];
+                                curax.tickInterval = null;
+                                curax.numberTicks = null;
+                            }
+                        }
+                    }
                 }
                 ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
                 plot.redraw();
@@ -883,7 +921,7 @@
                 document.selection.empty();
             }
             else if (sel && !sel().isCollapsed) {
-                sel().collapse();
+                sel().collapse(ev.currentTarget, 0);
             }
             drawZoomBox.call(c);
             ctx = null;

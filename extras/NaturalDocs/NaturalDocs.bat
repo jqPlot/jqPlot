@@ -12,6 +12,6 @@ shift
 goto MORE
 :NOMORE
 
-perl NaturalDocs %NaturalDocsParams%
+perl extras/NaturalDocs/NaturalDocs %NaturalDocsParams%
 
 set NaturalDocsParams=

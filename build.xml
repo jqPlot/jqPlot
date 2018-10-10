@@ -25,14 +25,14 @@
     <property description="NaturalDocs" name="ND" value="${basedir}/extras/NaturalDocs/NaturalDocs" />
     <property description="NaturalDocs" value="${basedir}/extras/NaturalDocs/NaturalDocs.bat" dir="${basedir}/extras/NaturalDocs">
     -->
-    <exec executable="hg" outputproperty="HG_ID">
-      <arg value="id"/>
-      <arg value="-n"/>
+
+    <exec executable="git" outputproperty="HG_ID">
+      <arg value="tag"/>
     </exec>
 
-    <exec executable="hg" outputproperty="REVISION">
-      <arg value="id"/>
-      <arg value="-n"/>
+    <exec executable="git" outputproperty="REVISION">
+      <arg value="rev-parse"/>
+      <arg value="HEAD"/>
     </exec>
 
     <!-- MAIN -->

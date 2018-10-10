@@ -7,7 +7,7 @@
 <!-- Example scripts go here -->
 
 
-  <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.csss" rel="Stylesheet" /> 
+  <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="stylesheet" /> 
 
   <style type="text/css">
 
@@ -477,7 +477,7 @@ $(document).ready(function(){
 
 <!-- End Don't touch this! -->
 
-<!-- Additional plugins go here -->>
+<!-- Additional plugins go here -->
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.logAxisRenderer.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.cursor.js"></script>
   <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>

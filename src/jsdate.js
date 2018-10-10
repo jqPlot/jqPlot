@@ -21,7 +21,7 @@
      * @author Chris Leonello
      * @date #date#
      * @version #VERSION#
-     * @copyright (c) 2010-2013 Chris Leonello
+     * @copyright (c) 2010-2015 Chris Leonello
      * jsDate is currently available for use in all personal or commercial projects 
      * under both the MIT and GPL version 2.0 licenses. This means that you can 
      * choose the license that best suits your project and use it accordingly.
@@ -106,7 +106,17 @@
     jsDate.prototype.add = function(number, unit) {
         var factor = multipliers[unit] || multipliers.day;
         if (typeof factor == 'number') {
+            // Get the offset from the current time.
+            var oldOffset = this.proxy.getTimezoneOffset();
+
+            // Set the new time.
             this.proxy.setTime(this.proxy.getTime() + (factor * number));
+
+            // Check to see if we've crossed a daylight savings time boundary, if so convert to a number of milliseconds to add back to the diff.
+            OffsetDiff = oldOffset - this.proxy.getTimezoneOffset();
+
+            // Reset the time to account for daylight savings time.
+            this.proxy.setTime(this.proxy.getTime() - (OffsetDiff * 60 * 1000));
         } else {
             factor.add(this, number);
         }
@@ -152,7 +162,12 @@
         var factor = multipliers[unit] || multipliers.day;
         if (typeof factor == 'number') {
             // multiply
-            var unitDiff = (this.proxy.getTime() - dateObj.proxy.getTime()) / factor;
+			
+            // Check to see if we've crossed a daylight savings time boundary, if so convert to a number of milliseconds to add back to the diff.
+            var OffsetDiff = (dateObj.proxy.getTimezoneOffset() - this.proxy.getTimezoneOffset()) * 60 * 1000;
+
+            // Now find the difference, add back in the offset and then divide by the factor.
+            var unitDiff = (this.proxy.getTime() - dateObj.proxy.getTime() + OffsetDiff) / factor;
         } else {
             // run function
             var unitDiff = factor.diff(this.proxy, dateObj.proxy);
@@ -728,10 +743,18 @@
 
         'sv': {
             monthNames: ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'],
-          monthNamesShort: ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'],
+            monthNamesShort: ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'],
             dayNames: ['söndag','måndag','tisdag','onsdag','torsdag','fredag','lördag'],
             dayNamesShort: ['sön','mån','tis','ons','tor','fre','lör'],
             formatString: '%Y-%m-%d %H:%M:%S'
+        },
+
+        'it': {
+            monthNames: ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'],
+            monthNamesShort: ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'],
+            dayNames: ['Domenica','Lunedi','Martedi','Mercoledi','Giovedi','Venerdi','Sabato'],
+            dayNamesShort: ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'],
+            formatString: '%d-%m-%Y %H:%M:%S'
         }
     
     };

@@ -217,7 +217,7 @@
                                 <li><input class="color" type="color" id="colorMale" value="#526D2C" /> Male</li>
                                 <li><input class="color" type="color" id="colorFemale" value="#77933C" /> Female</li>
                                 <li><input class="color" type="color" id="colorBackground" value="#ffffff" /> Background</li>
-                                <li><input class="color" type="color" id="colorPlotBands" value="f5ebd7" /> Plot Bands</li>
+                                <li><input class="color" type="color" id="colorPlotBands" value="#f5ebd7" /> Plot Bands</li>
                             </ul>
                         </td>
                     </tr>
@@ -371,7 +371,7 @@
         var greenColors = ["#526D2C", "#77933C", "#C57225", "#C57225"];
         var blueColors = ["#3F7492", "#4F9AB8", "#C57225", "#C57225"];
 
-        // To accomodate changing y axis, need to keep track of plot options.
+        // To accommodate changing y axis, need to keep track of plot options.
         // changing axes will require recreating the plot, so need to keep 
         // track of state changes.
         var plotOptions = {

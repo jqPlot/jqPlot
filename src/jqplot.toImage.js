@@ -5,7 +5,7 @@
  * Version: @VERSION
  * Revision: @REVISION
  *
- * Copyright (c) 2009-2013 Chris Leonello
+ * Copyright (c) 2009-2016 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
  * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
@@ -29,7 +29,7 @@
  *
  * jsDate library by Chris Leonello:
  *
- * Copyright (c) 2010-2013 Chris Leonello
+ * Copyright (c) 2010-2015 Chris Leonello
  *
  * jsDate is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
@@ -181,7 +181,7 @@
 
             for (var i=0; i<wl; i++) {
                 w += words[i];
-                if (context.measureText(w).width > tagwidth) {
+                if (context.measureText(w).width > tagwidth && w.length > words[i].length) {
                     breaks.push(i);
                     w = '';
                     i--;
@@ -232,7 +232,7 @@
 
             // somehow in here, for divs within divs, the width of the inner div should be used instead of the canvas.
 
-            if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip')) {
+            if ((tagname == 'div' || tagname == 'span') && !$(el).hasClass('jqplot-highlighter-tooltip') && !$(el).hasClass('jqplot-canvasOverlay-tooltip')) {
                 $(el).children().each(function() {
                     _jqpToImage(this, left, top);
                 });
@@ -292,7 +292,12 @@
             }
 
             else if (tagname == 'canvas') {
-                newContext.drawImage(el, left, top);
+                // newContext.drawImage(el, left, top);
+                // chart not scale correctly for high dpi canvas, need w,h for the fix:
+                var h = $(el).innerHeight() - 2 * parseInt($(el).css('padding-top'), 10);
+                var w = $(el).innerWidth() - 2 * parseInt($(el).css('padding-left'), 10);
+
+                newContext.drawImage(el, left, top, w, h);
             }
         }
         $(this).children().each(function() {
