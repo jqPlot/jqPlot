@@ -122,6 +122,8 @@
             for (i=0; i<nr; i++) {
                 tr = $(document.createElement('tr'));
                 tr.addClass('jqplot-table-legend');
+				//Issue-177 | added element series class reference jqplot-table-legend-series-[sidx]
+				tr.addClass("jqplot-table-legend-series-" + idx);
                 if (reverse){
                     tr.prependTo(this._elem);
                 }
@@ -274,23 +276,11 @@
                 }
                 var s = plot.series[sidx];
 
+				//Issue-177 | removed element index based location of series legend element and replaced with explicit class reference jqplot-table-legend-series-[sidx]
                 if (s.canvas._elem.is(':hidden') || !s.show) {
-                    // Not sure if there is a better way to check for showSwatches and showLabels === true.
-                    // Test for "undefined" since default values for both showSwatches and showLables is true.
-                    if (typeof plot.options.legend.showSwatches === 'undefined' || plot.options.legend.showSwatches === true) {
-                        plot.legend._elem.find('td').eq(sidx1 * 2).addClass('jqplot-series-hidden');
-                    }
-                    if (typeof plot.options.legend.showLabels === 'undefined' || plot.options.legend.showLabels === true) {
-                        plot.legend._elem.find('td').eq((sidx1 * 2) + 1).addClass('jqplot-series-hidden');
-                    }
-                }
-                else {
-                    if (typeof plot.options.legend.showSwatches === 'undefined' || plot.options.legend.showSwatches === true) {
-                        plot.legend._elem.find('td').eq(sidx1 * 2).removeClass('jqplot-series-hidden');
-                    }
-                    if (typeof plot.options.legend.showLabels === 'undefined' || plot.options.legend.showLabels === true) {
-                        plot.legend._elem.find('td').eq((sidx1 * 2) + 1).removeClass('jqplot-series-hidden');
-                    }
+                    plot.legend._elem.find('tr.jqplot-table-legend-series-' + sidx + ' td.jqplot-table-legend-label').addClass('jqplot-series-hidden');
+                } else {
+                    plot.legend._elem.find('tr.jqplot-table-legend-series-' + sidx + ' td.jqplot-table-legend-label').removeClass('jqplot-series-hidden');
                 }
 
             }
