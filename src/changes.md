@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Formatting of _changes.txt_ changelog to the recommended formatting.
 - Renamed changes.txt to changes.md.
+- Fix enhancedLegendRenderer element hide mismatch - By Daniel G (@dg-spark)
 
 ## [1.0.9] - 2016-02-16
 ### Added
