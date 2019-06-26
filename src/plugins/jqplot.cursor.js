@@ -316,7 +316,9 @@
     
     $.jqplot.Cursor.prototype.resetZoom = function(plot, cursor) {
         var axes = plot.axes;
+        var series = plot.series;
         var cax = cursor._zoom.axes;
+        var cser = cursor._data_series;
         if (!plot.plugins.cursor.zoomProxy && cursor._zoom.isZoomed) {
             for (var ax in axes) {
                 // axes[ax]._ticks = [];
@@ -326,11 +328,17 @@
                 // axes[ax].tickInterval = cax[ax].tickInterval;
                 // // for date axes
                 // axes[ax].daTickInterval = cax[ax].daTickInterval;
+                axes[ax].ticks = cax[ax].ticks;
                 axes[ax].reset();
                 axes[ax]._ticks = [];
                 // fake out tick creation algorithm to make sure original auto
                 // computed format string is used if _overrideFormatString is true
                 axes[ax]._autoFormatString = cax[ax].tickFormatString;
+            }
+            if (cser){
+                for (var idxSerie=0 ; idxSerie < series.length; idxSerie++) {
+                    series[idxSerie].data = cser[idxSerie];
+                }
             }
             plot.redraw();
             cursor._zoom.isZoomed = false;
@@ -350,6 +358,7 @@
     $.jqplot.Cursor.prototype.doZoom = function (gridpos, datapos, plot, cursor) {
         var c = cursor;
         var axes = plot.axes;
+        var series = plot.series;
         var zaxes = c._zoom.axes;
         var start = zaxes.start;
         var end = zaxes.end;
@@ -363,6 +372,7 @@
                     // make a copy of the original axes to revert back.
                     if (c._zoom.axes[ax] == undefined) {
                         c._zoom.axes[ax] = {};
+                        c._zoom.axes[ax].ticks = axes[ax].ticks;
                         c._zoom.axes[ax].numberTicks = axes[ax].numberTicks;
                         c._zoom.axes[ax].tickInterval = axes[ax].tickInterval;
                         // for date axes...
@@ -370,6 +380,13 @@
                         c._zoom.axes[ax].min = axes[ax].min;
                         c._zoom.axes[ax].max = axes[ax].max;
                         c._zoom.axes[ax].tickFormatString = (axes[ax].tickOptions != null) ? axes[ax].tickOptions.formatString :  '';
+                    }
+                    // make a copy of the original data to revert back.
+                    if (c._data_series == undefined){
+                        c._data_series = new Array();
+                        for (var idxSerie=0 ; idxSerie < series.length; idxSerie++) {
+                            c._data_series.push(series[idxSerie].data);
+                        }
                     }
 
 
@@ -400,8 +417,34 @@
                                     _numberTicks = plot.axes.yaxis.numberTicks;
                                 }
                             }
-                            
-                            if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.LogAxisRenderer )) { //} || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
+
+                            if (axes[ax].renderer.constructor === $.jqplot.CategoryAxisRenderer && curax.name === "xaxis") {  // only managed for x
+                                var tickDelta = axes[ax].max / axes[ax].ticks.length;
+                                var currentValue = 0;
+                                var currentData = new Array();
+                                var newTicks = new Array();
+                                // only get the relevant ticks and filter data
+                                for (var idxTick=0 ; idxTick < axes[ax].ticks.length; idxTick++) {
+                                    currentValue += tickDelta;
+                                    if (currentValue >= newmin && (currentValue - tickDelta) <= newmax){
+                                        newTicks.push(axes[ax].ticks[idxTick]);
+                                        for (var idxSerie=0 ; idxSerie < series.length; idxSerie++) {
+                                            if (currentData.length <= idxSerie) currentData.push(new Array());
+                                            currentData[idxSerie].push(
+                                                [newTicks.length, series[idxSerie].data[idxTick][1]]);
+                                        }
+                                    }
+                                }
+                                if (newTicks.length){
+                                    axes[ax].min = newmin;
+                                    axes[ax].max = newmax;
+                                    axes[ax].ticks = newTicks;
+                                    for (var idxSerie=0 ; idxSerie < series.length; idxSerie++) {
+                                        series[idxSerie].data = currentData[idxSerie];
+                                    }
+                                }
+                            }
+                            else if (this.looseZoom && (axes[ax].renderer.constructor === $.jqplot.LinearAxisRenderer || axes[ax].renderer.constructor === $.jqplot.LogAxisRenderer )) { //} || axes[ax].renderer.constructor === $.jqplot.DateAxisRenderer)) {
 
                                 ret = $.jqplot.LinearTickGenerator(newmin, newmax, curax._scalefact, _numberTicks);
 
