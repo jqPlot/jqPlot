@@ -4,7 +4,7 @@
 <?php include "opener.php"; ?>
 
 <!-- Example scripts go here -->
-    <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" /> 
+    <link class="include" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" />
     <link href="colorpicker/jquery.colorpicker.css" rel="stylesheet" type="text/css"/>
     <style type="text/css">
 
@@ -798,7 +798,7 @@
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasTextRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.canvasAxisLabelRenderer.js"></script>
     <script class="include" type="text/javascript" src="../src/plugins/jqplot.json2.js"></script>
-    <script class="include" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+    <script class="include" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
     <script class="include" type="text/javascript" src="kcp.print.js"></script>
 
     <script src="colorpicker/jquery.colorpicker.js"></script>

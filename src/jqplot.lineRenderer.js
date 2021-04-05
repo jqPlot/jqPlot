@@ -559,7 +559,7 @@
     // This implementation is derived from the one posted
     // by krypin on the jqplot-users mailing list:
     //
-    // http://groups.google.com/group/jqplot-users/browse_thread/thread/748be6a445723cea?pli=1
+    // https://groups.google.com/group/jqplot-users/browse_thread/thread/748be6a445723cea?pli=1
     //
     // with a blog post:
     //

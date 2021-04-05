@@ -6,7 +6,7 @@
 
 <!-- Example scripts go here -->
 
-  <link class="include" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" /> 
+  <link class="include" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="Stylesheet" />
 
     <style type="text/css">
 
