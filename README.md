@@ -7,17 +7,17 @@ Pure JavaScript plotting plugin for jQuery.
 
 **jqPlot home page**: http://www.jqplot.com
 
-**Users forum**: http://groups.google.com/group/jqplot-users
+**Users forum**: https://groups.google.com/group/jqplot-users
 
-**Developers forum**: http://groups.google.com/group/jqplot-dev
+**Developers forum**: https://groups.google.com/group/jqplot-dev
 
 **Examples and unit tests**: http://www.jqplot.com/examples
 
 **Documentation**: http://www.jqplot.com/docs/
 
-**Project page and source code**: http://www.github.com/jqPlot/jqPlot
+**Project page and source code**: https://www.github.com/jqPlot/jqPlot
 
-**Bugs, issues, feature requests**: http://www.github.com/jqPlot/jqPlot/issues
+**Bugs, issues, feature requests**: https://www.github.com/jqPlot/jqPlot/issues
 
 # Basic Usage Instructions
 

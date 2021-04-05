@@ -1,4 +1,4 @@
-// Memory Leaks patch from http://explorercanvas.googlecode.com/svn/trunk/ 
+// Memory Leaks patch from https://explorercanvas.googlecode.com/svn/trunk/
 //  svn : r73
 // ------------------------------------------------------------------
 // Copyright 2006 Google Inc.
@@ -176,7 +176,7 @@ if (!document.createElement('canvas').getContext) {
       return el;
     },
 
-    // Memory Leaks patch : see http://code.google.com/p/explorercanvas/issues/detail?id=82
+    // Memory Leaks patch : see https://code.google.com/p/explorercanvas/issues/detail?id=82
     uninitElement: function(el){
       if (el.getContext) {
         var ctx = el.getContext();
